@@ -11,12 +11,11 @@
 #include "tjreference.h"
 #include "tjexception.h"
 
-class EXPORTED  GC {
+class EXPORTED GC {
 	public:
-		GC(); // do not instantiate!
-		~GC();
+		static void IncrementLive();
+		static void DecrementLive();
 		template<typename T> static ref< T > Hold(T* x);
-		static unsigned int _live;
 };
 
 template<typename T> ref< T> GC::Hold(T* x) {
