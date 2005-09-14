@@ -4,7 +4,7 @@
 #ifdef TJSHARED_EXPORTS 
 	#define EXPORTED __declspec(dllexport)
 #else
-	#define EXPORTED __declspec(dllimport)
+	#define EXPORTED
 #endif
 
 #include <string>

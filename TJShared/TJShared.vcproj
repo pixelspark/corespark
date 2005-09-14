@@ -136,10 +136,12 @@
 				Name="VCLinkerTool"
 				OutputFile="$(OutDir)\..\..\Release\tjshared.dll"
 				LinkIncremental="1"
+				GenerateManifest="false"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
+				LinkTimeCodeGeneration="0"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -147,7 +149,8 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
-				AdditionalManifestFiles="$(InputDir)\res\windows-xp.manifest"
+				AdditionalManifestFiles="$(InputDir)/res/windows-xp.manifest"
+				EmbedManifest="true"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
