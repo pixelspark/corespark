@@ -195,8 +195,8 @@ template<typename T, class R> class ref {
 			return (_res==r._res);
 		}
 
-		bool operator!=(ref<T,R>& r) {
-		return (_res!=r->_res);
+		template<typename TT, class RR> bool operator!=(ref<TT,RR>& r) {
+			return (_res!=r._res);
 		}
 
 		template<class X> bool IsCastableTo() {
