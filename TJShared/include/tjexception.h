@@ -5,6 +5,7 @@ enum ExceptionType {
 	ExceptionTypeSevere=0,
 	ExceptionTypeError,
 	ExceptionTypeWarning,
+	ExceptionTypeMessage,
 };
 
 #define Throw(msg,t) throw Exception((const wchar_t*)msg,t,(const char*)__FILE__, (int)__LINE__)
