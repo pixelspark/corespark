@@ -10,6 +10,7 @@
 #include <string>
 #include "tjreference.h"
 #include "tjexception.h"
+#include "tjcode.h"
 
 class EXPORTED GC {
 	public:
