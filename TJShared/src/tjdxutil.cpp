@@ -6,7 +6,9 @@
 #include <stdio.h>
 
 HRESULT AddGraphToRot(IUnknown *pUnkGraph, DWORD *pdwRegister)  {
-    IMoniker * pMoniker;
+	return S_OK;
+
+	IMoniker * pMoniker;
     IRunningObjectTable *pROT;
     WCHAR wsz[128];
     HRESULT hr;
@@ -43,6 +45,8 @@ HRESULT AddGraphToRot(IUnknown *pUnkGraph, DWORD *pdwRegister)  {
 
 // Removes a filter graph from the Running Object Table
 void RemoveGraphFromRot(DWORD pdwRegister) {
+	return;
+
     IRunningObjectTable *pROT;
 
     if (SUCCEEDED(GetRunningObjectTable(0, &pROT))) 
