@@ -6,7 +6,6 @@
 	ProjectGUID="{74D222D8-DAE6-4EB2-BC62-8F6927E275A4}"
 	RootNamespace="TJShared"
 	Keyword="Win32Proj"
-	SignManifests="true"
 	>
 	<Platforms>
 		<Platform
@@ -183,6 +182,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\tjdxutil.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\tjexception.cpp"
 				>
 			</File>
@@ -198,6 +201,10 @@
 			>
 			<File
 				RelativePath=".\include\tjcode.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tjdxutil.h"
 				>
 			</File>
 			<File

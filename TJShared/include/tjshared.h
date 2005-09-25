@@ -11,6 +11,7 @@
 #include "tjreference.h"
 #include "tjexception.h"
 #include "tjcode.h"
+#include "tjdxutil.h"
 
 class EXPORTED GC {
 	public:
