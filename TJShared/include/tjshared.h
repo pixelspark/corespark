@@ -7,6 +7,9 @@
 	#define EXPORTED
 #endif
 
+typedef unsigned int Time; // in milliseconds
+typedef unsigned short Channel;
+
 #include <string>
 #include "tjreference.h"
 #include "tjexception.h"

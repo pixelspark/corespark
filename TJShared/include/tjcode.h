@@ -22,6 +22,8 @@ class EXPORTED Code {
 };
 
 class EXPORTED CodeWriter {
+	friend class Stream;
+
 	public:
 		CodeWriter(unsigned int initialSize=1024);
 		virtual ~CodeWriter();

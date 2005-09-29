@@ -9,6 +9,7 @@ enum ExceptionType {
 };
 
 #define Throw(msg,t) throw Exception((const wchar_t*)msg,t,(const char*)__FILE__, (int)__LINE__)
+#define ErrorMessage(msg,t) MessageBox(0L, msg, L"Error", MB_OK|MB_ICONWARNING)
 
 class EXPORTED Exception {
 	public:

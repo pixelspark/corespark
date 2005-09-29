@@ -153,12 +153,9 @@ template<typename T, class R> class ref {
 			return (*this);
 		}
 
-		/*operator T() {
-			if(_res==0) {
-				throw Exception("Tryed to dereference a null pointer.", ExceptionTypeError);
-			}
-			return R(_res);
-		}*/
+		T* GetPointer() {
+			return _res->_data;
+		}
 
 		operator ref<const T,R>() {
 			return ref<const T,R>((res<const T,R>*)_res);
