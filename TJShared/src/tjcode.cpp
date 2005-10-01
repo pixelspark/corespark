@@ -32,15 +32,3 @@ unsigned int CodeWriter::GetCapacity() {
 CodeWriter::~CodeWriter() {
 	delete[] _buffer;
 }
-
-
-template<> CodeWriter& CodeWriter::Add(std::wstring x) {
-	Add((unsigned short)x.length());
-	std::wstring::iterator it = x.begin();
-	while(it!=x.end()) {
-		wchar_t c = *it;
-		Add(c);
-		it++;
-	}
-	return *this;
-}

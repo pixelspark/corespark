@@ -1,6 +1,9 @@
 #ifndef _TJCODE_H
 #define _TJCODE_H
 
+#include <sstream>
+#pragma pack(push,1)
+
 class EXPORTED Code {
 	public:
 		Code(const char* code, unsigned int size);
@@ -9,7 +12,7 @@ class EXPORTED Code {
 
 		template<typename T> T Get(unsigned int& position) {
 			unsigned int size = sizeof(T)/sizeof(char);
-			if(position+size>_size) Throw(L"Array index out of bounds in code reader", ExceptionTypeError);
+			if((position+(size-1))>_size) Throw(L"Array index out of bounds in code reader", ExceptionTypeError);
 
 			T* tp = (T*)&(_code[position]);
 			position += size;
@@ -20,6 +23,9 @@ class EXPORTED Code {
 		char* _code;
 		unsigned int _size;
 };
+
+template<> std::wstring Code::Get(unsigned int& position);
+
 
 class EXPORTED CodeWriter {
 	friend class Stream;
@@ -55,4 +61,5 @@ class EXPORTED CodeWriter {
 
 template<> CodeWriter& CodeWriter::Add(std::wstring x);
 
+#pragma pack(pop)
 #endif
