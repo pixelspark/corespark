@@ -6,6 +6,7 @@
 	ProjectGUID="{74D222D8-DAE6-4EB2-BC62-8F6927E275A4}"
 	RootNamespace="TJShared"
 	Keyword="Win32Proj"
+	SignManifests="true"
 	>
 	<Platforms>
 		<Platform
@@ -178,6 +179,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\src\tjarguments.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\tjcode.cpp"
 				>
 			</File>
@@ -199,6 +204,10 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath=".\include\tjarguments.h"
+				>
+			</File>
 			<File
 				RelativePath=".\include\tjcode.h"
 				>

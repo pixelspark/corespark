@@ -15,6 +15,7 @@ typedef unsigned short Channel;
 #include "tjexception.h"
 #include "tjcode.h"
 #include "tjdxutil.h"
+#include "tjarguments.h"
 
 class EXPORTED GC {
 	public:
