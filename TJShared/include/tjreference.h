@@ -123,13 +123,18 @@ template<typename T, class R> class ref {
 			}
 		} 
 
-		template<typename RT, class RR> ref(const ref<RT,RR>& org) {			
-			T* rt = dynamic_cast<T*>(org._res->_data);				
-			if(rt==0) throw BadCastException();
+		template<typename RT, class RR> ref(const ref<RT,RR>& org) {	
+			if(org._res==0) {
+				_res = 0;
+			}
+			else {
+				T* rt = dynamic_cast<T*>(org._res->_data);				
+				if(rt==0) throw BadCastException();
 
-			_res = reinterpret_cast<Resource<T,R>* >(org._res);
-			if(_res!=0) {
-				_res->AddReference();
+				_res = reinterpret_cast<Resource<T,R>* >(org._res);
+				if(_res!=0) {
+					_res->AddReference();
+				}
 			}
 		}
 
