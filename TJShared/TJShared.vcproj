@@ -6,7 +6,6 @@
 	ProjectGUID="{74D222D8-DAE6-4EB2-BC62-8F6927E275A4}"
 	RootNamespace="TJShared"
 	Keyword="Win32Proj"
-	SignManifests="true"
 	>
 	<Platforms>
 		<Platform
@@ -198,6 +197,10 @@
 				RelativePath=".\src\tjshared.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\src\tjtea.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -226,6 +229,10 @@
 			</File>
 			<File
 				RelativePath=".\include\tjshared.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tjtea.h"
 				>
 			</File>
 		</Filter>

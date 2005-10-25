@@ -34,18 +34,18 @@ template< typename T, class R=Call<T> > class Resource {
 			GC::DecrementLive();
 		}
 
-		void AddReference() {
+		inline void AddReference() {
 			_rc++;
 		}
 
-		void DeleteReference() {
+		inline void DeleteReference() {
 			_rc--;
 			if(_rc==0) {
 				delete this;
 			}
 		}
 
-		ref<T,R> Reference() {
+		inline ref<T,R> Reference() {
 			return ref<T,R>(this);
 		}
 
@@ -67,6 +67,26 @@ template< typename T, class R=Call<T> > class Resource {
 		
 };
 
+template< typename T, class R=Call<T> > class ArrayResource: public Resource<T, R> {
+	friend class ref<T,R>;
+	friend class Call<T>;
+	friend class GC;
+
+	public:
+		virtual ~ArrayResource() {
+		}
+
+		T* _data;
+	protected:
+		ArrayResource(T* x): Resource(x) { 
+		}
+  
+		void Release() {
+			delete[] _data;
+		}
+
+		int _rc;	
+};
 
 template<class T> class Call {
 	friend class ref<T,Call>;

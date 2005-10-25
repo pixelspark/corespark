@@ -16,16 +16,23 @@ typedef unsigned short Channel;
 #include "tjcode.h"
 #include "tjdxutil.h"
 #include "tjarguments.h"
+#include "tjtea.h"
 
 class EXPORTED GC {
 	public:
 		static void IncrementLive();
 		static void DecrementLive();
 		template<typename T> static ref< T > Hold(T* x);
+		template<typename T> static ref< T > HoldArray(T* x);
 };
 
 template<typename T> ref< T> GC::Hold(T* x) {
 	Resource< T,Call<T> >* rs = new Resource<T, Call<T> >(x);
+	return rs->Reference();
+}
+
+template<typename T> ref< T> GC::HoldArray(T* x) {
+	ArrayResource< T,Call<T> >* rs = new ArrayResource<T, Call<T> >(x);
 	return rs->Reference();
 }
 
