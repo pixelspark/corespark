@@ -202,6 +202,10 @@
 				RelativePath=".\src\tjtea.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\src\tjthread.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -234,6 +238,10 @@
 			</File>
 			<File
 				RelativePath=".\include\tjtea.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tjthread.h"
 				>
 			</File>
 		</Filter>

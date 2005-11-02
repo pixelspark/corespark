@@ -17,6 +17,7 @@ typedef unsigned short Channel;
 #include "tjdxutil.h"
 #include "tjarguments.h"
 #include "tjtea.h"
+#include "tjthread.h"
 
 class EXPORTED GC {
 	public:
