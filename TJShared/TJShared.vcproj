@@ -203,6 +203,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\tjtheme.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\tjthememgr.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\tjthread.cpp"
 				>
 			</File>
@@ -238,6 +246,14 @@
 			</File>
 			<File
 				RelativePath=".\include\tjtea.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tjtheme.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tjthememgr.h"
 				>
 			</File>
 			<File
