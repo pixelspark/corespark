@@ -2,6 +2,7 @@
 #include <windows.h>
 
 unsigned int _gc_live = 0;
+size_t _gc_size = 0;
 
 class GCChecker {
 	public:
@@ -17,10 +18,20 @@ class GCChecker {
 
 GCChecker _gc_checker;
 
-void GC::IncrementLive() {
+void GC::IncrementLive(size_t size) {
 	_gc_live++;
+	_gc_size += size;
 }
 
-void GC::DecrementLive() {
+void GC::DecrementLive(size_t size) {
 	_gc_live--;
+	_gc_size -= size;
+}
+
+int GC::GetLiveCount() {
+	return _gc_live;
+}
+
+size_t GC::GetSize() {
+	return _gc_size;
 }

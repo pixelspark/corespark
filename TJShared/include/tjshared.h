@@ -23,8 +23,10 @@ typedef unsigned short Channel;
 
 class EXPORTED GC {
 	public:
-		static void IncrementLive();
-		static void DecrementLive();
+		static void IncrementLive(size_t size=0);
+		static void DecrementLive(size_t size=0);
+		static int GetLiveCount();
+		static size_t GetSize();
 		template<typename T> static ref< T > Hold(T* x);
 		template<typename T> static ref< T > HoldArray(T* x);
 };

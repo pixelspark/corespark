@@ -31,7 +31,7 @@ template< typename T, class R=Call<T> > class Resource {
 					throw Exception(L"Resource deleted while still referenced!",ExceptionTypeWarning);
 			}
 			this->Release();
-			GC::DecrementLive();
+			GC::DecrementLive(sizeof(T));
 		}
 
 		inline void AddReference() {
@@ -56,7 +56,7 @@ template< typename T, class R=Call<T> > class Resource {
 		Resource(T* x) { 
 			_rc = 0;
 			_data = x;
-			GC::IncrementLive();
+			GC::IncrementLive(sizeof(T));
 		}
   
 		void Release() {
