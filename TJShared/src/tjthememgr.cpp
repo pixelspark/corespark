@@ -26,6 +26,22 @@ void ThemeManager::RemoveTheme(ref<Theme> thm) {
 	}
 }
 
+
+int ThemeManager::GetThemeId() {
+	std::vector< ref<Theme> >::iterator it = _themes.begin();
+	int idx = 0;
+	while(it!=_themes.end()) {
+		ref<Theme> th = *it;
+		if(th==_theme) {
+			return idx;
+		}
+		idx++;
+		it++;
+	}
+
+	return -1;
+}
+
 void ThemeManager::ListThemes(HWND list) {
 	std::vector< ref<Theme> >::iterator it = _themes.begin();
 	while(it!=_themes.end()) {

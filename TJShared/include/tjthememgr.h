@@ -17,6 +17,7 @@ class EXPORTED ThemeManager {
 		static void SelectTheme(ref<Theme> thm);
 		static void SelectTheme(int n);
 		static void ListThemes(HWND list);
+		static int GetThemeId();
 
 	protected:
 		static std::vector< ref<Theme> > _themes;
