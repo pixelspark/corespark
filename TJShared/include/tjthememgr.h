@@ -19,9 +19,13 @@ class EXPORTED ThemeManager {
 		static void ListThemes(HWND list);
 		static int GetThemeId();
 
+		// friendly time
+		static bool IsFriendlyTime();
+		static void SetFriendlyTime(bool t);
 	protected:
 		static std::vector< ref<Theme> > _themes;
 		static ref<Theme> _theme;
+		static bool _friendlyTime;
 };
 
 class EXPORTED ThemeSubscription {

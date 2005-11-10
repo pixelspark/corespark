@@ -2,6 +2,7 @@
 
 std::vector< ref<Theme> > ThemeManager::_themes;
 ref<Theme> ThemeManager::_theme;
+bool ThemeManager::_friendlyTime = false;
 
 ref<Theme> ThemeManager::GetTheme() {
 	return _theme;
@@ -57,6 +58,14 @@ void ThemeManager::SelectTheme(ref<Theme> th) {
 
 void ThemeManager::SelectTheme(int n) {
 	_theme = _themes.at(n);
+}
+
+bool ThemeManager::IsFriendlyTime() {
+	return _friendlyTime;
+}
+
+void ThemeManager::SetFriendlyTime(bool t) {
+	_friendlyTime = t;
 }
 
 /* ThemeSubscription */
