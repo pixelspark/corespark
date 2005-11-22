@@ -133,6 +133,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="gdiplus.lib"
 				OutputFile="$(OutDir)\..\..\Release\tjshared.dll"
 				LinkIncremental="1"
 				GenerateManifest="false"
@@ -222,6 +223,10 @@
 			>
 			<File
 				RelativePath=".\include\tjarguments.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tjcache.h"
 				>
 			</File>
 			<File

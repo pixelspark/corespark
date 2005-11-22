@@ -17,6 +17,7 @@
 #include "tjthread.h"
 #include "tjtheme.h"
 #include "tjthememgr.h"
+#include "tjcache.h"
 
 class EXPORTED GC {
 	public:

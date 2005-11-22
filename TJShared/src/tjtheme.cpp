@@ -1,13 +1,31 @@
 #include "../include/tjshared.h"
-using Gdiplus::Color;
+using namespace Gdiplus;
 
 ThemeSubscription _subscription_theme(GC::Hold(new Theme()));
 ThemeSubscription _subscription_bright_theme(GC::Hold(new BrightTheme()));
 
 Theme::Theme() {
+	_font = 0;
+	_fontBold = 0;
 }
 
 Theme::~Theme() {
+	delete _font;
+	delete _fontBold;
+}
+
+Gdiplus::Font* Theme::GetGUIFontBold() {
+	if(_fontBold==0) {
+		_fontBold = new Font(L"Tahoma", 11, FontStyleBold, UnitPixel, 0);
+	}
+	return _fontBold;
+}
+
+Gdiplus::Font* Theme::GetGUIFont() {
+	if(_font==0) {
+		_font = new Font(L"Tahoma", 11, FontStyleRegular, UnitPixel, 0);
+	}
+	return _font;
 }
 
 std::wstring Theme::GetName() { return std::wstring(L"Donker (Standaard)"); }

@@ -92,14 +92,14 @@ template<class T> class Call {
 	friend class ref<T,Call>;
 
 	public:
-		Call(Resource<T,Call>* s) {
-			if(s==0) throw Exception(L"Tryed to construct a call without subject", ExceptionTypeError);
+		inline Call(Resource<T,Call>* s) {
+			if(s==0) throw Exception(L"Null pointer exception", ExceptionTypeError);
 			_subject = s;
 			
 			s->AddReference();
 		}
 
-		~Call() {
+		inline ~Call() {
 			_subject->DeleteReference();
 			_subject = 0;
 		}
@@ -119,7 +119,7 @@ template<class T> class Call {
 	protected:
 		Resource<T,Call>* _subject;
 
-		Call(const Call<T>& org) {
+		inline Call(const Call<T>& org) {
 			_subject = org._subject;
 			_subject->AddReference();
 		}
@@ -129,21 +129,21 @@ template<typename T, class R> class ref {
 	friend class Resource<T,R>;
 
 	public:
-		ref(Resource<T,R>* rx=0) {
+		inline ref(Resource<T,R>* rx=0) {
 			_res = rx;
 			if(_res!=0) {
 			_res->AddReference();
 			}
 		}
 
-		ref(const ref<T,R>& org) {
+		inline ref(const ref<T,R>& org) {
 			_res = org._res;
 			if(_res!=0) {
 				_res->AddReference();
 			}
 		} 
 
-		template<typename RT, class RR> ref(const ref<RT,RR>& org) {	
+		template<typename RT, class RR> inline ref(const ref<RT,RR>& org) {	
 			if(org._res==0) {
 				_res = 0;
 			}
@@ -158,13 +158,13 @@ template<typename T, class R> class ref {
 			}
 		}
 
-		~ref() {
+		inline ~ref() {
 			if(_res==0) return;
 			_res->DeleteReference();
 			_res = 0;
 		}
 
-		ref<T,R>& operator=(const ref<T,R>& o) {
+		inline ref<T,R>& operator=(const ref<T,R>& o) {
 			Resource<T,R>* old = _res;
 			_res = o._res;
 
@@ -178,50 +178,50 @@ template<typename T, class R> class ref {
 			return (*this);
 		}
 
-		T* GetPointer() {
+		inline T* GetPointer() {
 			return _res->_data;
 		}
 
-		operator ref<const T,R>() {
+		inline operator ref<const T,R>() {
 			return ref<const T,R>((res<const T,R>*)_res);
 		}
 
-		ref<const T, R> get_const() {
+		inline ref<const T, R> get_const() {
 			return ref<const T,R>((res<const T,R>*)_res);
 		}
 
-		operator T&() {
+		inline operator T&() {
 			return *(_res->_data);
 		}
 
-		R operator->() {
+		inline R operator->() {
 			return R(_res);
 		}
 
-		operator bool() {
+		inline operator bool() {
 			return _res!=0&&_res->_data!=0;
 		}
 
-			bool operator==(const ref<T,R>& r) {
-		return (r._res==_res);
+		inline bool operator==(const ref<T,R>& r) {
+			return (r._res==_res);
 		}
 
-		ref<T,R> Copy() {
-			if(_res==0) throw Exception("Tryed to copy a null reference", ExceptionTypeError);
+		inline ref<T,R> Copy() {
+			if(_res==0) throw Exception("Tried to copy a null reference", ExceptionTypeError);
 			return _res->Reference();
 		}
 
-		bool IsNull() { return _res==0; }
+		inline bool IsNull() { return _res==0; }
 
-		template<typename TT, class RR> bool operator==(ref<TT,RR>& r) {
+		template<typename TT, class RR> inline bool operator==(ref<TT,RR>& r) {
 			return (_res==r._res);
 		}
 
-		template<typename TT, class RR> bool operator!=(ref<TT,RR>& r) {
+		template<typename TT, class RR> inline bool operator!=(ref<TT,RR>& r) {
 			return (_res!=r._res);
 		}
 
-		template<class X> bool IsCastableTo() {
+		template<class X> inline bool IsCastableTo() {
 			return dynamic_cast<X*>(_res->_data)!=0;	
 		}
 

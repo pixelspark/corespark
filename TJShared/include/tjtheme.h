@@ -3,6 +3,9 @@
 
 #include <Gdiplus.h>
 
+#pragma warning(push)
+#pragma warning(disable: 4251)
+
 class EXPORTED Theme {
 	public:
 		Theme();
@@ -24,6 +27,12 @@ class EXPORTED Theme {
 		virtual Gdiplus::Color GetCurrentPositionColor();
 		virtual Gdiplus::Color GetTrackDescriptionTextColor();
 		virtual Gdiplus::Color GetFaderColor();
+		virtual Gdiplus::Font* GetGUIFont();
+		virtual Gdiplus::Font* GetGUIFontBold();
+
+	protected:
+		Gdiplus::Font* _font;
+		Gdiplus::Font* _fontBold;
 };
 
 class BrightTheme: public Theme {
@@ -48,4 +57,5 @@ class BrightTheme: public Theme {
 		virtual Gdiplus::Color GetFaderColor();
 };
 
+#pragma warning(pop)
 #endif
