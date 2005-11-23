@@ -1,5 +1,5 @@
 #include "../include/tjshared.h"
-
+#include <assert.h>
 #include <atlbase.h>
 #include <windows.h>
 #include <dshow.h>
@@ -17,7 +17,7 @@ HRESULT AddGraphToRot(IUnknown *pUnkGraph, DWORD *pdwRegister)  {
     if (FAILED(GetRunningObjectTable(0, &pROT)))
         return E_FAIL;
 
-    wsprintfW(wsz, L"FilterGraph %08x pid %08x\0", (DWORD_PTR)pUnkGraph, 
+    wsprintfW(wsz, L"TJShow FilterGraph %08x pid %08x\0", (DWORD_PTR)pUnkGraph, 
               GetCurrentProcessId());
 
     hr = CreateItemMoniker(L"!", wsz, &pMoniker);
@@ -54,8 +54,10 @@ void RemoveGraphFromRot(DWORD pdwRegister) {
 
 // ROT Regisration holder
 RotRegistration::RotRegistration(IGraphBuilder* ig) {
+	assert(ig!=0);
 	HRESULT hr = AddGraphToRot(ig, &_magic);
     if(FAILED(hr)) {
+		MessageBox(0L, L"ROT registration failed",L"", MB_OK);
 		_magic = 0;
     }
 }
