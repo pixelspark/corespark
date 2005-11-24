@@ -133,7 +133,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="gdiplus.lib"
+				AdditionalDependencies="gdiplus.lib comctl32.lib"
 				OutputFile="$(OutDir)\..\..\Release\tjshared.dll"
 				LinkIncremental="1"
 				GenerateManifest="false"
@@ -200,6 +200,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\tjsplitter.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\tjtea.cpp"
 				>
 			</File>
@@ -213,6 +217,10 @@
 			</File>
 			<File
 				RelativePath=".\src\tjthread.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\tjui.cpp"
 				>
 			</File>
 		</Filter>
@@ -242,11 +250,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\include\tjrange.h"
+				>
+			</File>
+			<File
 				RelativePath=".\include\tjreference.h"
 				>
 			</File>
 			<File
 				RelativePath=".\include\tjshared.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tjsplitter.h"
 				>
 			</File>
 			<File
@@ -263,6 +279,10 @@
 			</File>
 			<File
 				RelativePath=".\include\tjthread.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tjui.h"
 				>
 			</File>
 		</Filter>

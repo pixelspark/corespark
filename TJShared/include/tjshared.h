@@ -7,7 +7,9 @@
 	#define EXPORTED
 #endif
 
+#include <assert.h>
 #include <string>
+#include "tjrange.h"
 #include "tjreference.h"
 #include "tjexception.h"
 #include "tjcode.h"
@@ -18,6 +20,8 @@
 #include "tjtheme.h"
 #include "tjthememgr.h"
 #include "tjcache.h"
+#include "tjui.h"
+#include "tjsplitter.h"
 
 class EXPORTED GC {
 	public:
