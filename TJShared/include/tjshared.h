@@ -7,11 +7,19 @@
 	#define EXPORTED
 #endif
 
+#undef _WIN32_WINNT
+#undef _WIN32_IE
+#undef WIN32_LEAN_AND_MEAN
+#define _WIN32_WINNT 0x0600
+#define _WIN32_IE 0x0600
+#define _CRT_SECURE_CPP_OVERLOAD_SECURE_NAMES 1
+
 #include <assert.h>
 #include <string>
 #include "tjrange.h"
 #include "tjreference.h"
 #include "tjexception.h"
+#include "tjlistener.h"
 #include "tjcode.h"
 #include "tjdxutil.h"
 #include "tjarguments.h"
@@ -21,7 +29,10 @@
 #include "tjthememgr.h"
 #include "tjcache.h"
 #include "tjui.h"
+#include "tjchildwnd.h"
 #include "tjsplitter.h"
+#include "tjtab.h"
+#include "tjslider.h"
 
 class EXPORTED GC {
 	public:

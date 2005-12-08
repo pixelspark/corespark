@@ -248,17 +248,6 @@ void Wnd::LeaveHotkeyMode(wchar_t key) {
 	Update();
 }
 
-void ChildWnd::LeaveHotkeyMode(wchar_t key) {
-	Wnd::LeaveHotkeyMode(key);
-
-	HWND parent = ::GetParent(_wnd);
-	if(parent!=0) {
-		RECT rc;
-		GetClientRect(parent, &rc);
-		InvalidateRect(parent, &rc, FALSE);
-	}
-}
-
 bool Wnd::IsMouseOver() {
 	POINT cursorPosition;
 	GetCursorPos(&cursorPosition);
@@ -387,34 +376,6 @@ void Wnd::DrawHotkey(Graphics* g, const wchar_t* str, int x, int y) {
 	g->DrawString(str,(int)wcslen(str),theme->GetGUIFontBold(),blockrc,&sf,&br);
 }
 
-LRESULT ChildWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
-	if(msg==WM_PAINT) {
-		Wnd* parent = GetParent();
-		if(parent!=0) {
-			if(parent->IsInHotkeyMode()) {
-				ref<Theme> theme = ThemeManager::GetTheme();
-
-				//PAINTSTRUCT ps;
-				//BeginPaint(_wnd,&ps);
-				HDC dc = GetWindowDC(_wnd);
-
-				RECT rc;
-				GetClientRect(_wnd, &rc);
-				{ 
-					Graphics g(dc);
-					std::wostringstream os;
-					os << GetPreferredHotkey();
-					std::wstring hk = os.str();
-					DrawHotkey(&g, hk.c_str(), (rc.right-rc.left)/2, (rc.bottom-rc.top)/2);
-				}
-				ReleaseDC(_wnd,dc);
-			}
-		}
-	}
-
-	return Wnd::Message(msg,wp,lp);
-}
-
 void Wnd::SetQuitOnClose(bool q) {
 	_quitOnClose = q;
 }
@@ -524,14 +485,6 @@ LRESULT ColorWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	}
 	return Wnd::Message(msg,wp,lp);
 }
-
-void ChildWnd::Fill() {
-	RECT r;
-	GetClientRect(::GetParent(_wnd), &r);
-	SetWindowPos(_wnd, 0, 0, 0, r.right-r.left, r.bottom-r.top, SWP_NOZORDER);
-	Layout();
-}
-
 
 void Wnd::Move(int x, int y, int w, int h) {
 	MoveWindow(_wnd,x,y,w,h,TRUE);

@@ -16,6 +16,7 @@ SplitterWnd::SplitterWnd(HWND parent, ref<Wnd> a, ref<Wnd> b, Orientation o): Ch
 	_defaultRatio = 0.618f;
 	_dragging = false;
 	_orientation = o;
+	Show(true);
 }
 
 SplitterWnd::~SplitterWnd() {

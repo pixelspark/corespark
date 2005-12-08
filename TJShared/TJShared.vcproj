@@ -184,6 +184,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\tjchildwnd.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\tjcode.cpp"
 				>
 			</File>
@@ -200,7 +204,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\tjslider.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\tjsplitter.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\tjtab.cpp"
 				>
 			</File>
 			<File
@@ -238,6 +250,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\include\tjchildwnd.h"
+				>
+			</File>
+			<File
 				RelativePath=".\include\tjcode.h"
 				>
 			</File>
@@ -247,6 +263,10 @@
 			</File>
 			<File
 				RelativePath=".\include\tjexception.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tjlistener.h"
 				>
 			</File>
 			<File
@@ -262,7 +282,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\include\tjslider.h"
+				>
+			</File>
+			<File
 				RelativePath=".\include\tjsplitter.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tjtab.h"
 				>
 			</File>
 			<File
