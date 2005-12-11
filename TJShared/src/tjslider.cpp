@@ -9,20 +9,25 @@ SliderWnd::SliderWnd(HWND parent, const wchar_t* title): ChildWnd(title, parent)
 	_hotkey = L'S';
 	_bitmap = 0;
 	_hasFocus = false;
+	_listener = 0;
 }
 
 float SliderWnd::GetValue() const {
 	return _value;
 }
 
-void SliderWnd::SetValue(float f) {
+void SliderWnd::Update() {
+	Repaint();
+}
+
+void SliderWnd::SetValue(float f, bool notify) {
 	if(f<0.0f) f = 0.0f;
 	if(f>1.0f) f = 1.0f;
 	_value = f;
 	Repaint();
 
-	if(_listener) {
-		_listener->Notify(this, NotificationUpdate);
+	if(notify && _listener!=0) {
+		_listener->Notify(this, NotificationChanged);
 	}
 }
 
@@ -32,6 +37,10 @@ SliderWnd::~SliderWnd() {
 
 LRESULT SliderWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	if(msg==WM_PAINT) {
+		if(_listener!=0) {
+			_listener->Notify(this, NotificationUpdate);
+		}
+
 		PAINTSTRUCT ps;
 		BeginPaint(_wnd, &ps);
 		RECT rect;
@@ -135,6 +144,6 @@ void SliderWnd::SetHotkey(wchar_t hotkey) {
 	_hotkey = hotkey;
 }
 
-void SliderWnd::SetListener(ref<Listener> listener) {
+void SliderWnd::SetListener(Listener* listener) {
 	_listener = listener;
 }

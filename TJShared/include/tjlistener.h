@@ -3,6 +3,7 @@
 
 enum Notification {
 	NotificationNop = 0,
+	NotificationChanged,
 	NotificationUpdate,
 };
 

@@ -11,13 +11,14 @@ class EXPORTED SliderWnd: public ChildWnd {
 		virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 		virtual wchar_t GetPreferredHotkey();
 		void SetHotkey(wchar_t hotkey);
-		void SetListener(ref<Listener> listener);
+		void SetListener(Listener* listener);
 		float GetValue() const;
-		void SetValue(float f);
+		void SetValue(float f, bool notify=true);
+		virtual void Update();
 
 	protected:
 		wchar_t _hotkey;
-		ref<Listener> _listener;
+		Listener* _listener;
 		float _value;
 		Gdiplus::Bitmap* _bitmap;
 		bool _hasFocus;
