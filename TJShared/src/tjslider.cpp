@@ -112,15 +112,38 @@ LRESULT SliderWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		else if(wp==VK_UP) {
 			SetValue(_value+0.05f);
 		}
+		else {
+			HWND first = ::GetWindow(_wnd, GW_HWNDFIRST);
+			HWND last = ::GetWindow(_wnd, GW_HWNDLAST);
+
+			if(wp==VK_LEFT) {
+				if(_wnd==last) {
+					SetFocus(first);
+				}
+				else {
+					HWND next = ::GetWindow(_wnd, GW_HWNDNEXT);
+					SetFocus(next);
+				}
+			}
+			else if(wp==VK_RIGHT) {
+				if(_wnd==first) {
+					SetFocus(last);
+				}
+				else {
+					HWND next = ::GetWindow(_wnd, GW_HWNDPREV);
+					SetFocus(next);
+				}
+			}
+		}
 	}
 	else if(msg==WM_MOUSEWHEEL) {
 		int delta = GET_WHEEL_DELTA_WPARAM(wp);
 		if(delta<0) {
-			_value = max(0.0f, _value - 0.05f);
+			SetValue(max(0.0f, _value - 0.05f));
 			Repaint();
 		}
 		else {
-			_value = min(1.0f,_value+0.05f);
+			SetValue(min(1.0f,_value+0.05f));
 			Repaint();
 		}
 	}
