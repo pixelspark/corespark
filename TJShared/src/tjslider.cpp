@@ -68,6 +68,21 @@ LRESULT SliderWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		int x = (rect.right-rect.left)/2 - (squareWidth/2);
 		g.DrawRectangle(&pn, RectF(float(x), float(rect.top), float(squareWidth), float(rect.bottom-rect.top)));
 
+		// markers
+		int mx = (rect.right-rect.left)/2 + (squareWidth/2);
+		for(float my=0.0f;my<=1.0f;my+=0.1f) {
+			float mty = int(rect.bottom) - int(my*int(rect.bottom-rect.top));;
+			g.DrawLine(&pn, (REAL)mx, mty, (REAL)mx+2,mty);
+		}
+
+		// larger markers at 0.0, 0.5, 1.0
+		float mty = int(rect.bottom) - int(0.5f*int(rect.bottom-rect.top));;
+		g.DrawLine(&pn, (REAL)mx, mty, (REAL)mx+4,mty);
+		mty = int(rect.bottom) - int(1.0f*int(rect.bottom-rect.top));;
+		g.DrawLine(&pn, (REAL)mx, mty, (REAL)mx+4,mty);
+		mty = int(rect.bottom) - int(0.0f*int(rect.bottom-rect.top));;
+		g.DrawLine(&pn, (REAL)mx, mty, (REAL)mx+4,mty);
+
 		// dragger
 		const static int draggerWidth = 22;
 		x = (rect.right-rect.left)/2 - draggerWidth/2;
@@ -102,7 +117,12 @@ LRESULT SliderWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 
 			y -= rc.top;
 			float val = float(y)/float(rc.bottom-rc.top);
-			SetValue(1.0f - val);
+			/*if(val<0.52f && val>0.48f) {
+				SetValue(0.5f);
+			}
+			else {*/
+				SetValue(1.0f - val);
+			//}
 		}
 	}
 	else if(msg==WM_KEYDOWN) {
@@ -111,6 +131,12 @@ LRESULT SliderWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		}
 		else if(wp==VK_UP) {
 			SetValue(_value+0.05f);
+		}
+		else if(wp==VK_NEXT) {
+			SetValue(0.0f);
+		}
+		else if(wp==VK_PRIOR) {
+			SetValue(1.0f);
 		}
 		else {
 			HWND first = ::GetWindow(_wnd, GW_HWNDFIRST);

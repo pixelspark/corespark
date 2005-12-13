@@ -30,6 +30,8 @@
 #include "tjcache.h"
 #include "tjui.h"
 #include "tjchildwnd.h"
+#include "tjlogger.h"
+#include "tjlog.h"
 #include "tjsplitter.h"
 #include "tjtab.h"
 #include "tjslider.h"

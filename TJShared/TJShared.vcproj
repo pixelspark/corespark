@@ -200,6 +200,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\tjlog.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\tjlogger.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\tjshared.cpp"
 				>
 			</File>
@@ -267,6 +275,14 @@
 			</File>
 			<File
 				RelativePath=".\include\tjlistener.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tjlog.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tjlogger.h"
 				>
 			</File>
 			<File
