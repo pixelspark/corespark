@@ -127,10 +127,10 @@ LRESULT SliderWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	}
 	else if(msg==WM_KEYDOWN) {
 		if(wp==VK_DOWN) {
-			SetValue(_value - 0.05f);
+			SetValue(_value - (1.0f/255.0f));
 		}
 		else if(wp==VK_UP) {
-			SetValue(_value+0.05f);
+			SetValue(_value+(1.0f/255.0f));
 		}
 		else if(wp==VK_NEXT) {
 			SetValue(0.0f);

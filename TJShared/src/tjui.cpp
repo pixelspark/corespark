@@ -540,12 +540,12 @@ LRESULT CALLBACK PropertyEditNumericWndProc(HWND wnd, UINT msg, WPARAM wp, LPARA
 			SetWindowText(wnd, getal.c_str());
 			return 0;
 		}
-		if((wp>L'9' || wp < L'0')&&wp!=L'-' &&wp!=L':' && wp!=VK_DELETE && wp!=L'\b' && wp!=VK_UP && wp!=VK_DOWN) {
+		if((wp>L'9' || wp < L'0')&&wp!=L'-' &&wp!=L':' && wp!=VK_DELETE && wp!=VK_HOME && wp!=VK_END && wp!=L'\b' && wp!=VK_UP && wp!=VK_DOWN) {
 			return 0; // no alpha-numeric stuff in here please!
 		}
 	}
 	else if(msg==WM_CHAR) {
-		if((wp>L'9' || wp < L'0')&&wp!=L'-' && wp!=L':' && wp!=VK_DELETE && wp!=L'\b' && wp!=VK_UP && wp!=VK_DOWN) {
+		if((wp>L'9' || wp < L'0')&&wp!=L'-' && wp!=L':' && wp!=VK_DELETE && wp!=VK_HOME && wp!=VK_END && wp!=L'\b' && wp!=VK_UP && wp!=VK_DOWN) {
 			return 0; // no alpha-numeric stuff in here please!
 		}
 	}
