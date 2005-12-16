@@ -57,8 +57,13 @@ void TabWnd::SelectPane(unsigned int index) {
 	try {
 		Pane& pane = _panes.at(index);
 		if(pane._detached) {
-			if(pane._wnd->IsShown()) {
-				SetForegroundWindow(pane._wnd->GetWindow());
+			HWND paneWnd = pane._wnd->GetWindow();
+			
+			int style = GetWindowLong(paneWnd, GWL_STYLE);
+
+			if((style&WS_VISIBLE)!=0) {
+				HWND panel = ::GetParent(paneWnd);
+				SetForegroundWindow(panel);
 				_current = 0;
 				return;
 			}
@@ -246,24 +251,48 @@ void TabWnd::Pane::SetDetached(bool d, TabWnd* tab) {
 	assert(tab!=0);
 	if(!d) {
 		SetParent(_wnd->GetWindow(),tab->GetWindow());
-		_wnd->SetStyle(WS_CHILD);
-		_wnd->UnsetStyle(WS_OVERLAPPEDWINDOW);
-		_wnd->UnsetStyleEx(WS_EX_TOOLWINDOW);
+		//_wnd->Show(true);
 		_wnd->Update();
 		UpdateWindow(_wnd->GetWindow());
 	}
 	else {
-		HWND window = _wnd->GetWindow();
-		SetParent(window,0);
-		_wnd->UnsetStyle(WS_CHILD|WS_VISIBLE);
-		_wnd->SetStyle(WS_OVERLAPPEDWINDOW);
-		_wnd->SetStyleEx(WS_EX_TOOLWINDOW);
+		// Create holder window
+		HWND parent = 0L;
 		RECT tabrc;
 		GetWindowRect(tab->GetWindow(), &tabrc);
-		SetWindowPos(window, 0, tabrc.left+30, tabrc.top+TabWnd::defaultHeaderHeight+30, 0, 0, SWP_NOSIZE|SWP_NOZORDER);
-		_wnd->Show(true);
-		_wnd->Update();
-		UpdateWindow(_wnd->GetWindow());
+
+		HWND panel = CreateWindowEx(WS_EX_PALETTEWINDOW, TJ_TAB_PANEL_CLASS_NAME, L"Panel", WS_OVERLAPPEDWINDOW,  tabrc.left+30, tabrc.top+30, tabrc.right-tabrc.left, tabrc.bottom-tabrc.top, parent, 0L, GetModuleHandle(NULL), 0L);
+		SetWindowText(panel, _title.c_str());
+		HWND window = _wnd->GetWindow();
+		SetParent(window,panel);
+		SendMessage(panel, WM_SIZE, 0,0);
+		ShowWindow(panel, SW_SHOW);
 	}
 	_detached = d;
+}
+
+LRESULT CALLBACK TabPanelWndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) {
+	if(msg==WM_CREATE) {
+		return 1;
+	}
+	else if(msg==WM_CLOSE) {
+		HWND child = GetWindow(wnd, GW_CHILD);
+		if(child!=0) {
+			// hide it somewhere so it won't be destroyed and TabWnd can pick it back up
+			ShowWindow(child, SW_HIDE);
+			SetParent(child,0L);
+		}
+		DestroyWindow(wnd);
+		return 0;
+	}
+	else if(msg==WM_SIZE) {
+		// update size of child window
+		HWND child = GetWindow(wnd, GW_CHILD);
+		if(child!=0) {
+			RECT r;
+			GetClientRect(wnd, &r);
+			SetWindowPos(child, 0, 0,0, r.right-r.left, r.bottom-r.top, SWP_NOZORDER);
+		}
+	}
+	return DefWindowProc(wnd, msg, wp, lp);
 }

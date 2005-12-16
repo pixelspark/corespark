@@ -71,16 +71,16 @@ LRESULT SliderWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		// markers
 		int mx = (rect.right-rect.left)/2 + (squareWidth/2);
 		for(float my=0.0f;my<=1.0f;my+=0.1f) {
-			float mty = int(rect.bottom) - int(my*int(rect.bottom-rect.top));;
+			float mty = float(int(rect.bottom) - int(my*int(rect.bottom-rect.top)));
 			g.DrawLine(&pn, (REAL)mx, mty, (REAL)mx+2,mty);
 		}
 
 		// larger markers at 0.0, 0.5, 1.0
-		float mty = int(rect.bottom) - int(0.5f*int(rect.bottom-rect.top));;
+		float mty = float(int(rect.bottom) - int(0.5f*int(rect.bottom-rect.top)));
 		g.DrawLine(&pn, (REAL)mx, mty, (REAL)mx+4,mty);
-		mty = int(rect.bottom) - int(1.0f*int(rect.bottom-rect.top));;
+		mty = float( int(rect.bottom) - int(1.0f*int(rect.bottom-rect.top)));
 		g.DrawLine(&pn, (REAL)mx, mty, (REAL)mx+4,mty);
-		mty = int(rect.bottom) - int(0.0f*int(rect.bottom-rect.top));;
+		mty = float(int(rect.bottom) - int(0.0f*int(rect.bottom-rect.top)));
 		g.DrawLine(&pn, (REAL)mx, mty, (REAL)mx+4,mty);
 
 		// dragger

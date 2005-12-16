@@ -168,14 +168,14 @@ void Wnd::RegisterClasses() {
 	//wc.hIcon = LoadIcon(wc.hInstance, 0);
 	wc.lpfnWndProc = WndProc;
 	wc.lpszClassName = TJ_DEFAULT_CLASS_NAME;
-	wc.style = CS_HREDRAW|CS_VREDRAW|CS_DBLCLKS;
+	wc.style = CS_HREDRAW|CS_VREDRAW|CS_DBLCLKS|CS_PARENTDC;
 	
 	if(!RegisterClassEx(&wc)) {
 		Throw(L"Could not register class",ExceptionTypeError);
 	}
 	
 	wc.lpszClassName = TJ_DEFAULT_NDBL_CLASS_NAME;
-	wc.style = CS_HREDRAW|CS_VREDRAW;
+	wc.style = CS_HREDRAW|CS_VREDRAW|CS_PARENTDC;
 
 	if(!RegisterClassEx(&wc)) {
 		Throw(L"Could not register class",ExceptionTypeError);
@@ -196,6 +196,12 @@ void Wnd::RegisterClasses() {
 
 	wc.lpszClassName = TJ_PROPERTY_LABEL_CLASS_NAME;
 	wc.lpfnWndProc = PropertyLabelWndProc;
+	if(!RegisterClassEx(&wc)) {
+		Throw(L"Could not register class", ExceptionTypeError);
+	}
+
+	wc.lpszClassName = TJ_TAB_PANEL_CLASS_NAME;
+	wc.lpfnWndProc = TabPanelWndProc;
 	if(!RegisterClassEx(&wc)) {
 		Throw(L"Could not register class", ExceptionTypeError);
 	}

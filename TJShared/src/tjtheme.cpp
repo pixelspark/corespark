@@ -83,6 +83,10 @@ Color Theme::GetFaderColor() {
 	return Color(255,255,255);
 }
 
+Color Theme::GetDisabledOverlayColor() {
+	return Color(200,0,0,0);
+}
+
 // Bright theme
 
 BrightTheme::BrightTheme() {
@@ -142,5 +146,10 @@ Color BrightTheme::GetTrackDescriptionTextColor() {
 Color BrightTheme::GetFaderColor() {
 	return Color(0,0,0);
 }
+
+Color BrightTheme::GetDisabledOverlayColor() {
+	return Color(200,255,255,255);
+}
+
 
 std::wstring BrightTheme::GetName() { return std::wstring(L"Licht"); }

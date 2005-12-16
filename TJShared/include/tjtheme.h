@@ -30,6 +30,8 @@ class EXPORTED Theme {
 		virtual Gdiplus::Font* GetGUIFont();
 		virtual Gdiplus::Font* GetGUIFontBold();
 
+		virtual Gdiplus::Color GetDisabledOverlayColor();
+
 	protected:
 		Gdiplus::Font* _font;
 		Gdiplus::Font* _fontBold;
@@ -55,6 +57,8 @@ class BrightTheme: public Theme {
 		virtual Gdiplus::Color GetCurrentPositionColor();
 		virtual Gdiplus::Color GetTrackDescriptionTextColor();
 		virtual Gdiplus::Color GetFaderColor();
+
+		virtual Gdiplus::Color GetDisabledOverlayColor();
 };
 
 #pragma warning(pop)

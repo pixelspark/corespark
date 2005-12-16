@@ -6,7 +6,8 @@
 #define TJ_DEFAULT_NDBL_CLASS_NAME (L"TjWndClassNdbl")
 #define TJ_PROPERTY_EDIT_CLASS_NAME (L"TjPropertyEditWndClass")
 #define TJ_PROPERTY_EDIT_NUMERIC_CLASS_NAME (L"TjPropertyEditNumericWndClass")
-#define  TJ_PROPERTY_LABEL_CLASS_NAME (L"TjPropertyLabelWndClass")
+#define TJ_PROPERTY_LABEL_CLASS_NAME (L"TjPropertyLabelWndClass")
+#define TJ_TAB_PANEL_CLASS_NAME (L"TjTabPanelWndClass")
 
 /** Class for initializing GDI+ **/
 class EXPORTED GraphicsInit {
@@ -14,6 +15,8 @@ class EXPORTED GraphicsInit {
 		GraphicsInit();
 		virtual ~GraphicsInit();
 };
+
+LRESULT CALLBACK TabPanelWndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 
 class EXPORTED Wnd {
 	public:
