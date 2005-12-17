@@ -10,6 +10,9 @@ SliderWnd::SliderWnd(HWND parent, const wchar_t* title): ChildWnd(title, parent)
 	_bitmap = 0;
 	_hasFocus = false;
 	_listener = 0;
+	_displayValue = 0.0f;
+	_flash = false;
+	_oldValue = 0.0f;
 }
 
 float SliderWnd::GetValue() const {
@@ -18,6 +21,10 @@ float SliderWnd::GetValue() const {
 
 void SliderWnd::Update() {
 	Repaint();
+}
+
+void SliderWnd::SetDisplayValue(float v) {
+	_displayValue = v;
 }
 
 void SliderWnd::SetValue(float f, bool notify) {
@@ -67,6 +74,11 @@ LRESULT SliderWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		const static int squareWidth = 6;
 		int x = (rect.right-rect.left)/2 - (squareWidth/2);
 		g.DrawRectangle(&pn, RectF(float(x), float(rect.top), float(squareWidth), float(rect.bottom-rect.top)));
+
+		if(_displayValue>0.0f) {
+			float dvh = (1.0f-_displayValue) * (rect.bottom-rect.top);
+			g.FillRectangle(&br,RectF(float(x+2), float(float(rect.top)+dvh), float(squareWidth-3), float(rect.bottom-rect.top)-dvh));
+		}
 
 		// markers
 		int mx = (rect.right-rect.left)/2 + (squareWidth/2);
@@ -125,7 +137,18 @@ LRESULT SliderWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 			//}
 		}
 	}
+	else if(msg==WM_KEYUP) {
+		if(_flash) {
+			SetValue(_oldValue);
+		}
+		_flash = false;
+	}
 	else if(msg==WM_KEYDOWN) {
+		if(ISVKKEYDOWN(VK_CONTROL)) {
+			_flash = true;	
+			_oldValue = _value;
+		}
+		
 		if(wp==VK_DOWN) {
 			SetValue(_value - (1.0f/255.0f));
 		}
