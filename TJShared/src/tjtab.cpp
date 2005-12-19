@@ -3,6 +3,7 @@
 using namespace Gdiplus;
 
 TabWnd::TabWnd(HWND parent): ChildWnd(L"TabWnd", parent) {
+	SetStyle(WS_CLIPCHILDREN|WS_CLIPSIBLINGS);
 	_headerHeight = defaultHeaderHeight;
 	_buffer = 0;
 	_hotkey = L'O';
@@ -17,8 +18,16 @@ void TabWnd::SetHotkey(wchar_t key) {
 	_hotkey = key;
 }
 
+ref<Wnd> TabWnd::GetCurrentPane() {
+	return _current;
+}
+
 wchar_t TabWnd::GetPreferredHotkey() {
 	return _hotkey;
+}
+
+void TabWnd::Clear() {
+	_panes.clear();
 }
 
 void TabWnd::LeaveHotkeyMode(wchar_t key) {
@@ -51,6 +60,9 @@ void TabWnd::AddPane(std::wstring name, ref<Wnd> wnd) {
 	assert(wnd);
 	wnd->Show(false);
 	_panes.push_back(Pane(name,wnd,false));
+	if(_panes.size()==1) {
+		SelectPane(0);
+	}
 }
 
 void TabWnd::SelectPane(unsigned int index) {

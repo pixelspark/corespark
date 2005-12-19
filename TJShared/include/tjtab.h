@@ -16,9 +16,11 @@ class EXPORTED TabWnd: public ChildWnd {
 		virtual void Layout();
 		virtual void Update();
 		virtual void LeaveHotkeyMode(wchar_t key);
+		virtual void Clear();
+		ref<Wnd> GetCurrentPane();
 	
 	protected:
-		struct Pane {
+		struct EXPORTED Pane {
 			Pane(std::wstring, ref<Wnd>, bool);
 			void SetDetached(bool d, TabWnd* tab);
 
