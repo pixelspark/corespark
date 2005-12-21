@@ -3,7 +3,7 @@
 
 class EXPORTED ChildWnd: public Wnd {
 	public:
-		ChildWnd(const wchar_t* title, HWND parent, bool wantDoubleClick=true);
+		ChildWnd(const wchar_t* title, HWND parent, bool wantDoubleClick=true, bool useDoubleBuffering=true);
 		virtual void Fill();
 		virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 		virtual void LeaveHotkeyMode(wchar_t key=0);

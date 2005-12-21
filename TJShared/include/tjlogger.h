@@ -9,6 +9,7 @@ class EXPORTED LoggerWnd: public Wnd {
 		wchar_t GetPreferredHotkey();
 		virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 		virtual void Layout();
+		virtual void Paint(Gdiplus::Graphics& g);
 
 	protected:
 		HFONT _font;

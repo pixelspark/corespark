@@ -17,6 +17,7 @@ class EXPORTED TabWnd: public ChildWnd {
 		virtual void Update();
 		virtual void LeaveHotkeyMode(wchar_t key);
 		virtual void Clear();
+		virtual void Paint(Gdiplus::Graphics& g);
 		ref<Wnd> GetCurrentPane();
 	
 	protected:
@@ -34,7 +35,6 @@ class EXPORTED TabWnd: public ChildWnd {
 		std::vector<Pane> _panes;
 		ref<Wnd> _current;
 		int _headerHeight;
-		Gdiplus::Bitmap* _buffer;
 
 		enum {defaultHeaderHeight = 21};
 };

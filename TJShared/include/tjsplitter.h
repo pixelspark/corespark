@@ -24,6 +24,7 @@ class EXPORTED SplitterWnd: public ChildWnd {
 		virtual void LeaveHotkeyMode(wchar_t wp=L'\0');
 		virtual void EnterHotkeyMode();
 		virtual bool IsSplitter();
+		virtual void Paint(Gdiplus::Graphics& g);
 		void Collapse();
 		void Expand();
 

@@ -16,13 +16,13 @@ class EXPORTED SliderWnd: public ChildWnd {
 		void SetValue(float f, bool notify=true);
 		virtual void Update();
 		void SetDisplayValue(float f);
+		virtual void Paint(Gdiplus::Graphics& g);
 
 	protected:
 		wchar_t _hotkey;
 		Listener* _listener;
 		float _value;
 		float _displayValue;
-		Gdiplus::Bitmap* _bitmap;
 		bool _hasFocus;
 		bool _flash;
 		float _oldValue;

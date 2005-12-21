@@ -5,13 +5,56 @@ using namespace Gdiplus;
 TabWnd::TabWnd(HWND parent): ChildWnd(L"TabWnd", parent) {
 	SetStyle(WS_CLIPCHILDREN|WS_CLIPSIBLINGS);
 	_headerHeight = defaultHeaderHeight;
-	_buffer = 0;
 	_hotkey = L'O';
 	Show(true);
 }
 
 TabWnd::~TabWnd() {
-	delete _buffer;
+}
+
+void TabWnd::Paint(Graphics& g) {
+	if(_headerHeight>0) {
+		RECT rect;
+		GetClientRect(_wnd, &rect);
+		ref<Theme> theme = ThemeManager::GetTheme();
+		SolidBrush br(theme->GetTimeBackgroundColor());
+
+		g.FillRectangle(&br, Rect(rect.left, rect.top, rect.right, _current?_headerHeight:(rect.bottom-rect.top)));
+		
+		Pen pn(theme->GetActiveEndColor(), 1.0f);
+		g.DrawLine(&pn, 0, _headerHeight-1, rect.right, _headerHeight-1);
+
+		std::vector< Pane >::iterator it = _panes.begin();
+		SolidBrush textBrush = theme->GetTextColor();
+		int left = 0;
+		int idx = 0;
+		while(it!=_panes.end()) {
+			Pane& pane = *it;
+			RectF bound;
+			g.MeasureString(pane._title.c_str(), (INT)pane._title.length(), theme->GetGUIFontBold(), PointF(0.0f, 0.0f), &bound);				
+			
+			if(pane._wnd==_current) {
+				LinearGradientBrush lbr(PointF(0.0f, 0.0f), PointF(0.0f, float(_headerHeight)), theme->GetActiveStartColor(), theme->GetActiveEndColor());
+				g.FillRectangle(&lbr, RectF(float(left+2), 2.0f, float(bound.Width+2), float(_headerHeight)));
+				SolidBrush backBrush(theme->GetBackgroundColor());
+				g.FillRectangle(&backBrush, RectF(float(left+3), 3.0f, float(bound.Width), float(_headerHeight)));
+			}
+
+			g.DrawString(pane._title.c_str(), (INT)pane._title.length(), theme->GetGUIFontBold(), PointF(float(left+3), 3.0f), &textBrush);
+
+
+			if(IsInHotkeyMode()) {
+				std::wostringstream os;
+				os << idx;
+				std::wstring idxs = os.str();
+				DrawHotkey(&g, idxs.c_str(), left+12, 12);
+			}
+
+			left += int(bound.Width) + 4;
+			it++;
+			idx++;
+		}
+	}
 }
 
 void TabWnd::SetHotkey(wchar_t key) {
@@ -111,65 +154,7 @@ void TabWnd::Layout() {
 }
 
 LRESULT TabWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
-	if(msg==WM_PAINT) {	
-		if(_headerHeight>0) {
-			PAINTSTRUCT ps;
-			BeginPaint(_wnd, &ps);
-			Graphics org(ps.hdc);
-
-			RECT rect;
-			GetClientRect(_wnd, &rect);
-
-			if(_buffer==0 || (_buffer->GetWidth()!=(unsigned int)(rect.right-rect.left)) || (_buffer->GetHeight()!=(unsigned int)(rect.bottom-rect.top))) {
-				delete _buffer;
-				_buffer = new Bitmap(rect.right-rect.left, rect.bottom-rect.top, &org);
-			}
-
-			ref<Theme> theme = ThemeManager::GetTheme();
-			SolidBrush br(theme->GetTimeBackgroundColor());
-			Graphics g(_buffer);
-
-			g.FillRectangle(&br, Rect(rect.left, rect.top, rect.right, _current?_headerHeight:(rect.bottom-rect.top)));
-			
-			Pen pn(theme->GetActiveEndColor(), 1.0f);
-			g.DrawLine(&pn, 0, _headerHeight-1, rect.right, _headerHeight-1);
-
-			std::vector< Pane >::iterator it = _panes.begin();
-			SolidBrush textBrush = theme->GetTextColor();
-			int left = 0;
-			int idx = 0;
-			while(it!=_panes.end()) {
-				Pane& pane = *it;
-				RectF bound;
-				g.MeasureString(pane._title.c_str(), (INT)pane._title.length(), theme->GetGUIFontBold(), PointF(0.0f, 0.0f), &bound);				
-				
-				if(pane._wnd==_current) {
-					LinearGradientBrush lbr(PointF(0.0f, 0.0f), PointF(0.0f, float(_headerHeight)), theme->GetActiveStartColor(), theme->GetActiveEndColor());
-					g.FillRectangle(&lbr, RectF(float(left+2), 2.0f, float(bound.Width+2), float(_headerHeight)));
-					SolidBrush backBrush(theme->GetBackgroundColor());
-					g.FillRectangle(&backBrush, RectF(float(left+3), 3.0f, float(bound.Width), float(_headerHeight)));
-				}
-
-				g.DrawString(pane._title.c_str(), (INT)pane._title.length(), theme->GetGUIFontBold(), PointF(float(left+3), 3.0f), &textBrush);
-
-
-				if(IsInHotkeyMode()) {
-					std::wostringstream os;
-					os << idx;
-					std::wstring idxs = os.str();
-					DrawHotkey(&g, idxs.c_str(), left+12, 12);
-				}
-
-				left += int(bound.Width) + 4;
-				it++;
-				idx++;
-			}
-
-			org.DrawImage(_buffer, PointF(0.0f, 0.0f));
-			EndPaint(_wnd, &ps);
-		}
-	}
-	else if(msg==WM_SIZE) {
+	if(msg==WM_SIZE) {
 		Layout();
 	}
 	else if(msg==WM_LBUTTONDOWN) {

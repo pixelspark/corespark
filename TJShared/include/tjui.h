@@ -8,6 +8,7 @@
 #define TJ_PROPERTY_EDIT_NUMERIC_CLASS_NAME (L"TjPropertyEditNumericWndClass")
 #define TJ_PROPERTY_LABEL_CLASS_NAME (L"TjPropertyLabelWndClass")
 #define TJ_TAB_PANEL_CLASS_NAME (L"TjTabPanelWndClass")
+#define WM_TJ_PRINT (WM_USER+2)
 
 /** Class for initializing GDI+ **/
 class EXPORTED GraphicsInit {
@@ -20,9 +21,9 @@ LRESULT CALLBACK TabPanelWndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 
 class EXPORTED Wnd {
 	public:
-		Wnd(const wchar_t* title, HWND parent=0, const wchar_t* className=TJ_DEFAULT_CLASS_NAME);
+		Wnd(const wchar_t* title, HWND parent=0, const wchar_t* className=TJ_DEFAULT_CLASS_NAME,  bool useDoubleBuffering=true);
 		virtual ~Wnd();
-		virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
+		
 		virtual void Show(bool s);
 		bool IsShown();
 		HWND GetWindow();
@@ -30,7 +31,8 @@ class EXPORTED Wnd {
 		void SetQuitOnClose(bool q);
 		virtual void Layout() {};
 		virtual void Update() {};
-
+		virtual void Paint(Gdiplus::Graphics& g) = 0;
+		LRESULT PreMessage(UINT msg, WPARAM wp, LPARAM lp);
 		virtual void SetText(const wchar_t* t);
 		void SetStyle(DWORD style);
 		void SetStyleEx(DWORD style);
@@ -58,17 +60,22 @@ class EXPORTED Wnd {
 		bool IsMouseOver();
 
 	protected:
+		virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 		void DrawHotkey(Gdiplus::Graphics* g, const wchar_t* wc, int x, int y);
-		static void RegisterClasses();
-		static bool _classesRegistered;
 		HWND _wnd;
-		bool _quitOnClose;
 		bool _inHotkeyMode;
+	
+	private:
+		Gdiplus::Bitmap* _buffer;
+		bool _doubleBuffered;
+		bool _quitOnClose;
 		bool _eatHotkeys;
 		unsigned int _horizontalPos;
 		unsigned int _verticalPos;
 		unsigned int _horizontalPageSize;
 		unsigned int _verticalPageSize;
+		static void RegisterClasses();
+		static bool _classesRegistered;
 };
 
 #endif

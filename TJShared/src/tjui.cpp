@@ -21,6 +21,41 @@ GraphicsInit::~GraphicsInit() {
 	
 }
 
+void RecursivePaintChildren(HWND toplevel, HWND wp, Graphics& g) {
+	if(wp==0) return;
+
+	int style = GetWindowLong(wp, GWL_STYLE);
+	if((style&WS_VISIBLE)==0) return;
+
+	RECT tr;
+	GetWindowRect(toplevel, &tr);
+	RECT wr;
+	GetWindowRect(wp, &wr);
+
+	int xo = wr.left - tr.left;
+	int yo = wr.top - tr.top;
+	g.TranslateTransform(float(xo), float(yo));
+ 
+	if(toplevel!=wp) {
+		Wnd* wnd = reinterpret_cast<Wnd*>((long long)GetWindowLong(wp, GWL_USERDATA));
+		if(wnd!=0) {
+			wnd->Paint(g);
+		}
+		else {
+			SendMessage(wp, WM_PRINTCLIENT, (WPARAM)g.GetHDC(), PRF_CLIENT|PRF_CHILDREN);
+		}
+	}
+
+	g.TranslateTransform(-float(xo), -float(yo));
+	HWND current = GetWindow(wp, GW_CHILD);
+	if(current==0) return;
+	current = GetWindow(current, GW_HWNDLAST);
+	while(current!=0) {
+		RecursivePaintChildren(toplevel, current, g);
+		current = GetWindow(current, GW_HWNDPREV);
+	}
+}
+
 BOOL ChildEnumeratorProc(HWND wnd, LPARAM lp);
 
 class ChildEnumerator {
@@ -85,7 +120,7 @@ void ChildEnumerator::Add(HWND wnd) {
 	}
 }
 
-Wnd::Wnd(const wchar_t* title, HWND parent, const wchar_t* className) {
+Wnd::Wnd(const wchar_t* title, HWND parent, const wchar_t* className, bool usedb) {
 	RegisterClasses();
 	_quitOnClose = false;
 	_horizontalPos = 0;
@@ -94,6 +129,8 @@ Wnd::Wnd(const wchar_t* title, HWND parent, const wchar_t* className) {
 	_verticalPageSize = 1;
 	_inHotkeyMode = false;
 	_eatHotkeys = false;
+	_buffer = 0;
+	_doubleBuffered = usedb;
 
 	_wnd = CreateWindowEx(0L, className, title, WS_CLIPCHILDREN, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, parent, (HMENU)0, GetModuleHandle(NULL), 0);
 	if(_wnd==0) Throw(L"Could not create window", ExceptionTypeError);
@@ -123,6 +160,10 @@ bool Wnd::IsSplitter() {
 
 void Wnd::Show(bool t) {
 	ShowWindow(_wnd, t?SW_SHOW:SW_HIDE);
+	if(!t) {
+		delete _buffer;
+		_buffer = 0;
+	}
 }
 
 bool Wnd::IsShown() {
@@ -136,6 +177,7 @@ HWND Wnd::GetWindow() {
 
 Wnd::~Wnd() {
 	DestroyWindow(_wnd);
+	delete _buffer;
 }
 
 void Wnd::Repaint() {
@@ -150,7 +192,7 @@ LRESULT CALLBACK WndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) {
 	Wnd* dp = reinterpret_cast<Wnd*>((long long)GetWindowLong(wnd,GWL_USERDATA));
 
 	if(dp!=0) {
-		return dp->Message(msg,wp,lp);
+		return dp->PreMessage(msg,wp,lp);
 	}
 
 	return DefWindowProc(wnd, msg, wp, lp);
@@ -495,6 +537,51 @@ LRESULT ColorWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 void Wnd::Move(int x, int y, int w, int h) {
 	MoveWindow(_wnd,x,y,w,h,TRUE);
 	Layout();
+}
+
+LRESULT Wnd::PreMessage(UINT msg, WPARAM wp, LPARAM lp) {
+	if(msg==WM_PAINT) {
+		int style = GetWindowLong(_wnd, GWL_STYLE);
+		if((style&WS_VISIBLE)==0) {
+			return 0;
+		}
+
+		PAINTSTRUCT ps;
+		BeginPaint(_wnd, &ps);
+		
+		if(!_doubleBuffered) {
+			Graphics graphics(ps.hdc);
+			Paint(graphics);
+		}
+		else {
+			RECT cw;
+			GetClientRect(_wnd, &cw);
+			if(_buffer==0 || int(_buffer->GetWidth()) < int(cw.right-cw.left) || int(_buffer->GetHeight()) < int(cw.bottom-cw.top)) {
+				delete _buffer;
+				_buffer = 0;
+				_buffer = new Bitmap(cw.right-cw.left+100, cw.bottom-cw.top+100); // +100 for buffer
+			}
+			Graphics buffered(_buffer);
+			Paint(buffered);
+			Graphics org(ps.hdc);
+			org.DrawImage(_buffer, PointF(0.0f, 0.0f));
+		}
+
+		EndPaint(_wnd, &ps);
+		return 0;
+	}
+	else if(msg==WM_TJ_PRINT) {
+		Graphics* g = (Graphics*)lp;
+
+		//if((lp&PRF_CHILDREN)!=0) {
+			RecursivePaintChildren(GetWindow(), GetWindow(), *g);
+		//}
+
+		return 0;
+	}
+	else {
+		return Message(msg, wp, lp);
+	}
 }
 
 /* Property edit window */

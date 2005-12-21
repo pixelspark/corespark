@@ -3,7 +3,7 @@ using namespace Gdiplus;
 
 const float SplitterWnd::snapMargin = 0.07f;
 
-SplitterWnd::SplitterWnd(HWND parent, ref<Wnd> a, ref<Wnd> b, Orientation o): ChildWnd(L"Splitter", parent) {
+SplitterWnd::SplitterWnd(HWND parent, ref<Wnd> a, ref<Wnd> b, Orientation o): ChildWnd(L"Splitter", parent, true, false) {
 	assert(a!=0);
 	assert(b!=0);
 	SetStyle(WS_CLIPCHILDREN);
@@ -70,34 +70,28 @@ void SplitterWnd::Expand() {
 	Repaint();
 }
 
+void SplitterWnd::Paint(Graphics& g) {
+	ref<Theme> theme = ThemeManager::GetTheme();
+
+	RECT r;
+	GetClientRect(_wnd,&r);
+	if(_orientation==OrientationHorizontal) {
+		int bH = int(_ratio * (r.bottom-r.top)-(barHeight/2)); // top of the bar
+
+		LinearGradientBrush br(PointF(0, REAL(bH-1)),PointF(0, REAL(bH+barHeight+2)), theme->GetSplitterStartColor(), theme->GetSplitterEndColor());
+		g.FillRectangle(&br, 0,bH-2,r.right-r.left, barHeight+4);
+	}
+	else if(_orientation==OrientationVertical) {
+		int bH = int(_ratio * (r.right-r.left)-(barHeight/2)); // top of the bar
+
+		LinearGradientBrush br(PointF(REAL(bH-1),0),PointF(REAL(bH+barHeight+2),0), theme->GetSplitterStartColor(), theme->GetSplitterEndColor());
+		g.FillRectangle(&br, bH-2, 0, barHeight+4, r.bottom-r.top);
+	}
+}
+
 LRESULT SplitterWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	if(msg==WM_SIZE) {
 		Layout();
-	}
-	else if(msg==WM_PAINT) {
-		PAINTSTRUCT ps;
-		BeginPaint(_wnd, &ps);
-		Graphics g(ps.hdc);
-
-		ref<Theme> theme = ThemeManager::GetTheme();
-
-		RECT r;
-		GetClientRect(_wnd,&r);
-		if(_orientation==OrientationHorizontal) {
-			int bH = int(_ratio * (r.bottom-r.top)-(barHeight/2)); // top of the bar
-
-			LinearGradientBrush br(PointF(0, REAL(bH-1)),PointF(0, REAL(bH+barHeight+2)), theme->GetSplitterStartColor(), theme->GetSplitterEndColor());
-			g.FillRectangle(&br, 0,bH-2,r.right-r.left, barHeight+4);
-		}
-		else if(_orientation==OrientationVertical) {
-			int bH = int(_ratio * (r.right-r.left)-(barHeight/2)); // top of the bar
-
-			LinearGradientBrush br(PointF(REAL(bH-1),0),PointF(REAL(bH+barHeight+2),0), theme->GetSplitterStartColor(), theme->GetSplitterEndColor());
-			g.FillRectangle(&br, bH-2, 0, barHeight+4, r.bottom-r.top);
-		}
-
-		EndPaint(_wnd, &ps);
-		return 0;
 	}
 	else if(msg==WM_MOUSEMOVE) {
 		int x = GET_X_LPARAM(lp);

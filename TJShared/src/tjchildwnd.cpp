@@ -1,7 +1,7 @@
 #include "../include/tjshared.h"
 using namespace Gdiplus;
 
-ChildWnd::ChildWnd(const wchar_t* title, HWND parent, bool wantDoubleClick): Wnd(title,parent, wantDoubleClick?TJ_DEFAULT_CLASS_NAME:(L"TjWndClassNdbl")) {
+ChildWnd::ChildWnd(const wchar_t* title, HWND parent, bool wantDoubleClick, bool useDB): Wnd(title,parent, wantDoubleClick?TJ_DEFAULT_CLASS_NAME:(L"TjWndClassNdbl"), useDB) {
 	SetWindowLong(_wnd,GWL_STYLE,WS_CHILD);
 	//Show(true);
 }
