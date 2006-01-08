@@ -378,7 +378,7 @@ LRESULT Wnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		return 0;
 	}
 	else if(msg==WM_LBUTTONDOWN||msg==WM_LBUTTONUP) {
-		LeaveHotkeyMode();
+		//LeaveHotkeyMode();
 	}
 	else if(msg==WM_DESTROY) {
 		if(_quitOnClose) PostQuitMessage(0);
