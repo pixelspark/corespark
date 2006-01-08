@@ -21,6 +21,7 @@ void LoggerWnd::Paint(Gdiplus::Graphics& g) {
 
 void LoggerWnd::Log(std::wstring ws) {
 	ListBox_AddString(_list, ws.c_str());
+	//PostMessage(_list, LB_ADDSTRING, 0, ws.c_str());
 }
 
 wchar_t LoggerWnd::GetPreferredHotkey() {

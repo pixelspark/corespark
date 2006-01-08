@@ -29,8 +29,14 @@ void SplitterWnd::EnterHotkeyMode() {
 }
 
 void SplitterWnd::LeaveHotkeyMode(wchar_t key) {
-	Wnd* parent = GetParent();
-	if(parent!=0) parent->LeaveHotkeyMode(key);
+	/*Wnd* parent = GetParent();
+	if(parent!=0) parent->LeaveHotkeyMode(key);*/
+	if(_a->GetPreferredHotkey()==key) {
+		_a->EnterHotkeyMode();
+	}
+	else if(_b->GetPreferredHotkey()==key) {
+		_b->EnterHotkeyMode();
+	}
 }
 
 bool SplitterWnd::IsSplitter() {
@@ -170,7 +176,7 @@ void SplitterWnd::Collapse() {
 }
 
 wchar_t SplitterWnd::GetPreferredHotkey() {
-	return L'S';
+	return L'\0';
 }
 
 void SplitterWnd::Update() {

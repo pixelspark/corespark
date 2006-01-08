@@ -1,8 +1,8 @@
 #include "../include/tjshared.h"
 #include <windows.h>
 
-unsigned int _gc_live = 0;
-size_t _gc_size = 0;
+volatile long _gc_live = 0;
+volatile long _gc_size = 0;
 
 class GCChecker {
 	public:
@@ -19,19 +19,19 @@ class GCChecker {
 GCChecker _gc_checker;
 
 void GC::IncrementLive(size_t size) {
-	_gc_live++;
-	_gc_size += size;
+	InterlockedIncrement(&_gc_live);
+	InterlockedExchangeAdd(&_gc_size, long(size));
 }
 
 void GC::DecrementLive(size_t size) {
-	_gc_live--;
-	_gc_size -= size;
+	InterlockedDecrement(&_gc_live);
+	InterlockedExchangeAdd(&_gc_size, -long(size));
 }
 
-int GC::GetLiveCount() {
+long GC::GetLiveCount() {
 	return _gc_live;
 }
 
-size_t GC::GetSize() {
+long GC::GetSize() {
 	return _gc_size;
 }

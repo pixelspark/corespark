@@ -35,14 +35,20 @@ template< typename T, class R=Call<T> > class Resource {
 		}
 
 		inline void AddReference() {
+			ThreadLock lck(&_lock);
 			_rc++;
 		}
 
 		inline void DeleteReference() {
+			ThreadLock lck(&_lock);
 			_rc--;
 			if(_rc==0) {
 				delete this;
 			}
+		}
+
+		CriticalSection& GetLock() {
+			return _lock;
 		}
 
 		inline ref<T,R> Reference() {
@@ -64,28 +70,7 @@ template< typename T, class R=Call<T> > class Resource {
 		}
 
 		int _rc;	
-		
-};
-
-template< typename T, class R=Call<T> > class ArrayResource: public Resource<T, R> {
-	friend class ref<T,R>;
-	friend class Call<T>;
-	friend class GC;
-
-	public:
-		virtual ~ArrayResource() {
-		}
-
-		T* _data;
-	protected:
-		ArrayResource(T* x): Resource(x) { 
-		}
-  
-		void Release() {
-			delete[] _data;
-		}
-
-		int _rc;	
+		CriticalSection _lock;
 };
 
 template<class T> class Call {
@@ -108,18 +93,46 @@ template<class T> class Call {
 			return _subject->_data;
 		}
 
-		inline operator T*() {
-			return _subject->_data;
-		}
-
-		int operator&() {
-			return 0; // no pointers to this class
-		}
-
 	protected:
 		Resource<T,Call>* _subject;
 
 		inline Call(const Call<T>& org) {
+			_subject = org._subject;
+			_subject->AddReference();
+		}
+};
+
+class Lock;
+class CriticalSection;
+
+template<class T> class ThreadCall {
+	friend class ref<T,ThreadCall>;
+
+	public:
+		inline ThreadCall(Resource<T,ThreadCall>* s) {
+			if(s==0) throw Exception(L"Null pointer exception", ExceptionTypeError);
+			_lock = new ThreadLock(s->GetLock());
+			_subject = s;
+			
+			s->AddReference();
+
+		}
+
+		inline ~ThreadCall() {
+			_subject->DeleteReference();
+			_subject = 0;
+			delete _lock;
+		}
+
+		inline T* operator->() {
+			return _subject->_data;
+		}
+
+	protected:
+		Resource<T,ThreadCall>* _subject;
+		ThreadLock* _lock;
+
+		inline ThreadCall(const ThreadCall<T>& org) {
 			_subject = org._subject;
 			_subject->AddReference();
 		}
@@ -219,6 +232,11 @@ template<typename T, class R> class ref {
 
 		template<typename TT, class RR> inline bool operator!=(ref<TT,RR>& r) {
 			return (_res!=r._res);
+		}
+
+		CriticalSection& GetLock() {
+			if(_res==0) throw Exception("Tried to lock a null resource", ExceptionTypeError);
+			return _res->GetLock();
 		}
 
 		template<class X> inline bool IsCastableTo() {

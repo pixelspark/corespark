@@ -148,10 +148,13 @@ void Wnd::SetText(const wchar_t* t) {
 void Wnd::EnterHotkeyMode() {
 	_inHotkeyMode = true;
 	SetFocus(_wnd);
+	_inHotkeyMode = true;
 	
 	RECT rc;
 	GetClientRect(_wnd, &rc);
 	RedrawWindow(_wnd, &rc, 0, RDW_ALLCHILDREN|RDW_INTERNALPAINT);
+	InvalidateRect(_wnd, &rc, FALSE);
+	Repaint();
 }
 
 bool Wnd::IsSplitter() {
@@ -548,10 +551,10 @@ LRESULT Wnd::PreMessage(UINT msg, WPARAM wp, LPARAM lp) {
 
 		PAINTSTRUCT ps;
 		BeginPaint(_wnd, &ps);
-		
+		Graphics org(ps.hdc);
+
 		if(!_doubleBuffered) {
-			Graphics graphics(ps.hdc);
-			Paint(graphics);
+			Paint(org);
 		}
 		else {
 			RECT cw;
@@ -563,8 +566,23 @@ LRESULT Wnd::PreMessage(UINT msg, WPARAM wp, LPARAM lp) {
 			}
 			Graphics buffered(_buffer);
 			Paint(buffered);
-			Graphics org(ps.hdc);
 			org.DrawImage(_buffer, PointF(0.0f, 0.0f));
+		}
+
+		Wnd* parent = GetParent();
+		if(parent!=0) {
+			if(parent->IsInHotkeyMode()) { 
+				wchar_t hotkey = GetPreferredHotkey();
+				if(hotkey!=L'\0') {
+					RECT rc;
+					GetClientRect(_wnd, &rc);
+					//Graphics org(ps.hdc);
+					std::wostringstream os;
+					os << hotkey;
+					std::wstring hk = os.str();
+					DrawHotkey(&org, hk.c_str(), (rc.right-rc.left)/2, (rc.bottom-rc.top)/2);
+				}
+			}
 		}
 
 		EndPaint(_wnd, &ps);

@@ -4,12 +4,15 @@
 #pragma warning(push)
 #pragma warning(disable:4251)
 
+class LogThread;
+
 class EXPORTED Log {
 	public:
 		static void Write(std::wstring source, std::wstring message);
 		static void Show(bool s);
 	protected:
-		static LoggerWnd* _logger;
+		static LogThread* _logger;
+		static CriticalSection _lock;
 };
 
 #pragma warning(pop)

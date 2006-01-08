@@ -43,12 +43,12 @@ void TabWnd::Paint(Graphics& g) {
 			g.DrawString(pane._title.c_str(), (INT)pane._title.length(), theme->GetGUIFontBold(), PointF(float(left+3), 3.0f), &textBrush);
 
 
-			if(IsInHotkeyMode()) {
+			/*if(IsInHotkeyMode()) {
 				std::wostringstream os;
 				os << idx;
 				std::wstring idxs = os.str();
 				DrawHotkey(&g, idxs.c_str(), left+12, 12);
-			}
+			}*/
 
 			left += int(bound.Width) + 4;
 			it++;
@@ -66,7 +66,10 @@ ref<Wnd> TabWnd::GetCurrentPane() {
 }
 
 wchar_t TabWnd::GetPreferredHotkey() {
-	return _hotkey;
+	if(_current) {
+		return _current->GetPreferredHotkey();
+	}
+	return L'\0';
 }
 
 void TabWnd::Clear() {
@@ -74,7 +77,7 @@ void TabWnd::Clear() {
 }
 
 void TabWnd::LeaveHotkeyMode(wchar_t key) {
-	ReplyMessage(0);
+	/*ReplyMessage(0);
 
 	if(IsInHotkeyMode()) {
 		_inHotkeyMode = false;
@@ -96,8 +99,24 @@ void TabWnd::LeaveHotkeyMode(wchar_t key) {
 		GetClientRect(parent, &rc);
 		InvalidateRect(parent, &rc, FALSE);
 	}
-	Update();
+	Update();*/
+	if(_current) {
+		_current->LeaveHotkeyMode(key);
+	}
 }
+
+void TabWnd::EnterHotkeyMode() {
+	if(_current) {
+		_current->EnterHotkeyMode();
+	}
+}
+
+bool TabWnd::IsInHotkeyMode() {
+	Wnd* parent = GetParent();
+	if(parent==0) return false;
+	return parent->IsInHotkeyMode();
+}
+
 
 void TabWnd::AddPane(std::wstring name, ref<Wnd> wnd) {
 	assert(wnd);

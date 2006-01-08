@@ -39,7 +39,9 @@ class EXPORTED Thread {
 		virtual ~Thread();
 		virtual void Terminate();
 		virtual void Start();
-		int GetID();
+		void WaitForCompletion();
+		int GetID() const;
+		void SetName(const char* name);
 
 	protected:
 		virtual void Run();
@@ -66,10 +68,33 @@ template<typename T> class EventThread: public Thread {
 			_event.Reset();
 		}
 
-		virtual void OnEvent(const T& param) {
-		}
+		virtual void OnEvent(const T& param)=0;
 
 		Event<T> _event;
+};
+
+class EXPORTED CriticalSection {
+	friend class ThreadLock;
+
+	public:
+		CriticalSection();
+		virtual ~CriticalSection();
+
+	protected:
+		void Enter();
+		void Leave();
+
+	private:
+		CRITICAL_SECTION _cs;
+};
+
+class EXPORTED ThreadLock {
+	public:
+		ThreadLock(CriticalSection* cs);
+		virtual ~ThreadLock();
+
+	protected:
+		CriticalSection* _cs;
 };
 
 #endif

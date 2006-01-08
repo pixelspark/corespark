@@ -1,0 +1,4 @@
+#ifndef _TJCRITICALSECTION_H
+#define _TJCRITICALSECTION_H
+
+#endif

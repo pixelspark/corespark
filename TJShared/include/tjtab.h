@@ -16,6 +16,8 @@ class EXPORTED TabWnd: public ChildWnd {
 		virtual void Layout();
 		virtual void Update();
 		virtual void LeaveHotkeyMode(wchar_t key);
+		virtual void EnterHotkeyMode();
+		virtual bool IsInHotkeyMode();
 		virtual void Clear();
 		virtual void Paint(Gdiplus::Graphics& g);
 		ref<Wnd> GetCurrentPane();

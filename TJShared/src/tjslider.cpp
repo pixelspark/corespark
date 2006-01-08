@@ -6,7 +6,7 @@ using namespace Gdiplus;
 
 SliderWnd::SliderWnd(HWND parent, const wchar_t* title): ChildWnd(title, parent) {
 	_value = 0.0f;
-	_hotkey = L'S';
+	_hotkey = L'\0';
 	_hasFocus = false;
 	_listener = 0;
 	_displayValue = 0.0f;
