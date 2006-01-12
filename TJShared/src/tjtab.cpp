@@ -42,14 +42,6 @@ void TabWnd::Paint(Graphics& g) {
 
 			g.DrawString(pane._title.c_str(), (INT)pane._title.length(), theme->GetGUIFontBold(), PointF(float(left+3), 3.0f), &textBrush);
 
-
-			/*if(IsInHotkeyMode()) {
-				std::wostringstream os;
-				os << idx;
-				std::wstring idxs = os.str();
-				DrawHotkey(&g, idxs.c_str(), left+12, 12);
-			}*/
-
 			left += int(bound.Width) + 4;
 			it++;
 			idx++;
@@ -77,29 +69,6 @@ void TabWnd::Clear() {
 }
 
 void TabWnd::LeaveHotkeyMode(wchar_t key) {
-	/*ReplyMessage(0);
-
-	if(IsInHotkeyMode()) {
-		_inHotkeyMode = false;
-		
-		if(_current && key==_current->GetPreferredHotkey()) {
-			_current->EnterHotkeyMode();
-		}
-		else {		
-			int idx = key - L'0';
-			if(idx<10 && idx >=0) {
-				SelectPane(idx);
-			}
-		}
-	}
-
-	HWND parent = ::GetParent(_wnd);
-	if(parent!=0) {
-		RECT rc;
-		GetClientRect(parent, &rc);
-		InvalidateRect(parent, &rc, FALSE);
-	}
-	Update();*/
 	if(_current) {
 		_current->LeaveHotkeyMode(key);
 	}
@@ -227,25 +196,14 @@ void TabWnd::DoContextMenu(int x, int y) {
 		g.MeasureString(pane._title.c_str(), (INT)pane._title.length(), theme->GetGUIFontBold(), PointF(0.0f, 0.0f), &bound);				
 		left += int(bound.Width) + 4;
 		if(x<left) {
-			HMENU men = CreatePopupMenu();
-			MENUITEMINFO mif;
-			memset(&mif, 0, sizeof(MENUITEMINFO));
-
-			mif.cbSize = sizeof(MENUITEMINFO);
-			mif.fMask = MIIM_ID|MIIM_STRING;
-
-			mif.wID = 1;
-			mif.fType = MFT_STRING;
-			mif.dwTypeData = L_DETACH_TAB;
-			mif.cch = (UINT)wcslen(L_DETACH_TAB);
-			InsertMenuItem(men, 0, FALSE, &mif);
-
-			int cmd = TrackPopupMenu(men, TPM_RETURNCMD|TPM_TOPALIGN|TPM_VERPOSANIMATION, x+rc.left,y, 0, _wnd, 0);
-			DestroyMenu(men);
-
-			if(cmd==1) {
-				_current = 0;
-				pane.SetDetached(true,this);
+			enum {cmdDetach=1,};
+			ContextMenu context;
+			context.AddItem(L_DETACH_TAB, cmdDetach, true);
+			switch(context.DoContextMenu(_wnd, x+rc.left, y)) {
+				case cmdDetach:
+					_current = 0;
+					pane.SetDetached(true,this);
+					break;
 			}
 			
 			Update();

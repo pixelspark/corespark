@@ -13,6 +13,7 @@
 
 #include <windows.h>
 #include <assert.h>
+#include <commctrl.h>
 #include <string>
 #include "tjrange.h"
 #include "tjthread.h"
@@ -29,6 +30,8 @@
 #include "tjcache.h"
 #include "tjui.h"
 #include "tjchildwnd.h"
+#include "tjtooltipwnd.h"
+#include "tjcontextmenu.h"
 #include "tjlogger.h"
 #include "tjlog.h"
 #include "tjsplitter.h"

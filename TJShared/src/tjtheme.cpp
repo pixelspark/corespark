@@ -1,8 +1,8 @@
 #include "../include/tjshared.h"
 using namespace Gdiplus;
 
-ThemeSubscription _subscription_theme(GC::Hold(new Theme()));
-ThemeSubscription _subscription_bright_theme(GC::Hold(new BrightTheme()));
+ThemeSubscription _subscription_theme(ref<Theme>(GC::Hold(new Theme())));
+ThemeSubscription _subscription_bright_theme(ref<Theme>(GC::Hold(new BrightTheme())));
 
 Theme::Theme() {
 	_font = 0;

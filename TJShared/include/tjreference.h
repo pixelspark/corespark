@@ -35,13 +35,11 @@ template< typename T, class R=Call<T> > class Resource {
 		}
 
 		inline void AddReference() {
-			ThreadLock lck(&_lock);
-			_rc++;
+			InterlockedIncrement(&_rc);
 		}
 
 		inline void DeleteReference() {
-			ThreadLock lck(&_lock);
-			_rc--;
+			InterlockedDecrement(&_rc);
 			if(_rc==0) {
 				delete this;
 			}
@@ -69,8 +67,7 @@ template< typename T, class R=Call<T> > class Resource {
 			delete _data;
 		}
 
-		int _rc;	
-		CriticalSection _lock;
+		long _rc;	
 };
 
 template<class T> class Call {

@@ -138,6 +138,7 @@
 				LinkIncremental="1"
 				GenerateManifest="false"
 				GenerateDebugInformation="true"
+				GenerateMapFile="true"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
@@ -189,6 +190,10 @@
 			</File>
 			<File
 				RelativePath=".\src\tjcode.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\tjcontextmenu.cpp"
 				>
 			</File>
 			<File
@@ -244,6 +249,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\tjtooltipwnd.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\tjui.cpp"
 				>
 			</File>
@@ -267,6 +276,10 @@
 			</File>
 			<File
 				RelativePath=".\include\tjcode.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tjcontextmenu.h"
 				>
 			</File>
 			<File
@@ -331,6 +344,10 @@
 			</File>
 			<File
 				RelativePath=".\include\tjthread.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tjtooltipwnd.h"
 				>
 			</File>
 			<File
