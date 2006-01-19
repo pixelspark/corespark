@@ -217,6 +217,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\tjresourcemgr.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\tjshared.cpp"
 				>
 			</File>
@@ -312,6 +316,10 @@
 			</File>
 			<File
 				RelativePath=".\include\tjreference.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tjresourcemgr.h"
 				>
 			</File>
 			<File

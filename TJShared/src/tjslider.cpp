@@ -22,15 +22,22 @@ void SliderWnd::Update() {
 	Repaint();
 }
 
-void SliderWnd::SetDisplayValue(float v) {
+void SliderWnd::SetDisplayValue(float v, bool notify) {
 	_displayValue = v;
+
+	if(notify) {
+		Repaint();
+		if(_listener!=0) {
+			_listener->Notify(this, NotificationChanged);
+		}
+	}
 }
 
 void SliderWnd::SetValue(float f, bool notify) {
 	if(f<0.0f) f = 0.0f;
 	if(f>1.0f) f = 1.0f;
 	_value = f;
-
+	
 	if(notify) {
 		Repaint();
 		if(_listener!=0) {

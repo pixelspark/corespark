@@ -15,7 +15,7 @@ class EXPORTED SliderWnd: public ChildWnd {
 		float GetValue() const;
 		void SetValue(float f, bool notify=true);
 		virtual void Update();
-		void SetDisplayValue(float f);
+		void SetDisplayValue(float f, bool notify);
 		virtual void Paint(Gdiplus::Graphics& g);
 
 	protected:

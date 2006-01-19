@@ -13,7 +13,6 @@ template<typename T=int> class Event {
 
 		void Signal(T param) {
 			WaitForSingleObject(_event,0); // wait for previous event to complete
-			_param = param;
 			SetEvent(_event);
 		}
 
@@ -23,12 +22,10 @@ template<typename T=int> class Event {
 
 		const T& Wait() {
 			WaitForSingleObject(_event, 0);
-			return _param;
 		}
 
 	protected:
 		HANDLE _event;
-		T _param;
 };
 
 class EXPORTED Thread {

@@ -37,6 +37,7 @@
 #include "tjsplitter.h"
 #include "tjtab.h"
 #include "tjslider.h"
+#include "tjresourcemgr.h"
 
 class EXPORTED GC {
 	public:
