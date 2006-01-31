@@ -129,6 +129,7 @@ Wnd::Wnd(const wchar_t* title, HWND parent, const wchar_t* className, bool usedb
 	_verticalPageSize = 1;
 	_inHotkeyMode = false;
 	_eatHotkeys = false;
+	_fullScreen = false;
 	_buffer = 0;
 	_doubleBuffered = usedb;
 
@@ -139,10 +140,48 @@ Wnd::Wnd(const wchar_t* title, HWND parent, const wchar_t* className, bool usedb
 
 	SetParent(_wnd,parent);
 	UpdateWindow(_wnd);
+	_oldStyle = 0;
+	_oldStyleEx = 0;
 }
 
 void Wnd::SetText(const wchar_t* t) {
 	SetWindowText(_wnd, t);
+}
+
+bool Wnd::IsFullScreen() {
+	return _fullScreen;
+}
+
+void Wnd::SetFullScreen(bool fs) {
+	if(fs==_fullScreen) return; //already in the desired mode
+	RECT rect;
+	GetWindowRect(_wnd,&rect);
+	HMONITOR mon = MonitorFromRect(&rect, MONITOR_DEFAULTTONEAREST);
+
+	MONITORINFO mi;
+    mi.cbSize = sizeof(mi);
+    GetMonitorInfo(mon, &mi);
+
+	/* TODO hier iets doen met schermgrootte of dualscreen troep */
+	if(fs&&!_fullScreen) {
+		_oldStyle = GetWindowLong(_wnd, GWL_STYLE);
+		_oldStyleEx = GetWindowLong(_wnd, GWL_EXSTYLE);
+		SetWindowLong(_wnd, GWL_STYLE, (_oldStyle & (~WS_OVERLAPPEDWINDOW)) | (WS_VISIBLE|WS_POPUP));
+		SetWindowPos(_wnd,0,mi.rcMonitor.left,mi.rcMonitor.top,mi.rcMonitor.right-mi.rcMonitor.left,mi.rcMonitor.bottom-mi.rcMonitor.top,SWP_NOZORDER);
+	}
+	else if(_fullScreen) {
+		if(_oldStyle!=0) {
+			SetWindowLong(_wnd, GWL_STYLE, _oldStyle);
+			SetWindowLong(_wnd, GWL_EXSTYLE, _oldStyleEx);
+			//_oldStyle = 0;
+			//_oldStyleEx = 0;
+		}
+		SetWindowPos(_wnd,0,0,0,800,600,SWP_NOZORDER);
+		UpdateWindow(_wnd);
+		Repaint();
+	}
+
+	_fullScreen = fs;
 }
 
 void Wnd::EnterHotkeyMode() {

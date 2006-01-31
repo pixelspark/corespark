@@ -1,13 +1,12 @@
 #include "../include/tjshared.h"
-#include "../../TJShow/include/internal/tjlanguage.h"
 
-LoggerWnd::LoggerWnd(HWND parent): Wnd(L_LOGGER, parent,TJ_DEFAULT_CLASS_NAME, false) {
+LoggerWnd::LoggerWnd(HWND parent): Wnd(TL(logger), parent,TJ_DEFAULT_CLASS_NAME, false) {
 	_list = CreateWindow(L"LISTBOX", L"LogListWnd", LBS_NOINTEGRALHEIGHT|WS_CHILD|WS_VISIBLE|LBS_DISABLENOSCROLL|(LBS_STANDARD&(~LBS_SORT)), 0, 0, 100, 100, _wnd, 0, GetModuleHandle(NULL), 0);
 
 	UnsetStyle(WS_CHILD);
 	SetStyle(WS_OVERLAPPEDWINDOW);
 	Move(200,200,400,500);
-	_font = CreateFont(-10, 0, 0, 0, 400, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, DEFAULT_PITCH, L_UI_FONT);
+	_font = CreateFont(-10, 0, 0, 0, 400, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, DEFAULT_PITCH, TL(ui_font));
 	SendMessage(_list, WM_SETFONT, (WPARAM)_font, TRUE);
 	Layout();
 }

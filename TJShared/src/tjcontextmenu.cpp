@@ -9,7 +9,13 @@ ContextMenu::~ContextMenu() {
 	DestroyMenu(_menu);
 }
 
-int ContextMenu::DoContextMenu(HWND window, int x, int y) {
+int ContextMenu::DoContextMenu(HWND window, int x, int y, bool correct) {
+	if(correct) {
+		RECT wr;
+		GetWindowRect(window, &wr);
+		x += wr.left;
+		y += wr.top;
+	}
 	return TrackPopupMenu(_menu, TPM_RETURNCMD|TPM_TOPALIGN|TPM_VERPOSANIMATION, x,y, 0, window, 0);
 }
 

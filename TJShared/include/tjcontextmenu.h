@@ -5,7 +5,7 @@ class EXPORTED ContextMenu {
 	public:
 		ContextMenu();
 		virtual ~ContextMenu();
-		int DoContextMenu(HWND wnd, int x, int y);
+		int DoContextMenu(HWND wnd, int x, int y, bool correct=false);
 		void AddItem(std::wstring name, int command, bool hilite=false);
 
 	protected:

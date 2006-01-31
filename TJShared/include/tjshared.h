@@ -7,6 +7,8 @@
 	#define EXPORTED
 #endif
 
+#undef _WIN32_IE
+#undef _WIN32_WINNT
 #define _WIN32_WINNT 0x0600
 #define _WIN32_IE 0x0600
 #define _CRT_SECURE_CPP_OVERLOAD_SECURE_NAMES 1
@@ -14,12 +16,14 @@
 #include <windows.h>
 #include <assert.h>
 #include <commctrl.h>
+#include <map>
 #include <string>
 #include "tjrange.h"
 #include "tjthread.h"
 #include "tjcriticalsection.h"
 #include "tjreference.h"
 #include "tjexception.h"
+#include "tjlanguage.h"
 #include "tjlistener.h"
 #include "tjcode.h"
 #include "tjdxutil.h"

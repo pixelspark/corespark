@@ -32,7 +32,7 @@ class EXPORTED Wnd {
 		virtual void Layout() {};
 		virtual void Update() {};
 		virtual void Paint(Gdiplus::Graphics& g) = 0;
-		LRESULT PreMessage(UINT msg, WPARAM wp, LPARAM lp);
+		virtual LRESULT PreMessage(UINT msg, WPARAM wp, LPARAM lp);
 		virtual void SetText(const wchar_t* t);
 		void SetStyle(DWORD style);
 		void SetStyleEx(DWORD style);
@@ -58,12 +58,15 @@ class EXPORTED Wnd {
 
 		void SetEatHotkeys(bool e);
 		bool IsMouseOver();
+		virtual void SetFullScreen(bool f);
+		bool IsFullScreen();
 
 	protected:
 		virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 		void DrawHotkey(Gdiplus::Graphics* g, const wchar_t* wc, int x, int y);
 		HWND _wnd;
 		bool _inHotkeyMode;
+		bool _fullScreen;
 	
 	private:
 		Gdiplus::Bitmap* _buffer;
@@ -76,6 +79,7 @@ class EXPORTED Wnd {
 		unsigned int _verticalPageSize;
 		static void RegisterClasses();
 		static bool _classesRegistered;
+		long _oldStyle, _oldStyleEx;
 };
 
 #endif

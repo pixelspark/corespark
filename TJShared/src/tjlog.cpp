@@ -1,7 +1,10 @@
 #include "../include/tjshared.h"
+#include <fstream>
 
 LogThread* Log::_logger = 0;
 CriticalSection Log::_lock;
+bool Log::_writeToFile = false;
+
 
 class LogThread: public Thread {
 	public:
@@ -43,10 +46,48 @@ class LogThread: public Thread {
 		HANDLE _loggerCreatedEvent;
 };
 
+class FileLogger {
+	protected:
+		FileLogger(std::wstring fileName): _file(fileName.c_str()) {
+		}
+
+		static ref<FileLogger> _instance;
+
+	public:
+		static ref<FileLogger> Instance() {
+			if(!_instance) {
+				_instance = GC::Hold(new FileLogger(L"tjshow.log"));
+			}
+			return _instance;
+		} 
+
+		virtual ~FileLogger() {
+		}
+
+		void Write(std::wstring message) {
+			_file << message;
+			_file.flush();
+		}
+
+		std::wofstream _file;
+};
+
+ref<FileLogger> FileLogger::_instance;
+
 void Log::Write(std::wstring source, std::wstring message) {
 	ThreadLock lock(&_lock);
+	if(_writeToFile) {
+		ref<FileLogger> file = FileLogger::Instance();
+		file->Write(source + std::wstring(L": ") + message + std::wstring(L"\r\n"));
+	}
+
 	if(_logger==0) _logger = new LogThread();
 	_logger->Log(source + L": " + message);
+}
+
+void Log::SetWriteToFile(bool f) {
+	ThreadLock lock(&_lock);
+	_writeToFile = f;
 }
 
 void Log::Show(bool t) {

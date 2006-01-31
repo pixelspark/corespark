@@ -133,7 +133,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="gdiplus.lib comctl32.lib"
+				AdditionalDependencies="gdiplus.lib comctl32.lib strmiids.lib quartz.lib"
 				OutputFile="$(OutDir)\..\..\Release\tjshared.dll"
 				LinkIncremental="1"
 				GenerateManifest="false"
@@ -206,6 +206,10 @@
 			</File>
 			<File
 				RelativePath=".\src\tjexception.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\tjlanguage.cpp"
 				>
 			</File>
 			<File
@@ -296,6 +300,10 @@
 			</File>
 			<File
 				RelativePath=".\include\tjexception.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tjlanguage.h"
 				>
 			</File>
 			<File

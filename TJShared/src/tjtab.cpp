@@ -1,5 +1,4 @@
 #include "../include/tjshared.h"
-#include "../../TJShow/include/internal/tjlanguage.h"
 using namespace Gdiplus;
 
 TabWnd::TabWnd(HWND parent): ChildWnd(L"TabWnd", parent) {
@@ -198,7 +197,7 @@ void TabWnd::DoContextMenu(int x, int y) {
 		if(x<left) {
 			enum {cmdDetach=1,};
 			ContextMenu context;
-			context.AddItem(L_DETACH_TAB, cmdDetach, true);
+			context.AddItem(TL(detach_tab), cmdDetach, true);
 			switch(context.DoContextMenu(_wnd, x+rc.left, y)) {
 				case cmdDetach:
 					_current = 0;
