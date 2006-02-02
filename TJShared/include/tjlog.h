@@ -12,7 +12,7 @@ class EXPORTED Log {
 		static void Show(bool s);
 		static void SetWriteToFile(bool f);
 	protected:
-		static LogThread* _logger;
+		static LogThread _logger;
 		static CriticalSection _lock;
 		static bool _writeToFile;
 };

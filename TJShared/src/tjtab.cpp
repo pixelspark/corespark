@@ -195,7 +195,7 @@ void TabWnd::DoContextMenu(int x, int y) {
 		g.MeasureString(pane._title.c_str(), (INT)pane._title.length(), theme->GetGUIFontBold(), PointF(0.0f, 0.0f), &bound);				
 		left += int(bound.Width) + 4;
 		if(x<left) {
-			enum {cmdDetach=1,};
+			enum {cmdDetach=1,cmdFullScreen};
 			ContextMenu context;
 			context.AddItem(TL(detach_tab), cmdDetach, true);
 			switch(context.DoContextMenu(_wnd, x+rc.left, y)) {
@@ -238,6 +238,7 @@ void TabWnd::Pane::SetDetached(bool d, TabWnd* tab) {
 		SetWindowText(panel, _title.c_str());
 		HWND window = _wnd->GetWindow();
 		SetParent(window,panel);
+
 		SendMessage(panel, WM_SIZE, 0,0);
 		ShowWindow(panel, SW_SHOW);
 	}
@@ -267,5 +268,46 @@ LRESULT CALLBACK TabPanelWndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) {
 			SetWindowPos(child, 0, 0,0, r.right-r.left, r.bottom-r.top, SWP_NOZORDER);
 		}
 	}
+	else if(msg==WM_KEYDOWN) {
+		if(wp==VK_ESCAPE) {
+			SetWindowLong(wnd, GWL_STYLE, WS_OVERLAPPEDWINDOW|WS_VISIBLE);
+			UpdateWindow(wnd);
+			SetWindowPos(wnd, 0L, 100, 100, 640, 480, SWP_NOZORDER);
+		}
+	}
+	else if(msg==WM_CONTEXTMENU) {
+		int style = GetWindowLong(wnd, GWL_STYLE);
+		int command = 0;
+		enum {cmdNothing = 0, cmdExit, cmdEnter};
+		ContextMenu men;
+
+		if((style & WS_POPUP) >0) {
+			// we're fullscreen
+			men.AddItem(TL(leave_full_screen), cmdExit, true);
+		}
+		else {
+			men.AddItem(TL(enter_full_screen), cmdEnter, true);
+		}
+
+		command = men.DoContextMenu(wnd, GET_X_LPARAM(lp), GET_Y_LPARAM(lp), false);
+		if(command==cmdEnter) {
+			SetWindowLong(wnd, GWL_STYLE, WS_POPUP|WS_VISIBLE);
+			RECT rect;
+			GetWindowRect(wnd,&rect);
+			HMONITOR mon = MonitorFromRect(&rect, MONITOR_DEFAULTTONEAREST);
+
+			MONITORINFO mi;
+			mi.cbSize = sizeof(mi);
+			GetMonitorInfo(mon, &mi);
+
+			SetWindowPos(wnd,0,mi.rcMonitor.left,mi.rcMonitor.top,mi.rcMonitor.right-mi.rcMonitor.left,mi.rcMonitor.bottom-mi.rcMonitor.top,SWP_NOZORDER);
+		}
+		else if(command==cmdExit) {
+			SetWindowLong(wnd, GWL_STYLE, WS_OVERLAPPEDWINDOW|WS_VISIBLE);
+			UpdateWindow(wnd);
+			SetWindowPos(wnd, 0L, 100, 100, 640, 480, SWP_NOZORDER);
+		}
+	}
+
 	return DefWindowProc(wnd, msg, wp, lp);
 }

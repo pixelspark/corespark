@@ -1,7 +1,7 @@
 #include "../include/tjshared.h"
 #include <fstream>
 
-LogThread* Log::_logger = 0;
+
 CriticalSection Log::_lock;
 bool Log::_writeToFile = false;
 
@@ -19,7 +19,7 @@ class LogThread: public Thread {
 		}
 
 		virtual void Log(std::wstring msg) {
-			Start();
+			//Start();
 			WaitForSingleObject(_loggerCreatedEvent, INFINITE);
 			_logger->Log(msg);
 		}
@@ -45,6 +45,8 @@ class LogThread: public Thread {
 		LoggerWnd* _logger;
 		HANDLE _loggerCreatedEvent;
 };
+
+LogThread Log::_logger;
 
 class FileLogger {
 	protected:
@@ -81,8 +83,8 @@ void Log::Write(std::wstring source, std::wstring message) {
 		file->Write(source + std::wstring(L": ") + message + std::wstring(L"\r\n"));
 	}
 
-	if(_logger==0) _logger = new LogThread();
-	_logger->Log(source + L": " + message);
+	//if(_logger==0) _logger = new LogThread();
+	_logger.Log(source + L": " + message);
 }
 
 void Log::SetWriteToFile(bool f) {
@@ -91,6 +93,5 @@ void Log::SetWriteToFile(bool f) {
 }
 
 void Log::Show(bool t) {
-	if(_logger==0) return;
-	_logger->Show(t);
+	_logger.Show(t);
 }

@@ -30,6 +30,7 @@ class EXPORTED TabWnd: public ChildWnd {
 			std::wstring _title;
 			ref<Wnd> _wnd;
 			bool _detached;
+			bool _fullscreen;
 		};
 
 		wchar_t _hotkey;
