@@ -173,14 +173,13 @@ void Wnd::SetFullScreen(bool fs) {
 		if(_oldStyle!=0) {
 			SetWindowLong(_wnd, GWL_STYLE, _oldStyle);
 			SetWindowLong(_wnd, GWL_EXSTYLE, _oldStyleEx);
-			//_oldStyle = 0;
-			//_oldStyleEx = 0;
 		}
 		SetWindowPos(_wnd,0,0,0,800,600,SWP_NOZORDER);
 		UpdateWindow(_wnd);
 		Repaint();
 	}
 
+	CloseHandle(mon);
 	_fullScreen = fs;
 }
 

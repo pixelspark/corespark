@@ -54,6 +54,17 @@ class EXPORTED GC {
 };
 
 template<typename T> ref< T> GC::Hold(T* x) {
+	// get type information
+	/*std::string name = typeid(x).name();
+
+	wchar_t* buf  = new wchar_t[name.length()+2];
+	mbstowcs_s(0, buf, name.length()+1, name.c_str(), _TRUNCATE);
+		
+	//std::wstring w(buf);
+	OutputDebugStr(buf);
+	OutputDebugString(L"\r\n");
+	delete[] buf;*/
+
 	Resource< T,Call<T> >* rs = new Resource<T, Call<T> >(x);
 	return rs->Reference();
 }

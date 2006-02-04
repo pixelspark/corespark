@@ -30,6 +30,18 @@ template< typename T, class R=Call<T> > class Resource {
 			if(_rc!=0) {
 					throw Exception(L"Resource deleted while still referenced!",ExceptionTypeWarning);
 			}
+
+			/*std::string name = typeid(_data).name();
+
+			wchar_t* buf  = new wchar_t[name.length()+2];
+			mbstowcs_s(0, buf, name.length()+1, name.c_str(), _TRUNCATE);
+				
+			//std::wstring w(buf);
+			OutputDebugStr(L"Release ");
+			OutputDebugStr(buf);
+			OutputDebugString(L"\r\n");
+			delete[] buf;*/
+
 			this->Release();
 			GC::DecrementLive(sizeof(T));
 		}

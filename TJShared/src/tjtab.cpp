@@ -95,6 +95,21 @@ void TabWnd::AddPane(std::wstring name, ref<Wnd> wnd) {
 	}
 }
 
+void TabWnd::RemovePane(ref<Wnd> wnd) {
+	assert(wnd);
+
+	wnd->Show(false);
+	std::vector< TabWnd::Pane >::iterator it = _panes.begin();
+	while(it!=_panes.end()) {
+		if(it->_wnd == wnd) {
+			_panes.erase(it);
+			return;
+		}
+		it++;
+	}
+	SelectPane(0);
+}
+
 void TabWnd::SelectPane(unsigned int index) {
 	try {
 		Pane& pane = _panes.at(index);

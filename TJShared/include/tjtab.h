@@ -12,6 +12,7 @@ class EXPORTED TabWnd: public ChildWnd {
 		void SetHotkey(wchar_t hotkey);
 		virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 		void AddPane(std::wstring name, ref<Wnd> wnd);
+		void RemovePane(ref<Wnd> wnd);
 		void SelectPane(unsigned int index);
 		virtual void Layout();
 		virtual void Update();

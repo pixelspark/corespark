@@ -31,6 +31,16 @@ void ContextMenu::AddItem(std::wstring name, int command, bool hilite) {
 	mif.fState = MFS_ENABLED | (hilite?MFS_DEFAULT:0);
 	mif.dwTypeData = (LPWSTR)name.c_str();
 	mif.cch = (UINT)name.length();
-	InsertMenuItem(_menu, _index, FALSE, &mif);
+	InsertMenuItem(_menu, 0, FALSE, &mif);
+	_index++;
+}
+
+void ContextMenu::AddSeparator() {
+	MENUITEMINFO mif;
+	memset(&mif, 0, sizeof(MENUITEMINFO));
+
+	mif.cbSize = sizeof(MENUITEMINFO);
+	mif.fType = MFT_SEPARATOR;
+	InsertMenuItem(_menu, 0, FALSE, &mif);
 	_index++;
 }
