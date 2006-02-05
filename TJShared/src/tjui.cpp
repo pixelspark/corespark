@@ -602,9 +602,12 @@ LRESULT Wnd::PreMessage(UINT msg, WPARAM wp, LPARAM lp) {
 				_buffer = 0;
 				_buffer = new Bitmap(cw.right-cw.left+100, cw.bottom-cw.top+100); // +100 for buffer
 			}
-			Graphics buffered(_buffer);
-			Paint(buffered);
-			org.DrawImage(_buffer, PointF(0.0f, 0.0f));
+
+			{
+				Graphics buffered(_buffer);
+				Paint(buffered);
+			}
+			org.DrawImage(_buffer,0,0);
 		}
 
 		Wnd* parent = GetParent();
