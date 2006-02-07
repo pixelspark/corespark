@@ -18,6 +18,11 @@ float SliderWnd::GetValue() const {
 	return _value;
 }
 
+void SliderWnd::SetColor(int idx) {
+	_color = idx;
+	Repaint();
+}
+
 void SliderWnd::Update() {
 	Repaint();
 }
@@ -58,6 +63,9 @@ void SliderWnd::Paint(Graphics& g) {
 	RECT rect;
 	GetClientRect(_wnd, &rect);
 
+	Gdiplus::Color colorStart = theme->GetSliderColorStart(_color);
+	Gdiplus::Color colorEnd = theme->GetSliderColorEnd(_color);
+
 	// background
 	SolidBrush backBrush(theme->GetBackgroundColor());
 	g.FillRectangle(&backBrush,Rect(0,0,rect.right-rect.left, rect.bottom-rect.top));
@@ -65,7 +73,7 @@ void SliderWnd::Paint(Graphics& g) {
 	// middle rectangle, 6 pixels wide
 	rect.top += 5;
 	rect.bottom -= 60;
-	LinearGradientBrush br(PointF(0.0f, float(rect.top-10)), PointF(0.0f, float(rect.bottom-rect.top+15)), theme->GetActiveStartColor(), theme->GetActiveEndColor());
+	LinearGradientBrush br(PointF(0.0f, float(rect.top-10)), PointF(0.0f, float(rect.bottom-rect.top+15)), colorStart, colorEnd);
 	Pen pn(&br, 1.0f);
 	const static int squareWidth = 6;
 	int x = (rect.right-rect.left)/2 - (squareWidth/2);
@@ -95,12 +103,12 @@ void SliderWnd::Paint(Graphics& g) {
 	const static int draggerWidth = 22;
 	x = (rect.right-rect.left)/2 - draggerWidth/2;
 	int y = rect.bottom - int(_value*int(rect.bottom-rect.top));
-	SolidBrush border(theme->GetActiveEndColor());
+	SolidBrush border(colorEnd);
 	g.FillRectangle(&border, RectF(float(x), float(y), float(draggerWidth), 6.0f));
 	g.FillRectangle(&backBrush, RectF(float(x+1), float(y+1), float(draggerWidth-2), 4.0f));
 	
 	if(_hasFocus) {
-		LinearGradientBrush lbr(PointF(float(x+1), float(y)), PointF(float(x+1), float(y+6)), theme->GetActiveStartColor(), theme->GetActiveEndColor() );
+		LinearGradientBrush lbr(PointF(float(x+1), float(y)), PointF(float(x+1), float(y+6)), colorStart, colorEnd );
 		g.FillRectangle(&lbr, RectF(float(x+1), float(y+1), float(draggerWidth-2), 4.0f));
 	}
 

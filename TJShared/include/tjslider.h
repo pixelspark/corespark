@@ -17,7 +17,7 @@ class EXPORTED SliderWnd: public ChildWnd {
 		virtual void Update();
 		void SetDisplayValue(float f, bool notify);
 		virtual void Paint(Gdiplus::Graphics& g);
-
+		virtual void SetColor(int idx);
 	protected:
 		wchar_t _hotkey;
 		Listener* _listener;
@@ -26,6 +26,7 @@ class EXPORTED SliderWnd: public ChildWnd {
 		bool _hasFocus;
 		bool _flash;
 		float _oldValue;
+		int _color;
 };
 
 #pragma warning(pop)

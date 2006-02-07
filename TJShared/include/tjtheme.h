@@ -30,7 +30,17 @@ class EXPORTED Theme {
 		virtual Gdiplus::Font* GetGUIFont();
 		virtual Gdiplus::Font* GetGUIFontBold();
 
+		virtual Gdiplus::Color GetSliderColorStart(int i);
+		virtual Gdiplus::Color GetSliderColorEnd(int i);
+
 		virtual Gdiplus::Color GetDisabledOverlayColor();
+
+		enum {
+			SliderNormal = 0,
+			SliderSubmix,
+			SliderMaster,
+			SliderMacro,
+		};
 
 	protected:
 		Gdiplus::Font* _font;

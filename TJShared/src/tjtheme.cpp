@@ -55,11 +55,11 @@ Color Theme::GetActiveTrackColor() {
 }
 
 Color Theme::GetActiveStartColor() {
-	return Color(110,110,110);
+	return Color(255, 110,110,110);
 }
 
 Color Theme::GetActiveEndColor() {
-	return Color(50,50,50);
+	return Color(150, 50,50,50);
 }
 
 Color Theme::GetSplitterStartColor() {
@@ -76,6 +76,38 @@ Color Theme::GetCurrentPositionColor() {
 
 Color Theme::GetTrackDescriptionTextColor() {
 	return Color(120,120,120);
+}
+
+Color Theme::GetSliderColorStart(int i) {
+	switch(i) {
+		case SliderMaster:
+			return Color(255, 200,25,25);
+
+		case SliderSubmix:
+			return Color(255, 25, 200, 25);
+
+		case SliderMacro:
+			return Color(255, 60, 60, 110);
+
+		default:
+			return GetActiveStartColor();
+	}
+}
+
+Color Theme::GetSliderColorEnd(int i) {
+	switch(i) {
+		case SliderMaster:
+			return Color(150, 200,25,25);
+
+		case SliderSubmix:
+			return Color(150, 25, 200, 25);
+
+		case SliderMacro:
+			return Color(150, 60, 60, 110);
+
+		default:
+			return GetActiveEndColor();
+	}
 }
 
 
