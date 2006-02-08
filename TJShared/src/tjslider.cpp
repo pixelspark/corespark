@@ -12,6 +12,7 @@ SliderWnd::SliderWnd(HWND parent, const wchar_t* title): ChildWnd(title, parent)
 	_displayValue = 0.0f;
 	_flash = false;
 	_oldValue = 0.0f;
+	_mark = -1.0f;
 }
 
 float SliderWnd::GetValue() const {
@@ -36,6 +37,10 @@ void SliderWnd::SetDisplayValue(float v, bool notify) {
 			_listener->Notify(this, NotificationChanged);
 		}
 	}
+}
+
+void SliderWnd::SetMarkValue(float v) {
+	_mark = v;
 }
 
 void SliderWnd::SetValue(float f, bool notify) {
@@ -89,6 +94,13 @@ void SliderWnd::Paint(Graphics& g) {
 	for(float my=0.0f;my<=1.0f;my+=0.1f) {
 		float mty = float(int(rect.bottom) - int(my*int(rect.bottom-rect.top)));
 		g.DrawLine(&pn, (REAL)mx, mty, (REAL)mx+2,mty);
+	}
+
+	if(_mark >= 0.0f && _mark != _value) {
+		mx = (rect.right-rect.left)/2 - (squareWidth/2);
+		Pen mpn(Color(255,0,0), 3.0f);
+		float mty = float(int(rect.bottom) - int(_mark*int(rect.bottom-rect.top)));
+		g.DrawLine(&mpn, (REAL)mx, mty, (REAL)mx+squareWidth+1,mty);
 	}
 
 	// larger markers at 0.0, 0.5, 1.0
@@ -163,6 +175,17 @@ LRESULT SliderWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		}
 		else if(wp==VK_PRIOR) {
 			SetValue(1.0f);
+		}
+		else if(wp>=L'0'&& wp <= L'9' || wp == VK_OEM_3) {
+			float v = (wp - L'0')*0.1f;
+			if(wp==L'0') {
+				v = 1.0f;
+			}
+			else if(wp==VK_OEM_3) {
+				v = 0.0f;
+			}
+
+			SetValue(v);
 		}
 		else {
 			HWND first = ::GetWindow(_wnd, GW_HWNDFIRST);

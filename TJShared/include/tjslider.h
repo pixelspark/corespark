@@ -16,6 +16,7 @@ class EXPORTED SliderWnd: public ChildWnd {
 		void SetValue(float f, bool notify=true);
 		virtual void Update();
 		void SetDisplayValue(float f, bool notify);
+		void SetMarkValue(float f);
 		virtual void Paint(Gdiplus::Graphics& g);
 		virtual void SetColor(int idx);
 	protected:
@@ -27,6 +28,7 @@ class EXPORTED SliderWnd: public ChildWnd {
 		bool _flash;
 		float _oldValue;
 		int _color;
+		float _mark;
 };
 
 #pragma warning(pop)
