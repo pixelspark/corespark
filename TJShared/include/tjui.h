@@ -9,6 +9,7 @@
 #define TJ_PROPERTY_LABEL_CLASS_NAME (L"TjPropertyLabelWndClass")
 #define TJ_TAB_PANEL_CLASS_NAME (L"TjTabPanelWndClass")
 #define WM_TJ_PRINT (WM_USER+2)
+#define ISVKKEYDOWN(vk_code) ((GetAsyncKeyState(vk_code) & 0x8000))
 
 /** Class for initializing GDI+ **/
 class EXPORTED GraphicsInit {
