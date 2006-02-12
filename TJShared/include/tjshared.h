@@ -18,6 +18,12 @@
 #include <commctrl.h>
 #include <map>
 #include <string>
+#include <sstream>
+#include <algorithm>
+#include <math.h>
+#include <vector>
+
+#include "tjutil.h"
 #include "tjrange.h"
 #include "tjthread.h"
 #include "tjcriticalsection.h"
@@ -43,6 +49,9 @@
 #include "tjslider.h"
 #include "tjresourcemgr.h"
 
+#pragma warning(push)
+#pragma warning(disable: 4251)
+
 class EXPORTED GC {
 	public:
 		static void IncrementLive(size_t size=0);
@@ -50,28 +59,27 @@ class EXPORTED GC {
 		static long GetLiveCount();
 		static long GetSize();
 		template<typename T> static ref< T > Hold(T* x);
-		template<typename T> static ref< T > HoldArray(T* x);
+
+		static void AddLog(void* id, std::wstring info);
+		static void RemoveLog(void* id);
+
+	protected:
+		static std::map< void*, std::wstring> _objects;
 };
 
 template<typename T> ref< T> GC::Hold(T* x) {
 	// get type information
-	/*std::string name = typeid(x).name();
+	std::string name = typeid(x).name();
 
 	wchar_t* buf  = new wchar_t[name.length()+2];
 	mbstowcs_s(0, buf, name.length()+1, name.c_str(), _TRUNCATE);
-		
-	//std::wstring w(buf);
-	OutputDebugStr(buf);
-	OutputDebugString(L"\r\n");
-	delete[] buf;*/
+	AddLog((void*)x, std::wstring(buf));
+	delete[] buf;
 
 	Resource< T,Call<T> >* rs = new Resource<T, Call<T> >(x);
 	return rs->Reference();
 }
 
-template<typename T> ref< T> GC::HoldArray(T* x) {
-	ArrayResource< T,Call<T> >* rs = new ArrayResource<T, Call<T> >(x);
-	return rs->Reference();
-}
+#pragma warning(pop)
 
 #endif

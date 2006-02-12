@@ -31,19 +31,9 @@ template< typename T, class R=Call<T> > class Resource {
 					throw Exception(L"Resource deleted while still referenced!",ExceptionTypeWarning);
 			}
 
-			/*std::string name = typeid(_data).name();
-
-			wchar_t* buf  = new wchar_t[name.length()+2];
-			mbstowcs_s(0, buf, name.length()+1, name.c_str(), _TRUNCATE);
-				
-			//std::wstring w(buf);
-			OutputDebugStr(L"Release ");
-			OutputDebugStr(buf);
-			OutputDebugString(L"\r\n");
-			delete[] buf;*/
-
 			this->Release();
 			GC::DecrementLive(sizeof(T));
+			GC::RemoveLog((void*)_data);
 		}
 
 		inline void AddReference() {
@@ -99,49 +89,13 @@ template<class T> class Call {
 		}
 
 		inline T* operator->() {
-			return _subject->_data;
+			return dynamic_cast<T*>(_subject->_data);
 		}
 
 	protected:
 		Resource<T,Call>* _subject;
 
 		inline Call(const Call<T>& org) {
-			_subject = org._subject;
-			_subject->AddReference();
-		}
-};
-
-class Lock;
-class CriticalSection;
-
-template<class T> class ThreadCall {
-	friend class ref<T,ThreadCall>;
-
-	public:
-		inline ThreadCall(Resource<T,ThreadCall>* s) {
-			if(s==0) throw Exception(L"Null pointer exception", ExceptionTypeError);
-			_lock = new ThreadLock(s->GetLock());
-			_subject = s;
-			
-			s->AddReference();
-
-		}
-
-		inline ~ThreadCall() {
-			_subject->DeleteReference();
-			_subject = 0;
-			delete _lock;
-		}
-
-		inline T* operator->() {
-			return _subject->_data;
-		}
-
-	protected:
-		Resource<T,ThreadCall>* _subject;
-		ThreadLock* _lock;
-
-		inline ThreadCall(const ThreadCall<T>& org) {
 			_subject = org._subject;
 			_subject->AddReference();
 		}
@@ -201,7 +155,7 @@ template<typename T, class R> class ref {
 		}
 
 		inline T* GetPointer() {
-			return _res->_data;
+			return dynamic_cast<T*>(_res->_data);
 		}
 
 		inline operator ref<const T,R>() {

@@ -1,22 +1,28 @@
 #include "../include/tjshared.h"
 #include <windows.h>
+#include <fstream>
 
 volatile long _gc_live = 0;
 volatile long _gc_size = 0;
 
+void _gc_check() {
+#ifdef _DEBUG
+	if(_gc_live>0) {
+		MessageBox(0L, L"There are still objects left in memory!", L"TJShared GC", MB_OK|MB_ICONWARNING);
+	}
+#endif
+}
+
 class GCChecker {
 	public:
 		GCChecker() {
-		}
-
-		virtual ~GCChecker() {
-			if(_gc_live>0) {
-				MessageBox(0L, L"One or more objects were not correctly deleted. This is a problem in the program and does not affect your data. Probably it's just poor coding done by some programmer :-) You can safely ignore this message.", L"Error", MB_OK|MB_ICONWARNING);
-			}
+			atexit(_gc_check);
 		}
 };
 
 GCChecker _gc_checker;
+
+std::map< void* , std::wstring> GC::_objects;
 
 void GC::IncrementLive(size_t size) {
 	InterlockedIncrement(&_gc_live);
@@ -34,4 +40,20 @@ long GC::GetLiveCount() {
 
 long GC::GetSize() {
 	return _gc_size;
+}
+
+void GC::AddLog(void* id, std::wstring info) {
+#ifdef _DEBUG
+	_objects[(void*)id] = info;
+#endif
+}
+
+void GC::RemoveLog(void* id) {
+#ifdef _DEBUG	
+	std::map<void*, std::wstring>::iterator it = _objects.find(id);
+	if(it!=_objects.end()) {
+		_objects.erase(it);
+		return;
+	}
+#endif
 }

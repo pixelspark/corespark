@@ -677,6 +677,9 @@ LRESULT CALLBACK PropertyEditWndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) {
 }
 
 LRESULT CALLBACK PropertyEditNumericWndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) {
+	static int begin_y = -1;
+	static int begin_value = -1;
+
 	if(msg==WM_KEYDOWN) {
 		if(wp==VK_RIGHT||wp==VK_LEFT) {
 			DWORD n = GetWindowTextLength(wnd);
@@ -699,6 +702,34 @@ LRESULT CALLBACK PropertyEditNumericWndProc(HWND wnd, UINT msg, WPARAM wp, LPARA
 	else if(msg==WM_CHAR) {
 		if((wp>L'9' || wp < L'0')&&wp!=L'-' && wp!=L':' && wp!=VK_DELETE && wp!=VK_HOME && wp!=VK_END && wp!=L'\b' && wp!=VK_UP && wp!=VK_DOWN) {
 			return 0; // no alpha-numeric stuff in here please!
+		}
+	}
+	else if(msg==WM_MBUTTONDOWN) {
+		SetCapture(wnd);
+		begin_y = GET_Y_LPARAM(lp);
+
+		int n = GetWindowTextLength(wnd);
+		wchar_t* buffer = new wchar_t[n+2];
+		GetWindowText(wnd, buffer, n+1);
+		std::wstring value = buffer;
+		delete[] buffer;
+
+		begin_value = StringTo<int>(value, -1);
+	}
+	else if(msg==WM_MBUTTONUP) {
+		ReleaseCapture();
+		begin_y = begin_value = -1;
+	}
+	else if(msg==WM_MOUSEMOVE && ISVKKEYDOWN(VK_MBUTTON)) {
+		if(begin_y>=0) {
+			int dy = begin_y - GET_Y_LPARAM(lp);
+
+			if(begin_value!=-1) {
+				int x = dy*dy;
+				if(dy<0) x = -x;
+				std::wstring newValue = Stringify(begin_value+x);
+				SetWindowText(wnd, newValue.c_str());
+			}
 		}
 	}
 	return PropertyEditWndProc(wnd, msg, wp, lp);

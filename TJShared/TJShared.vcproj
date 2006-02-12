@@ -370,6 +370,10 @@
 				RelativePath=".\include\tjui.h"
 				>
 			</File>
+			<File
+				RelativePath=".\include\tjutil.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
