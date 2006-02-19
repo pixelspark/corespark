@@ -251,14 +251,14 @@ void Wnd::RegisterClasses() {
 	//wc.hIcon = LoadIcon(wc.hInstance, 0);
 	wc.lpfnWndProc = WndProc;
 	wc.lpszClassName = TJ_DEFAULT_CLASS_NAME;
-	wc.style = CS_HREDRAW|CS_VREDRAW|CS_DBLCLKS;
+	wc.style = CS_HREDRAW|CS_DBLCLKS;
 	
 	if(!RegisterClassEx(&wc)) {
 		Throw(L"Could not register class",ExceptionTypeError);
 	}
 	
 	wc.lpszClassName = TJ_DEFAULT_NDBL_CLASS_NAME;
-	wc.style = CS_HREDRAW|CS_VREDRAW;
+	wc.style = CS_HREDRAW /* |CS_VREDRAW */;
 
 	if(!RegisterClassEx(&wc)) {
 		Throw(L"Could not register class",ExceptionTypeError);
@@ -583,9 +583,9 @@ void Wnd::Move(int x, int y, int w, int h) {
 LRESULT Wnd::PreMessage(UINT msg, WPARAM wp, LPARAM lp) {
 	if(msg==WM_PAINT) {
 		int style = GetWindowLong(_wnd, GWL_STYLE);
-		/*if((style&WS_VISIBLE)==0) {
+		if((style&WS_VISIBLE)==0) {
 			return 0;
-		}*/
+		}
 
 		PAINTSTRUCT ps;
 		BeginPaint(_wnd, &ps);

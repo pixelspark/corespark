@@ -2,7 +2,7 @@
 #include <windows.h>
 
 CriticalSection::CriticalSection() {
-	InitializeCriticalSection(&_cs);
+	InitializeCriticalSectionAndSpinCount(&_cs, 2);
 }
 
 CriticalSection::~CriticalSection() {
