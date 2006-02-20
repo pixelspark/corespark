@@ -576,8 +576,9 @@ LRESULT ColorWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 }
 
 void Wnd::Move(int x, int y, int w, int h) {
-	MoveWindow(_wnd,x,y,w,h,TRUE);
-	Layout();
+	//MoveWindow(_wnd,x,y,w,h,FALSE);
+	SetWindowPos(_wnd, 0L, x, y, w, h, SWP_NOZORDER|SWP_NOREDRAW|SWP_NOSENDCHANGING);
+	//Layout();
 }
 
 LRESULT Wnd::PreMessage(UINT msg, WPARAM wp, LPARAM lp) {
