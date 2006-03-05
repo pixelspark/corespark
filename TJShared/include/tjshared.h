@@ -40,7 +40,6 @@
 #include "tjcache.h"
 #include "tjui.h"
 #include "tjchildwnd.h"
-#include "tjtooltipwnd.h"
 #include "tjcontextmenu.h"
 #include "tjlogger.h"
 #include "tjlog.h"
@@ -48,6 +47,7 @@
 #include "tjtab.h"
 #include "tjslider.h"
 #include "tjresourcemgr.h"
+#include "tjtooltip.h" 
 
 #pragma warning(push)
 #pragma warning(disable: 4251)
