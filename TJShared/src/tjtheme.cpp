@@ -14,71 +14,77 @@ Theme::~Theme() {
 	delete _fontBold;
 }
 
-Gdiplus::Font* Theme::GetGUIFontBold() {
+Gdiplus::Font* Theme::GetGUIFontBold() const {
 	if(_fontBold==0) {
 		_fontBold = new Font(L"Tahoma", 11, FontStyleBold, UnitPixel, 0);
 	}
 	return _fontBold;
 }
 
-Gdiplus::Font* Theme::GetGUIFont() {
+Gdiplus::Font* Theme::GetGUIFont() const {
 	if(_font==0) {
 		_font = new Font(L"Tahoma", 11, FontStyleRegular, UnitPixel, 0);
 	}
 	return _font;
 }
 
-std::wstring Theme::GetName() { return std::wstring(L"Donker (Standaard)"); }
+std::wstring Theme::GetName() const { 
+	return std::wstring(L"Donker (Standaard)");
+}
 
-Color Theme::GetBackgroundColor() {
+Color Theme::GetBackgroundColor() const {
 	return Color(0,0,0);
 }
 
-Color Theme::GetTimeBackgroundColor() {
+Color Theme::GetTimeBackgroundColor() const {
 	return Color(20,20,20);
 }
 
-Color Theme::GetPropertyBackgroundColor() {
+Color Theme::GetPropertyBackgroundColor() const {
 	return Color(0,0,0);
 }
 
-Color Theme::GetLineColor() {
+Color Theme::GetLineColor() const {
 	return Color(50,50,50);
 }
 
-Color Theme::GetTextColor() {
+Color Theme::GetTextColor() const {
 	return Color(255,255,255);
 }
 
-Color Theme::GetActiveTrackColor() {
+Color Theme::GetActiveTrackColor() const {
 	return Color(25,25,25);
 }
 
-Color Theme::GetActiveStartColor() {
+Color Theme::GetActiveStartColor() const {
 	return Color(255, 110,110,110);
 }
 
-Color Theme::GetActiveEndColor() {
+Color Theme::GetCommandMarkerColor() const {
+	return Color(255,0,0);
+}
+
+Color Theme::GetActiveEndColor() const {
 	return Color(150, 50,50,50);
 }
 
-Color Theme::GetSplitterStartColor() {
+Color Theme::GetSplitterStartColor() const {
 	return Color(100,100,100);
 }
 
-Color Theme::GetSplitterEndColor() {
+Color Theme::GetSplitterEndColor() const {
 	return Color(20,20,20);
 }
 
-Color Theme::GetCurrentPositionColor() {
+Color Theme::GetCurrentPositionColor() const {
 	return Color(255,255,255);
 }
 
-Color Theme::GetTrackDescriptionTextColor() {
+Color Theme::GetTrackDescriptionTextColor() const {
 	return Color(120,120,120);
 }
 
-Color Theme::GetSliderColorStart(int i) {
+Color Theme::GetSliderColorStart(int i) const {
 	switch(i) {
 		case SliderMaster:
 			return Color(255, 200,25,25);
@@ -94,7 +100,7 @@ Color Theme::GetSliderColorStart(int i) {
 	}
 }
 
-Color Theme::GetSliderColorEnd(int i) {
+Color Theme::GetSliderColorEnd(int i) const {
 	switch(i) {
 		case SliderMaster:
 			return Color(150, 200,25,25);
@@ -111,11 +117,11 @@ Color Theme::GetSliderColorEnd(int i) {
 }
 
 
-Color Theme::GetFaderColor() {
+Color Theme::GetFaderColor() const {
 	return Color(255,255,255);
 }
 
-Color Theme::GetDisabledOverlayColor() {
+Color Theme::GetDisabledOverlayColor() const {
 	return Color(200,0,0,0);
 }
 
@@ -127,61 +133,61 @@ BrightTheme::BrightTheme() {
 BrightTheme::~BrightTheme() {
 }
 
-Color BrightTheme::GetBackgroundColor() {
+Color BrightTheme::GetBackgroundColor() const {
 	return Color(255,255,255);
 }
 
-Color BrightTheme::GetTimeBackgroundColor() {
+Color BrightTheme::GetTimeBackgroundColor() const {
 	return Color(236,233,216);
 }
 
-Color BrightTheme::GetPropertyBackgroundColor() {
+Color BrightTheme::GetPropertyBackgroundColor() const {
 	return Color(236,233,216);
 }
 
-Color BrightTheme::GetLineColor() {
+Color BrightTheme::GetLineColor() const {
 	return Color(136, 133, 116);
 }
 
-Color BrightTheme::GetTextColor() {
+Color BrightTheme::GetTextColor() const {
 	return Color(0,0,0);
 }
 
-Color BrightTheme::GetActiveTrackColor() {
+Color BrightTheme::GetActiveTrackColor() const {
 	return Color(206,203,186);
 }
 
-Color BrightTheme::GetActiveStartColor() {
+Color BrightTheme::GetActiveStartColor() const {
 	return Color(206,203,186);
 }
 
-Color BrightTheme::GetActiveEndColor() {
+Color BrightTheme::GetActiveEndColor() const {
 	return Color(206,203,186);
 }
 
-Color BrightTheme::GetSplitterStartColor() {
+Color BrightTheme::GetSplitterStartColor() const {
 	return Color(100,100,100);
 }
 
-Color BrightTheme::GetSplitterEndColor() {
+Color BrightTheme::GetSplitterEndColor() const {
 	return Color(133,133,133);
 }
 
-Color BrightTheme::GetCurrentPositionColor() {
+Color BrightTheme::GetCurrentPositionColor() const {
 	return Color(0,0,0);
 }
 
-Color BrightTheme::GetTrackDescriptionTextColor() {
+Color BrightTheme::GetTrackDescriptionTextColor() const {
 	return Color(120,120,120);
 }
 
-Color BrightTheme::GetFaderColor() {
+Color BrightTheme::GetFaderColor() const {
 	return Color(0,0,0);
 }
 
-Color BrightTheme::GetDisabledOverlayColor() {
+Color BrightTheme::GetDisabledOverlayColor() const {
 	return Color(200,255,255,255);
 }
 
 
-std::wstring BrightTheme::GetName() { return std::wstring(L"Licht"); }
+std::wstring BrightTheme::GetName() const { return std::wstring(L"Licht"); }

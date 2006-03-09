@@ -41,6 +41,7 @@ void SliderWnd::SetDisplayValue(float v, bool notify) {
 
 void SliderWnd::SetMarkValue(float v) {
 	_mark = v;
+	//Repaint();
 }
 
 void SliderWnd::SetValue(float f, bool notify) {
@@ -96,9 +97,9 @@ void SliderWnd::Paint(Graphics& g) {
 		g.DrawLine(&pn, (REAL)mx, mty, (REAL)mx+2,mty);
 	}
 
-	if(_mark >= 0.0f && _mark != _value) {
+	if(_mark != _value && _mark <= 1.0f && _mark >= 0.0f) {
 		mx = (rect.right-rect.left)/2 - (squareWidth/2);
-		Pen mpn(Color(255,0,0), 3.0f);
+		Pen mpn(theme->GetCommandMarkerColor(), 3.0f);
 		float mty = float(int(rect.bottom) - int(_mark*int(rect.bottom-rect.top)));
 		g.DrawLine(&mpn, (REAL)mx, mty, (REAL)mx+squareWidth+1,mty);
 	}

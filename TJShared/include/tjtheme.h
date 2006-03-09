@@ -10,30 +10,31 @@ class EXPORTED Theme {
 	public:
 		Theme();
 		virtual ~Theme();
-		virtual std::wstring GetName();
-		virtual Gdiplus::Color GetBackgroundColor();
-		virtual Gdiplus::Color GetTimeBackgroundColor();
-		virtual Gdiplus::Color GetPropertyBackgroundColor();
-		virtual Gdiplus::Color GetLineColor();
-		virtual Gdiplus::Color GetTextColor();
-		virtual Gdiplus::Color GetActiveTrackColor();
+		virtual std::wstring GetName() const;
+		virtual Gdiplus::Color GetBackgroundColor() const;
+		virtual Gdiplus::Color GetTimeBackgroundColor() const;
+		virtual Gdiplus::Color GetPropertyBackgroundColor() const;
+		virtual Gdiplus::Color GetLineColor() const;
+		virtual Gdiplus::Color GetTextColor() const;
+		virtual Gdiplus::Color GetActiveTrackColor() const;
 
-		virtual Gdiplus::Color GetActiveStartColor();
-		virtual Gdiplus::Color GetActiveEndColor();
+		virtual Gdiplus::Color GetActiveStartColor() const;
+		virtual Gdiplus::Color GetActiveEndColor() const;
 
-		virtual Gdiplus::Color GetSplitterStartColor();
-		virtual Gdiplus::Color GetSplitterEndColor();
+		virtual Gdiplus::Color GetSplitterStartColor() const;
+		virtual Gdiplus::Color GetSplitterEndColor() const;
 
-		virtual Gdiplus::Color GetCurrentPositionColor();
-		virtual Gdiplus::Color GetTrackDescriptionTextColor();
-		virtual Gdiplus::Color GetFaderColor();
-		virtual Gdiplus::Font* GetGUIFont();
-		virtual Gdiplus::Font* GetGUIFontBold();
+		virtual Gdiplus::Color GetCurrentPositionColor() const;
+		virtual Gdiplus::Color GetTrackDescriptionTextColor() const;
+		virtual Gdiplus::Color GetFaderColor() const;
+		virtual Gdiplus::Font* GetGUIFont() const;
+		virtual Gdiplus::Font* GetGUIFontBold() const;
 
-		virtual Gdiplus::Color GetSliderColorStart(int i);
-		virtual Gdiplus::Color GetSliderColorEnd(int i);
+		virtual Gdiplus::Color GetSliderColorStart(int i) const;
+		virtual Gdiplus::Color GetSliderColorEnd(int i) const;
 
-		virtual Gdiplus::Color GetDisabledOverlayColor();
+		virtual Gdiplus::Color GetDisabledOverlayColor() const;
+		virtual Gdiplus::Color GetCommandMarkerColor() const;
 
 		enum {
 			SliderNormal = 0,
@@ -43,32 +44,32 @@ class EXPORTED Theme {
 		};
 
 	protected:
-		Gdiplus::Font* _font;
-		Gdiplus::Font* _fontBold;
+		mutable Gdiplus::Font* _font;
+		mutable Gdiplus::Font* _fontBold;
 };
 
 class BrightTheme: public Theme {
 	public:
 		BrightTheme();
 		virtual ~BrightTheme();
-		virtual std::wstring GetName();
-		virtual Gdiplus::Color GetBackgroundColor();
-		virtual Gdiplus::Color GetTimeBackgroundColor();
-		virtual Gdiplus::Color GetPropertyBackgroundColor();
-		virtual Gdiplus::Color GetLineColor();
-		virtual Gdiplus::Color GetTextColor();
-		virtual Gdiplus::Color GetActiveTrackColor();
+		virtual std::wstring GetName() const;
+		virtual Gdiplus::Color GetBackgroundColor() const;
+		virtual Gdiplus::Color GetTimeBackgroundColor() const;
+		virtual Gdiplus::Color GetPropertyBackgroundColor() const;
+		virtual Gdiplus::Color GetLineColor() const;
+		virtual Gdiplus::Color GetTextColor() const;
+		virtual Gdiplus::Color GetActiveTrackColor() const;
 
-		virtual Gdiplus::Color GetActiveStartColor();
-		virtual Gdiplus::Color GetActiveEndColor();
+		virtual Gdiplus::Color GetActiveStartColor() const;
+		virtual Gdiplus::Color GetActiveEndColor() const;
 
-		virtual Gdiplus::Color GetSplitterStartColor();
-		virtual Gdiplus::Color GetSplitterEndColor();
-		virtual Gdiplus::Color GetCurrentPositionColor();
-		virtual Gdiplus::Color GetTrackDescriptionTextColor();
-		virtual Gdiplus::Color GetFaderColor();
+		virtual Gdiplus::Color GetSplitterStartColor() const;
+		virtual Gdiplus::Color GetSplitterEndColor() const;
+		virtual Gdiplus::Color GetCurrentPositionColor() const;
+		virtual Gdiplus::Color GetTrackDescriptionTextColor() const;
+		virtual Gdiplus::Color GetFaderColor() const;
 
-		virtual Gdiplus::Color GetDisabledOverlayColor();
+		virtual Gdiplus::Color GetDisabledOverlayColor() const;
 };
 
 #pragma warning(pop)
