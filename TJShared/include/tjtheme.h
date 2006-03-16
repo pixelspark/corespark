@@ -29,9 +29,13 @@ class EXPORTED Theme {
 		virtual Gdiplus::Color GetFaderColor() const;
 		virtual Gdiplus::Font* GetGUIFont() const;
 		virtual Gdiplus::Font* GetGUIFontBold() const;
+		virtual Gdiplus::Font* GetGUIFontSmall() const;
 
 		virtual Gdiplus::Color GetSliderColorStart(int i) const;
 		virtual Gdiplus::Color GetSliderColorEnd(int i) const;
+
+		virtual Gdiplus::Color GetTimeSelectionColorEnd() const;
+		virtual Gdiplus::Color GetTimeSelectionColorStart() const;
 
 		virtual Gdiplus::Color GetDisabledOverlayColor() const;
 		virtual Gdiplus::Color GetCommandMarkerColor() const;
@@ -46,6 +50,7 @@ class EXPORTED Theme {
 	protected:
 		mutable Gdiplus::Font* _font;
 		mutable Gdiplus::Font* _fontBold;
+		mutable Gdiplus::Font* _fontSmall;
 };
 
 class BrightTheme: public Theme {
@@ -68,6 +73,9 @@ class BrightTheme: public Theme {
 		virtual Gdiplus::Color GetCurrentPositionColor() const;
 		virtual Gdiplus::Color GetTrackDescriptionTextColor() const;
 		virtual Gdiplus::Color GetFaderColor() const;
+
+		virtual Gdiplus::Color GetTimeSelectionColorEnd() const;
+		virtual Gdiplus::Color GetTimeSelectionColorStart() const;
 
 		virtual Gdiplus::Color GetDisabledOverlayColor() const;
 };

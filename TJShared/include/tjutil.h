@@ -49,7 +49,7 @@ template<> std::string inline StringifyMbs(const std::wstring& x) {
 	return Mbs(x);
 }
 
-template<typename T> inline T StringTo(std::wstring& s, const T def) {
+template<typename T> inline T StringTo(std::wstring s, const T def) {
 	std::wistringstream i(s);
 	T x;
 	if (!(i >> x)) {
@@ -60,7 +60,7 @@ template<typename T> inline T StringTo(std::wstring& s, const T def) {
 }
 
 
-template<typename T> inline T StringTo(std::string& s, const T def) {
+template<typename T> inline T StringTo(std::string s, const T def) {
 	std::istringstream i(s);
 	T x;
 	if (!(i >> x)) {
@@ -92,6 +92,20 @@ template<typename T> inline bool Near(const T& a, const T& b, const T limit) {
 
 template<typename T> inline bool Between(const T&a, const T& b, const T& c) {
 	return (c>a)&&(c<b);
+}
+
+template<typename StringType> void Trim(StringType& str) {
+	StringType::size_type pos = str.find_last_not_of(' ');
+	if(pos != StringType::npos) {
+		str.erase(pos + 1);
+		pos = str.find_first_not_of(' ');
+		if(pos != StringType::npos) {
+			str.erase(0, pos);
+		}
+	}
+	else {
+		str.erase(str.begin(), str.end());
+	}
 }
 
 #endif

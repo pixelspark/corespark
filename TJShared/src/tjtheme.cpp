@@ -7,11 +7,13 @@ ThemeSubscription _subscription_bright_theme(ref<Theme>(GC::Hold(new BrightTheme
 Theme::Theme() {
 	_font = 0;
 	_fontBold = 0;
+	_fontSmall = 0;
 }
 
 Theme::~Theme() {
 	delete _font;
 	delete _fontBold;
+	delete _fontSmall;
 }
 
 Gdiplus::Font* Theme::GetGUIFontBold() const {
@@ -27,6 +29,14 @@ Gdiplus::Font* Theme::GetGUIFont() const {
 	}
 	return _font;
 }
+
+Gdiplus::Font* Theme::GetGUIFontSmall() const {
+	if(_fontSmall==0) {
+		_fontSmall = new Font(L"Tahoma", 8, FontStyleRegular, UnitPixel, 0);
+	}
+	return _fontSmall;
+}
+
 
 std::wstring Theme::GetName() const { 
 	return std::wstring(L"Donker (Standaard)");
@@ -82,6 +92,14 @@ Color Theme::GetCurrentPositionColor() const {
 
 Color Theme::GetTrackDescriptionTextColor() const {
 	return Color(120,120,120);
+}
+
+Gdiplus::Color Theme::GetTimeSelectionColorEnd() const {
+	return Color(50,255,255,255);
+}
+
+Gdiplus::Color Theme::GetTimeSelectionColorStart() const {
+	return Color(0, 255, 255, 255);
 }
 
 Color Theme::GetSliderColorStart(int i) const {
@@ -183,6 +201,15 @@ Color BrightTheme::GetTrackDescriptionTextColor() const {
 
 Color BrightTheme::GetFaderColor() const {
 	return Color(0,0,0);
+}
+
+
+Gdiplus::Color BrightTheme::GetTimeSelectionColorEnd() const {
+	return Color(100,0,0,100);
+}
+
+Gdiplus::Color BrightTheme::GetTimeSelectionColorStart() const {
+	return Color(50, 0, 0, 100);
 }
 
 Color BrightTheme::GetDisabledOverlayColor() const {
