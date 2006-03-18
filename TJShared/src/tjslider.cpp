@@ -13,6 +13,16 @@ SliderWnd::SliderWnd(HWND parent, const wchar_t* title): ChildWnd(title, parent)
 	_flash = false;
 	_oldValue = 0.0f;
 	_mark = -1.0f;
+	_showValue = true;
+	_snapHalf = false;
+}
+
+void SliderWnd::SetShowValue(bool t) {
+	_showValue = t;
+}
+
+void SliderWnd::SetSnapToHalf(bool s) {
+	_snapHalf = s;
 }
 
 float SliderWnd::GetValue() const {
@@ -79,6 +89,7 @@ void SliderWnd::Paint(Graphics& g) {
 	// middle rectangle, 6 pixels wide
 	rect.top += 5;
 	rect.bottom -= 60;
+	if(!_showValue) rect.bottom += 15;
 	LinearGradientBrush br(PointF(0.0f, float(rect.top-10)), PointF(0.0f, float(rect.bottom-rect.top+15)), colorStart, colorEnd);
 	Pen pn(&br, 1.0f);
 	const static int squareWidth = 6;
@@ -120,40 +131,55 @@ void SliderWnd::Paint(Graphics& g) {
 	g.FillRectangle(&border, RectF(float(x), float(y), float(draggerWidth), 6.0f));
 	g.FillRectangle(&backBrush, RectF(float(x+1), float(y+1), float(draggerWidth-2), 4.0f));
 	
-	if(_hasFocus) {
+	if(_hasFocus||_flash) {
 		LinearGradientBrush lbr(PointF(float(x+1), float(y)), PointF(float(x+1), float(y+6)), colorStart, colorEnd );
 		g.FillRectangle(&lbr, RectF(float(x+1), float(y+1), float(draggerWidth-2), 4.0f));
 	}
 
-	std::wostringstream os;
-	os << int(_value*100) << L'%';
-	std::wstring msg = os.str();
-	StringFormat sf;
-	sf.SetAlignment(StringAlignmentCenter);
-	SolidBrush tbr(theme->GetTextColor());
-	g.DrawString(msg.c_str(), (INT)msg.length(), theme->GetGUIFont(), RectF(0.0f, float(rect.bottom+15), float(rect.right), 16.0f), &sf, &tbr);
+	if(_showValue) {
+		std::wostringstream os;
+		os << int(_value*100) << L'%';
+		std::wstring msg = os.str();
+		StringFormat sf;
+		sf.SetAlignment(StringAlignmentCenter);
+		SolidBrush tbr(theme->GetTextColor());
+		g.DrawString(msg.c_str(), (INT)msg.length(), theme->GetGUIFont(), RectF(0.0f, float(rect.bottom+15), float(rect.right), 16.0f), &sf, &tbr);
+	}
 }
 
 LRESULT SliderWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
-	if(msg==WM_MOUSEMOVE || msg==WM_LBUTTONDOWN) {
-		if(ISVKKEYDOWN(VK_LBUTTON)) {
+	if(msg==WM_CONTEXTMENU) {
+		msg = WM_RBUTTONDOWN;
+	}
+
+	if(msg==WM_MOUSEMOVE || msg==WM_LBUTTONDOWN || msg==WM_RBUTTONDOWN) {
+		if(ISVKKEYDOWN(VK_LBUTTON) || ISVKKEYDOWN(VK_RBUTTON)) {
 			int y = GET_Y_LPARAM(lp);
 			RECT rc;
 			GetClientRect(_wnd, &rc);
 			rc.top += 5;
 			rc.bottom -= 60;
+			if(!_showValue) rc.bottom += 15;
 
 			y -= rc.top;
 			float val = float(y)/float(rc.bottom-rc.top);
-			/*if(val<0.52f && val>0.48f) {
+
+			if(msg==WM_RBUTTONDOWN) {
+				if(!_flash) {
+					_oldValue = _value;
+					_flash = true;
+				}
+			}
+			
+			if(_snapHalf && val<0.52f && val>0.48f) {
 				SetValue(0.5f);
 			}
-			else {*/
+			else {
 				SetValue(1.0f - val);
-			//}
+			}
 		}
 	}
-	else if(msg==WM_KEYUP) {
+	else if(msg==WM_KEYUP || msg==WM_RBUTTONUP) {
 		if(_flash) {
 			SetValue(_oldValue);
 		}
@@ -161,8 +187,10 @@ LRESULT SliderWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	}
 	else if(msg==WM_KEYDOWN) {
 		if(ISVKKEYDOWN(VK_CONTROL)) {
-			_flash = true;	
-			_oldValue = _value;
+			if(!_flash) {
+				_flash = true;	
+				_oldValue = _value;
+			}
 		}
 		
 		if(wp==VK_DOWN) {

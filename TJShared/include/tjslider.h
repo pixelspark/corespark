@@ -19,6 +19,8 @@ class EXPORTED SliderWnd: public ChildWnd {
 		void SetMarkValue(float f);
 		virtual void Paint(Gdiplus::Graphics& g);
 		virtual void SetColor(int idx);
+		void SetShowValue(bool show);
+		void SetSnapToHalf(bool snap);
 	protected:
 		wchar_t _hotkey;
 		Listener* _listener;
@@ -29,6 +31,8 @@ class EXPORTED SliderWnd: public ChildWnd {
 		float _oldValue;
 		int _color;
 		float _mark;
+		bool _showValue;
+		bool _snapHalf;
 };
 
 #pragma warning(pop)
