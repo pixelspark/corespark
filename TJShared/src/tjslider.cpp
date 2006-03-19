@@ -171,7 +171,7 @@ LRESULT SliderWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 				}
 			}
 			
-			if(_snapHalf && val<0.52f && val>0.48f) {
+			if(_snapHalf && val<0.51f && val>0.49f) {
 				SetValue(0.5f);
 			}
 			else {
