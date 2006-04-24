@@ -75,15 +75,15 @@ Color Theme::GetCommandMarkerColor() const {
 }
 
 Color Theme::GetActiveEndColor() const {
-	return Color(150, 50,50,50);
+	return Color(255, 70,70,70);
 }
 
 Color Theme::GetSplitterStartColor() const {
-	return Color(100,100,100);
+	return Color(0,0,0);
 }
 
 Color Theme::GetSplitterEndColor() const {
-	return Color(20,20,20);
+	return Color(0,0,0);
 }
 
 Color Theme::GetCurrentPositionColor() const {
@@ -160,11 +160,11 @@ Color BrightTheme::GetTimeBackgroundColor() const {
 }
 
 Color BrightTheme::GetPropertyBackgroundColor() const {
-	return Color(236,233,216);
+	return Color(255,255,255);
 }
 
 Color BrightTheme::GetLineColor() const {
-	return Color(136, 133, 116);
+	return Color(150,150,150);
 }
 
 Color BrightTheme::GetTextColor() const {
@@ -176,19 +176,19 @@ Color BrightTheme::GetActiveTrackColor() const {
 }
 
 Color BrightTheme::GetActiveStartColor() const {
-	return Color(206,203,186);
+	return Color(136,136,136);
 }
 
 Color BrightTheme::GetActiveEndColor() const {
-	return Color(206,203,186);
+	return Color(150,150,150);
 }
 
 Color BrightTheme::GetSplitterStartColor() const {
-	return Color(100,100,100);
+	return Color(236,233,216);
 }
 
 Color BrightTheme::GetSplitterEndColor() const {
-	return Color(133,133,133);
+	return Color(236,233,216);
 }
 
 Color BrightTheme::GetCurrentPositionColor() const {

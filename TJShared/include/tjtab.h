@@ -21,6 +21,7 @@ class EXPORTED TabWnd: public ChildWnd {
 		virtual bool IsInHotkeyMode();
 		virtual void Clear();
 		virtual void Paint(Gdiplus::Graphics& g);
+		void Rename(ref<Wnd> pane, std::wstring name);
 		ref<Wnd> GetCurrentPane();
 	
 	protected:

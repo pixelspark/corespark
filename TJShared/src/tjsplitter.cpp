@@ -7,6 +7,7 @@ SplitterWnd::SplitterWnd(HWND parent, ref<Wnd> a, ref<Wnd> b, Orientation o): Ch
 	assert(a!=0);
 	assert(b!=0);
 	SetStyle(WS_CLIPCHILDREN);
+	SetStyle(WS_CLIPSIBLINGS);
 	SetParent(a->GetWindow(),_wnd);
 	SetParent(b->GetWindow(),_wnd);
 	_a = a;
@@ -48,15 +49,15 @@ void SplitterWnd::Layout() {
 	GetClientRect(_wnd, &rc);
 
 	if(_orientation==OrientationHorizontal) {
-		int heightA = int(_ratio*(rc.bottom-rc.top));
-		int heightB = int((rc.bottom-rc.top)-heightA);
+		int heightA = (int)floor(_ratio*(rc.bottom-rc.top));
+		int heightB = (rc.bottom-rc.top)-heightA;
 
 		SetWindowPos(_a->GetWindow(), 0, 0, 0, rc.right-rc.left, heightA-(barHeight/2),SWP_NOZORDER);
 		SetWindowPos(_b->GetWindow(), 0, 0, heightA+(barHeight/2), rc.right-rc.left, heightB-(barHeight/2),SWP_NOZORDER);
 	}
 	else if(_orientation==OrientationVertical) {
-		int widthA = int(_ratio*(rc.right-rc.left));
-		int widthB = int((rc.right-rc.left)-widthA);
+		int widthA = (int)floor(_ratio*(rc.right-rc.left));
+		int widthB = (rc.right-rc.left)-widthA;
 
 		SetWindowPos(_a->GetWindow(), 0, 0, 0, widthA-(barHeight/2), rc.bottom-rc.top, SWP_NOZORDER);
 		SetWindowPos(_b->GetWindow(), 0, widthA+(barHeight/2), 0, widthB-(barHeight/2),rc.bottom-rc.top,SWP_NOZORDER);

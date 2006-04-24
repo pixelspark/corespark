@@ -158,7 +158,7 @@ int DXTools::GetDuration(std::wstring file) {
 	}
 
 	// Graph files have infinite length
-	if(file.substr(file.length()-4, 4)==L".grf") {
+	if(file.length()>4 && file.substr(file.length()-4, 4)==L".grf") {
 		return INT_MAX;
 	}
 

@@ -11,6 +11,20 @@ TabWnd::TabWnd(HWND parent): ChildWnd(L"TabWnd", parent) {
 TabWnd::~TabWnd() {
 }
 
+void TabWnd::Rename(ref<Wnd> wnd, std::wstring name) {
+	Log::Write(L"TJShared/Tab", std::wstring(L"rename to ")+name);
+	std::vector<Pane>::iterator it = _panes.begin();
+	while(it!=_panes.end()) {
+		Pane& p = *it;
+		if(p._wnd ==wnd) {
+			p._title = name;
+			Update();
+			return;
+		}
+		it++;
+	}
+}
+
 void TabWnd::Paint(Graphics& g) {
 	if(_headerHeight>0) {
 		RECT rect;
@@ -20,8 +34,15 @@ void TabWnd::Paint(Graphics& g) {
 
 		g.FillRectangle(&br, Rect(rect.left, rect.top, rect.right, _current?_headerHeight:(rect.bottom-rect.top)));
 		
-		Pen pn(theme->GetActiveEndColor(), 1.0f);
-		g.DrawLine(&pn, 0, _headerHeight-1, rect.right, _headerHeight-1);
+		g.SetSmoothingMode(SmoothingModeDefault);
+		g.SetCompositingQuality(CompositingQualityDefault);
+		Pen back(theme->GetTimeBackgroundColor(), 2.0f);
+		g.DrawRectangle(&back, RectF(0.0f, float(_headerHeight), float(rect.right-rect.left-1), float(rect.bottom-rect.top-_headerHeight+1)));
+
+		Pen border(theme->GetActiveEndColor(), 1.0f);
+		g.DrawRectangle(&border, RectF(1.0f, float(_headerHeight-1), float(rect.right-rect.left-2), float(rect.bottom-rect.top-_headerHeight)));
+		//g.SetSmoothingMode(SmoothingModeHighQuality);
+		//g.SetCompositingQuality(CompositingQualityHighQuality);
 
 		std::vector< Pane >::iterator it = _panes.begin();
 		SolidBrush textBrush = theme->GetTextColor();
@@ -34,12 +55,12 @@ void TabWnd::Paint(Graphics& g) {
 			
 			if(pane._wnd==_current) {
 				LinearGradientBrush lbr(PointF(0.0f, 0.0f), PointF(0.0f, float(_headerHeight)), theme->GetActiveStartColor(), theme->GetActiveEndColor());
-				g.FillRectangle(&lbr, RectF(float(left+2), 2.0f, float(bound.Width+2), float(_headerHeight)));
+				g.FillRectangle(&lbr, RectF(float(left+1), 2.0f, float(bound.Width+2), float(_headerHeight)));
 				SolidBrush backBrush(theme->GetBackgroundColor());
-				g.FillRectangle(&backBrush, RectF(float(left+3), 3.0f, float(bound.Width), float(_headerHeight)));
+				g.FillRectangle(&backBrush, RectF(float(left+2), 3.0f, float(bound.Width), float(_headerHeight)));
 			}
 
-			g.DrawString(pane._title.c_str(), (INT)pane._title.length(), theme->GetGUIFontBold(), PointF(float(left+3), 3.0f), &textBrush);
+			g.DrawString(pane._title.c_str(), (INT)pane._title.length(), theme->GetGUIFontBold(), PointF(float(left+2), 3.0f), &textBrush);
 
 			left += int(bound.Width) + 4;
 			it++;
@@ -149,7 +170,7 @@ void TabWnd::Layout() {
 	if(_current) {
 		RECT rct;
 		GetClientRect(_wnd, &rct);
-		SetWindowPos(_current->GetWindow(), 0, 0,rct.top+_headerHeight,rct.right-rct.left,rct.bottom-rct.top-_headerHeight, SWP_NOZORDER);
+		SetWindowPos(_current->GetWindow(), 0, 2,rct.top+_headerHeight,rct.right-rct.left-3,rct.bottom-rct.top-_headerHeight-1, SWP_NOZORDER);
 		//_current->Move(rct.left, rct.top+_headerHeight, rct.right-rct.left, rct.bottom-rct.top-_headerHeight);
 	}
 	Update();
