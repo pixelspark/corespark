@@ -1,10 +1,11 @@
 #include "../include/tjshared.h"
 using namespace Gdiplus;
 
-TabWnd::TabWnd(HWND parent): ChildWnd(L"TabWnd", parent) {
+TabWnd::TabWnd(HWND parent, RootWnd* root): ChildWnd(L"TabWnd", parent) {
 	SetStyle(WS_CLIPCHILDREN|WS_CLIPSIBLINGS);
 	_headerHeight = defaultHeaderHeight;
 	_hotkey = L'O';
+	_root = root;
 	Show(true);
 }
 
@@ -54,6 +55,11 @@ void TabWnd::Paint(Graphics& g) {
 		int idx = 0;
 		while(it!=_panes.end()) {
 			ref<Pane> pane = *it;
+			if(pane->_detached) {
+				it++;
+				continue;
+			}
+
 			RectF bound;
 			g.MeasureString(pane->_title.c_str(), (INT)pane->_title.length(), theme->GetGUIFontBold(), PointF(0.0f, 0.0f), &bound);				
 			
@@ -172,21 +178,6 @@ void TabWnd::RemovePane(ref<Wnd> wnd) {
 void TabWnd::SelectPane(unsigned int index) {
 	try {
 		ref<Pane> pane = _panes.at(index);
-		if(pane->_detached) {
-			HWND paneWnd = pane->_wnd->GetWindow();
-			
-			int style = GetWindowLong(paneWnd, GWL_STYLE);
-
-			if((style&WS_VISIBLE)!=0) {
-				HWND panel = ::GetParent(paneWnd);
-				SetForegroundWindow(panel);
-				_current = 0;
-				return;
-			}
-			else {
-				pane->SetDetached(false,this);
-			}
-		}
 
 		if(_current) {
 			_current->_wnd->Show(false);
@@ -230,6 +221,11 @@ LRESULT TabWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 
 		while(it!=_panes.end()) {
 			ref<Pane> pane = *it;
+			if(pane->_detached) {
+				it++;
+				idx++;
+				continue;
+			}
 			RectF bound;
 			g.MeasureString(pane->_title.c_str(), (INT)pane->_title.length(), theme->GetGUIFontBold(), PointF(0.0f, 0.0f), &bound);				
 			left += int(bound.Width) + 4;
@@ -240,11 +236,69 @@ LRESULT TabWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 				}
 				else {
 					SetDraggingPane(pane);
+					_dragStartX = GET_X_LPARAM(lp);
+					_dragStartY = GET_Y_LPARAM(lp);
 				}
 				break;
 			}
 			idx++;
 			it++;
+		}
+
+		if(_dragging) {
+			if(msg==WM_LBUTTONDOWN) {
+				SetCapture(_wnd);
+			}
+		}
+		else {
+			ReleaseCapture();
+		}
+	}
+	else if(msg==WM_MOUSEMOVE) {
+		if(_dragging && ISVKKEYDOWN(VK_LBUTTON)) {
+			// we're dragging a tab
+			int dx = abs(_dragStartX - GET_X_LPARAM(lp));
+			int dy = abs(_dragStartY - GET_Y_LPARAM(lp));
+			
+			if(dy < TearOffLimit && dx > TearOffLimit ) {
+				// only move tabs
+				try {
+					std::vector< ref<Pane> >::iterator it = std::find(_panes.begin(), _panes.end(), _dragging);
+					if(it!=_panes.end() && it!=_panes.begin()) {
+						dx = GET_X_LPARAM(lp) - _dragStartX;
+						if(dx<0) {
+							std::vector< ref<Pane> >::iterator leftNeighbour = it-1;
+							if(leftNeighbour!=_panes.end()) {
+								ref<Pane> left = *leftNeighbour;
+								*leftNeighbour = *it;
+								*it = left;
+							}
+						}
+						else {
+							std::vector< ref<Pane> >::iterator rightNeighbour = it+1;
+							if(rightNeighbour!=_panes.end()) {
+								ref<Pane> right = *rightNeighbour;
+								*rightNeighbour = *it;
+								*it = right;
+							}
+						}
+					}
+					else {
+						Log::Write(L"TJShared/Tab", L"Could not find the tab pane you're dragging");
+					}
+				}
+				catch(...) {
+					_dragging = 0;
+				}
+
+				_dragStartX = GET_X_LPARAM(lp);
+				_dragStartY = GET_Y_LPARAM(lp);
+			}
+			else if(dy > TearOffLimit) {
+				Detach(_dragging);
+				_dragging = 0;
+			}
+			Update();
 		}
 	}
 	else if(msg==WM_CONTEXTMENU) {
@@ -269,12 +323,35 @@ void TabWnd::DoContextMenu(int x, int y) {
 		switch(context.DoContextMenu(_wnd, x+rc.left, y)) {
 			case cmdDetach:
 				_current = 0;
-				pane->SetDetached(true,this);
+				Detach(pane);
 				break;
 		}
 		
 		Update();
 	}
+}
+
+void TabWnd::Detach(ref<Pane> p) {
+	std::vector< ref<Pane> >::iterator it = _panes.begin();
+	while(it!=_panes.end()) {
+		if(*it == p) {
+			_panes.erase(it);
+			break;
+		}
+		it++;
+	}
+
+	if(p==_current) {
+		_current = 0;
+	}
+	_root->AddFloatingPane(p, this);
+	Update();
+}
+
+void TabWnd::Attach(ref<Pane> p) {
+	AddPane(p);
+	SetParent(p->GetWindow()->GetWindow(), _wnd);
+	Update();
 }
 
 ref<Pane> TabWnd::GetPaneAt(int x) {
@@ -290,6 +367,11 @@ ref<Pane> TabWnd::GetPaneAt(int x) {
 
 	while(it!=_panes.end()) {
 		ref<Pane> pane = *it;
+		if(pane->_detached) {
+			it++;
+			idx++;
+			continue;
+		}
 		RectF bound;
 		g.MeasureString(pane->_title.c_str(), (INT)pane->_title.length(), theme->GetGUIFontBold(), PointF(0.0f, 0.0f), &bound);				
 		left += int(bound.Width) + 4;
@@ -303,105 +385,18 @@ ref<Pane> TabWnd::GetPaneAt(int x) {
 	return ref<Pane>(0);
 }
 
-Pane::Pane(std::wstring title, ref<Wnd> window, bool detached) {
-	_title = title;
-	_wnd = window;
-	_detached = detached;
-}
-
-void Pane::SetDetached(bool d, TabWnd* tab) {
-	assert(_wnd);
-	assert(tab!=0);
-	if(!d) {
-		SetParent(_wnd->GetWindow(),tab->GetWindow());
-		//_wnd->Show(true);
-		_wnd->Update();
-		UpdateWindow(_wnd->GetWindow());
-	}
-	else {
-		// Create holder window
-		HWND parent = 0L;
-		RECT tabrc;
-		GetWindowRect(tab->GetWindow(), &tabrc);
-
-		HWND panel = CreateWindowEx(WS_EX_PALETTEWINDOW, TJ_TAB_PANEL_CLASS_NAME, L"Panel", WS_OVERLAPPEDWINDOW,  tabrc.left+30, tabrc.top+30, tabrc.right-tabrc.left, tabrc.bottom-tabrc.top, parent, 0L, GetModuleHandle(NULL), 0L);
-		SetWindowText(panel, _title.c_str());
-		HWND window = _wnd->GetWindow();
-		SetParent(window,panel);
-
-		SendMessage(panel, WM_SIZE, 0,0);
-		ShowWindow(panel, SW_SHOW);
-	}
-	_detached = d;
-}
-
-ref<Wnd> Pane::GetWindow() {
-	return _wnd;
-}
-
-LRESULT CALLBACK TabPanelWndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) {
-	if(msg==WM_CREATE) {
-		return 1;
-	}
-	else if(msg==WM_CLOSE) {
-		HWND child = GetWindow(wnd, GW_CHILD);
-		if(child!=0) {
-			// hide it somewhere so it won't be destroyed and TabWnd can pick it back up
-			ShowWindow(child, SW_HIDE);
-			SetParent(child,0L);
+bool TabWnd::RevealWindow(ref<Wnd> w) {
+	std::vector< ref<Pane> >::iterator it = _panes.begin();
+	int idx = 0;
+	while(it!=_panes.end()) {
+		ref<Pane> p = *it;
+		if(p->GetWindow() == w) {
+			SelectPane(idx);
+			return true;
 		}
-		DestroyWindow(wnd);
-		return 0;
-	}
-	else if(msg==WM_SIZE) {
-		// update size of child window
-		HWND child = GetWindow(wnd, GW_CHILD);
-		if(child!=0) {
-			RECT r;
-			GetClientRect(wnd, &r);
-			SetWindowPos(child, 0, 0,0, r.right-r.left, r.bottom-r.top, SWP_NOZORDER);
-		}
-	}
-	else if(msg==WM_KEYDOWN) {
-		if(wp==VK_ESCAPE) {
-			SetWindowLong(wnd, GWL_STYLE, WS_OVERLAPPEDWINDOW|WS_VISIBLE);
-			UpdateWindow(wnd);
-			SetWindowPos(wnd, 0L, 100, 100, 640, 480, SWP_NOZORDER);
-		}
-	}
-	else if(msg==WM_CONTEXTMENU) {
-		int style = GetWindowLong(wnd, GWL_STYLE);
-		int command = 0;
-		enum {cmdNothing = 0, cmdExit, cmdEnter};
-		ContextMenu men;
-
-		if((style & WS_POPUP) >0) {
-			// we're fullscreen
-			men.AddItem(TL(leave_full_screen), cmdExit, true);
-		}
-		else {
-			men.AddItem(TL(enter_full_screen), cmdEnter, true);
-		}
-
-		command = men.DoContextMenu(wnd, GET_X_LPARAM(lp), GET_Y_LPARAM(lp), false);
-		if(command==cmdEnter) {
-			SetWindowLong(wnd, GWL_STYLE, WS_POPUP|WS_VISIBLE);
-			RECT rect;
-			GetWindowRect(wnd,&rect);
-			HMONITOR mon = MonitorFromRect(&rect, MONITOR_DEFAULTTONEAREST);
-
-			MONITORINFO mi;
-			mi.cbSize = sizeof(mi);
-			GetMonitorInfo(mon, &mi);
-
-			SetWindowPos(wnd,0,mi.rcMonitor.left,mi.rcMonitor.top,mi.rcMonitor.right-mi.rcMonitor.left,mi.rcMonitor.bottom-mi.rcMonitor.top,SWP_NOZORDER);
-		}
-		else if(command==cmdExit) {
-			SetWindowLong(wnd, GWL_STYLE, WS_OVERLAPPEDWINDOW|WS_VISIBLE);
-			UpdateWindow(wnd);
-			SetWindowPos(wnd, 0L, 100, 100, 640, 480, SWP_NOZORDER);
-		}
+		idx++;
+		it++;
 	}
 
-	return DefWindowProc(wnd, msg, wp, lp);
+	return false;
 }

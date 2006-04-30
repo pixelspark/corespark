@@ -11,6 +11,7 @@ class EXPORTED ResourceManager {
 
 		/** Returns a full path to the specified resource.**/
 		std::wstring Get(std::wstring identifier);
+		void AddSearchPath(std::wstring path);
 
 	protected:
 		ResourceManager();

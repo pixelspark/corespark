@@ -14,7 +14,13 @@ ResourceManager::ResourceManager() {
 ResourceManager::~ResourceManager() {
 }
 
+void ResourceManager::AddSearchPath(std::wstring path) {
+	Log::Write(L"TJShared/ResourceManager", std::wstring(L"Added path to search path list: ")+path);
+	_paths.push_back(path);
+}
+
 std::wstring ResourceManager::Get(std::wstring ident) {
+	Log::Write(L"TJShared/ResourceManager", ident);
 	std::vector<std::wstring>::iterator it = _paths.begin();
 	while(it!=_paths.end()) {
 		std::wstring path = *it + L"\\"+ident;

@@ -4,24 +4,9 @@
 #pragma warning(push)
 #pragma warning(disable: 4251)
 
-class EXPORTED Pane {
-	friend class TabWnd;
-
-	public:
-		Pane(std::wstring, ref<Wnd>, bool);
-		void SetDetached(bool d, TabWnd* tab);
-		ref<Wnd> GetWindow();
-
-	protected:
-		std::wstring _title;
-		ref<Wnd> _wnd;
-		bool _detached;
-		bool _fullscreen;
-};
-
 class EXPORTED TabWnd: public ChildWnd {
 	public:
-		TabWnd(HWND parent);
+		TabWnd(HWND parent, RootWnd* root);
 		virtual ~TabWnd();
 		virtual wchar_t GetPreferredHotkey();
 		void SetHotkey(wchar_t hotkey);
@@ -41,6 +26,9 @@ class EXPORTED TabWnd: public ChildWnd {
 		void Rename(ref<Wnd> pane, std::wstring name);
 		ref<Wnd> GetCurrentPane();
 		ref<Pane> GetPaneAt(int x);
+		void Detach(ref<Pane> p);
+		void Attach(ref<Pane> p);
+		bool RevealWindow(ref<Wnd> w);
 	
 	protected:
 		void SetDraggingPane(ref<Pane> pane);
@@ -50,8 +38,11 @@ class EXPORTED TabWnd: public ChildWnd {
 		std::vector< ref<Pane> > _panes;
 		ref<Pane> _current;
 		ref<Pane> _dragging;
+		RootWnd* _root;
 		int _headerHeight;
+		int _dragStartX, _dragStartY;
 
+		const static int TearOffLimit = 15;
 		enum {defaultHeaderHeight = 21};
 };
 

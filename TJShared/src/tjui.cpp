@@ -283,12 +283,6 @@ void Wnd::RegisterClasses() {
 		Throw(L"Could not register class", ExceptionTypeError);
 	}
 
-	wc.lpszClassName = TJ_TAB_PANEL_CLASS_NAME;
-	wc.lpfnWndProc = TabPanelWndProc;
-	if(!RegisterClassEx(&wc)) {
-		Throw(L"Could not register class", ExceptionTypeError);
-	}
-
 	_classesRegistered = true;
 }
 

@@ -18,9 +18,9 @@ class EXPORTED GraphicsInit {
 		virtual ~GraphicsInit();
 };
 
-LRESULT CALLBACK TabPanelWndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
-
 class EXPORTED Wnd {
+	friend class FloatingPane;
+
 	public:
 		Wnd(const wchar_t* title, HWND parent=0, const wchar_t* className=TJ_DEFAULT_CLASS_NAME,  bool useDoubleBuffering=true);
 		virtual ~Wnd();

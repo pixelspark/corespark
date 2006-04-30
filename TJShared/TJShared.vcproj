@@ -381,6 +381,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\tjpane.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\tjresourcemgr.cpp"
 				>
 			</File>
@@ -480,6 +484,10 @@
 			</File>
 			<File
 				RelativePath=".\include\tjlogger.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tjpane.h"
 				>
 			</File>
 			<File
