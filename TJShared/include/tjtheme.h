@@ -40,6 +40,8 @@ class EXPORTED Theme {
 		virtual Gdiplus::Color GetDisabledOverlayColor() const;
 		virtual Gdiplus::Color GetCommandMarkerColor() const;
 
+		static Gdiplus::Color ChangeAlpha(Gdiplus::Color col, int a);
+
 		enum {
 			SliderNormal = 0,
 			SliderSubmix,

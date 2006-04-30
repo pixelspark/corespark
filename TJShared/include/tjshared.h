@@ -45,6 +45,7 @@
 #include "tjlog.h"
 #include "tjsplitter.h"
 #include "tjtab.h"
+#include "tjrootwnd.h"
 #include "tjslider.h"
 #include "tjresourcemgr.h"
 #include "tjtooltip.h" 

@@ -16,6 +16,10 @@ Theme::~Theme() {
 	delete _fontSmall;
 }
 
+Gdiplus::Color Theme::ChangeAlpha(Gdiplus::Color col, int a) {
+	return Gdiplus::Color(a, col.GetR(), col.GetG(), col.GetB());
+}
+
 Gdiplus::Font* Theme::GetGUIFontBold() const {
 	if(_fontBold==0) {
 		_fontBold = new Font(L"Tahoma", 11, FontStyleBold, UnitPixel, 0);

@@ -12,17 +12,21 @@ TabWnd::~TabWnd() {
 }
 
 void TabWnd::Rename(ref<Wnd> wnd, std::wstring name) {
-	Log::Write(L"TJShared/Tab", std::wstring(L"rename to ")+name);
-	std::vector<Pane>::iterator it = _panes.begin();
+	std::vector< ref<Pane> >::iterator it = _panes.begin();
 	while(it!=_panes.end()) {
-		Pane& p = *it;
-		if(p._wnd ==wnd) {
-			p._title = name;
+		ref<Pane> p = *it;
+		if(p->_wnd ==wnd) {
+			p->_title = name;
 			Update();
 			return;
 		}
 		it++;
 	}
+}
+
+void TabWnd::SetDraggingPane(ref<Pane> pane) {
+	_dragging = pane;
+	Update();
 }
 
 void TabWnd::Paint(Graphics& g) {
@@ -44,23 +48,33 @@ void TabWnd::Paint(Graphics& g) {
 		//g.SetSmoothingMode(SmoothingModeHighQuality);
 		//g.SetCompositingQuality(CompositingQualityHighQuality);
 
-		std::vector< Pane >::iterator it = _panes.begin();
+		std::vector< ref<Pane> >::iterator it = _panes.begin();
 		SolidBrush textBrush = theme->GetTextColor();
 		int left = 0;
 		int idx = 0;
 		while(it!=_panes.end()) {
-			Pane& pane = *it;
+			ref<Pane> pane = *it;
 			RectF bound;
-			g.MeasureString(pane._title.c_str(), (INT)pane._title.length(), theme->GetGUIFontBold(), PointF(0.0f, 0.0f), &bound);				
+			g.MeasureString(pane->_title.c_str(), (INT)pane->_title.length(), theme->GetGUIFontBold(), PointF(0.0f, 0.0f), &bound);				
 			
-			if(pane._wnd==_current) {
+			if(pane==_current) {
 				LinearGradientBrush lbr(PointF(0.0f, 0.0f), PointF(0.0f, float(_headerHeight)), theme->GetActiveStartColor(), theme->GetActiveEndColor());
 				g.FillRectangle(&lbr, RectF(float(left+1), 2.0f, float(bound.Width+2), float(_headerHeight)));
 				SolidBrush backBrush(theme->GetBackgroundColor());
 				g.FillRectangle(&backBrush, RectF(float(left+2), 3.0f, float(bound.Width), float(_headerHeight)));
 			}
+			
+			if(pane==_dragging) {
+				Color tstart = theme->GetActiveStartColor();
+				Color tend = theme->GetActiveEndColor();
+				Color start(80, tstart.GetR(), tstart.GetG(), tstart.GetB());
+				Color end(80, tend.GetR(), tend.GetG(), tend.GetB());
 
-			g.DrawString(pane._title.c_str(), (INT)pane._title.length(), theme->GetGUIFontBold(), PointF(float(left+2), 3.0f), &textBrush);
+				LinearGradientBrush lbr(PointF(0.0f, 0.0f), PointF(0.0f, float(_headerHeight)), start, end);
+				g.FillRectangle(&lbr, RectF(float(left+1), 2.0f, float(bound.Width+2), float(_headerHeight)));
+			}
+
+			g.DrawString(pane->_title.c_str(), (INT)pane->_title.length(), theme->GetGUIFontBold(), PointF(float(left+2), 3.0f), &textBrush);
 
 			left += int(bound.Width) + 4;
 			it++;
@@ -74,12 +88,12 @@ void TabWnd::SetHotkey(wchar_t key) {
 }
 
 ref<Wnd> TabWnd::GetCurrentPane() {
-	return _current;
+	return _current->_wnd;
 }
 
 wchar_t TabWnd::GetPreferredHotkey() {
 	if(_current) {
-		return _current->GetPreferredHotkey();
+		return _current->_wnd->GetPreferredHotkey();
 	}
 	return L'\0';
 }
@@ -90,13 +104,13 @@ void TabWnd::Clear() {
 
 void TabWnd::LeaveHotkeyMode(wchar_t key) {
 	if(_current) {
-		_current->LeaveHotkeyMode(key);
+		_current->_wnd->LeaveHotkeyMode(key);
 	}
 }
 
 void TabWnd::EnterHotkeyMode() {
 	if(_current) {
-		_current->EnterHotkeyMode();
+		_current->_wnd->EnterHotkeyMode();
 	}
 }
 
@@ -107,12 +121,35 @@ bool TabWnd::IsInHotkeyMode() {
 }
 
 
-void TabWnd::AddPane(std::wstring name, ref<Wnd> wnd) {
+ref<Pane> TabWnd::AddPane(std::wstring name, ref<Wnd> wnd) {
 	assert(wnd);
 	wnd->Show(false);
-	_panes.push_back(Pane(name,wnd,false));
+	ref<Pane> pane = GC::Hold(new Pane(name,wnd,false));
+	_panes.push_back(pane);
 	if(_panes.size()==1) {
 		SelectPane(0);
+	}
+
+	return pane;
+}
+
+ref<Pane> TabWnd::AddPane(ref<Pane> pane) {
+	assert(pane);
+	pane->_wnd->Show(false);
+	_panes.push_back(pane);
+	if(_panes.size()==1) {
+		SelectPane(0);
+	}
+
+	return pane;
+}
+
+ref<Pane> TabWnd::GetPane(int index) {
+	try {
+		return _panes.at(index);
+	}
+	catch(...) {
+		return 0;
 	}
 }
 
@@ -120,9 +157,10 @@ void TabWnd::RemovePane(ref<Wnd> wnd) {
 	assert(wnd);
 
 	wnd->Show(false);
-	std::vector< TabWnd::Pane >::iterator it = _panes.begin();
+	std::vector< ref<Pane> >::iterator it = _panes.begin();
 	while(it!=_panes.end()) {
-		if(it->_wnd == wnd) {
+		ref<Pane> pane = *it;
+		if(pane->_wnd == wnd) {
 			_panes.erase(it);
 			return;
 		}
@@ -133,9 +171,9 @@ void TabWnd::RemovePane(ref<Wnd> wnd) {
 
 void TabWnd::SelectPane(unsigned int index) {
 	try {
-		Pane& pane = _panes.at(index);
-		if(pane._detached) {
-			HWND paneWnd = pane._wnd->GetWindow();
+		ref<Pane> pane = _panes.at(index);
+		if(pane->_detached) {
+			HWND paneWnd = pane->_wnd->GetWindow();
 			
 			int style = GetWindowLong(paneWnd, GWL_STYLE);
 
@@ -146,15 +184,15 @@ void TabWnd::SelectPane(unsigned int index) {
 				return;
 			}
 			else {
-				pane.SetDetached(false,this);
+				pane->SetDetached(false,this);
 			}
 		}
 
 		if(_current) {
-			_current->Show(false);
+			_current->_wnd->Show(false);
 		}
-		pane._wnd->Show(true);
-		_current = pane._wnd;
+		pane->_wnd->Show(true);
+		_current = pane;
 	}
 	catch(...) {
 	}
@@ -170,7 +208,7 @@ void TabWnd::Layout() {
 	if(_current) {
 		RECT rct;
 		GetClientRect(_wnd, &rct);
-		SetWindowPos(_current->GetWindow(), 0, 2,rct.top+_headerHeight,rct.right-rct.left-3,rct.bottom-rct.top-_headerHeight-1, SWP_NOZORDER);
+		SetWindowPos(_current->_wnd->GetWindow(), 0, 2,rct.top+_headerHeight,rct.right-rct.left-3,rct.bottom-rct.top-_headerHeight-1, SWP_NOZORDER);
 		//_current->Move(rct.left, rct.top+_headerHeight, rct.right-rct.left, rct.bottom-rct.top-_headerHeight);
 	}
 	Update();
@@ -180,10 +218,10 @@ LRESULT TabWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	if(msg==WM_SIZE) {
 		Layout();
 	}
-	else if(msg==WM_LBUTTONDOWN) {
+	else if(msg==WM_LBUTTONUP || msg==WM_LBUTTONDOWN) {
 		int x = GET_X_LPARAM(lp);
 
-		std::vector< Pane >::iterator it = _panes.begin();
+		std::vector< ref<Pane> >::iterator it = _panes.begin();
 		unsigned int idx = 0; 
 		int left = 0;
 		Graphics g(_wnd);
@@ -191,12 +229,18 @@ LRESULT TabWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		ref<Theme> theme = ThemeManager::GetTheme();
 
 		while(it!=_panes.end()) {
-			Pane& pane = *it;
+			ref<Pane> pane = *it;
 			RectF bound;
-			g.MeasureString(pane._title.c_str(), (INT)pane._title.length(), theme->GetGUIFontBold(), PointF(0.0f, 0.0f), &bound);				
+			g.MeasureString(pane->_title.c_str(), (INT)pane->_title.length(), theme->GetGUIFontBold(), PointF(0.0f, 0.0f), &bound);				
 			left += int(bound.Width) + 4;
 			if(x<left) {
-				SelectPane(idx);
+				if(msg==WM_LBUTTONUP) {
+					SelectPane(idx);
+					_dragging = 0;
+				}
+				else {
+					SetDraggingPane(pane);
+				}
 				break;
 			}
 			idx++;
@@ -214,48 +258,58 @@ LRESULT TabWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 }
 
 void TabWnd::DoContextMenu(int x, int y) {
-	std::vector< Pane >::iterator it = _panes.begin();
+	RECT rc;
+	GetClientRect(_wnd, &rc);
+	ref<Pane> pane = GetPaneAt(x);
+
+	if(pane) {
+		enum {cmdDetach=1,cmdFullScreen};
+		ContextMenu context;
+		context.AddItem(TL(detach_tab), cmdDetach, true);
+		switch(context.DoContextMenu(_wnd, x+rc.left, y)) {
+			case cmdDetach:
+				_current = 0;
+				pane->SetDetached(true,this);
+				break;
+		}
+		
+		Update();
+	}
+}
+
+ref<Pane> TabWnd::GetPaneAt(int x) {
+	std::vector< ref<Pane> >::iterator it = _panes.begin();
 	unsigned int idx = 0; 
 	int left = 0;
 	Graphics g(_wnd);
 	ref<Theme> theme = ThemeManager::GetTheme();
-	
+
 	RECT rc;
 	GetWindowRect(_wnd, &rc);
 	x -= rc.left;
 
-
 	while(it!=_panes.end()) {
-		Pane& pane = *it;
+		ref<Pane> pane = *it;
 		RectF bound;
-		g.MeasureString(pane._title.c_str(), (INT)pane._title.length(), theme->GetGUIFontBold(), PointF(0.0f, 0.0f), &bound);				
+		g.MeasureString(pane->_title.c_str(), (INT)pane->_title.length(), theme->GetGUIFontBold(), PointF(0.0f, 0.0f), &bound);				
 		left += int(bound.Width) + 4;
 		if(x<left) {
-			enum {cmdDetach=1,cmdFullScreen};
-			ContextMenu context;
-			context.AddItem(TL(detach_tab), cmdDetach, true);
-			switch(context.DoContextMenu(_wnd, x+rc.left, y)) {
-				case cmdDetach:
-					_current = 0;
-					pane.SetDetached(true,this);
-					break;
-			}
-			
-			Update();
-			return;
+			return pane;
 		}
 		idx++;
 		it++;
 	}
+
+	return ref<Pane>(0);
 }
 
-TabWnd::Pane::Pane(std::wstring title, ref<Wnd> window, bool detached) {
+Pane::Pane(std::wstring title, ref<Wnd> window, bool detached) {
 	_title = title;
 	_wnd = window;
 	_detached = detached;
 }
 
-void TabWnd::Pane::SetDetached(bool d, TabWnd* tab) {
+void Pane::SetDetached(bool d, TabWnd* tab) {
 	assert(_wnd);
 	assert(tab!=0);
 	if(!d) {
@@ -279,6 +333,10 @@ void TabWnd::Pane::SetDetached(bool d, TabWnd* tab) {
 		ShowWindow(panel, SW_SHOW);
 	}
 	_detached = d;
+}
+
+ref<Wnd> Pane::GetWindow() {
+	return _wnd;
 }
 
 LRESULT CALLBACK TabPanelWndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) {
