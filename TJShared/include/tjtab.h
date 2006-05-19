@@ -5,6 +5,8 @@
 #pragma warning(disable: 4251)
 
 class EXPORTED TabWnd: public ChildWnd {
+	friend class FloatingPane;
+
 	public:
 		TabWnd(HWND parent, RootWnd* root);
 		virtual ~TabWnd();

@@ -23,7 +23,7 @@ FloatingPane::FloatingPane(RootWnd* rw, ref<Pane> p, TabWnd* source): Wnd(L"Floa
 	ref<Wnd> paneWnd = _pane->GetWindow();
 	RECT sz;
 	GetWindowRect(paneWnd->GetWindow(), &sz);
-	SetWindowPos(_wnd, 0, sz.left+25, sz.top+25, sz.right-sz.left, sz.bottom-sz.top, SWP_NOZORDER);
+	SetWindowPos(_wnd, 0, sz.left+TabWnd::TearOffLimit, sz.top+TabWnd::TearOffLimit, sz.right-sz.left, sz.bottom-sz.top, SWP_NOZORDER);
 	SetParent(paneWnd->GetWindow(), _wnd);
 
 	// set window title

@@ -24,6 +24,7 @@
 #include <vector>
 
 #include "tjutil.h"
+#include "tjflags.h"
 #include "tjrange.h"
 #include "tjthread.h"
 #include "tjcriticalsection.h"

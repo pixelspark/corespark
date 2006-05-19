@@ -19,6 +19,7 @@ int ContextMenu::DoContextMenu(HWND window, int x, int y, bool correct) {
 	return TrackPopupMenu(_menu, TPM_RETURNCMD|TPM_TOPALIGN|TPM_VERPOSANIMATION, x,y, 0, window, 0);
 }
 
+/** if command == -1, then the item will be grayed out/disabled **/
 void ContextMenu::AddItem(std::wstring name, int command, bool hilite, bool radiocheck) {
 	MENUITEMINFO mif;
 	memset(&mif, 0, sizeof(MENUITEMINFO));
@@ -28,7 +29,7 @@ void ContextMenu::AddItem(std::wstring name, int command, bool hilite, bool radi
 
 	mif.wID = command;
 	mif.fType = MFT_STRING | (radiocheck?MFT_RADIOCHECK:0);
-	mif.fState = MFS_ENABLED | (hilite?MFS_DEFAULT:0)| (radiocheck?MFS_CHECKED:0);
+	mif.fState = (command==-1?MFS_DISABLED:MFS_ENABLED) | (hilite?MFS_DEFAULT:0)| (radiocheck?MFS_CHECKED:0);
 	mif.dwTypeData = (LPWSTR)name.c_str();
 	mif.cch = (UINT)name.length();
 	InsertMenuItem(_menu, _index, TRUE, &mif);

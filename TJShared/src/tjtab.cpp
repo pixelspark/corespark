@@ -201,6 +201,14 @@ void TabWnd::Layout() {
 		GetClientRect(_wnd, &rct);
 		SetWindowPos(_current->_wnd->GetWindow(), 0, 2,rct.top+_headerHeight,rct.right-rct.left-3,rct.bottom-rct.top-_headerHeight-1, SWP_NOZORDER);
 		//_current->Move(rct.left, rct.top+_headerHeight, rct.right-rct.left, rct.bottom-rct.top-_headerHeight);
+	
+		std::vector< ref<Pane> >::iterator it = _panes.begin();
+		while(it!=_panes.end()) {
+			ref<Pane> pane = *it;
+			SetWindowPos(pane->_wnd->GetWindow(), 0, 2,rct.top+_headerHeight,rct.right-rct.left-3,rct.bottom-rct.top-_headerHeight-1, SWP_NOZORDER|SWP_NOREDRAW|SWP_NOACTIVATE);
+		
+			it++;
+		}
 	}
 	Update();
 }
@@ -344,7 +352,9 @@ void TabWnd::Detach(ref<Pane> p) {
 	if(p==_current) {
 		_current = 0;
 	}
-	_root->AddFloatingPane(p, this);
+	ref<FloatingPane> fp = _root->AddFloatingPane(p, this);
+	ReleaseCapture();
+	SendMessage(fp->GetWindow(), WM_NCLBUTTONDOWN, HTCAPTION, 0);
 	Update();
 }
 

@@ -57,7 +57,12 @@ void ThemeManager::SelectTheme(ref<Theme> th) {
 }
 
 void ThemeManager::SelectTheme(int n) {
-	_theme = _themes.at(n);
+	try {
+		_theme = _themes.at(n);
+	}
+	catch(...) {
+		// n out of range
+	}
 }
 
 bool ThemeManager::IsFriendlyTime() {
