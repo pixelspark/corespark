@@ -88,7 +88,7 @@ void SliderWnd::Paint(Graphics& g) {
 
 	// middle rectangle, 6 pixels wide
 	rect.top += 5;
-	rect.bottom -= 60;
+	rect.bottom -= 30;
 	if(!_showValue) rect.bottom += 15;
 	LinearGradientBrush br(PointF(0.0f, float(rect.top-10)), PointF(0.0f, float(rect.bottom-rect.top+15)), colorStart, colorEnd);
 	Pen pn(&br, 1.0f);
@@ -158,7 +158,7 @@ LRESULT SliderWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 			RECT rc;
 			GetClientRect(_wnd, &rc);
 			rc.top += 5;
-			rc.bottom -= 60;
+			rc.bottom -= 30;
 			if(!_showValue) rc.bottom += 15;
 
 			y -= rc.top;

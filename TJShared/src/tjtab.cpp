@@ -35,15 +35,25 @@ void TabWnd::Paint(Graphics& g) {
 		RECT rect;
 		GetClientRect(_wnd, &rect);
 		ref<Theme> theme = ThemeManager::GetTheme();
-		SolidBrush br(theme->GetTimeBackgroundColor());
-
-		g.FillRectangle(&br, Rect(rect.left, rect.top, rect.right, _current?_headerHeight:(rect.bottom-rect.top)));
+		
+		// draw application background
+		HWND root = GetAncestor(_wnd, GA_ROOT);
+		Gdiplus::Brush* abr = theme->GetApplicationBackgroundBrush(root, _wnd);
+		if(abr!=0) {
+			g.FillRectangle(abr, Rect(rect.left, rect.top, rect.right, _current?_headerHeight:(rect.bottom-rect.top)));
+			Pen back(abr, 2.0f);
+			g.DrawRectangle(&back, RectF(0.0f, float(_headerHeight), float(rect.right-rect.left-1), float(rect.bottom-rect.top-_headerHeight+1)));
+		
+			delete abr;
+		}
+		else {
+			SolidBrush br(theme->GetTimeBackgroundColor());
+			g.FillRectangle(&br, Rect(rect.left, rect.top, rect.right, _current?_headerHeight:(rect.bottom-rect.top)));
+		}
 		
 		g.SetSmoothingMode(SmoothingModeDefault);
 		g.SetCompositingQuality(CompositingQualityDefault);
-		Pen back(theme->GetTimeBackgroundColor(), 2.0f);
-		g.DrawRectangle(&back, RectF(0.0f, float(_headerHeight), float(rect.right-rect.left-1), float(rect.bottom-rect.top-_headerHeight+1)));
-
+		
 		Pen border(theme->GetActiveEndColor(), 1.0f);
 		g.DrawRectangle(&border, RectF(1.0f, float(_headerHeight-1), float(rect.right-rect.left-2), float(rect.bottom-rect.top-_headerHeight)));
 		//g.SetSmoothingMode(SmoothingModeHighQuality);
@@ -70,11 +80,11 @@ void TabWnd::Paint(Graphics& g) {
 				g.FillRectangle(&backBrush, RectF(float(left+2), 3.0f, float(bound.Width), float(_headerHeight)));
 			}
 			
-			if(pane==_dragging) {
+			if((pane==_current && pane!=_dragging) || pane==_dragging) {
 				Color tstart = theme->GetActiveStartColor();
 				Color tend = theme->GetActiveEndColor();
-				Color start(80, tstart.GetR(), tstart.GetG(), tstart.GetB());
-				Color end(80, tend.GetR(), tend.GetG(), tend.GetB());
+				Color start(60, tstart.GetR(), tstart.GetG(), tstart.GetB());
+				Color end(60, tend.GetR(), tend.GetG(), tend.GetB());
 
 				LinearGradientBrush lbr(PointF(0.0f, 0.0f), PointF(0.0f, float(_headerHeight)), start, end);
 				g.FillRectangle(&lbr, RectF(float(left+1), 2.0f, float(bound.Width+2), float(_headerHeight)));

@@ -79,8 +79,25 @@ void SplitterWnd::Expand() {
 
 void SplitterWnd::Paint(Graphics& g) {
 	ref<Theme> theme = ThemeManager::GetTheme();
+	RECT rc;
+	GetClientRect(_wnd, &rc);
 
-	Color start, end;
+	HWND root = GetAncestor(_wnd, GA_ROOT);
+	Gdiplus::Brush* abr = theme->GetApplicationBackgroundBrush(root, _wnd);
+	if(abr!=0) {
+		if(_orientation==OrientationHorizontal) {
+			int bH = int(_ratio * (rc.bottom-rc.top)-(barHeight/2)); // top of the bar
+			g.FillRectangle(abr, 0,bH-2,rc.right-rc.left, barHeight+4);
+		}
+		else if(_orientation==OrientationVertical) {
+			int bH = int(_ratio * (rc.right-rc.left)-(barHeight/2)); // top of the bar
+			g.FillRectangle(abr, bH-2, 0, barHeight+4, rc.bottom-rc.top);
+		}
+
+		delete abr;
+	}
+
+	/*Color start, end;
 	if(_dragging) {
 		start = theme->GetActiveStartColor();
 		end = theme->GetActiveEndColor();
@@ -103,7 +120,9 @@ void SplitterWnd::Paint(Graphics& g) {
 
 		LinearGradientBrush br(PointF(REAL(bH-1),0),PointF(REAL(bH+barHeight+2),0), start,end);
 		g.FillRectangle(&br, bH-2, 0, barHeight+4, r.bottom-r.top);
-	}
+	}*/
+
+
 }
 
 LRESULT SplitterWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {

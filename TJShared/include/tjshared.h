@@ -51,6 +51,8 @@
 #include "tjslider.h"
 #include "tjresourcemgr.h"
 #include "tjtooltip.h" 
+#include "tjimagebutton.h"
+#include "tjedit.h"
 
 #pragma warning(push)
 #pragma warning(disable: 4251)

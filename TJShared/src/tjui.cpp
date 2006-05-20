@@ -595,7 +595,7 @@ LRESULT Wnd::PreMessage(UINT msg, WPARAM wp, LPARAM lp) {
 			if(_buffer==0 || int(_buffer->GetWidth()) < int(cw.right-cw.left) || int(_buffer->GetHeight()) < int(cw.bottom-cw.top)) {
 				delete _buffer;
 				_buffer = 0;
-				_buffer = new Bitmap(cw.right-cw.left+100, cw.bottom-cw.top+100); // +100 for buffer
+				_buffer = new Bitmap(cw.right-cw.left+100, cw.bottom-cw.top+100, &org); // +100 for buffer
 			}
 
 			{

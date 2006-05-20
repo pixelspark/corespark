@@ -147,6 +147,20 @@ Color Theme::GetDisabledOverlayColor() const {
 	return Color(200,0,0,0);
 }
 
+Brush* Theme::GetApplicationBackgroundBrush(HWND root, HWND child) const {
+	RECT rootrc, childrc;
+	GetWindowRect(root, &rootrc);
+	GetWindowRect(child, &childrc);
+
+	Gdiplus::LinearGradientBrush* lbr = new Gdiplus::LinearGradientBrush(PointF(0.0f, -float(childrc.top-rootrc.top)), PointF(0.0f,float(rootrc.bottom-rootrc.top)), Color(0,0,0), Color(50,50,50));
+	lbr->SetWrapMode(WrapModeClamp);
+	REAL factors[3] = {1.0f, 0.0f, 0.0f};
+	REAL positions[3] = {0.0f, 0.20f ,1.0f};
+	lbr->SetBlend(factors,positions, 3);
+
+	return lbr;
+}
+	
 // Bright theme
 
 BrightTheme::BrightTheme() {
@@ -220,5 +234,8 @@ Color BrightTheme::GetDisabledOverlayColor() const {
 	return Color(200,255,255,255);
 }
 
-
 std::wstring BrightTheme::GetName() const { return std::wstring(L"Licht"); }
+
+Brush* BrightTheme::GetApplicationBackgroundBrush(HWND root, HWND child) const {
+	return new SolidBrush(GetTimeBackgroundColor());
+}

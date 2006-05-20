@@ -365,11 +365,23 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\tjedit.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\tjexception.cpp"
 				>
 			</File>
 			<File
+				RelativePath=".\src\tjimagebutton.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\tjlanguage.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\tjlistener.cpp"
 				>
 			</File>
 			<File
@@ -467,11 +479,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\include\tjedit.h"
+				>
+			</File>
+			<File
 				RelativePath=".\include\tjexception.h"
 				>
 			</File>
 			<File
 				RelativePath=".\include\tjflags.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tjimagebutton.h"
 				>
 			</File>
 			<File
