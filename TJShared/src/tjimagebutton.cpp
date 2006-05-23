@@ -54,6 +54,8 @@ LRESULT ButtonWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	else if(msg==WM_LBUTTONDOWN) {
 		if(_listener) {
 			_listener->Notify(this, NotificationClick);
+			Repaint();
+			return 0;
 		}
 	}
 	else if(msg==WM_MOUSEMOVE) {

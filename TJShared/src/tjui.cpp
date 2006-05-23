@@ -671,6 +671,19 @@ LRESULT CALLBACK PropertyEditWndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) {
 	return CallWindowProc(wc.lpfnWndProc, wnd, msg, wp, lp);
 }
 
+std::wstring Wnd::GetText() {
+	int n = GetWindowTextLength(_wnd);
+	wchar_t* buffer = new wchar_t[n+2];
+	GetWindowText(_wnd, buffer, n+1);
+	std::wstring text = buffer;
+	delete[] buffer;
+	return text;
+}
+
+void Wnd::SetText(std::wstring text) {
+	SetWindowText(_wnd, text.c_str());
+}
+
 LRESULT CALLBACK PropertyEditNumericWndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) {
 	static int begin_y = -1;
 	static int begin_value = -1;

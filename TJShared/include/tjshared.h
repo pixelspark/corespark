@@ -72,7 +72,7 @@ class EXPORTED GC {
 		static std::map< void*, std::wstring> _objects;
 };
 
-template<typename T> ref< T> GC::Hold(T* x) {
+template<typename T> ref<T> GC::Hold(T* x) {
 	// get type information
 	std::string name = typeid(x).name();
 
@@ -81,7 +81,7 @@ template<typename T> ref< T> GC::Hold(T* x) {
 	AddLog((void*)x, std::wstring(buf));
 	delete[] buf;
 
-	Resource< T,Call<T> >* rs = new Resource<T, Call<T> >(x);
+	Resource<T>* rs = new Resource<T>(x);
 	return rs->Reference();
 }
 

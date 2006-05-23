@@ -14,12 +14,19 @@ class BadCastException: public Exception {
 		}
 };
 
-// T must be a pointer, like MyClass*
-template< typename T, class R=Call<T> > class ref;
+class NullPointerException: public Exception {
+	public:
+		NullPointerException(): Exception(L"A null pointer was dereferenced", ExceptionTypeError) {
+		}
+};
 
-template< typename T, class R=Call<T> > class Resource {
-	friend class ref<T,R>;
-	friend class Call<T>;
+// T must be a pointer, like MyClass*
+template<typename T> class ref;
+template<typename T> class weak;
+
+template< typename T > class Resource {
+	friend class ref<T>;
+	friend class weak<T>;
 	friend class GC;
 
 	public:
@@ -27,7 +34,7 @@ template< typename T, class R=Call<T> > class Resource {
 			if(_data==0) {
 				throw Exception(L"Resource deleted with null data", ExceptionTypeWarning);
 			}
-			if(_rc!=0) {
+			if((_rc+_weakrc)!=0) {
 					throw Exception(L"Resource deleted while still referenced!",ExceptionTypeWarning);
 			}
 
@@ -42,17 +49,31 @@ template< typename T, class R=Call<T> > class Resource {
 
 		inline void DeleteReference() {
 			InterlockedDecrement(&_rc);
-			if(_rc==0) {
+			if(_rc+_weakrc==0) {
+				delete this;
+			}
+			else if(_rc==0) {
+				Release();
+			}
+		}
+
+		inline void AddWeakReference() {
+			InterlockedIncrement(&_weakrc);
+		}
+
+		inline void DeleteWeakReference() {
+			InterlockedDecrement(&_weakrc);
+			if(_rc+_weakrc==0) {
 				delete this;
 			}
 		}
 
-		CriticalSection& GetLock() {
-			return _lock;
+		inline ref<T> Reference() {
+			return ref<T>(this);
 		}
 
-		inline ref<T,R> Reference() {
-			return ref<T,R>(this);
+		inline weak<T> WeakReference() {
+			return weak<T>(this);
 		}
 
 		inline T* GetData() { return _data; }
@@ -61,65 +82,39 @@ template< typename T, class R=Call<T> > class Resource {
 	protected:
 		Resource(T* x) { 
 			_rc = 0;
+			_weakrc = 0;
 			_data = x;
 			GC::IncrementLive(sizeof(T));
 		}
   
 		void Release() {
 			delete _data;
+			_data = 0;
 		}
 
-		long _rc;	
+		long _rc;
+		long _weakrc;
 };
 
-template<class T> class Call {
-	friend class ref<T,Call>;
+template<typename T> class ref {
+	friend class Resource<T>;
 
 	public:
-		inline Call(Resource<T,Call>* s) {
-			if(s==0) throw Exception(L"Null pointer exception", ExceptionTypeError);
-			_subject = s;
-			
-			s->AddReference();
-		}
-
-		inline ~Call() {
-			_subject->DeleteReference();
-			_subject = 0;
-		}
-
-		inline T* operator->() {
-			return dynamic_cast<T*>(_subject->_data);
-		}
-
-	protected:
-		Resource<T,Call>* _subject;
-
-		inline Call(const Call<T>& org) {
-			_subject = org._subject;
-			_subject->AddReference();
-		}
-};
-
-template<typename T, class R> class ref {
-	friend class Resource<T,R>;
-
-	public:
-		inline ref(Resource<T,R>* rx=0) {
+		inline ref(Resource<T>* rx=0) {
 			_res = rx;
 			if(_res!=0) {
 			_res->AddReference();
 			}
 		}
 
-		inline ref(const ref<T,R>& org) {
+		inline ref(const ref<T>& org) {
 			_res = org._res;
 			if(_res!=0) {
 				_res->AddReference();
 			}
 		} 
 
-		template<typename RT, class RR> inline ref(const ref<RT,RR>& org) {	
+		template<typename RT> inline ref(const ref<RT>& org) {	
 			if(org._res==0) {
 				_res = 0;
 			}
@@ -127,7 +122,7 @@ template<typename T, class R> class ref {
 				T* rt = dynamic_cast<T*>(org._res->_data);				
 				if(rt==0) throw BadCastException();
 
-				_res = reinterpret_cast<Resource<T,R>* >(org._res);
+				_res = reinterpret_cast<Resource<T>* >(org._res);
 				if(_res!=0) {
 					_res->AddReference();
 				}
@@ -140,8 +135,8 @@ template<typename T, class R> class ref {
 			_res = 0;
 		}
 
-		inline ref<T,R>& operator=(const ref<T,R>& o) {
-			Resource<T,R>* old = _res;
+		inline ref<T>& operator=(const ref<T>& o) {
+			Resource<T>* old = _res;
 			_res = o._res;
 
 			if(_res!=0) {
@@ -158,55 +153,143 @@ template<typename T, class R> class ref {
 			return dynamic_cast<T*>(_res->_data);
 		}
 
-		inline operator ref<const T,R>() {
-			return ref<const T,R>((res<const T,R>*)_res);
+		inline operator ref<const T>() {
+			return ref<const T>((res<const T>*)_res);
 		}
 
-		inline ref<const T, R> get_const() {
-			return ref<const T,R>((res<const T,R>*)_res);
+		inline ref<const T> get_const() {
+			return ref<const T>((res<const T>*)_res);
 		}
 
 		inline operator T&() {
+			if(_res->_data==0) throw NullPointerException();
 			return *(_res->_data);
 		}
 
-		inline R operator->() {
-			return R(_res);
+		inline T* operator->() {
+			if(_res->_data==0) throw NullPointerException();
+			return _res->_data;
 		}
 
 		inline operator bool() {
 			return _res!=0&&_res->_data!=0;
 		}
 
-		inline bool operator==(const ref<T,R>& r) {
+		inline bool operator==(const ref<T>& r) {
 			return (r._res==_res);
 		}
 
-		inline ref<T,R> Copy() {
-			if(_res==0) throw Exception("Tried to copy a null reference", ExceptionTypeError);
-			return _res->Reference();
-		}
-
-		inline bool IsNull() { return _res==0; }
-
-		template<typename TT, class RR> inline bool operator==(ref<TT,RR>& r) {
+		template<typename TT> inline bool operator==(ref<TT>& r) {
 			return (_res==r._res);
 		}
 
-		template<typename TT, class RR> inline bool operator!=(ref<TT,RR>& r) {
+		template<typename TT> inline bool operator!=(ref<TT>& r) {
 			return (_res!=r._res);
-		}
-
-		CriticalSection& GetLock() {
-			if(_res==0) throw Exception("Tried to lock a null resource", ExceptionTypeError);
-			return _res->GetLock();
 		}
 
 		template<class X> inline bool IsCastableTo() {
 			return dynamic_cast<X*>(_res->_data)!=0;	
 		}
 
-		Resource<T,R>* _res;
+		Resource<T>* _res;
+};
+
+template<typename T> class weak {
+	friend class Resource<T>;
+
+	public:
+		inline weak(Resource<T>* rx=0) {
+			_res = rx;
+			if(_res!=0) {
+			_res->AddWeakReference();
+			}
+		}
+
+		inline weak(const ref<T>& org) {
+			_res = org._res;
+			if(_res!=0) {
+				_res->AddWeakReference();
+			}
+		} 
+
+		template<typename RT> inline weak(const weak<RT>& org) {	
+			if(org._res==0) {
+				_res = 0;
+			}
+			else {
+				T* rt = dynamic_cast<T*>(org._res->_data);				
+				if(rt==0) throw BadCastException();
+
+				_res = reinterpret_cast<Resource<T>* >(org._res);
+				if(_res!=0) {
+					_res->AddReference();
+				}
+			}
+		}
+
+		inline ~weak() {
+			if(_res==0) return;
+			_res->DeleteWeakReference();
+			_res = 0;
+		}
+
+		inline ref<T>& operator=(const ref<T>& o) {
+			Resource<T>* old = _res;
+			_res = o._res;
+
+			if(_res!=0) {
+				_res->AddWeakReference();
+			}
+			if(old!=0) {
+				old->DeleteWeakReference();
+			}
+
+			return (*this);
+		}
+
+		inline T* GetPointer() {
+			return dynamic_cast<T*>(_res->_data);
+		}
+
+		inline operator weak<const T>() {
+			return weak<const T>((res<const T>*)_res);
+		}
+
+		inline weak<const T> get_const() {
+			return weak<const T>((res<const T>*)_res);
+		}
+
+		inline operator T&() {
+			if(_res->_data==0) throw NullPointerException();
+			return *(_res->_data);
+		}
+
+		inline T* operator->() {
+			if(_res->_data==0) throw NullPointerException();
+			return _res->_data;
+		}
+
+		inline operator bool() {
+			return _res!=0&&_res->_data!=0;
+		}
+
+		inline bool operator==(const ref<T>& r) {
+			return (r._res==_res);
+		}
+
+		template<typename TT> inline bool operator==(ref<TT>& r) {
+			return (_res==r._res);
+		}
+
+		template<typename TT> inline bool operator!=(ref<TT>& r) {
+			return (_res!=r._res);
+		}
+
+		template<class X> inline bool IsCastableTo() {
+			return dynamic_cast<X*>(_res->_data)!=0;	
+		}
+
+		Resource<T>* _res;
 };
 
 #endif

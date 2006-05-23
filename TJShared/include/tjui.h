@@ -62,6 +62,9 @@ class EXPORTED Wnd {
 		virtual void SetFullScreen(bool f);
 		bool IsFullScreen();
 
+		std::wstring GetText();
+		void SetText(std::wstring text);
+
 	protected:
 		virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 		void DrawHotkey(Gdiplus::Graphics* g, const wchar_t* wc, int x, int y);
