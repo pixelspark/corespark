@@ -1,8 +1,6 @@
 #ifndef _TJTEA_H
 #define _TJTEA_H
 
-#include <string>
-
 class EXPORTED TEAEncrypter {
 	public:
 		TEAEncrypter();

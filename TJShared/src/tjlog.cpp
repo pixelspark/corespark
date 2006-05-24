@@ -1,50 +1,52 @@
 #include "../include/tjshared.h"
-#include <fstream>
-
+using namespace tj::shared;
 
 CriticalSection Log::_lock;
 bool Log::_writeToFile = false;
 
+namespace tj {
+	namespace shared {
+		class LogThread: public Thread {
+			public:
+				LogThread() {
+					_loggerCreatedEvent = CreateEvent(NULL, TRUE, FALSE, 0);
+					Start();
+				}
 
-class LogThread: public Thread {
-	public:
-		LogThread() {
-			_loggerCreatedEvent = CreateEvent(NULL, TRUE, FALSE, 0);
-			Start();
-		}
+				virtual ~LogThread() {
+					PostThreadMessage(_id, WM_QUIT, 0, 0);
+					WaitForCompletion();
+				}
 
-		virtual ~LogThread() {
-			PostThreadMessage(_id, WM_QUIT, 0, 0);
-			WaitForCompletion();
-		}
+				virtual void Log(std::wstring msg) {
+					//Start();
+					WaitForSingleObject(_loggerCreatedEvent, INFINITE);
+					_logger->Log(msg);
+				}
 
-		virtual void Log(std::wstring msg) {
-			//Start();
-			WaitForSingleObject(_loggerCreatedEvent, INFINITE);
-			_logger->Log(msg);
-		}
+				virtual void Show(bool s) {
+					_logger->Show(s);
+				}
 
-		virtual void Show(bool s) {
-			_logger->Show(s);
-		}
+			protected:
+				virtual void Run() {
+					_logger = new LoggerWnd(0L);
+					SetEvent(_loggerCreatedEvent);
 
-	protected:
-		virtual void Run() {
-			_logger = new LoggerWnd(0L);
-			SetEvent(_loggerCreatedEvent);
+					MSG msg;
+					while(GetMessage(&msg, 0, 0, 0)!=WM_QUIT) {
+						TranslateMessage(&msg);
+						DispatchMessage(&msg);
+					}
 
-			MSG msg;
-			while(GetMessage(&msg, 0, 0, 0)!=WM_QUIT) {
-				TranslateMessage(&msg);
-				DispatchMessage(&msg);
-			}
+					delete _logger;
+				}
 
-			delete _logger;
-		}
-
-		LoggerWnd* _logger;
-		HANDLE _loggerCreatedEvent;
-};
+				LoggerWnd* _logger;
+				HANDLE _loggerCreatedEvent;
+		};
+	}
+}
 
 LogThread Log::_logger;
 

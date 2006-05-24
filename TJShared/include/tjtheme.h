@@ -1,8 +1,6 @@
 #ifndef _TJTHEME_H
 #define _TJTHEME_H
 
-#include <Gdiplus.h>
-
 #pragma warning(push)
 #pragma warning(disable: 4251)
 

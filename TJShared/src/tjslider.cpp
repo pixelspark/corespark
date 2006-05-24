@@ -1,6 +1,6 @@
 #include "../include/tjshared.h"
 using namespace Gdiplus;
-#include <iomanip>
+using namespace tj::shared;
 
 #define ISVKKEYDOWN(vk_code) ((GetAsyncKeyState(vk_code) & 0x8000))
 

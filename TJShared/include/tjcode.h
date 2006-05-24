@@ -1,7 +1,6 @@
 #ifndef _TJCODE_H
 #define _TJCODE_H
 
-#include <sstream>
 #pragma pack(push,1)
 
 class EXPORTED Code {
@@ -26,10 +25,7 @@ class EXPORTED Code {
 
 template<> std::wstring Code::Get(unsigned int& position);
 
-
 class EXPORTED CodeWriter {
-	friend class Stream;
-
 	public:
 		CodeWriter(unsigned int initialSize=1024);
 		virtual ~CodeWriter();
@@ -56,6 +52,8 @@ class EXPORTED CodeWriter {
 	protected:
 		unsigned int _size;
 		unsigned int _pos;
+
+	public:
 		char* _buffer;
 };
 

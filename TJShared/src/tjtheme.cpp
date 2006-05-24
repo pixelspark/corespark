@@ -1,5 +1,6 @@
 #include "../include/tjshared.h"
 using namespace Gdiplus;
+using namespace tj::shared;
 
 ThemeSubscription _subscription_theme(ref<Theme>(GC::Hold(new Theme())));
 ThemeSubscription _subscription_bright_theme(ref<Theme>(GC::Hold(new BrightTheme())));

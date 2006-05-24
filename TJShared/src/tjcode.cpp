@@ -1,4 +1,5 @@
 #include "../include/tjshared.h"
+using namespace tj::shared;
 
 Code::Code(const char* code, unsigned int size) {
 	_code = new char[size*sizeof(char)];

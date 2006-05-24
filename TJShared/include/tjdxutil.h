@@ -1,9 +1,6 @@
 #ifndef _TJDXUTIL_H
 #define _TJDXUTIL_H
 
-#include <atlbase.h>
-#include <dshow.h>
-
 class EXPORTED RotRegistration {
 	public:
 		RotRegistration(IGraphBuilder* ig);

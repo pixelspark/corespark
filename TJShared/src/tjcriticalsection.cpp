@@ -1,5 +1,5 @@
 #include "../include/tjshared.h"
-#include <windows.h>
+using namespace tj::shared;
 
 CriticalSection::CriticalSection() {
 	InitializeCriticalSectionAndSpinCount(&_cs, 2);

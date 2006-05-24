@@ -64,6 +64,9 @@ class EXPORTED Wnd {
 
 		std::wstring GetText();
 		void SetText(std::wstring text);
+		void SetSize(int w, int h);
+		tj::shared::Rectangle GetClientRectangle();
+		tj::shared::Rectangle GetWindowRectangle();
 
 	protected:
 		virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
@@ -85,5 +88,16 @@ class EXPORTED Wnd {
 		static bool _classesRegistered;
 		long _oldStyle, _oldStyleEx;
 };
+
+class ChildEnumerator {
+	public:
+		ChildEnumerator(HWND parent, bool recursive=false);
+		void Add(HWND wnd);
+	
+		std::vector<Wnd*> _children;
+		bool _recursive;
+		HWND _for;
+};
+
 
 #endif

@@ -1,4 +1,5 @@
 #include "../include/tjshared.h"
+using namespace tj::shared;
 
 std::vector< ref<Theme> > ThemeManager::_themes;
 ref<Theme> ThemeManager::_theme;

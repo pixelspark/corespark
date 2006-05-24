@@ -1,4 +1,5 @@
 #include "../include/tjshared.h"
+using namespace tj::shared;
 
 Arguments::Arguments() {
     // Save local copy of the command line string, because

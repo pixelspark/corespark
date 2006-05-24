@@ -1,4 +1,5 @@
 #include "../include/tjshared.h"
+using namespace tj::shared;
 
 ref<ResourceManager> ResourceManager::_instance;
 

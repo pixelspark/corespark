@@ -1,4 +1,5 @@
 #include "../include/tjshared.h"
+using namespace tj::shared;
 
 LoggerWnd::LoggerWnd(HWND parent): Wnd(L"Log", parent,TJ_DEFAULT_CLASS_NAME, false) {
 	_list = CreateWindow(L"LISTBOX", L"LogListWnd", LBS_NOINTEGRALHEIGHT|WS_CHILD|WS_VISIBLE|LBS_DISABLENOSCROLL|(LBS_STANDARD&(~LBS_SORT)), 0, 0, 100, 100, _wnd, 0, GetModuleHandle(NULL), 0);

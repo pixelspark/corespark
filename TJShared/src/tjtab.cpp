@@ -1,5 +1,6 @@
 #include "../include/tjshared.h"
 using namespace Gdiplus;
+using namespace tj::shared;
 
 TabWnd::TabWnd(HWND parent, RootWnd* root): ChildWnd(L"TabWnd", parent) {
 	SetStyle(WS_CLIPCHILDREN|WS_CLIPSIBLINGS);

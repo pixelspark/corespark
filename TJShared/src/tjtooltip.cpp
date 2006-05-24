@@ -1,4 +1,5 @@
 #include "../include/tjshared.h" 
+using namespace tj::shared;
 
 TooltipWnd::TooltipWnd(HWND owner) {
 	_owner = owner;

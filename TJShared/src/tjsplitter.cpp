@@ -1,5 +1,6 @@
 #include "../include/tjshared.h"
 using namespace Gdiplus;
+using namespace tj::shared;
 
 const float SplitterWnd::snapMargin = 0.07f;
 

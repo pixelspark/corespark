@@ -212,7 +212,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="gdiplus.lib comctl32.lib strmiids.lib quartz.lib"
+				AdditionalDependencies="gdiplus.lib comctl32.lib strmiids.lib quartz.lib ../libraries/tinyxml.lib"
 				OutputFile="$(OutDir)\..\..\Release\tjshared.dll"
 				LinkIncremental="0"
 				GenerateManifest="false"
@@ -353,6 +353,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\tjcolor.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\tjcontextmenu.cpp"
 				>
 			</File>
@@ -394,6 +398,10 @@
 			</File>
 			<File
 				RelativePath=".\src\tjpane.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\tjrectangle.cpp"
 				>
 			</File>
 			<File
@@ -444,6 +452,10 @@
 				RelativePath=".\src\tjui.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\src\tjutil.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -464,6 +476,10 @@
 			</File>
 			<File
 				RelativePath=".\include\tjcode.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tjcolor.h"
 				>
 			</File>
 			<File
@@ -488,6 +504,10 @@
 			</File>
 			<File
 				RelativePath=".\include\tjflags.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tjgc.h"
 				>
 			</File>
 			<File
@@ -519,6 +539,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\include\tjrectangle.h"
+				>
+			</File>
+			<File
 				RelativePath=".\include\tjreference.h"
 				>
 			</File>
@@ -528,6 +552,10 @@
 			</File>
 			<File
 				RelativePath=".\include\tjrootwnd.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tjserializable.h"
 				>
 			</File>
 			<File

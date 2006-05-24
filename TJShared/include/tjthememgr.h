@@ -1,9 +1,6 @@
 #ifndef _TJTHEMEMGR_H
 #define _TJTHEMEMGR_H
 
-#include <vector>
-#include <windows.h>
-
 /* disable complaints about dll-interface for std::vector, which should not be reachable
 from 'clients' anyway */
 #pragma warning(push)

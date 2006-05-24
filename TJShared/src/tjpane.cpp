@@ -1,4 +1,5 @@
 #include "../include/tjshared.h"
+using namespace tj::shared;
 
 Pane::Pane(std::wstring title, ref<Wnd> window, bool detached) {
 	_title = title;

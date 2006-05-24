@@ -1,6 +1,5 @@
 #include "../include/tjshared.h"
-#include <windows.h>
-#include <fstream>
+using namespace tj::shared;
 
 volatile long _gc_live = 0;
 volatile long _gc_size = 0;

@@ -1,6 +1,5 @@
 #include "../include/tjshared.h"
-#include <map>
-#include <fstream>
+using namespace tj::shared;
 
 Language _instance;
 

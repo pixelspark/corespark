@@ -1,9 +1,5 @@
 #include "../include/tjshared.h"
-#include <assert.h>
-#include <atlbase.h>
-#include <windows.h>
-#include <dshow.h>
-#include <stdio.h>
+using namespace tj::shared;
 
 HRESULT RotRegistration::AddGraphToRot(IUnknown *pUnkGraph, DWORD *pdwRegister)  {
 	IMoniker * pMoniker;

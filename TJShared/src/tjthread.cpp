@@ -1,4 +1,5 @@
 #include "../include/tjshared.h"
+using namespace tj::shared;
 
 // SetThreadName, see ms-help://MS.MSDNQTR.v80.en/MS.MSDN.v80/MS.VisualStudio.v80.en/dv_vsdebug/html/c85d0968-9f22-4d69-87f4-acca2ae777b8.htm
 #define MS_VC_EXCEPTION 0x406D1388
@@ -24,13 +25,18 @@ void SetThreadName( DWORD dwThreadID, LPCSTR szThreadName) {
    }
 }
 
-DWORD WINAPI ThreadProc(LPVOID lpParam) {
-	Thread* tr = (Thread*)lpParam;
-	if(tr!=0) {
-		tr->Run();
+namespace tj {
+	namespace shared {
+		DWORD WINAPI ThreadProc(LPVOID lpParam) {
+			Thread* tr = (Thread*)lpParam;
+			if(tr!=0) {
+				tr->Run();
+			}
+			return 0;
+		}
 	}
-	return 0;
 }
+
 
 /* Thread */
 Thread::Thread() {

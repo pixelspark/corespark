@@ -1,5 +1,6 @@
 #include "../include/tjshared.h"
 using namespace Gdiplus;
+using namespace tj::shared;
 
 ButtonWnd::ButtonWnd(HWND parent, wchar_t hotkey, ref<Listener> listener, const wchar_t* image, const wchar_t* text): ChildWnd(L"", parent, false, true) {
 	_hotkey = hotkey;
@@ -28,8 +29,18 @@ void ButtonWnd::Paint(Graphics& g) {
 	RECT rc;
 	GetClientRect(_wnd,&rc);
 	ref<Theme> theme = ThemeManager::GetTheme();
+	
+	Color col = theme->GetTimeBackgroundColor();
+	if(IsMouseOver()) {
+		if(ISVKKEYDOWN(VK_LBUTTON)) {
+		col = theme->GetActiveStartColor();
+		}
+		else {
+			col = theme->GetActiveEndColor();
+		}
+	}
 
-	SolidBrush backBr(IsMouseOver()?theme->GetActiveEndColor():theme->GetTimeBackgroundColor());
+	SolidBrush backBr(col);
 	g.FillRectangle(&backBr, RectF(0.0f, 0.0f, REAL(rc.right-rc.left), REAL(rc.bottom-rc.top)));
 	g.DrawImage(_image, RectF(0.0f, 0.0f, REAL(rc.bottom-rc.top), REAL(rc.bottom-rc.top)));
 
@@ -52,11 +63,15 @@ LRESULT ButtonWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		TrackMouseEvent(&evt);
 	}
 	else if(msg==WM_LBUTTONDOWN) {
+		Repaint();
+
 		if(_listener) {
 			_listener->Notify(this, NotificationClick);
-			Repaint();
 			return 0;
 		}
+	}
+	else if(msg==WM_LBUTTONUP) {
+		Repaint();
 	}
 	else if(msg==WM_MOUSEMOVE) {
 		TRACKMOUSEEVENT evt;

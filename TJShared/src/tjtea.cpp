@@ -5,7 +5,7 @@
 #include <vector>
 #include <stdexcept>
 #include <algorithm>
-
+using namespace tj::shared;
 using namespace std;
 
 void encode(unsigned long *v, unsigned long *k)

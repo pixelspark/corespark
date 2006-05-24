@@ -1,11 +1,6 @@
 #ifndef _REFERENCE_H
 #define _REFERENCE_H
 
-#include <stdio.h>
-#include <string.h>
-#include <wchar.h>
-#include "../include/tjexception.h"
-
 template<class T> class Call;
 
 class BadCastException: public Exception {

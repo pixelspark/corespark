@@ -108,4 +108,6 @@ template<typename StringType> void Trim(StringType& str) {
 	}
 }
 
+template<> EXPORTED bool StringTo(std::wstring s, bool def);
+template<> EXPORTED std::wstring Stringify(const bool& x);
 #endif

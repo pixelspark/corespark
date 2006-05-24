@@ -1,6 +1,8 @@
 #include "../include/tjshared.h"
+using namespace tj::shared;
 
 RootWnd::RootWnd(std::wstring title): Wnd(title.c_str(),0, TJ_DEFAULT_CLASS_NAME, false) {
+	SetStyleEx(WS_EX_CONTROLPARENT);
 }
 
 RootWnd::~RootWnd() {

@@ -1,6 +1,6 @@
 #include "../include/tjshared.h"
+using namespace tj::shared;
 
-#include <sstream>
 
 std::wstring Exception::ToString() {
 	std::wostringstream os;

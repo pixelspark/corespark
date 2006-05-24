@@ -1,9 +1,6 @@
 #ifndef _TJCACHE_H
 #define _TJCACHE_H
 
-#include <map>
-#include <time.h>
-
 template<typename T> struct CacheItem {
 	CacheItem(T value=0, int age=0) {
 		_value = value;

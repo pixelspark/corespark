@@ -1,4 +1,5 @@
 #include "../include/tjshared.h"
+using namespace tj::shared;
 
 ListenerWrapper::ListenerWrapper(Listener* lp) {
 	assert(_listener!=0);

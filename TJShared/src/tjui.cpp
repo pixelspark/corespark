@@ -1,6 +1,6 @@
 #include "../include/tjshared.h"
 #include <commctrl.h>
-
+using namespace tj::shared;
 using namespace Gdiplus;
 
 bool Wnd::_classesRegistered = false;
@@ -55,18 +55,6 @@ void RecursivePaintChildren(HWND toplevel, HWND wp, Graphics& g) {
 		current = GetWindow(current, GW_HWNDPREV);
 	}
 }
-
-BOOL ChildEnumeratorProc(HWND wnd, LPARAM lp);
-
-class ChildEnumerator {
-	public:
-		ChildEnumerator(HWND parent, bool recursive=false);
-		void Add(HWND wnd);
-	
-		std::vector<Wnd*> _children;
-		bool _recursive;
-		HWND _for;
-};
 
 BOOL ChildEnumeratorProc(HWND wnd, LPARAM lp) {
 	ChildEnumerator* cp = reinterpret_cast<ChildEnumerator*>((long long)lp);
@@ -307,7 +295,7 @@ void Wnd::LeaveHotkeyMode(wchar_t key) {
 		_inHotkeyMode = false;
 		
 		if(key!=L'\0') {
-			ChildEnumerator en(_wnd);
+			::ChildEnumerator en(_wnd);
 	
 			bool found = false;
 			std::vector<Wnd*>::iterator it = en._children.begin();
@@ -682,6 +670,22 @@ std::wstring Wnd::GetText() {
 
 void Wnd::SetText(std::wstring text) {
 	SetWindowText(_wnd, text.c_str());
+}
+
+void Wnd::SetSize(int w, int h) {
+	SetWindowPos(_wnd, 0L, 0, 0, w, h, SWP_NOZORDER|SWP_NOMOVE|SWP_NOACTIVATE);
+}
+
+tj::shared::Rectangle Wnd::GetClientRectangle() {
+	RECT r;
+	GetClientRect(_wnd, &r);
+	return tj::shared::Rectangle(r);
+}
+
+tj::shared::Rectangle Wnd::GetWindowRectangle() {
+	RECT r;
+	GetWindowRect(_wnd, &r);
+	return tj::shared::Rectangle(r);
 }
 
 LRESULT CALLBACK PropertyEditNumericWndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) {

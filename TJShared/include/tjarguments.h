@@ -1,7 +1,6 @@
 #ifndef _TJARGUMENTS_H
 #define _TJARGUMENTS_H
 
-#include <vector>
 #pragma warning(push)
 #pragma warning(disable: 4251)
 
