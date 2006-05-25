@@ -72,7 +72,8 @@ Color Theme::GetActiveTrackColor() const {
 }
 
 Color Theme::GetActiveStartColor() const {
-	return Color(255, 110,110,110);
+	//return Color(255, 110,110,110);
+	return Color(230,130,130,130);
 }
 
 Color Theme::GetCommandMarkerColor() const {
@@ -80,7 +81,7 @@ Color Theme::GetCommandMarkerColor() const {
 }
 
 Color Theme::GetActiveEndColor() const {
-	return Color(255, 70,70,70);
+	return Color(230, 90,90,90); // 255,70,70,70
 }
 
 Color Theme::GetSplitterStartColor() const {
@@ -148,15 +149,23 @@ Color Theme::GetDisabledOverlayColor() const {
 	return Color(200,0,0,0);
 }
 
+Color Theme::GetTabButtonColorStart() const {
+	return Color(100,110,110,110);
+}
+
+Color Theme::GetTabButtonColorEnd() const {
+	return Color(100,70,70,70);
+}
+
 Brush* Theme::GetApplicationBackgroundBrush(HWND root, HWND child) const {
 	RECT rootrc, childrc;
 	GetWindowRect(root, &rootrc);
 	GetWindowRect(child, &childrc);
 
-	Gdiplus::LinearGradientBrush* lbr = new Gdiplus::LinearGradientBrush(PointF(0.0f, -float(childrc.top-rootrc.top)), PointF(0.0f,float(rootrc.bottom-rootrc.top)), Color(0,0,0), Color(50,50,50));
+	Gdiplus::LinearGradientBrush* lbr = new Gdiplus::LinearGradientBrush(PointF(0.0f, -float(childrc.top-rootrc.top)), PointF(0.0f,float(rootrc.bottom-rootrc.top)), Color(0,0,0), Color(90,90,90));
 	lbr->SetWrapMode(WrapModeClamp);
 	REAL factors[3] = {1.0f, 0.0f, 0.0f};
-	REAL positions[3] = {0.0f, 0.20f ,1.0f};
+	REAL positions[3] = {0.0f, 0.25f ,1.0f};
 	lbr->SetBlend(factors,positions, 3);
 
 	return lbr;
@@ -222,7 +231,6 @@ Color BrightTheme::GetFaderColor() const {
 	return Color(0,0,0);
 }
 
-
 Gdiplus::Color BrightTheme::GetTimeSelectionColorEnd() const {
 	return Color(100,0,0,100);
 }
@@ -239,4 +247,12 @@ std::wstring BrightTheme::GetName() const { return std::wstring(L"Licht"); }
 
 Brush* BrightTheme::GetApplicationBackgroundBrush(HWND root, HWND child) const {
 	return new SolidBrush(GetTimeBackgroundColor());
+}
+
+Color BrightTheme::GetTabButtonColorStart() const {
+	return Color(100,255,255,255);
+}
+
+Color BrightTheme::GetTabButtonColorEnd() const {
+	return Color(100,255,255,255);
 }

@@ -35,6 +35,9 @@ class EXPORTED Theme {
 		virtual Gdiplus::Color GetTimeSelectionColorEnd() const;
 		virtual Gdiplus::Color GetTimeSelectionColorStart() const;
 
+		virtual Gdiplus::Color GetTabButtonColorStart() const;
+		virtual Gdiplus::Color GetTabButtonColorEnd() const;
+
 		virtual Gdiplus::Color GetDisabledOverlayColor() const;
 		virtual Gdiplus::Color GetCommandMarkerColor() const;
 		
@@ -78,6 +81,9 @@ class BrightTheme: public Theme {
 
 		virtual Gdiplus::Color GetTimeSelectionColorEnd() const;
 		virtual Gdiplus::Color GetTimeSelectionColorStart() const;
+
+		virtual Gdiplus::Color GetTabButtonColorStart() const;
+		virtual Gdiplus::Color GetTabButtonColorEnd() const;
 
 		virtual Gdiplus::Color GetDisabledOverlayColor() const;
 		virtual Gdiplus::Brush* GetApplicationBackgroundBrush(HWND root, HWND child) const;

@@ -82,10 +82,8 @@ void TabWnd::Paint(Graphics& g) {
 			}
 			
 			if((pane==_current && pane!=_dragging) || pane==_dragging) {
-				Color tstart = theme->GetActiveStartColor();
-				Color tend = theme->GetActiveEndColor();
-				Color start(60, tstart.GetR(), tstart.GetG(), tstart.GetB());
-				Color end(60, tend.GetR(), tend.GetG(), tend.GetB());
+				Color start = theme->GetTabButtonColorStart();
+				Color end = theme->GetTabButtonColorEnd();
 
 				LinearGradientBrush lbr(PointF(0.0f, 0.0f), PointF(0.0f, float(_headerHeight)), start, end);
 				g.FillRectangle(&lbr, RectF(float(left+1), 2.0f, float(bound.Width+2), float(_headerHeight)));
