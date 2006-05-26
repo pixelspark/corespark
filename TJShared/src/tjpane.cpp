@@ -7,6 +7,10 @@ Pane::Pane(std::wstring title, ref<Wnd> window, bool detached) {
 	_detached = detached;
 }
 
+std::wstring Pane::GetTitle() const {
+	return _title;
+}
+
 ref<Wnd> Pane::GetWindow() {
 	return _wnd;
 }
@@ -49,9 +53,37 @@ LRESULT FloatingPane::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	else if(msg==WM_CLOSE) {
 		ShowWindow(_wnd, SW_HIDE);
 		if(_source) {
-			_source->Attach(_pane);
 			_root->RemoveFloatingPane(_pane);
+			_root->AddOrphanPane(_pane);
 			return 0;
+		}
+	}
+	else if(msg==WM_ENTERSIZEMOVE) {
+		_dragging = true;
+		SetCursor(LoadCursor(0,IDC_SIZEALL));
+		SetCapture(_wnd);
+	}
+	else if(msg==WM_EXITSIZEMOVE) {
+		_dragging = false;
+		SetCursor(LoadCursor(0,IDC_ARROW));
+		// find tab window below this window and attach
+		POINT p;
+		GetCursorPos(&p);
+		ref<TabWnd> below = _root->FindTabWindowAt(p.x, p.y);
+		if(below) {
+			below->Attach(_pane);
+			_root->RemoveFloatingPane(_pane);
+		}
+		_root->SetDragTarget(0);
+		ReleaseCapture();
+		return 0;
+	}
+	else if(msg==WM_NCMOUSEMOVE||msg==WM_MOUSEMOVE||WM_MOVING) {
+		if(_dragging) {
+			POINT p;
+			GetCursorPos(&p);
+			ref<TabWnd> below = _root->FindTabWindowAt(p.x, p.y);
+			_root->SetDragTarget(below);
 		}
 	}
 	else if(msg==WM_GETMINMAXINFO) {

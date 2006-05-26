@@ -67,12 +67,13 @@ namespace tj {
 		#include "tjlog.h"
 		#include "tjsplitter.h"
 		#include "tjpane.h"
+		#include "tjimagebutton.h"
 		#include "tjtab.h"
 		#include "tjrootwnd.h"
 		#include "tjslider.h"
 		#include "tjresourcemgr.h"
 		#include "tjtooltip.h" 
-		#include "tjimagebutton.h"
+		
 		#include "tjedit.h"
 		#include "tjgc.h"
 	}

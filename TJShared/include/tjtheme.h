@@ -40,6 +40,9 @@ class EXPORTED Theme {
 
 		virtual Gdiplus::Color GetDisabledOverlayColor() const;
 		virtual Gdiplus::Color GetCommandMarkerColor() const;
+
+		virtual Gdiplus::Color GetHighlightColorStart() const;
+		virtual Gdiplus::Color GetHighlightColorEnd() const;
 		
 		virtual Gdiplus::Brush* GetApplicationBackgroundBrush(HWND root, HWND child) const;
 
@@ -87,6 +90,9 @@ class BrightTheme: public Theme {
 
 		virtual Gdiplus::Color GetDisabledOverlayColor() const;
 		virtual Gdiplus::Brush* GetApplicationBackgroundBrush(HWND root, HWND child) const;
+
+		virtual Gdiplus::Color GetHighlightColorStart() const;
+		virtual Gdiplus::Color GetHighlightColorEnd() const;
 };
 
 #pragma warning(pop)

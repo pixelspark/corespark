@@ -17,6 +17,7 @@ class EXPORTED Rectangle {
 		void SetHeight(int h);
 		void Narrow(int x, int y, int w, int h);
 		void Widen(int x, int y, int w, int h);
+		bool IsInside(int x, int y) const;
 		
 		inline operator Gdiplus::RectF() const {
 			return Gdiplus::RectF(float(_x), float(_y), float(_w), float(_h));

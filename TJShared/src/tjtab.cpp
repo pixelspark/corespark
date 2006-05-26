@@ -7,10 +7,18 @@ TabWnd::TabWnd(HWND parent, RootWnd* root): ChildWnd(L"TabWnd", parent) {
 	_headerHeight = defaultHeaderHeight;
 	_hotkey = L'O';
 	_root = root;
+
+	std::wstring fn = ResourceManager::Instance()->Get(L"icons/tab_close.png");
+	_closeIcon = Bitmap::FromFile(fn.c_str(), TRUE);
+	fn = ResourceManager::Instance()->Get(L"icons/tab_add.png");
+	_addIcon = Bitmap::FromFile(fn.c_str(), TRUE);
+	Layout();
 	Show(true);
 }
 
 TabWnd::~TabWnd() {
+	delete _closeIcon;
+	delete _addIcon;
 }
 
 void TabWnd::Rename(ref<Wnd> wnd, std::wstring name) {
@@ -49,7 +57,15 @@ void TabWnd::Paint(Graphics& g) {
 		}
 		else {
 			SolidBrush br(theme->GetTimeBackgroundColor());
-			g.FillRectangle(&br, Rect(rect.left, rect.top, rect.right, _current?_headerHeight:(rect.bottom-rect.top)));
+			g.FillRectangle(&br, Rect(rect.left, rect.top, rect.right-rect.left, _current?_headerHeight:(rect.bottom-rect.top)));
+		}
+
+		if(_root) {
+			ref<TabWnd> dt =  _root->GetDragTarget();
+			if(dt && dt.GetPointer()==this) {
+				LinearGradientBrush br(PointF(0.0f, 0.0f), PointF(0.0f,float(_headerHeight)), theme->GetHighlightColorStart(), theme->GetHighlightColorEnd());
+				g.FillRectangle(&br, Rect(rect.left+1, rect.top, rect.right, _headerHeight));
+			}
 		}
 		
 		g.SetSmoothingMode(SmoothingModeDefault);
@@ -86,7 +102,7 @@ void TabWnd::Paint(Graphics& g) {
 				Color end = theme->GetTabButtonColorEnd();
 
 				LinearGradientBrush lbr(PointF(0.0f, 0.0f), PointF(0.0f, float(_headerHeight)), start, end);
-				g.FillRectangle(&lbr, RectF(float(left+1), 2.0f, float(bound.Width+2), float(_headerHeight)));
+				g.FillRectangle(&lbr, RectF(float(left+1), 2.0f, float(bound.Width+2), float(_headerHeight-2)));
 			}
 
 			g.DrawString(pane->_title.c_str(), (INT)pane->_title.length(), theme->GetGUIFontBold(), PointF(float(left+2), 3.0f), &textBrush);
@@ -94,6 +110,11 @@ void TabWnd::Paint(Graphics& g) {
 			left += int(bound.Width) + 4;
 			it++;
 			idx++;
+		}
+
+		if(left<(rect.right-rect.left-2*_headerHeight)) {
+			g.DrawImage(_addIcon, RectF(float(rect.right-rect.left-2*_headerHeight), 0.0f, float(_headerHeight-2), float(_headerHeight-2)));
+			g.DrawImage(_closeIcon, RectF(float(rect.right-rect.left-_headerHeight), 0.0f, float(_headerHeight-2), float(_headerHeight-2)));
 		}
 	}
 }
@@ -205,20 +226,21 @@ void TabWnd::Update() {
 }
 
 void TabWnd::Layout() {
-	if(_current) {
-		RECT rct;
-		GetClientRect(_wnd, &rct);
-		SetWindowPos(_current->_wnd->GetWindow(), 0, 2,rct.top+_headerHeight,rct.right-rct.left-3,rct.bottom-rct.top-_headerHeight-1, SWP_NOZORDER);
-		//_current->Move(rct.left, rct.top+_headerHeight, rct.right-rct.left, rct.bottom-rct.top-_headerHeight);
-	
+	RECT rc;
+	GetClientRect(_wnd, &rc);
+
+	if(_current) {	
+		SetWindowPos(_current->_wnd->GetWindow(), 0, 2,rc.top+_headerHeight,rc.right-rc.left-3,rc.bottom-rc.top-_headerHeight-1, SWP_NOZORDER);
+		
 		std::vector< ref<Pane> >::iterator it = _panes.begin();
 		while(it!=_panes.end()) {
 			ref<Pane> pane = *it;
-			SetWindowPos(pane->_wnd->GetWindow(), 0, 2,rct.top+_headerHeight,rct.right-rct.left-3,rct.bottom-rct.top-_headerHeight-1, SWP_NOZORDER|SWP_NOREDRAW|SWP_NOACTIVATE);
+			SetWindowPos(pane->_wnd->GetWindow(), 0, 2,rc.top+_headerHeight,rc.right-rc.left-3,rc.bottom-rc.top-_headerHeight-1, SWP_NOZORDER|SWP_NOREDRAW|SWP_NOACTIVATE);
 		
 			it++;
 		}
 	}
+
 	Update();
 }
 
@@ -260,6 +282,35 @@ LRESULT TabWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 			}
 			idx++;
 			it++;
+		}
+
+		RECT rect;
+		GetClientRect(_wnd, &rect);
+		if(left<(rect.right-rect.left-2*_headerHeight) && msg==WM_LBUTTONDOWN) {
+			if(x>rect.right-rect.left-_headerHeight) {
+				// close button
+				if(_current && _root) {
+					std::vector< ref<Pane> >::iterator it = _panes.begin();
+					while(it!=_panes.end()) {
+						ref<Pane> pn = *it;
+						if(pn==_current) {
+							_panes.erase(it);
+							break;
+						}
+						it++;
+					}
+					_root->AddOrphanPane(_current);
+					ref<Wnd> wnd = _current->GetWindow();
+					if(wnd) wnd->Show(false);
+					_current = 0;
+					SelectPane(0);
+					Update();
+				}
+			}
+			else if(x>rect.right-rect.left-2*_headerHeight) {
+				// add button
+				DoAddMenu(x,GET_Y_LPARAM(lp));
+			}
 		}
 
 		if(_dragging) {
@@ -418,4 +469,34 @@ bool TabWnd::RevealWindow(ref<Wnd> w) {
 	}
 
 	return false;
+}
+
+void TabWnd::DoAddMenu(int x, int y) {
+	ContextMenu m;
+	std::vector< ref<Pane> >* pv = _root->GetOrphanPanes();
+	std::vector< ref<Pane> >::iterator it = pv->begin();
+	int n = 1;
+	while(it!=pv->end()) {
+		ref<Pane> pane = *it;
+		if(pane) {
+			m.AddItem(pane->GetTitle(), n, false, false);
+			n++;
+		}
+		it++;
+	}
+
+	int c = m.DoContextMenu(_wnd, x,y,true);
+	if(c>0) {
+		try {
+			ref<Pane> selected = pv->at(c-1);
+
+			if(selected) {
+				_root->RemoveOrphanPane(selected);
+				Attach(selected);
+				_current = selected;
+			}
+		}
+		catch(...) {
+		}
+	}
 }

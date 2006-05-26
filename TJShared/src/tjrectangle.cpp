@@ -25,6 +25,10 @@ Rectangle::Rectangle(const Gdiplus::RectF& r) {
 Rectangle::~Rectangle() {
 }
 
+bool Rectangle::IsInside(int x, int y) const {
+	return (x > _x && y > _y && x < (_x+_w) && y < (_y+_h));
+}
+
 int Rectangle::GetX() const {
 	return _x;
 }

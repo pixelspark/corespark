@@ -65,3 +65,47 @@ void RootWnd::RevealWindow(ref<Wnd> wnd) {
 		itt++;
 	}
 }
+
+ref<TabWnd> RootWnd::FindTabWindowAt(int x, int y) {
+	std::vector< ref<TabWnd> >::iterator itt = _tabWindows.begin();
+	while(itt!=_tabWindows.end()) {
+		ref<TabWnd> tab = *itt;
+		tj::shared::Rectangle r = tab->GetWindowRectangle();
+		if(r.IsInside(x,y)) {
+			return tab;
+		}
+		itt++;
+	}
+
+	return 0;
+}
+
+void RootWnd::SetDragTarget(ref<TabWnd> tw) {
+	if(_dragTarget) _dragTarget->Update();
+	_dragTarget = tw;
+	if(tw) tw->Update();
+}
+
+ref<TabWnd> RootWnd::GetDragTarget() {
+	return _dragTarget;
+}
+
+void RootWnd::AddOrphanPane(ref<Pane> pane) {
+	_orphans.push_back(pane);
+}
+
+std::vector< ref<Pane> >* RootWnd::GetOrphanPanes() {
+	return &_orphans;
+}
+
+void RootWnd::RemoveOrphanPane(ref<Pane> pane) {
+	std::vector< ref<Pane> >::iterator it = _orphans.begin();
+	while(it!=_orphans.end()) {
+		ref<Pane> fp = *it;
+		if(fp==pane) {
+			_orphans.erase(it);
+			return;
+		}
+		it++;
+	}
+}

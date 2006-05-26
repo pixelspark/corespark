@@ -12,6 +12,7 @@ class EXPORTED Pane {
 	public:
 		Pane(std::wstring, ref<Wnd>, bool);
 		ref<Wnd> GetWindow();
+		std::wstring GetTitle() const;
 
 	protected:
 		std::wstring _title;
@@ -35,6 +36,7 @@ class FloatingPane: public Wnd {
 		ref<Pane> _pane;
 		TabWnd* _source;
 		RootWnd* _root;
+		bool _dragging;
 };
 
 #pragma warning(pop)

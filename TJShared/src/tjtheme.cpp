@@ -84,6 +84,15 @@ Color Theme::GetActiveEndColor() const {
 	return Color(230, 90,90,90); // 255,70,70,70
 }
 
+Color Theme::GetHighlightColorStart() const {
+	return Color(255, 127, 75, 0);
+}
+
+Color Theme::GetHighlightColorEnd() const {
+	
+	return Color(255, 255,150,0);
+}
+
 Color Theme::GetSplitterStartColor() const {
 	return Color(0,0,0);
 }
@@ -255,4 +264,12 @@ Color BrightTheme::GetTabButtonColorStart() const {
 
 Color BrightTheme::GetTabButtonColorEnd() const {
 	return Color(100,255,255,255);
+}
+
+Color BrightTheme::GetHighlightColorStart() const {
+	return Color(255, 255,100,0);
+}
+
+Color BrightTheme::GetHighlightColorEnd() const {
+	return Color(100, 255, 100, 0);
 }

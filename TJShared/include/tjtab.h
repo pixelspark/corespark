@@ -35,6 +35,7 @@ class EXPORTED TabWnd: public ChildWnd {
 	protected:
 		void SetDraggingPane(ref<Pane> pane);
 		void DoContextMenu(int x, int y);
+		void DoAddMenu(int x, int y);
 
 		wchar_t _hotkey;
 		std::vector< ref<Pane> > _panes;
@@ -43,6 +44,8 @@ class EXPORTED TabWnd: public ChildWnd {
 		RootWnd* _root;
 		int _headerHeight;
 		int _dragStartX, _dragStartY;
+		Gdiplus::Bitmap* _closeIcon;
+		Gdiplus::Bitmap* _addIcon;
 
 		const static int TearOffLimit = 15;
 		enum {defaultHeaderHeight = 21};

@@ -108,7 +108,7 @@ void ChildEnumerator::Add(HWND wnd) {
 	}
 }
 
-Wnd::Wnd(const wchar_t* title, HWND parent, const wchar_t* className, bool usedb) {
+Wnd::Wnd(const wchar_t* title, HWND parent, const wchar_t* className, bool usedb, int exStyle) {
 	RegisterClasses();
 	_quitOnClose = false;
 	_horizontalPos = 0;
@@ -121,7 +121,7 @@ Wnd::Wnd(const wchar_t* title, HWND parent, const wchar_t* className, bool usedb
 	_buffer = 0;
 	_doubleBuffered = usedb;
 
-	_wnd = CreateWindowEx(0L, className, title, WS_CLIPCHILDREN|WS_CLIPSIBLINGS, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, parent, (HMENU)0, GetModuleHandle(NULL), 0);
+	_wnd = CreateWindowEx(exStyle, className, title, WS_CLIPCHILDREN|WS_CLIPSIBLINGS, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, parent, (HMENU)0, GetModuleHandle(NULL), 0);
 	if(_wnd==0) Throw(L"Could not create window", ExceptionTypeError);
 
 	SetWindowLong(_wnd, GWL_USERDATA, (LONG)(long long)this);
