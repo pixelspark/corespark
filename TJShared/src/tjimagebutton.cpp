@@ -7,6 +7,7 @@ ButtonWnd::ButtonWnd(HWND parent, wchar_t hotkey, ref<Listener> listener, const 
 	_listener = listener;
 	std::wstring fn = ResourceManager::Instance()->Get(image);
 	_image =  Bitmap::FromFile(fn.c_str(),TRUE);
+	_down = false;
 	Show(true);
 
 	if(text!=0) {
@@ -16,6 +17,10 @@ ButtonWnd::ButtonWnd(HWND parent, wchar_t hotkey, ref<Listener> listener, const 
 
 ButtonWnd::~ButtonWnd() {
 	delete _image;
+}
+
+void ButtonWnd::SetListener(ref<Listener> lr) {
+	_listener = lr;
 }
 
 void ButtonWnd::EnterHotkeyMode() {
@@ -31,13 +36,11 @@ void ButtonWnd::Paint(Graphics& g) {
 	ref<Theme> theme = ThemeManager::GetTheme();
 	
 	Color col = theme->GetTimeBackgroundColor();
-	if(IsMouseOver()) {
-		if(ISVKKEYDOWN(VK_LBUTTON)) {
+	if(_down) {
 		col = theme->GetActiveStartColor();
-		}
-		else {
-			col = theme->GetActiveEndColor();
-		}
+	}
+	else if(IsMouseOver()) {
+		col = theme->GetActiveEndColor();
 	}
 
 	SolidBrush backBr(col);
@@ -63,12 +66,16 @@ LRESULT ButtonWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		TrackMouseEvent(&evt);
 	}
 	else if(msg==WM_LBUTTONDOWN) {
+		_down = true;
 		Repaint();
 
 		if(_listener) {
 			_listener->Notify(this, NotificationClick);
-			return 0;
 		}
+
+		_down = false;
+		Repaint();
+		return 0;
 	}
 	else if(msg==WM_LBUTTONUP) {
 		Repaint();

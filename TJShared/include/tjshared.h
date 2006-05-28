@@ -70,12 +70,15 @@ namespace tj {
 		#include "tjimagebutton.h"
 		#include "tjtab.h"
 		#include "tjrootwnd.h"
+		#include "tjlayeredwnd.h"
+		#include "tjnotificationwnd.h"
 		#include "tjslider.h"
+		#include "tjcore.h"
 		#include "tjresourcemgr.h"
 		#include "tjtooltip.h" 
-		
 		#include "tjedit.h"
 		#include "tjgc.h"
+		
 	}
 }
 

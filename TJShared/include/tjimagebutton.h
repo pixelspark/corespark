@@ -12,12 +12,14 @@ class EXPORTED ButtonWnd: public ChildWnd {
 		virtual wchar_t GetPreferredHotkey();
 		virtual void EnterHotkeyMode();
 		virtual void Paint(Gdiplus::Graphics& g);
+		virtual void SetListener(ref<Listener> lf);
 		
 	protected:
 		wchar_t _hotkey;
 		std::wstring _text;
 		Gdiplus::Bitmap* _image;
 		ref<Listener> _listener;
+		bool _down;
 };
 
 class EXPORTED StateButtonWnd: public ButtonWnd {

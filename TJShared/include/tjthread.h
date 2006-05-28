@@ -1,18 +1,17 @@
 #ifndef _TJTHREAD_H
 #define _TJTHREAD_H
 
-template<typename T=int> class Event {
+class EXPORTED Event {
 	public:
 		Event() {
-			_event = CreateEvent(NULL, FALSE, FALSE, NULL);
+			_event = CreateEvent(NULL, TRUE, FALSE, NULL);
 		}
 
 		~Event() {
 			CloseHandle(_event);
 		}
 
-		void Signal(T param) {
-			WaitForSingleObject(_event,0); // wait for previous event to complete
+		void Signal() {
 			SetEvent(_event);
 		}
 
@@ -20,7 +19,11 @@ template<typename T=int> class Event {
 			ResetEvent(_event);
 		}
 
-		const T& Wait() {
+		HANDLE GetHandle() {
+			return _event;
+		}
+
+		void Wait() {
 			WaitForSingleObject(_event, 0);
 		}
 
@@ -46,7 +49,7 @@ class EXPORTED Thread {
 		int _id;
 };
 
-template<typename T> class EventThread: public Thread {
+/* template<typename T> class EventThread: public Thread {
 	public:
 		EventThread() {
 		}
@@ -67,8 +70,8 @@ template<typename T> class EventThread: public Thread {
 
 		virtual void OnEvent(const T& param)=0;
 
-		Event<T> _event;
-};
+		Event _event;
+};*/
 
 class EXPORTED CriticalSection {
 	friend class ThreadLock;

@@ -6,6 +6,7 @@ using namespace Gdiplus;
 bool Wnd::_classesRegistered = false;
 LRESULT CALLBACK PropertyEditWndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 LRESULT CALLBACK PropertyEditNumericWndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+LRESULT CALLBACK PropertyEditTimeWndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 LRESULT CALLBACK PropertyLabelWndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 
 /* GDI+ Init */
@@ -261,6 +262,12 @@ void Wnd::RegisterClasses() {
 
 	wc.lpszClassName = TJ_PROPERTY_EDIT_NUMERIC_CLASS_NAME;
 	wc.lpfnWndProc = PropertyEditNumericWndProc;
+	if(!RegisterClassEx(&wc)) {
+		Throw(L"Could not register class", ExceptionTypeError);
+	}
+
+	wc.lpszClassName = TJ_PROPERTY_EDIT_TIME_CLASS_NAME;
+	wc.lpfnWndProc = PropertyEditTimeWndProc;
 	if(!RegisterClassEx(&wc)) {
 		Throw(L"Could not register class", ExceptionTypeError);
 	}
@@ -744,6 +751,10 @@ LRESULT CALLBACK PropertyEditNumericWndProc(HWND wnd, UINT msg, WPARAM wp, LPARA
 			}
 		}
 	}
+	return PropertyEditWndProc(wnd, msg, wp, lp);
+}
+
+LRESULT CALLBACK PropertyEditTimeWndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) {
 	return PropertyEditWndProc(wnd, msg, wp, lp);
 }
 

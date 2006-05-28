@@ -248,6 +248,19 @@ LRESULT TabWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	if(msg==WM_SIZE) {
 		Layout();
 	}
+	else if(msg==WM_PARENTNOTIFY && wp==WM_DESTROY) {
+		// child deleted
+		HWND child = (HWND)lp;
+		std::vector< ref<Pane> >::iterator it = _panes.begin();
+		while(it!=_panes.end()) {
+			ref<Pane> pane = *it;
+			if(pane->_wnd->GetWindow()==child) {
+				_panes.erase(it);
+				break;
+			}
+			it++;
+		}
+	}
 	else if(msg==WM_LBUTTONUP || msg==WM_LBUTTONDOWN) {
 		int x = GET_X_LPARAM(lp);
 

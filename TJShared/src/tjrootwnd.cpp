@@ -12,6 +12,21 @@ LRESULT RootWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	if(msg==WM_ENTERMENULOOP) {
 		return 0;
 	}
+	else if(msg==WM_PARENTNOTIFY && wp==WM_DESTROY) {
+		// child deleted
+		HWND child = (HWND)lp;
+
+		// remove it from orphan list
+		std::vector< ref<Pane> >::iterator it = _orphans.begin();
+		while(it!=_orphans.end()) {
+			ref<Pane> pane = *it;
+			if(pane->_wnd->GetWindow()==child) {
+				_orphans.erase(it);
+				break;
+			}
+			it++;
+		}
+	}
 	return Wnd::Message(msg,wp,lp);
 }
 
@@ -40,6 +55,44 @@ void RootWnd::AddTabWindow(ref<TabWnd> wnd) {
 
 void RootWnd::RemoveTabWindow(ref<TabWnd> wnd) {
 	_tabWindows.erase(std::find(_tabWindows.begin(), _tabWindows.end(), wnd));
+}
+
+void RootWnd::RemoveTabWindow(TabWnd* tw) {
+	std::vector< ref<TabWnd> >::iterator it = _tabWindows.begin();
+	while(it!=_tabWindows.end()) {
+		ref<TabWnd> tab = *it;
+		if(tab && tab.GetPointer()==tw) {
+			_tabWindows.erase(it);
+			return;
+		}
+		it++;
+	}
+}
+
+void RootWnd::AddNotification(std::wstring text, std::wstring icon, int time) {
+	int highestIndex = -1;
+	std::vector< ref<NotificationWnd> >::iterator it = _notifications.begin();
+	while(it!=_notifications.end()) {
+		ref<NotificationWnd> wnd = *it;
+		if(wnd) {
+			highestIndex = max(wnd->GetIndex(), highestIndex);
+		}
+		it++;
+	}
+	ref<NotificationWnd> nw = GC::Hold(new NotificationWnd(text,icon,time, highestIndex+1, this));
+	_notifications.push_back(nw);
+}
+
+void RootWnd::RemoveNotification(NotificationWnd* nw) {
+	std::vector< ref<NotificationWnd> >::iterator it = _notifications.begin();
+	while(it!=_notifications.end()) {
+		ref<NotificationWnd> wnd = *it;
+		if(wnd && wnd.GetPointer()==nw) {
+			_notifications.erase(it);
+			return;
+		}
+		it++;
+	}
 }
 
 void RootWnd::RevealWindow(ref<Wnd> wnd) {

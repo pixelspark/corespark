@@ -6,6 +6,7 @@
 #define TJ_DEFAULT_NDBL_CLASS_NAME (L"TjWndClassNdbl")
 #define TJ_PROPERTY_EDIT_CLASS_NAME (L"TjPropertyEditWndClass")
 #define TJ_PROPERTY_EDIT_NUMERIC_CLASS_NAME (L"TjPropertyEditNumericWndClass")
+#define TJ_PROPERTY_EDIT_TIME_CLASS_NAME (L"TjPropertyEditTimeWndClass")
 #define TJ_PROPERTY_LABEL_CLASS_NAME (L"TjPropertyLabelWndClass")
 #define TJ_TAB_PANEL_CLASS_NAME (L"TjTabPanelWndClass")
 #define WM_TJ_PRINT (WM_USER+2)
