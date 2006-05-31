@@ -52,9 +52,9 @@ LRESULT FloatingPane::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	}
 	else if(msg==WM_CLOSE) {
 		ShowWindow(_wnd, SW_HIDE);
-		if(_source) {
-			_root->RemoveFloatingPane(_pane);
+		if(_root) {
 			_root->AddOrphanPane(_pane);
+			_root->RemoveFloatingPane(_pane);
 			return 0;
 		}
 	}

@@ -242,10 +242,6 @@ template<typename T> class weak {
 			return (*this);
 		}
 
-		inline T* GetPointer() {
-			return dynamic_cast<T*>(_res->_data);
-		}
-
 		inline operator weak<const T>() {
 			return weak<const T>((res<const T>*)_res);
 		}
@@ -254,18 +250,8 @@ template<typename T> class weak {
 			return weak<const T>((res<const T>*)_res);
 		}
 
-		inline operator T&() {
-			if(_res->_data==0) throw NullPointerException();
-			return *(_res->_data);
-		}
-
-		inline T* operator->() {
-			if(_res->_data==0) throw NullPointerException();
-			return _res->_data;
-		}
-
 		inline operator bool() {
-			return _res!=0&&_res->_data!=0;
+			return _res!=0&&_res->_rc>0;
 		}
 
 		inline bool operator==(const ref<T>& r) {
@@ -282,6 +268,13 @@ template<typename T> class weak {
 
 		template<class X> inline bool IsCastableTo() {
 			return dynamic_cast<X*>(_res->_data)!=0;	
+		}
+
+		inline ref<T> Reference() {
+			if(_res && _res->_rc>0) {
+				return _res->Reference();
+			}
+			return ref<T>(0);
 		}
 
 		Resource<T>* _res;

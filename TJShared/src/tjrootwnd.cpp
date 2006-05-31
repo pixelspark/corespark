@@ -12,21 +12,6 @@ LRESULT RootWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	if(msg==WM_ENTERMENULOOP) {
 		return 0;
 	}
-	else if(msg==WM_PARENTNOTIFY && wp==WM_DESTROY) {
-		// child deleted
-		HWND child = (HWND)lp;
-
-		// remove it from orphan list
-		std::vector< ref<Pane> >::iterator it = _orphans.begin();
-		while(it!=_orphans.end()) {
-			ref<Pane> pane = *it;
-			if(pane->_wnd->GetWindow()==child) {
-				_orphans.erase(it);
-				break;
-			}
-			it++;
-		}
-	}
 	return Wnd::Message(msg,wp,lp);
 }
 
@@ -144,7 +129,12 @@ ref<TabWnd> RootWnd::GetDragTarget() {
 }
 
 void RootWnd::AddOrphanPane(ref<Pane> pane) {
-	_orphans.push_back(pane);
+	ref<Wnd> window = pane->GetWindow();
+	if(window) {
+		window->Show(false);
+		SetParent(window->GetWindow(), _wnd);
+		_orphans.push_back(pane);
+	}
 }
 
 std::vector< ref<Pane> >* RootWnd::GetOrphanPanes() {
