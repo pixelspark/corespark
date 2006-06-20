@@ -166,19 +166,23 @@ template<typename T> class ref {
 			return _res->_data;
 		}
 
-		inline operator bool() {
+		inline operator bool() const {
 			return _res!=0&&_res->_data!=0;
 		}
 
-		inline bool operator==(const ref<T>& r) {
-			return (r._res==_res);
+		inline bool operator<(const ref<T>& r) const {
+			return (r._res<_res);
 		}
 
-		template<typename TT> inline bool operator==(ref<TT>& r) {
+		inline bool operator>(const ref<T>& r) const {
+			return (r._res>_res);
+		}
+
+		template<typename TT> inline bool operator==(const ref<TT>& r) const {
 			return (_res==r._res);
 		}
 
-		template<typename TT> inline bool operator!=(ref<TT>& r) {
+		template<typename TT> inline bool operator!=(const ref<TT>& r) const {
 			return (_res!=r._res);
 		}
 

@@ -1,4 +1,5 @@
 #include "../include/tjshared.h"
+#include "../resource.h"
 using namespace Gdiplus;
 using namespace tj::shared;
 
@@ -9,12 +10,24 @@ Theme::Theme() {
 	_font = 0;
 	_fontBold = 0;
 	_fontSmall = 0;
+	_grab = LoadCursor(GetModuleHandle(L"TJShared"), MAKEINTRESOURCE(IDC_GRABHAND));
+	_grabbed = LoadCursor(GetModuleHandle(L"TJShared"), MAKEINTRESOURCE(IDC_GRAB));
 }
 
 Theme::~Theme() {
 	delete _font;
 	delete _fontBold;
 	delete _fontSmall;
+	CloseHandle(_grab);
+	CloseHandle(_grabbed);
+}
+
+HCURSOR Theme::GetGrabCursor() const {
+	return _grab;
+}
+
+HCURSOR Theme::GetGrabbedCursor() const {
+	return _grabbed;
 }
 
 Gdiplus::Color Theme::ChangeAlpha(Gdiplus::Color col, int a) {

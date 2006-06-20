@@ -44,6 +44,8 @@ class EXPORTED Theme {
 		virtual Gdiplus::Color GetHighlightColorStart() const;
 		virtual Gdiplus::Color GetHighlightColorEnd() const;
 		
+		virtual HCURSOR GetGrabCursor() const;
+		virtual HCURSOR GetGrabbedCursor() const;
 		virtual Gdiplus::Brush* GetApplicationBackgroundBrush(HWND root, HWND child) const;
 
 		static Gdiplus::Color ChangeAlpha(Gdiplus::Color col, int a);
@@ -59,6 +61,7 @@ class EXPORTED Theme {
 		mutable Gdiplus::Font* _font;
 		mutable Gdiplus::Font* _fontBold;
 		mutable Gdiplus::Font* _fontSmall;
+		HCURSOR _grab, _grabbed;
 };
 
 class BrightTheme: public Theme {

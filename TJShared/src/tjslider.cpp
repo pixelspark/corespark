@@ -30,8 +30,10 @@ float SliderWnd::GetValue() const {
 }
 
 void SliderWnd::SetColor(int idx) {
-	_color = idx;
-	Repaint();
+	if(_color!=idx) {
+		_color = idx;
+		Repaint();
+	}
 }
 
 void SliderWnd::Update() {

@@ -13,5 +13,11 @@ namespace tj {
 			o << x?Language::Get(L"yes"):Language::Get(L"no");
 			return o.str();
 		}
+
+		template<> std::wstring Stringify(const int& x) {
+			wchar_t buffer[33];
+			_itow_s(x, buffer, (size_t)16, 10);
+			return std::wstring(buffer);
+		}
 	}
 }
