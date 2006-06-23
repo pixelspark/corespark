@@ -47,7 +47,6 @@ ResourceManager::~ResourceManager() {
 }
 
 void ResourceManager::AddSearchPath(std::wstring path) {
-	Log::Write(L"TJShared/ResourceManager", std::wstring(L"Added path to search path list: ")+path);
 	_paths.push_back(path);
 }
 
@@ -63,14 +62,12 @@ std::wstring ResourceManager::Get(std::wstring ident) {
 
 		// file exists
 		if(GetFileAttributes(path.c_str())!=INVALID_FILE_ATTRIBUTES) {
-			Log::Write(L"TJShared/ResourceManager", std::wstring(L"Resource ")+ident+L" => "+path);
 			return path;
 		}
 		it++;
 	}
 
 	if(GetFileAttributes(ident.c_str())!=INVALID_FILE_ATTRIBUTES) {
-		Log::Write(L"TJShared/ResourceManager", std::wstring(L"Resource ")+ident+L" => absolute path already ");
 		return ident;
 	}
 

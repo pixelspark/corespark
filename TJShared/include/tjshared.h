@@ -25,6 +25,7 @@
 #include <sstream>
 #include <algorithm>
 #include <vector>
+#include <set>
 #include <list>
 #include <iomanip>
 #include <fstream>

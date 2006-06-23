@@ -547,22 +547,14 @@ void Wnd::SetVerticalScrollInfo(Range<unsigned int> rng, unsigned int pageSize) 
 }
 
 LRESULT ColorWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
-	if(msg==WM_PAINT) {
-		PAINTSTRUCT ps;
-		BeginPaint(_wnd, &ps);
-		Graphics g(ps.hdc);
-
-		RECT r;
-		GetClientRect(_wnd,&r);
-
-		SolidBrush br(Color(_r, _g, _b));
-		g.FillRectangle(&br, 0,0,r.right-r.left, r.bottom-r.top);
-
-		EndPaint(_wnd, &ps);
-		return 0;
-	}
 	return Wnd::Message(msg,wp,lp);
 }
+
+void ColorWnd::Paint(Gdiplus::Graphics& g) {
+	SolidBrush br(Color(_r, _g, _b));
+	g.FillRectangle(&br, GetClientRectangle());
+}
+
 
 void Wnd::Move(int x, int y, int w, int h) {
 	//MoveWindow(_wnd,x,y,w,h,FALSE);

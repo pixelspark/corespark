@@ -23,6 +23,7 @@ public:
 
 	virtual ~ColorWnd() {}
 	virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
+	virtual void Paint(Gdiplus::Graphics& g);
 
 	unsigned char _r,_g,_b;
 };

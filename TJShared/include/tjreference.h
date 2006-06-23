@@ -26,9 +26,6 @@ template< typename T > class Resource {
 
 	public:
 		virtual ~Resource() {
-			if(_data==0) {
-				throw Exception(L"Resource deleted with null data", ExceptionTypeWarning);
-			}
 			if((_rc+_weakrc)!=0) {
 					throw Exception(L"Resource deleted while still referenced!",ExceptionTypeWarning);
 			}
@@ -221,7 +218,7 @@ template<typename T> class weak {
 
 				_res = reinterpret_cast<Resource<T>* >(org._res);
 				if(_res!=0) {
-					_res->AddReference();
+					_res->AddWeakReference();
 				}
 			}
 		}
