@@ -55,7 +55,6 @@ void ResourceManager::SetRootWindowForNotifications(RootWnd* rw) {
 }
 
 std::wstring ResourceManager::Get(std::wstring ident) {
-	Log::Write(L"TJShared/ResourceManager", ident);
 	std::vector<std::wstring>::iterator it = _paths.begin();
 	while(it!=_paths.end()) {
 		std::wstring path = *it + L"\\"+ident;
