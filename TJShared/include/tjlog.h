@@ -11,6 +11,7 @@ class EXPORTED Log {
 		static void Write(std::wstring source, std::wstring message);
 		static void Show(bool s);
 		static void SetWriteToFile(bool f);
+		static std::wstring GetContents();
 	protected:
 		static LogThread _logger;
 		static CriticalSection _lock;

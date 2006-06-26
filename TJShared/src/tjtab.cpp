@@ -364,9 +364,6 @@ LRESULT TabWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 							}
 						}
 					}
-					else {
-						Log::Write(L"TJShared/Tab", L"Could not find the tab pane you're dragging");
-					}
 				}
 				catch(...) {
 					_dragging = 0;

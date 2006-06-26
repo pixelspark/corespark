@@ -34,6 +34,21 @@ void LoggerWnd::Layout() {
 	MoveWindow(_list, rc.left, rc.top, rc.right, rc.bottom, TRUE);
 }
 
+std::wstring LoggerWnd::GetContents() {
+	int n = ListBox_GetCount(_list);
+	std::wostringstream msgs;
+	for(int a=0;a<n;a++) {
+		int length = ListBox_GetTextLen(_list, a);
+		wchar_t* buf = new wchar_t[length+2];
+		buf[0] = L'\0';
+		ListBox_GetText(_list, a, buf);
+		msgs << buf << std::endl;
+		delete[] buf;
+	}
+
+	return msgs.str();
+}
+
 LRESULT LoggerWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	if(msg==WM_CLOSE) {
 		Show(false);

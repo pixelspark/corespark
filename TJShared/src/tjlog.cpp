@@ -28,6 +28,11 @@ namespace tj {
 					_logger->Show(s);
 				}
 
+				virtual std::wstring GetContents() {
+					WaitForSingleObject(_loggerCreatedEvent, INFINITE);
+					return _logger->GetContents();
+				}
+
 			protected:
 				virtual void Run() {
 					_logger = new LoggerWnd(0L);
@@ -96,4 +101,9 @@ void Log::SetWriteToFile(bool f) {
 
 void Log::Show(bool t) {
 	_logger.Show(t);
+}
+
+std::wstring Log::GetContents() {
+	ThreadLock lock(&_lock);
+	return _logger.GetContents();
 }

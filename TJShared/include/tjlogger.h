@@ -10,6 +10,7 @@ class EXPORTED LoggerWnd: public Wnd {
 		virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 		virtual void Layout();
 		virtual void Paint(Gdiplus::Graphics& g);
+		virtual std::wstring GetContents();
 
 	protected:
 		HFONT _font;
