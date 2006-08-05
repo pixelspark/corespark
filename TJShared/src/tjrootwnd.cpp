@@ -8,6 +8,40 @@ RootWnd::RootWnd(std::wstring title): Wnd(title.c_str(),0, TJ_DEFAULT_CLASS_NAME
 RootWnd::~RootWnd() {
 }
 
+void RootWnd::RemoveWindow(ref<Wnd> w) {
+	if(!w) return;
+
+	// remove from orphan panes
+	std::vector< ref<Pane> >::iterator it = _orphans.begin();
+	while(it!=_orphans.end()) {
+		ref<Pane> pane = *it;
+		if(pane->_wnd==w) {
+			RemoveOrphanPane(pane);
+			break;
+		}
+		it++;
+	}
+
+	// remove from floating panes
+	std::vector< ref<FloatingPane> >::iterator ita = _floatingPanes.begin();
+	while(ita!=_floatingPanes.end()) {
+		ref<FloatingPane> pane = *ita;
+		if(pane->_pane->_wnd==w) {
+			RemoveFloatingPane(pane);
+			break;
+		}
+		ita++;
+	}
+
+	// remove from tab windows
+	std::vector< ref<TabWnd> >::iterator itb = _tabWindows.begin();
+	while(itb!=_tabWindows.end()) {
+		ref<TabWnd> tab = *itb;
+		tab->RemovePane(w);
+		itb++;
+	}
+}
+
 LRESULT RootWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	if(msg==WM_ENTERMENULOOP) {
 		return 0;
@@ -124,6 +158,9 @@ void RootWnd::SetDragTarget(ref<TabWnd> tw) {
 	if(tw) tw->Update();
 }
 
+void RootWnd::Update() {
+}
+
 ref<TabWnd> RootWnd::GetDragTarget() {
 	return _dragTarget;
 }
@@ -150,5 +187,23 @@ void RootWnd::RemoveOrphanPane(ref<Pane> pane) {
 			return;
 		}
 		it++;
+	}
+}
+
+/** AddNotificationRunnable */
+AddNotificationRunnable::AddNotificationRunnable(RootWnd* root, std::wstring text, std::wstring icon, int time) {
+	_root = root;
+	_text = text;
+	_icon = icon;
+	_time = time;
+}
+
+AddNotificationRunnable::~AddNotificationRunnable() {
+
+}
+
+void AddNotificationRunnable::Run() {
+	if(_root!=0) {
+		_root->AddNotification(_text, _icon, _time);
 	}
 }

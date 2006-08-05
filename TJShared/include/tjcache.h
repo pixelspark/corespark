@@ -10,7 +10,7 @@ template<typename T> struct CacheItem {
 	int _age;
 };
 
-template<typename K, typename V> class Cache {
+template<typename K, typename V> class Cache: public virtual Object {
 	public:
 		Cache(unsigned int maxItems) {
 			_max = maxItems;

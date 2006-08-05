@@ -15,6 +15,7 @@ class EXPORTED RootWnd: public Wnd {
 		virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 		ref<FloatingPane> AddFloatingPane(ref<Pane> pane, TabWnd* source);
 		void RemoveFloatingPane(ref<Pane> pn);
+		virtual void Update();
 
 		// TODO: use weak<TabWnd> ?
 		void AddTabWindow(ref<TabWnd> tw);
@@ -28,6 +29,7 @@ class EXPORTED RootWnd: public Wnd {
 		void AddOrphanPane(ref<Pane> pane);
 		std::vector< ref<Pane> >* GetOrphanPanes();
 		void RemoveOrphanPane(ref<Pane> pane);
+		void RemoveWindow(ref<Wnd> w);
 
 		/* Notification API */
 		void AddNotification(std::wstring message, std::wstring icon, int time=-1);
@@ -38,6 +40,19 @@ class EXPORTED RootWnd: public Wnd {
 		std::vector< ref<Pane> > _orphans;
 		std::vector< ref<NotificationWnd> > _notifications;
 		ref<TabWnd> _dragTarget;
+};
+
+class EXPORTED AddNotificationRunnable: public Runnable {
+	public:
+		AddNotificationRunnable(RootWnd* root, std::wstring text, std::wstring icon, int time);
+		virtual ~AddNotificationRunnable();
+		virtual void Run();
+
+	protected:
+		RootWnd* _root;
+		std::wstring _text;
+		std::wstring _icon;
+		int _time;
 };
 
 #pragma warning(pop)

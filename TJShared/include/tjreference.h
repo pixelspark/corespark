@@ -1,8 +1,6 @@
 #ifndef _REFERENCE_H
 #define _REFERENCE_H
 
-template<class T> class Call;
-
 class BadCastException: public Exception {
 	public:
 		BadCastException(): Exception(L"A bad cast was attempted", ExceptionTypeError) {
@@ -26,13 +24,12 @@ template< typename T > class Resource {
 
 	public:
 		virtual ~Resource() {
-			if((_rc+_weakrc)!=0) {
+			if(_rc!=0 || _weakrc!=0) {
 					throw Exception(L"Resource deleted while still referenced!",ExceptionTypeWarning);
 			}
 
 			this->Release();
 			GC::DecrementLive(sizeof(T));
-			GC::RemoveLog((void*)_data);
 		}
 
 		inline void AddReference() {
@@ -41,7 +38,7 @@ template< typename T > class Resource {
 
 		inline void DeleteReference() {
 			InterlockedDecrement(&_rc);
-			if(_rc+_weakrc==0) {
+			if(_rc==0 && _weakrc ==0) {
 				delete this;
 			}
 			else if(_rc==0) {
@@ -55,7 +52,7 @@ template< typename T > class Resource {
 
 		inline void DeleteWeakReference() {
 			InterlockedDecrement(&_weakrc);
-			if(_rc+_weakrc==0) {
+			if(_rc==0 && _weakrc==0) {
 				delete this;
 			}
 		}
@@ -80,8 +77,11 @@ template< typename T > class Resource {
 		}
   
 		void Release() {
-			delete _data;
-			_data = 0;
+			if(_data!=0) {
+				T* temp = _data;
+				_data = 0;
+				delete temp;
+			}
 		}
 
 		long _rc;
@@ -95,7 +95,7 @@ template<typename T> class ref {
 		inline ref(Resource<T>* rx=0) {
 			_res = rx;
 			if(_res!=0) {
-			_res->AddReference();
+				_res->AddReference();
 			}
 		}
 
@@ -142,6 +142,7 @@ template<typename T> class ref {
 		}
 
 		inline T* GetPointer() {
+			if(_res->_data==0) return 0;
 			return dynamic_cast<T*>(_res->_data);
 		}
 
@@ -160,7 +161,12 @@ template<typename T> class ref {
 
 		inline T* operator->() {
 			if(_res->_data==0) throw NullPointerException();
-			return _res->_data;
+			return dynamic_cast<T*>(_res->_data);
+		}
+
+		inline const T* operator->() const {
+			if(_res->_data==0) throw NullPointerException();
+			return dynamic_cast<const T*>(_res->_data);
 		}
 
 		inline operator bool() const {
@@ -175,6 +181,7 @@ template<typename T> class ref {
 			return (r._res>_res);
 		}
 
+		// add dynamic casts for pointer comparisons
 		template<typename TT> inline bool operator==(const ref<TT>& r) const {
 			return (_res==r._res);
 		}
@@ -229,7 +236,7 @@ template<typename T> class weak {
 			_res = 0;
 		}
 
-		inline ref<T>& operator=(const ref<T>& o) {
+		inline weak<T>& operator=(const ref<T>& o) {
 			Resource<T>* old = _res;
 			_res = o._res;
 
@@ -251,8 +258,8 @@ template<typename T> class weak {
 			return weak<const T>((res<const T>*)_res);
 		}
 
-		inline operator bool() {
-			return _res!=0&&_res->_rc>0;
+		inline operator ref<T>() {
+			return Reference();
 		}
 
 		inline bool operator==(const ref<T>& r) {
@@ -268,6 +275,7 @@ template<typename T> class weak {
 		}
 
 		template<class X> inline bool IsCastableTo() {
+			if(_res==0 || _res->_data == 0) return false;
 			return dynamic_cast<X*>(_res->_data)!=0;	
 		}
 

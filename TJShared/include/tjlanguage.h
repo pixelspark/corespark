@@ -4,7 +4,7 @@
 #pragma warning(push)
 #pragma warning(disable:4251)
 
-class EXPORTED Language {
+class EXPORTED Language: public virtual Object {
 	public:
 		static const wchar_t* Get(std::wstring id);
 		static void Load(std::wstring file);

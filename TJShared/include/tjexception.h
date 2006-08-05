@@ -9,11 +9,10 @@ enum ExceptionType {
 };
 
 #define Throw(msg,t) throw Exception((const wchar_t*)msg,t,(const char*)__FILE__, (int)__LINE__)
-#define ErrorMessage(msg,t) MessageBox(0L, msg, L"Error", MB_OK|MB_ICONWARNING)
 
 class EXPORTED Exception {
 	public:
-		Exception(const wchar_t* message, ExceptionType type,const char* file="", int line=0) {
+		Exception(std::wstring message, ExceptionType type,const char* file="", int line=0) {
 			_message = message;
 			_type = type;
 			_file = file;
@@ -22,14 +21,13 @@ class EXPORTED Exception {
 
 		virtual ~Exception() {}
 
-		const wchar_t* GetMsg() { return _message; }
-		ExceptionType GetType() { return _type; }
-		int GetLine() { return _line; }
-		const char* GetFile() { return _file; }
-		std::wstring ToString();
-
+		const std::wstring GetMsg() const { return _message; }
+		ExceptionType GetType() const { return _type; }
+		int GetLine() const { return _line; }
+		const char* GetFile() const { return _file; }
+		std::wstring ToString() const;
 	protected:
-		const wchar_t* _message;
+		std::wstring _message;
 		ExceptionType _type;
 		const char* _file;
 		int _line;

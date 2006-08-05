@@ -195,6 +195,7 @@
 				FavorSizeOrSpeed="1"
 				WholeProgramOptimization="true"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;TJSHARED_EXPORTS"
+				MinimalRebuild="true"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -215,7 +216,7 @@
 				AdditionalDependencies="gdiplus.lib comctl32.lib strmiids.lib quartz.lib ../libraries/tinyxml.lib"
 				OutputFile="$(OutDir)\..\..\Release\tjshared.dll"
 				LinkIncremental="0"
-				GenerateManifest="false"
+				GenerateManifest="true"
 				GenerateDebugInformation="true"
 				GenerateMapFile="true"
 				SubSystem="2"
@@ -230,7 +231,8 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
-				EmbedManifest="false"
+				AdditionalManifestFiles="$(InputDir)\res\tjshared.manifest"
+				EmbedManifest="true"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -357,6 +359,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\tjcolorproperty.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\tjcontextmenu.cpp"
 				>
 			</File>
@@ -378,6 +384,10 @@
 			</File>
 			<File
 				RelativePath=".\src\tjexception.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\tjfilewriter.cpp"
 				>
 			</File>
 			<File
@@ -409,7 +419,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\tjobject.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\tjpane.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\tjpropertygrid.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\tjpropertyseparator.cpp"
 				>
 			</File>
 			<File
@@ -445,6 +467,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\tjtextproperty.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\tjtheme.cpp"
 				>
 			</File>
@@ -454,6 +480,10 @@
 			</File>
 			<File
 				RelativePath=".\src\tjthread.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\tjtoolbarwnd.cpp"
 				>
 			</File>
 			<File
@@ -499,6 +529,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\include\tjcolorproperty.h"
+				>
+			</File>
+			<File
 				RelativePath=".\include\tjcontextmenu.h"
 				>
 			</File>
@@ -520,6 +554,10 @@
 			</File>
 			<File
 				RelativePath=".\include\tjexception.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tjfilewriter.h"
 				>
 			</File>
 			<File
@@ -547,6 +585,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\include\tjlistproperty.h"
+				>
+			</File>
+			<File
 				RelativePath=".\include\tjlog.h"
 				>
 			</File>
@@ -559,11 +601,31 @@
 				>
 			</File>
 			<File
+				RelativePath=".\include\tjobject.h"
+				>
+			</File>
+			<File
 				RelativePath=".\include\tjpane.h"
 				>
 			</File>
 			<File
+				RelativePath=".\include\tjproperty.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tjpropertygrid.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tjpropertyseparator.h"
+				>
+			</File>
+			<File
 				RelativePath=".\include\tjrange.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tjreadonlyproperty.h"
 				>
 			</File>
 			<File
@@ -607,6 +669,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\include\tjtextproperty.h"
+				>
+			</File>
+			<File
 				RelativePath=".\include\tjtheme.h"
 				>
 			</File>
@@ -616,6 +682,10 @@
 			</File>
 			<File
 				RelativePath=".\include\tjthread.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tjtoolbarwnd.h"
 				>
 			</File>
 			<File

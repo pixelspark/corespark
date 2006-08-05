@@ -6,7 +6,7 @@
 
 class RootWnd;
 
-class EXPORTED ResourceManager {
+class EXPORTED ResourceManager: public virtual Object {
 	friend class Resource<ResourceManager>; // so it can call the destructor
 	public:
 		static ref<ResourceManager> Instance();

@@ -42,6 +42,9 @@
 
 namespace tj {
 	namespace shared {
+		#include "tjexception.h"
+		#include "tjreference.h"
+		#include "tjobject.h"
 		#include "tjserializable.h"
 		#include "tjrectangle.h"
 		#include "tjcolor.h"
@@ -50,8 +53,6 @@ namespace tj {
 		#include "tjrange.h"
 		#include "tjthread.h"
 		#include "tjcriticalsection.h"
-		#include "tjexception.h"
-		#include "tjreference.h"
 		#include "tjlanguage.h"
 		#include "tjlistener.h"
 		#include "tjcode.h"
@@ -79,7 +80,15 @@ namespace tj {
 		#include "tjtooltip.h" 
 		#include "tjedit.h"
 		#include "tjgc.h"
-		
+		#include "tjproperty.h"
+		#include "tjpropertyseparator.h"
+		#include "tjreadonlyproperty.h"
+		#include "tjcolorproperty.h"
+		#include "tjlistproperty.h"
+		#include "tjtextproperty.h"
+		#include "tjpropertygrid.h"
+		#include "tjfilewriter.h"
+		#include "tjtoolbarwnd.h"
 	}
 }
 

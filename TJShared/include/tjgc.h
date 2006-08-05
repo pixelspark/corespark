@@ -12,23 +12,20 @@ class EXPORTED GC {
 		static long GetSize();
 		template<typename T> static ref< T > Hold(T* x);
 
-		static void AddLog(void* id, std::wstring info);
-		static void RemoveLog(void* id);
-
 	protected:
+		static inline void SetObjectPointer(...) {
+		}
+		
+		static inline void SetObjectPointer(Object* object, Resource<Object>* rs) {
+			object->_resource = rs;
+		}
+
 		static std::map< void*, std::wstring> _objects;
 };
 
-template<typename T> ref<T> GC::Hold(T* x) {
-	// get type information
-	std::string name = typeid(x).name();
-
-	wchar_t* buf  = new wchar_t[name.length()+2];
-	mbstowcs_s(0, buf, name.length()+1, name.c_str(), _TRUNCATE);
-	AddLog((void*)x, std::wstring(buf));
-	delete[] buf;
-
+template<class T> ref<T> GC::Hold(T* x) {
 	Resource<T>* rs = new Resource<T>(x);
+	SetObjectPointer(x, reinterpret_cast< Resource<Object>* >(rs));
 	return rs->Reference();
 }
 

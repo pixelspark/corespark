@@ -1,7 +1,7 @@
 #ifndef _TJCOLOR_H
 #define _TJCOLOR_H
 
-struct EXPORTED RGBColor: public Serializable {
+struct EXPORTED RGBColor: public virtual Object, public Serializable {
 	RGBColor(unsigned char ar=0, unsigned char ag=0, unsigned char ab=0) {
 		r = ar;
 		g = ag;

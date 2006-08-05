@@ -11,12 +11,6 @@ class EXPORTED RunnableApplication {
 		virtual void Initialize(ref<Arguments> args) = 0;
 };
 
-class EXPORTED Runnable {
-	public:
-		virtual ~Runnable();
-		virtual void Run() = 0;
-};
-
 class EXPORTED Core {
 	public:
 		static ref<Core> Instance();

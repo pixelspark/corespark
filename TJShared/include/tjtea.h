@@ -1,7 +1,7 @@
 #ifndef _TJTEA_H
 #define _TJTEA_H
 
-class EXPORTED TEAEncrypter {
+class EXPORTED TEAEncrypter: public virtual Object {
 	public:
 		TEAEncrypter();
 		virtual ~TEAEncrypter();

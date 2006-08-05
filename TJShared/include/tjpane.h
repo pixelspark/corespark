@@ -5,12 +5,13 @@
 
 class RootWnd;
 
-class EXPORTED Pane {
+class EXPORTED Pane: public virtual Object {
 	friend class TabWnd;
 	friend class RootWnd;
 
 	public:
 		Pane(std::wstring, ref<Wnd>, bool);
+		virtual ~Pane();
 		ref<Wnd> GetWindow();
 		std::wstring GetTitle() const;
 

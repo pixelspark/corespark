@@ -18,8 +18,8 @@ Theme::~Theme() {
 	delete _font;
 	delete _fontBold;
 	delete _fontSmall;
-	CloseHandle(_grab);
-	CloseHandle(_grabbed);
+	DestroyCursor(_grab);
+	DestroyCursor(_grabbed);
 }
 
 HCURSOR Theme::GetGrabCursor() const {
@@ -114,6 +114,22 @@ Color Theme::GetSplitterEndColor() const {
 	return Color(0,0,0);
 }
 
+Color Theme::GetToolbarColorStart() const {
+	return GetActiveStartColor();
+}
+
+Color Theme::GetToolbarColorEnd() const {
+	return GetActiveEndColor();
+}
+
+Color Theme::GetGlassColorStart() const {
+	return Color(0,255,255,255);
+}
+
+Color Theme::GetGlassColorEnd() const {
+	return Color(15,255,255,255);
+}
+
 Color Theme::GetCurrentPositionColor() const {
 	return Color(255,255,255);
 }
@@ -206,7 +222,7 @@ Color BrightTheme::GetBackgroundColor() const {
 }
 
 Color BrightTheme::GetTimeBackgroundColor() const {
-	return Color(236,233,216);
+	return Color(235,235,235);
 }
 
 Color BrightTheme::GetPropertyBackgroundColor() const {
@@ -222,23 +238,23 @@ Color BrightTheme::GetTextColor() const {
 }
 
 Color BrightTheme::GetActiveTrackColor() const {
-	return Color(206,203,186);
+	return Color(230,230,230);
 }
 
 Color BrightTheme::GetActiveStartColor() const {
-	return Color(136,136,136);
+	return Color(139,139,139);
 }
 
 Color BrightTheme::GetActiveEndColor() const {
-	return Color(150,150,150);
+	return Color(166,166,166);
 }
 
 Color BrightTheme::GetSplitterStartColor() const {
-	return Color(236,233,216);
+	return Color(204,204,204);
 }
 
 Color BrightTheme::GetSplitterEndColor() const {
-	return Color(236,233,216);
+	return Color(255,255,255);
 }
 
 Color BrightTheme::GetCurrentPositionColor() const {
@@ -267,16 +283,12 @@ Color BrightTheme::GetDisabledOverlayColor() const {
 
 std::wstring BrightTheme::GetName() const { return std::wstring(L"Licht"); }
 
-Brush* BrightTheme::GetApplicationBackgroundBrush(HWND root, HWND child) const {
-	return new SolidBrush(GetTimeBackgroundColor());
-}
-
 Color BrightTheme::GetTabButtonColorStart() const {
-	return Color(100,255,255,255);
+	return Color(100,145,145,145);
 }
 
 Color BrightTheme::GetTabButtonColorEnd() const {
-	return Color(100,255,255,255);
+	return Color(100,185,185,185);
 }
 
 Color BrightTheme::GetHighlightColorStart() const {
@@ -285,4 +297,34 @@ Color BrightTheme::GetHighlightColorStart() const {
 
 Color BrightTheme::GetHighlightColorEnd() const {
 	return Color(100, 255, 100, 0);
+}
+
+Color BrightTheme::GetToolbarColorStart() const {
+	return GetActiveStartColor();
+}
+
+Color BrightTheme::GetToolbarColorEnd() const {
+	return GetActiveEndColor();
+}
+
+Color BrightTheme::GetGlassColorStart() const {
+	return Color(50,255,255,255);
+}
+
+Color BrightTheme::GetGlassColorEnd() const {
+	return Color(100,255,255,255);
+}
+
+Brush* BrightTheme::GetApplicationBackgroundBrush(HWND root, HWND child) const {
+	RECT rootrc, childrc;
+	GetWindowRect(root, &rootrc);
+	GetWindowRect(child, &childrc);
+
+	Gdiplus::LinearGradientBrush* lbr = new Gdiplus::LinearGradientBrush(PointF(0.0f, -float(childrc.top-rootrc.top)), PointF(0.0f,float(rootrc.bottom-rootrc.top)), Color(255,255,255), Color(204,204,204));
+	lbr->SetWrapMode(WrapModeClamp);
+	REAL factors[3] = {1.0f, 0.0f, 0.0f};
+	REAL positions[3] = {0.0f, 0.25f ,1.0f};
+	lbr->SetBlend(factors,positions, 3);
+
+	return lbr;
 }

@@ -1,10 +1,10 @@
 #ifndef _TJDXUTIL_H
 #define _TJDXUTIL_H
 
-class EXPORTED RotRegistration {
+class EXPORTED DXRotRegistration {
 	public:
-		RotRegistration(IGraphBuilder* ig);
-		virtual ~RotRegistration();
+		DXRotRegistration(IGraphBuilder* ig);
+		virtual ~DXRotRegistration();
 		
 	protected:
 		DWORD _magic;

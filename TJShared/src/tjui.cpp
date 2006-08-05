@@ -141,6 +141,12 @@ bool Wnd::IsFullScreen() {
 	return _fullScreen;
 }
 
+void Wnd::Update() {
+}
+
+void Wnd::Layout() {
+}
+
 void Wnd::SetFullScreen(bool fs) {
 	if(fs==_fullScreen) return; //already in the desired mode
 	RECT rect;
@@ -196,7 +202,7 @@ void Wnd::Show(bool t) {
 	}
 }
 
-bool Wnd::IsShown() {
+bool Wnd::IsShown() const {
 	LONG s = GetWindowLong(_wnd, GWL_STYLE);
 	return (s&WS_VISIBLE)>0;
 }
@@ -217,7 +223,7 @@ void Wnd::Repaint() {
 }
 
 LRESULT CALLBACK WndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) {
-	if(msg==WM_CREATE) return 1;
+	if(msg==WM_CREATE||msg==WM_DESTROY) return 1;
 	
 	Wnd* dp = reinterpret_cast<Wnd*>((long long)GetWindowLong(wnd,GWL_USERDATA));
 
@@ -291,6 +297,16 @@ Wnd* Wnd::GetParent() {
 	return 0;
 }
 
+Wnd* Wnd::GetRootWindow() {
+	HWND parent = ::GetWindow(_wnd, GW_OWNER);
+	if(parent!=0) {
+		Wnd* wp = reinterpret_cast<Wnd*>((long long)GetWindowLong(parent,GWL_USERDATA));
+		if(wp!=0) return wp;
+	}
+
+	return 0;
+}
+
 bool Wnd::IsInHotkeyMode() {
 	return _inHotkeyMode;
 }
@@ -339,7 +355,10 @@ bool Wnd::IsMouseOver() {
 LRESULT Wnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	if(msg==WM_CLOSE) {
 		Show(false);
-		if(_quitOnClose) DestroyWindow(_wnd);
+		if(_quitOnClose) {
+			DestroyWindow(_wnd);
+			PostQuitMessage(0);
+		}
 		return 0;
 	}
 	else if(msg==WM_LBUTTONDOWN) {
@@ -407,10 +426,6 @@ LRESULT Wnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	else if(msg==WM_LBUTTONDOWN||msg==WM_LBUTTONUP) {
 		//LeaveHotkeyMode();
 	}
-	else if(msg==WM_DESTROY) {
-		if(_quitOnClose) PostQuitMessage(0);
-		return 0;
-	}
 	else if(msg==WM_KEYDOWN) {
 		if(_eatHotkeys) {
 			/*ref<View> vw = Application::Instance()->GetView();
@@ -435,6 +450,9 @@ LRESULT Wnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		if(IsInHotkeyMode()) {
 			LeaveHotkeyMode(L'\0');
 		}
+	}
+	else if(msg==WM_MOUSEMOVE) {
+		SetWantMouseLeave(_wantsMouseLeave);
 	}
 
 	return DefWindowProc(_wnd, msg, wp, lp);
@@ -649,9 +667,10 @@ LRESULT CALLBACK PropertyEditWndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) {
 				SetFocus(next);
 			}
 		}
-		else if(wp==VK_RETURN) {
-			return 0; // do not play
-		}
+
+		RECT rc;
+		GetClientRect(wnd, &rc);
+		InvalidateRect(wnd, &rc, FALSE);
 	}
 	WNDCLASS wc;
 	GetClassInfo(0, L"EDIT", &wc);
@@ -685,6 +704,22 @@ tj::shared::Rectangle Wnd::GetWindowRectangle() {
 	RECT r;
 	GetWindowRect(_wnd, &r);
 	return tj::shared::Rectangle(r);
+}
+
+void Wnd::SetWantMouseLeave(bool t) {
+	_wantsMouseLeave = t;
+	if(t) {
+		TRACKMOUSEEVENT data;
+		data.cbSize = sizeof(TRACKMOUSEEVENT);
+		data.dwFlags = TME_LEAVE;
+		data.hwndTrack = _wnd;
+		data.dwHoverTime = HOVER_DEFAULT;
+		TrackMouseEvent(&data);
+	}
+}
+
+bool Wnd::GetWantMouseLeave() const {
+	return _wantsMouseLeave;
 }
 
 LRESULT CALLBACK PropertyEditNumericWndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) {

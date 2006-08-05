@@ -19,7 +19,7 @@ class EXPORTED GraphicsInit {
 		virtual ~GraphicsInit();
 };
 
-class EXPORTED Wnd {
+class EXPORTED Wnd: public virtual Object {
 	friend class FloatingPane;
 
 	public:
@@ -27,12 +27,12 @@ class EXPORTED Wnd {
 		virtual ~Wnd();
 		
 		virtual void Show(bool s);
-		bool IsShown();
+		bool IsShown() const;
 		HWND GetWindow();
 		void Repaint();
 		void SetQuitOnClose(bool q);
-		virtual void Layout() {};
-		virtual void Update() {};
+		virtual void Layout();
+		virtual void Update();
 		virtual void Paint(Gdiplus::Graphics& g) = 0;
 		virtual LRESULT PreMessage(UINT msg, WPARAM wp, LPARAM lp);
 		virtual void SetText(const wchar_t* t);
@@ -40,28 +40,28 @@ class EXPORTED Wnd {
 		void SetStyleEx(DWORD style);
 		void UnsetStyle(DWORD style);
 		void UnsetStyleEx(DWORD style);
+		bool IsMouseOver();
+		virtual void SetFullScreen(bool f);
+		bool IsFullScreen();
+
+		// Scrolling
 		void SetHorizontallyScrollable(bool s);
 		void SetVerticallyScrollable(bool s);
 		unsigned int GetHorizontalPos();
 		unsigned int GetVerticalPos();
 		void SetVerticalPos(unsigned int p);
 		void SetHorizontalPos(unsigned int p);
-		Wnd* GetParent();
-		virtual bool IsInHotkeyMode(); // returns true if its child windows should show hotkeys
-
 		void SetHorizontalScrollInfo(Range<unsigned int> rng, unsigned int pageSize);
 		void SetVerticalScrollInfo(Range<unsigned int> rng, unsigned int pageSize);
 
+		// Hotkeys
+		virtual bool IsInHotkeyMode(); // returns true if its child windows should show hotkeys
 		virtual wchar_t GetPreferredHotkey()=0;
 		virtual void EnterHotkeyMode();
 		virtual void LeaveHotkeyMode(wchar_t key=L'\0');
 		virtual void Move(int x, int y, int w, int h);
 		virtual bool IsSplitter();
-
 		void SetEatHotkeys(bool e);
-		bool IsMouseOver();
-		virtual void SetFullScreen(bool f);
-		bool IsFullScreen();
 
 		std::wstring GetText();
 		void SetText(std::wstring text);
@@ -69,12 +69,19 @@ class EXPORTED Wnd {
 		tj::shared::Rectangle GetClientRectangle();
 		tj::shared::Rectangle GetWindowRectangle();
 
+		Wnd* GetParent();
+		Wnd* GetRootWindow();
+
+		void SetWantMouseLeave(bool t);
+		bool GetWantMouseLeave() const;
+
 	protected:
 		virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 		void DrawHotkey(Gdiplus::Graphics* g, const wchar_t* wc, int x, int y);
 		HWND _wnd;
 		bool _inHotkeyMode;
 		bool _fullScreen;
+		bool _wantsMouseLeave;
 	
 	private:
 		Gdiplus::Bitmap* _buffer;

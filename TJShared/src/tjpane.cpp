@@ -7,6 +7,9 @@ Pane::Pane(std::wstring title, ref<Wnd> window, bool detached) {
 	_detached = detached;
 }
 
+Pane::~Pane() {
+}
+
 std::wstring Pane::GetTitle() const {
 	return _title;
 }

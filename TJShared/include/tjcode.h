@@ -3,7 +3,7 @@
 
 #pragma pack(push,1)
 
-class EXPORTED Code {
+class EXPORTED Code: public virtual Object {
 	public:
 		Code(const char* code, unsigned int size);
 		virtual ~Code();
@@ -25,7 +25,7 @@ class EXPORTED Code {
 
 template<> std::wstring Code::Get(unsigned int& position);
 
-class EXPORTED CodeWriter {
+class EXPORTED CodeWriter: public virtual Object {
 	public:
 		CodeWriter(unsigned int initialSize=1024);
 		virtual ~CodeWriter();

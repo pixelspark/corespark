@@ -1,7 +1,7 @@
 #ifndef _TJTOOLTIP_H
 #define _TJTOOLTIP_H
 
-class EXPORTED TooltipWnd {
+class EXPORTED TooltipWnd: public virtual Object {
 	public:
 		TooltipWnd(HWND owner);
 		virtual ~TooltipWnd();

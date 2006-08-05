@@ -160,6 +160,7 @@ bool TabWnd::IsInHotkeyMode() {
 ref<Pane> TabWnd::AddPane(std::wstring name, ref<Wnd> wnd) {
 	assert(wnd);
 	wnd->Show(false);
+	SetParent(wnd->GetWindow(), _wnd);
 	ref<Pane> pane = GC::Hold(new Pane(name,wnd,false));
 	_panes.push_back(pane);
 	if(_panes.size()==1) {
@@ -193,6 +194,7 @@ void TabWnd::RemovePane(ref<Wnd> wnd) {
 	assert(wnd);
 
 	wnd->Show(false);
+	_current = 0;
 	std::vector< ref<Pane> >::iterator it = _panes.begin();
 	while(it!=_panes.end()) {
 		ref<Pane> pane = *it;
@@ -498,12 +500,17 @@ void TabWnd::DoAddMenu(int x, int y) {
 	int c = m.DoContextMenu(_wnd, x,y,true);
 	if(c>0) {
 		try {
+			if(_current) {
+				_current->_wnd->Show(false);
+			}
+
 			ref<Pane> selected = pv->at(c-1);
 
 			if(selected) {
 				_root->RemoveOrphanPane(selected);
 				Attach(selected);
 				_current = selected;
+				_current->_wnd->Show(true);
 			}
 		}
 		catch(...) {

@@ -1,36 +1,6 @@
 #include "../include/tjshared.h"
 using namespace tj::shared;
 
-namespace tj {
-	namespace shared {
-		class AddNotificationRunnable: public Runnable {
-			public:
-				AddNotificationRunnable(RootWnd* root, std::wstring text, std::wstring icon, int time) {
-					_root = root;
-					_text = text;
-					_icon = icon;
-					_time = time;
-				}
-				
-				virtual ~AddNotificationRunnable() {
-				
-				}
-				
-				virtual void Run() {
-					if(_root!=0) {
-						_root->AddNotification(_text, _icon, _time);
-					}
-				}
-
-			protected:
-				RootWnd* _root;
-				std::wstring _text;
-				std::wstring _icon;
-				int _time;
-		};
-	}
-}
-
 ref<ResourceManager> ResourceManager::_instance;
 
 ResourceManager::ResourceManager() {

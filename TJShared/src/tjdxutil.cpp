@@ -1,7 +1,7 @@
 #include "../include/tjshared.h"
 using namespace tj::shared;
 
-HRESULT RotRegistration::AddGraphToRot(IUnknown *pUnkGraph, DWORD *pdwRegister)  {
+HRESULT DXRotRegistration::AddGraphToRot(IUnknown *pUnkGraph, DWORD *pdwRegister)  {
 	IMoniker * pMoniker;
     IRunningObjectTable *pROT;
     WCHAR wsz[128];
@@ -37,7 +37,7 @@ HRESULT RotRegistration::AddGraphToRot(IUnknown *pUnkGraph, DWORD *pdwRegister) 
 
 
 // Removes a filter graph from the Running Object Table
-void RotRegistration::RemoveGraphFromRot(DWORD pdwRegister) {
+void DXRotRegistration::RemoveGraphFromRot(DWORD pdwRegister) {
     IRunningObjectTable *pROT;
 
     if (SUCCEEDED(GetRunningObjectTable(0, &pROT))) {
@@ -47,7 +47,7 @@ void RotRegistration::RemoveGraphFromRot(DWORD pdwRegister) {
 }
 
 // ROT Regisration holder
-RotRegistration::RotRegistration(IGraphBuilder* ig) {
+DXRotRegistration::DXRotRegistration(IGraphBuilder* ig) {
 	assert(ig!=0);
 	HRESULT hr = AddGraphToRot(ig, &_magic);
     if(FAILED(hr)) {
@@ -56,7 +56,7 @@ RotRegistration::RotRegistration(IGraphBuilder* ig) {
     }
 }
 
-RotRegistration::~RotRegistration() {
+DXRotRegistration::~DXRotRegistration() {
 	 RemoveGraphFromRot(_magic);
 }
 

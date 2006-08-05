@@ -1,6 +1,9 @@
 #ifndef _TJNOTIFICATIONWND_H
 #define _TJNOTIFICATIONWND_H
 
+#pragma warning(push)
+#pragma warning(disable: 4251)
+
 class EXPORTED NotificationWnd: public Wnd {
 	public:
 		NotificationWnd(std::wstring text, std::wstring icon, int time, int h, RootWnd* parent);
@@ -26,5 +29,7 @@ class EXPORTED NotificationWnd: public Wnd {
 		const static int DefaultNotificationMargin;
 		const static int DefaultNotificationTimeout;
 };
+
+#pragma warning(pop)
 
 #endif

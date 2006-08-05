@@ -4,7 +4,7 @@
 #pragma warning(push)
 #pragma warning(disable: 4251)
 
-class EXPORTED Theme {
+class EXPORTED Theme: public virtual Object {
 	public:
 		Theme();
 		virtual ~Theme();
@@ -43,6 +43,12 @@ class EXPORTED Theme {
 
 		virtual Gdiplus::Color GetHighlightColorStart() const;
 		virtual Gdiplus::Color GetHighlightColorEnd() const;
+
+		virtual Gdiplus::Color GetGlassColorStart() const;
+		virtual Gdiplus::Color GetGlassColorEnd() const;
+
+		virtual Gdiplus::Color GetToolbarColorStart() const;
+		virtual Gdiplus::Color GetToolbarColorEnd() const;
 		
 		virtual HCURSOR GetGrabCursor() const;
 		virtual HCURSOR GetGrabbedCursor() const;
@@ -96,6 +102,13 @@ class BrightTheme: public Theme {
 
 		virtual Gdiplus::Color GetHighlightColorStart() const;
 		virtual Gdiplus::Color GetHighlightColorEnd() const;
+
+		
+		virtual Gdiplus::Color GetGlassColorStart() const;
+		virtual Gdiplus::Color GetGlassColorEnd() const;
+
+		virtual Gdiplus::Color GetToolbarColorStart() const;
+		virtual Gdiplus::Color GetToolbarColorEnd() const;
 };
 
 #pragma warning(pop)

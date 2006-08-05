@@ -6,7 +6,7 @@ from 'clients' anyway */
 #pragma warning(push)
 #pragma warning(disable: 4251)
 
-class EXPORTED ThemeManager {
+class EXPORTED ThemeManager: public virtual Object {
 	public:
 		static ref<Theme> GetTheme();
 		static void AddTheme(ref<Theme> thm);

@@ -213,33 +213,6 @@ void encryptMessage(const std::string &intstr, std::string &outstr, const std::s
 	outstr = coutput;
 }
 
-/*int main(int argc, char *argv[])
-{
-	std::cout << "Tiny Encryption Algorithm Demo" << endl;
-	std::cout << "Loops until nothing is entered for the key..." << endl << endl;
-	std::string key = " ";
-	std::string line, encoded_output, decoded_output, message = "Your string here";
-
-	while( key.size() > 0 )
-	{
-		std::cout << "Enter key: ";
-		std::getline(std::cin, key);
-
-		if( key.size() < 1 )
-			break;
-
-		encryptMessage(message, encoded_output, key);
-		cout << "Decoded String: " << message << endl;
-		cout << "Encoded String: " << encoded_output << endl << endl;
-
-		decryptMessage(encoded_output, decoded_output, key);
-		cout << "Encoded String: " << encoded_output << endl;
-		cout << "Decoded String: " << decoded_output << endl << endl;
-	}
-	
-	return 0;
-}*/
-
 /* TEA Class */
 TEAEncrypter::TEAEncrypter() {
 }

@@ -5,7 +5,7 @@
 #pragma warning(disable: 4251)
 
 /** Command-line argument parser. **/
-class EXPORTED Arguments {
+class EXPORTED Arguments: public virtual Object {
 	public:
 		Arguments(); 
 		virtual ~Arguments();

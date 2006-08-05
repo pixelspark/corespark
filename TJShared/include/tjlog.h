@@ -6,7 +6,7 @@
 
 class LogThread;
 
-class EXPORTED Log {
+class EXPORTED Log: public virtual Object {
 	public:
 		static void Write(std::wstring source, std::wstring message);
 		static void Show(bool s);

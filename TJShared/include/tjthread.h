@@ -1,6 +1,12 @@
 #ifndef _TJTHREAD_H
 #define _TJTHREAD_H
 
+class EXPORTED Runnable {
+	public:
+		virtual ~Runnable();
+		virtual void Run() = 0;
+};
+
 class EXPORTED Event {
 	public:
 		Event() {
@@ -31,7 +37,7 @@ class EXPORTED Event {
 		HANDLE _event;
 };
 
-class EXPORTED Thread {
+class EXPORTED Thread: public virtual Object {
 	friend DWORD WINAPI ThreadProc(LPVOID);
 
 	public:
@@ -48,30 +54,6 @@ class EXPORTED Thread {
 		HANDLE _thread;
 		int _id;
 };
-
-/* template<typename T> class EventThread: public Thread {
-	public:
-		EventThread() {
-		}
-
-		virtual ~EventThread() {
-		}
-
-		void Signal(T param) {
-			_event.Signal(param);
-		}
-
-	protected:
-		virtual void Run() {
-			const T& param = _event.Wait();
-			OnEvent(param);
-			_event.Reset();
-		}
-
-		virtual void OnEvent(const T& param)=0;
-
-		Event _event;
-};*/
 
 class EXPORTED CriticalSection {
 	friend class ThreadLock;
