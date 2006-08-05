@@ -17,13 +17,17 @@ ref<Core> Core::Instance() {
 	return _instance;
 }
 
-void Core::AddAction(ref<Runnable> rm) {
+void Core::AddAction(ref<Runnable> rm, bool wait) {
 	{
 		ThreadLock lck(&_actionLock);
-		Log::Write(L"TJShared/Core", L"GUI thread runnable action queued");
 		_actions.push_back(rm);
 	}
+	_actionsProcessedEvent.Reset();
 	_actionEvent.Signal();
+
+	if(wait) {
+		_actionsProcessedEvent.Wait();
+	}
 }
 
 void Core::Run(RunnableApplication* app, ref<Arguments> args) {
@@ -56,6 +60,7 @@ void Core::Run(RunnableApplication* app, ref<Arguments> args) {
 		else { 
 			// process actions
 			ProcessActions();
+			_actionsProcessedEvent.Signal();
 		}
     }
 

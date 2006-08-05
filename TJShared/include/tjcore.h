@@ -18,7 +18,7 @@ class EXPORTED Core {
 		RunnableApplication* GetApplicationPointer();
 		Core();
 		virtual ~Core();
-		void AddAction(ref<Runnable> action);
+		void AddAction(ref<Runnable> action, bool wait=false);
 
 	protected:
 		static ref<Core> _instance;
@@ -26,6 +26,7 @@ class EXPORTED Core {
 		CriticalSection _actionLock;
 		std::vector< ref<Runnable> > _actions;
 		Event _actionEvent;
+		Event _actionsProcessedEvent;
 
 		void ProcessActions();
 };

@@ -261,7 +261,7 @@ struct ScriptGrammar : public grammar<ScriptGrammar> {
 				 (identifier >> !(ch_p('(')[ScriptInstruction<OpPushParameter>(self._stack)] >> !parameterList >> ')'));
 
 			methodCallConstruct = 
-				methodCall[ScriptInstruction<OpCallGlobal>(self._stack)] >> !(methodCall[ScriptInstruction<OpCall>(self._stack)] % ch_p('.'));
+				methodCall[ScriptInstruction<OpCallGlobal>(self._stack)] >> !(ch_p(".") >> (methodCall[ScriptInstruction<OpCall>(self._stack)] % ch_p('.')));
 
 			/* Operators */
 			equalsOperator = 
