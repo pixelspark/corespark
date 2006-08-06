@@ -391,6 +391,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\tjhash.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\tjimagebutton.cpp"
 				>
 			</File>
@@ -566,6 +570,10 @@
 			</File>
 			<File
 				RelativePath=".\include\tjgc.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tjhash.h"
 				>
 			</File>
 			<File
