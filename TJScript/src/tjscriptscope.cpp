@@ -30,7 +30,7 @@ ref<Scriptable> ScriptScope::Execute(Command command, ref<ParameterList> params)
 			return _previous->Execute(command, params);
 		}
 		else {
-			return 0;
+			return ScriptConstants::Null();
 		}
 	}
 	else {

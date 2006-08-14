@@ -65,7 +65,7 @@ namespace tj {
 				// to be called by ops or vm during execution
 				void Call(tj::shared::ref<Scriptlet> s, tj::shared::ref<ScriptParameterList> sc=0);
 				void Call(int n);
-				void Return();
+				void Return(bool takeLastValue);
 				void Break();
 				
 			protected:

@@ -3,5 +3,6 @@
 
 #include "tjscriptarray.h"
 #include "tjscriptrange.h"
+#include "tjscripthash.h"
 
 #endif

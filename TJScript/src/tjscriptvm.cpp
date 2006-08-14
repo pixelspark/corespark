@@ -31,6 +31,7 @@ void VM::Call(ref<Scriptlet> s, ref<ScriptParameterList> p) {
 		current->_stackSize = _stack->GetSize();
 	}
 	_call.push_back(GC::Hold(new StackFrame(s,0)));
+
 	ScriptScope* ss = new ScriptScope(p);
 	ss->SetPrevious(_global);
 	_global = GC::Hold(ss);
@@ -44,7 +45,7 @@ void VM::Call(int n) {
 variables created inside the scriptlet). The difference is that return pops the call stack until a
 function scriptlet is encountered, and Break does the same thing until a loop scriptlet is encountered
 and quits that loop too. **/
-void VM::Return() {
+void VM::Return(bool returnValue) {
 	while(true) {
 		ref<StackFrame> frame = *(_call.rbegin());
 		_call.pop_back();
@@ -52,6 +53,19 @@ void VM::Return() {
 		if(frame->_scriptlet->IsFunction()) {
 			break;
 		}
+	}
+
+	ref<Scriptable> returnedValue = _stack->Top();
+	ref<StackFrame> current = *(_call.rbegin());
+	while(_stack->GetSize() > current->_stackSize) {
+		_stack->Pop();
+	}
+
+	if(returnValue) {
+		_stack->Push(returnedValue);
+	}
+	else {
+		_stack->Push(ScriptConstants::Null());
 	}
 }
 
@@ -88,7 +102,7 @@ void VM::Execute(ref<ScriptContext> c, ref<CompiledScript> script) {
 	}
 
 	ref<Scriptlet> main = script->GetMainScriptlet();
-	Call(main);
+	_call.push_back(GC::Hold(new StackFrame(main,0)));
 
 	try {
 		while(!_call.empty()) {
@@ -96,7 +110,9 @@ void VM::Execute(ref<ScriptContext> c, ref<CompiledScript> script) {
 			ref<Scriptlet> scriptlet = current->_scriptlet;
 
 			if(current->_pc>=scriptlet->_code.size()) {
-				Log::Write(L"TJScript/VM", L"Scriptlet ended");
+				if(_debug) {
+					Log::Write(L"TJScript/VM", L"Scriptlet ended");
+				}
 				_call.pop_back();
 				if(!_call.empty()) {
 					// attempt stack repair if necessary
@@ -107,12 +123,20 @@ void VM::Execute(ref<ScriptContext> c, ref<CompiledScript> script) {
 					else if(_stack->GetSize()>current->_stackSize) {
 						while(_stack->GetSize()>current->_stackSize) {
 							_stack->Pop();
-							Log::Write(L"TJScript/VM", L"Pop repair");
+							if(_debug) {
+								Log::Write(L"TJScript/VM", L"Pop repair");
+							}
 						}
+					}
+
+					if(scriptlet->IsFunction()) {
+						_stack->Push(ScriptConstants::Null());
 					}
 				}
 				
-				_global = _global->GetPrevious();
+				if(scriptlet!=main) {
+					_global = _global->GetPrevious();
+				}
 			}
 			else {
 				ref<Op> op = scriptlet->_code.at(current->_pc);

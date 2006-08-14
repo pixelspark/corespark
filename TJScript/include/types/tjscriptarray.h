@@ -10,7 +10,7 @@ namespace tj {
 				virtual ~ScriptArrayType();
 		};
 
-		class ScriptArray: public virtual tj::shared::Object, public Scriptable {
+		class SCRIPT_EXPORTED ScriptArray: public virtual tj::shared::Object, public Scriptable {
 			friend class ScriptArrayIterator;
 
 			public:	
@@ -21,6 +21,7 @@ namespace tj {
 
 			protected:
 				std::map<std::wstring, tj::shared::ref<Scriptable> > _array;
+				tj::shared::CriticalSection _lock;
 		};
 	}
 }

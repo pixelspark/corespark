@@ -4,7 +4,7 @@
 namespace tj {
 	namespace script {
 
-		class ScriptScope: public Scriptable {
+		class SCRIPT_EXPORTED ScriptScope: public Scriptable {
 			public:
 				ScriptScope(tj::shared::ref<ScriptParameterList> p=0);
 				virtual ~ScriptScope();

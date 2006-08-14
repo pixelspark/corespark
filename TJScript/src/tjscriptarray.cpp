@@ -16,6 +16,7 @@ namespace tj {
 				}
 
 				virtual ref<Scriptable> Execute(Command c, ref<ParameterList> p) {
+					ThreadLock lock(&(_array->_lock));
 					if(c==L"toString") {
 						return GC::Hold(new ScriptString(L"[ScriptArrayIterator]"));
 					}
@@ -63,6 +64,8 @@ ScriptArray::~ScriptArray() {
 }
 
 ref<Scriptable> ScriptArray::Execute(Command c, ref<ParameterList> p) {
+	ThreadLock lock(&_lock);
+
 	if(c==L"size") {
 		return GC::Hold(new ScriptInt((int)_array.size()));
 	}

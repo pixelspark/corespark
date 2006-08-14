@@ -28,6 +28,8 @@
 #include "tjscriptthread.h"
 #include "tjscriptcontext.h"
 #include "tjscriptparameter.h"
+#include "tjscriptscope.h"
+#include "types/tjstatictypes.h"
 
 #pragma warning(pop)
 

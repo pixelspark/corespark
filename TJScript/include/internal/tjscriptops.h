@@ -160,12 +160,20 @@ namespace tj {
 				int _scriptlet;
 		};
 
-		// returns from a scriptlet, leaving a return value to the caller
+		// returns from a scriptlet, not leaving any return value (so, giving null back implicitly)
 		class OpReturn: public Op {
 			public:
 				virtual ~OpReturn() {};
 				virtual void Execute(tj::shared::ref<VM> vm);
 				virtual inline std::wstring GetName() {return L"OpReturn";}
+		};
+
+		// returns from a scriptlet, leaving a return value to the caller
+		class OpReturnValue: public Op {
+			public:
+				virtual ~OpReturnValue() {};
+				virtual void Execute(tj::shared::ref<VM> vm);
+				virtual inline std::wstring GetName() {return L"OpReturnValue";}
 		};
 
 		// [bool] [bool] => [bool]
@@ -201,6 +209,15 @@ namespace tj {
 		};
 
 
+		// OpIndex: used for array indices; array[index] 
+		// [varname] [index key] => [value or null]
+		// calls get(key=...) on object
+		class OpIndex: public Op {
+			public:
+				virtual ~OpIndex() {};
+				virtual void Execute(tj::shared::ref<VM> vm);
+				virtual inline std::wstring GetName() {return L"OpIndex";}
+		};
 
 		// OpIterate: executes a scriptlet for each value in a container saving that value
 		// to a specific variable
@@ -217,6 +234,8 @@ namespace tj {
 
 				int _scriptlet;
 		};
+
+
 	}
 }
 

@@ -5,6 +5,8 @@ namespace tj {
 	namespace script {
 		
 		class ScriptStack {
+			friend class VM;
+
 			public:	
 				inline ScriptStack(int stackLimit=512) {
 					_stack = new tj::shared::ref<Scriptable>[stackLimit];

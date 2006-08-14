@@ -63,6 +63,20 @@ void OpCall::Execute(ref<VM> vm) {
 	}
 }
 
+void OpIndex::Execute(ref<VM> vm) {
+	ref<ScriptStack> stack = vm->GetStack();
+	ref<Scriptable> index = stack->Pop();
+	ref<Scriptable> object = stack->Pop();
+
+	ref<ParameterList> pl = GC::Hold(new ParameterList());
+	pl->insert(std::pair<std::wstring, ref<Scriptable> >(L"key", index));
+	ref<Scriptable> result = object->Execute(L"get", pl);
+	if(result==0) {
+		throw ScriptException(L"Object does not support get(key=...) method, array index cannot be used");
+	}
+	stack->Push(result);
+}
+
 
 void OpCallGlobal::Execute(ref<VM> vm) {
 	ref<ScriptStack> stack = vm->GetStack();
@@ -93,9 +107,9 @@ void OpCallGlobal::Execute(ref<VM> vm) {
 	}
 }
 
-
 void OpSave::Execute(ref<VM> vm) {
 	ref<ScriptStack> stack = vm->GetStack();
+
 	ref<Scriptable> object = stack->Pop();
 	ref< ScriptValue<std::wstring> > varName = stack->Pop();
 	vm->GetGlobal()->Set(varName->GetValue(), object);
@@ -245,6 +259,16 @@ void OpMul::Execute(ref<VM> vm) {
 		ref<ScriptDouble> ib = b;
 		stack->Push(GC::Hold(new ScriptDouble(ia->GetValue()*ib->GetValue())));
 	}
+	else if(a.IsCastableTo<ScriptDouble>() && b.IsCastableTo<ScriptInt>()) {
+		ref<ScriptDouble> da = a;
+		ref<ScriptInt> ib = b;
+		stack->Push(GC::Hold(new ScriptDouble(da->GetValue()*ib->GetValue())));
+	}
+	else if(b.IsCastableTo<ScriptDouble>() && a.IsCastableTo<ScriptInt>()) {
+		ref<ScriptDouble> da = b;
+		ref<ScriptInt> ib = a;
+		stack->Push(GC::Hold(new ScriptDouble(da->GetValue()*ib->GetValue())));
+	}
 	else {
 		stack->Push(GC::Hold(new ScriptInt(0)));
 	}
@@ -275,7 +299,11 @@ void OpLoadScriptlet::Execute(tj::shared::ref<VM> vm) {
 }
 
 void OpReturn::Execute(tj::shared::ref<VM> vm) {
-	vm->Return();
+	vm->Return(false);
+}
+
+void OpReturnValue::Execute(ref<VM> vm) {
+	vm->Return(true);
 }
 
 // OpOr
@@ -358,3 +386,4 @@ void OpIterate::Execute(ref<VM> vm) {
 		vm->GetStack()->Pop();
 	}
 }
+

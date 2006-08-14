@@ -11,3 +11,4 @@ template<class T> struct ScriptTypeRegistration {
 // register static types here
 ScriptTypeRegistration<ScriptArrayType> arrayRegistration(L"Array");
 ScriptTypeRegistration<ScriptRangeType> rangeRegistration(L"Range");
+ScriptTypeRegistration<ScriptHashType> hashRegistration(L"Hash");

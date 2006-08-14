@@ -43,7 +43,7 @@ template<typename T> struct ScriptPushValue {
 		_value = value;
 	}
 
-	void operator()(char const* start, char const* end) const {
+	template<typename X> void operator()(const X start, const X end) const {
 		ref<Op> op = GC::Hold(new OpPush(GC::Hold(new ScriptValue<T>(_value))));
 		_stack->Top()->Add(op);
 	}
@@ -57,12 +57,12 @@ struct ScriptPushNull {
 		_stack = stack;
 	}
 
-	void operator()(char const* start) const {
+	template<typename T> void operator()(const T start) const {
 		ref<Op> op = GC::Hold(new OpPush(GC::Hold(new ScriptNull())));
 		_stack->Top()->Add(op);
 	}
 
-	void operator()(char const* start, char const* end) const {
+	template<typename T> void operator()(const T start, const T end) const {
 		ref<Op> op = GC::Hold(new OpPush(GC::Hold(new ScriptNull())));
 		_stack->Top()->Add(op);
 	}
@@ -75,12 +75,12 @@ struct ScriptPushString {
 		_stack = stack;
 	}
 
-	void operator()(char const* start, char const* end) const {
+	template<typename T> void operator()(const T start, const T end) const {
 		ref<Op> op = GC::Hold(new OpPush(GC::Hold(new ScriptValue<std::wstring>(std::wstring(start,end)))));
 		_stack->Top()->Add(op);
 	}
 
-	void operator()(const char* str) const {
+	template<typename T> void operator()(const T str) const {
 		ref<Op> op = GC::Hold(new OpPush(GC::Hold(new ScriptValue<std::wstring>(Wcs(std::string(str))))));
 		_stack->Top()->Add(op);
 	}
@@ -153,7 +153,6 @@ struct ScriptLoadScriptlet {
 	}
 
 	template<typename T> void operator()(T str, T end) const {
-		Log::Write(L"TJScript/Parser", L"ScriptLoadScriptlet");
 		int idx = _stack->GetCurrentIndex();
 		ref<Scriptlet> dlg = _stack->Pop();
 
@@ -251,11 +250,8 @@ struct ScriptGrammar : public grammar<ScriptGrammar> {
 				(keyValuePair[ScriptInstruction<OpParameter>(self._stack)] % ch_p(','));
 
 			assignment = 
-				(lexeme_d[keyword_p("var")] >> identifier >> ch_p('=') >> expression)[ScriptInstruction<OpSave>(self._stack)][ScriptLog(L"OpSave")];
-
-			// any call, even variable resolution, that returns a value
-            //methodCall =
-			//	 eps_p[ScriptPushGlobal(self._stack)] >> (identifier >> !(ch_p('(')[ScriptInstruction<OpPushParameter>(self._stack)] >> !parameterList >> ')'))[ScriptCall(self._stack)] % ch_p('.');
+				lexeme_d[keyword_p("var")] >> identifier >> 
+				((ch_p('=') >> expression)[ScriptInstruction<OpSave>(self._stack)]|eps_p[ScriptPushNull(self._stack)][ScriptInstruction<OpSave>(self._stack)]);
 
 			methodCall =
 				 (identifier >> !(ch_p('(')[ScriptInstruction<OpPushParameter>(self._stack)] >> !parameterList >> ')'));
@@ -291,6 +287,9 @@ struct ScriptGrammar : public grammar<ScriptGrammar> {
 			mulOperator =
 				(str_p("*") >> factor)[ScriptInstruction<OpMul>(self._stack)];
 
+			indexOperator = 
+				ch_p('[') >> expression >> ch_p(']')[ScriptInstruction<OpIndex>(self._stack)];
+
 			/* If/else */
 			ifConstruct =
 				keyword_p("if") >> ch_p('(') >> expression >> ch_p(')') >> block[ScriptIf(self._stack, self._script)] >> 
@@ -300,7 +299,7 @@ struct ScriptGrammar : public grammar<ScriptGrammar> {
 			// Something that returns a value (methodCall must be last in this rule because of the
 			// eps_p, which otherwise pushes a global even when the rest of methodCall doesn't match
 			expression = 
-				function | (term >> *(plusOperator | minOperator | equalsOperator | notEqualsOperator | orOperator | andOperator | xorOperator));
+				function | (term >> *(indexOperator | plusOperator | minOperator | equalsOperator | notEqualsOperator | orOperator | andOperator | xorOperator));
 
 			// declared with var something = function() {..}
 			function =
@@ -337,7 +336,7 @@ struct ScriptGrammar : public grammar<ScriptGrammar> {
 				ifConstruct | forConstruct | (statement >> !ch_p(';'));
 
 			returnConstruct =
-				(keyword_p("return") >> !(expression))[ScriptInstruction<OpReturn>(self._stack)];
+				(keyword_p("return") >> ((expression[ScriptInstruction<OpReturnValue>(self._stack)]) | eps_p[ScriptInstruction<OpReturn>(self._stack)]));
 
 			forConstruct =
 				((keyword_p("for") >> ch_p('(') >> keyword_p("var") >> identifier >> ch_p(':') >> expression >> ch_p(')')) >> blockInFor) [ScriptIterate(self._stack, self._script)];
@@ -356,7 +355,7 @@ struct ScriptGrammar : public grammar<ScriptGrammar> {
 		rule<ScannerT> block, function, functionConstruct, ifConstruct, comment, assignment, value, identifier, declaredParameter, keyValuePair, parameterList, methodCall, expression, statement, blockConstruct, blockInFunction, blockInFor, script, returnConstruct, breakStatement, forConstruct, newConstruct, methodCallConstruct;
 		
 		// operators
-		rule<ScannerT> term, factor, negatedFactor, equalsOperator, notEqualsOperator, plusOperator, minOperator, divOperator, mulOperator, orOperator, andOperator, xorOperator;		
+		rule<ScannerT> term, factor, negatedFactor, indexOperator, equalsOperator, notEqualsOperator, plusOperator, minOperator, divOperator, mulOperator, orOperator, andOperator, xorOperator;		
 
 		rule<ScannerT> const& start() const { 
 			return script;
@@ -375,6 +374,26 @@ ref<CompiledScript> ScriptContext::Compile(std::wstring source) {
 	parse_info<> info = parse(Mbs(source).c_str(), parser, space_p);
 	if(!info.full) {
 		throw ParserException(std::wstring(L"Parsing stopped at")+Wcs(info.stop));
+	}
+
+	if(_optimize) {
+		script->Optimize();
+	}
+
+	return script;
+}
+
+ref<CompiledScript> ScriptContext::CompileFile(std::wstring fn) {
+	ref<CompiledScript> script = GC::Hold(new CompiledScript());
+
+	std::string fns = Mbs(fn);
+	ScriptGrammar parser(script);
+	file_iterator<char> begin(fns.c_str());
+	file_iterator<char> end = begin.make_end();
+
+	parse_info< file_iterator<char> > info = parse(begin,end, parser, space_p);
+	if(!info.full) {
+		throw ParserException(std::wstring(L"Parsing stopped"));
 	}
 
 	if(_optimize) {

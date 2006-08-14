@@ -10,7 +10,7 @@ namespace tj {
 				virtual ~ScriptRangeType();
 		};
 
-		class ScriptRange: public virtual tj::shared::Object, public Scriptable {
+		class SCRIPT_EXPORTED ScriptRange: public virtual tj::shared::Object, public Scriptable {
 			friend class ScriptArrayIterator;
 
 			public:	

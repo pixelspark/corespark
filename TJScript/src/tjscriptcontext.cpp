@@ -21,6 +21,10 @@ void ScriptContext::Execute(ref<CompiledScript> scr) {
 	_vm->Execute(This<ScriptContext>(), scr);
 }
 
+ref<ScriptScope> ScriptContext::GetGlobal() {
+	return _vm->GetGlobal();
+}
+
 ref<ScriptThread> ScriptContext::CreateExecutionThread(ref<CompiledScript> scr) {
 	ref<ScriptThread> thread = GC::Hold(new ScriptThread(This<ScriptContext>()));
 	thread->SetScript(scr);
