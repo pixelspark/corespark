@@ -1,17 +1,26 @@
 #include "../include/tjshared.h"
 #include <iomanip>
+#include <windowsx.h>
 using namespace Gdiplus;
 using namespace tj::shared;
 
-ToolbarItem::ToolbarItem() {
+ToolbarItem::ToolbarItem(int command, Gdiplus::Bitmap* bmp) {
 	_separator = false;
-	_icon = 0;
-	_command = 0;
+	_icon = bmp;
+	_command = command;
 }
 
 ToolbarItem::~ToolbarItem() {
 	delete _icon;
 };
+
+bool ToolbarItem::IsSeparator() const {
+	return _separator;
+}
+
+void ToolbarItem::SetSeparator(bool s) {
+	_separator = s;
+}
 
 ToolbarWnd::ToolbarWnd(HWND parent): ChildWnd(L"", parent) {
 	SetWantMouseLeave(true);
@@ -29,6 +38,20 @@ void ToolbarWnd::OnCommand(int c) {
 }
 
 void ToolbarWnd::Layout() {
+}
+
+void ToolbarWnd::Fill(LayoutFlags f, tj::shared::Rectangle& r) {
+	if(f==LayoutTop) {
+		SetWindowPos(_wnd, 0, r.GetLeft(), r.GetTop(), r.GetWidth(), ButtonSize, SWP_NOZORDER);
+		r.Narrow(0,ButtonSize,0,0);
+	}
+	else if(f==LayoutBottom) {
+		SetWindowPos(_wnd, 0, r.GetLeft(), r.GetTop()+r.GetHeight()-ButtonSize, r.GetWidth(), ButtonSize, SWP_NOZORDER);
+		r.Narrow(0,0,0,ButtonSize);
+	}
+	else {
+		ChildWnd::Fill(f, r);
+	}
 }
 
 wchar_t ToolbarWnd::GetPreferredHotkey() {

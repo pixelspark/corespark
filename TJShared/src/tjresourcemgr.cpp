@@ -1,4 +1,6 @@
 #include "../include/tjshared.h"
+#include <shlwapi.h>
+#include <commctrl.h>
 using namespace tj::shared;
 
 ref<ResourceManager> ResourceManager::_instance;

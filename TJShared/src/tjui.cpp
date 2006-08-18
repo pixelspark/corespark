@@ -1,5 +1,6 @@
 #include "../include/tjshared.h"
 #include <commctrl.h>
+#include <windowsx.h>
 using namespace tj::shared;
 using namespace Gdiplus;
 
@@ -15,7 +16,11 @@ GraphicsInit::GraphicsInit() {
 	ULONG_PTR gdiplusToken;
 	Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
 
-	InitCommonControls();
+	INITCOMMONCONTROLSEX sex;
+	sex.dwSize = sizeof(INITCOMMONCONTROLSEX);
+	sex.dwICC = ICC_STANDARD_CLASSES|ICC_TAB_CLASSES|ICC_PROGRESS_CLASS|ICC_UPDOWN_CLASS|ICC_USEREX_CLASSES|ICC_WIN95_CLASSES;
+	InitCommonControlsEx(&sex);
+
 }
 
 GraphicsInit::~GraphicsInit() {
@@ -122,7 +127,7 @@ Wnd::Wnd(const wchar_t* title, HWND parent, const wchar_t* className, bool usedb
 	_buffer = 0;
 	_doubleBuffered = usedb;
 
-	_wnd = CreateWindowEx(exStyle, className, title, WS_CLIPCHILDREN|WS_CLIPSIBLINGS, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, parent, (HMENU)0, GetModuleHandle(NULL), 0);
+	_wnd = CreateWindowEx(exStyle, className, title, WS_CLIPCHILDREN|WS_CLIPSIBLINGS, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, parent, (HMENU)0, GetModuleHandle(NULL), (void*)this);
 	if(_wnd==0) Throw(L"Could not create window", ExceptionTypeError);
 
 	SetWindowLong(_wnd, GWL_USERDATA, (LONG)(long long)this);
@@ -178,6 +183,31 @@ void Wnd::SetFullScreen(bool fs) {
 	_fullScreen = fs;
 }
 
+void Wnd::SetFullScreen(bool fs, int d) {
+	if(fs) {
+		if(!_fullScreen) {
+			_oldStyle = GetWindowLong(_wnd, GWL_STYLE);
+			_oldStyleEx = GetWindowLong(_wnd, GWL_EXSTYLE);
+			SetWindowLong(_wnd, GWL_STYLE, (_oldStyle & (~WS_OVERLAPPEDWINDOW)) | (WS_VISIBLE|WS_POPUP));
+		}
+
+		Displays displays;
+		RECT r = displays.GetDisplayRectangle(d);
+		Log::Write(L"TJShared/UI", L"Set full screen: d="+Stringify(d)+L" Rect="+Stringify(r.left)+L","+Stringify(r.top)+L"x"+Stringify(r.right)+L","+Stringify(r.bottom));
+		SetWindowPos(_wnd, 0L, r.left, r.top, r.right-r.left, r.bottom-r.top, SWP_NOZORDER);
+	}
+	else if(_fullScreen) {
+		if(_oldStyle!=0) {
+			SetWindowLong(_wnd, GWL_STYLE, _oldStyle);
+			SetWindowLong(_wnd, GWL_EXSTYLE, _oldStyleEx);
+		}
+		SetWindowPos(_wnd,0,0,0,800,600,SWP_NOZORDER);
+		UpdateWindow(_wnd);
+		Repaint();
+	}
+	_fullScreen = fs;
+}
+
 void Wnd::EnterHotkeyMode() {
 	_inHotkeyMode = true;
 	SetFocus(_wnd);
@@ -223,7 +253,15 @@ void Wnd::Repaint() {
 }
 
 LRESULT CALLBACK WndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) {
-	if(msg==WM_CREATE||msg==WM_DESTROY) return 1;
+	if(msg==WM_CREATE) {
+		/*CREATESTRUCT* cs = (CREATESTRUCT*)lp;
+		Wnd* wp = (Wnd*)cs->lpCreateParams;
+		wp->PreMessage(WM_CREATE, 0, 0);*/
+		return 1;
+	}
+	else if(msg==WM_DESTROY) {
+		return 1;
+	}
 	
 	Wnd* dp = reinterpret_cast<Wnd*>((long long)GetWindowLong(wnd,GWL_USERDATA));
 
@@ -812,4 +850,35 @@ LRESULT CALLBACK PropertyLabelWndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) 
 		return 0;
 	}
 	return DefWindowProc(wnd, msg, wp, lp);
+}
+
+/* Displays */
+BOOL CALLBACK MonitorEnumProc(HMONITOR hMonitor,HDC hdcMonitor,LPRECT lprcMonitor,LPARAM dwData) {
+	Displays* dp = (Displays*)dwData;
+	if(dp!=0) {
+		dp->AddDisplay(hMonitor);
+	}
+	return TRUE;
+}
+
+Displays::Displays() {
+	EnumDisplayMonitors(NULL, NULL, MonitorEnumProc, (LPARAM)this);
+}
+
+Displays::~Displays() {
+}
+
+void Displays::AddDisplay(HMONITOR hm) {
+	_displays.push_back(hm);
+}
+
+RECT Displays::GetDisplayRectangle(int idx) {
+	if(int(_displays.size())>idx) {
+		MONITORINFO mi;
+		mi.cbSize = sizeof(MONITORINFO);
+		GetMonitorInfo(_displays.at(idx), &mi);
+		return mi.rcWork;
+	}
+	RECT r = {0,0,0,0};
+	return r;
 }

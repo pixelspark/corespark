@@ -10,16 +10,18 @@ class EXPORTED Pane: public virtual Object {
 	friend class RootWnd;
 
 	public:
-		Pane(std::wstring, ref<Wnd>, bool);
+		Pane(std::wstring, ref<Wnd>, bool detached, bool closable);
 		virtual ~Pane();
 		ref<Wnd> GetWindow();
 		std::wstring GetTitle() const;
+		bool IsClosable() const;
 
 	protected:
 		std::wstring _title;
 		ref<Wnd> _wnd;
 		bool _detached;
 		bool _fullscreen;
+		bool _closable;
 };
 
 class FloatingPane: public Wnd {

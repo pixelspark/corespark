@@ -1,4 +1,5 @@
 #include "../include/tjshared.h"
+#include <windowsx.h>
 using namespace tj::shared;
 
 LoggerWnd::LoggerWnd(HWND parent): Wnd(L"Log", parent,TJ_DEFAULT_CLASS_NAME, false) {

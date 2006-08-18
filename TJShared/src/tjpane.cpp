@@ -1,10 +1,11 @@
 #include "../include/tjshared.h"
 using namespace tj::shared;
 
-Pane::Pane(std::wstring title, ref<Wnd> window, bool detached) {
+Pane::Pane(std::wstring title, ref<Wnd> window, bool detached, bool closable) {
 	_title = title;
 	_wnd = window;
 	_detached = detached;
+	_closable = closable;
 }
 
 Pane::~Pane() {
@@ -14,13 +15,16 @@ std::wstring Pane::GetTitle() const {
 	return _title;
 }
 
+bool Pane::IsClosable() const {
+	return _closable;
+}
+
 ref<Wnd> Pane::GetWindow() {
 	return _wnd;
 }
 
 FloatingPane::FloatingPane(RootWnd* rw, ref<Pane> p, TabWnd* source): Wnd(L"FloatingPane", 0, TJ_DEFAULT_CLASS_NAME, false) {
 	assert(p);
-	assert(p->_wnd);
 	_pane = p;
 	_root = rw;
 	_source = source;
@@ -56,7 +60,9 @@ LRESULT FloatingPane::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	else if(msg==WM_CLOSE) {
 		ShowWindow(_wnd, SW_HIDE);
 		if(_root) {
-			_root->AddOrphanPane(_pane);
+			if(!_pane->IsClosable()) {
+				_root->AddOrphanPane(_pane);
+			}
 			_root->RemoveFloatingPane(_pane);
 			return 0;
 		}

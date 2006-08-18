@@ -6,8 +6,10 @@
 
 class EXPORTED ToolbarItem {
 	public:
-		ToolbarItem();
+		ToolbarItem(int command=0, Gdiplus::Bitmap* bmp=0);
 		~ToolbarItem();
+		bool IsSeparator() const;
+		void SetSeparator(bool s);
 		int _command;
 		Gdiplus::Bitmap* _icon;
 		bool _separator;
@@ -23,6 +25,7 @@ class EXPORTED ToolbarWnd: public ChildWnd {
 		virtual void Layout();
 		virtual void Add(ref<ToolbarItem> item);
 		virtual void OnCommand(int c);
+		virtual void Fill(LayoutFlags f, tj::shared::Rectangle& r);
 
 	protected:
 		std::vector< ref<ToolbarItem> > _items;

@@ -10,6 +10,7 @@ class EXPORTED Theme: public virtual Object {
 		virtual ~Theme();
 		virtual std::wstring GetName() const;
 		virtual Gdiplus::Color GetBackgroundColor() const;
+		virtual Gdiplus::Color GetEditBackgroundColor() const;
 		virtual Gdiplus::Color GetTimeBackgroundColor() const;
 		virtual Gdiplus::Color GetPropertyBackgroundColor() const;
 		virtual Gdiplus::Color GetLineColor() const;
@@ -81,6 +82,7 @@ class BrightTheme: public Theme {
 		virtual Gdiplus::Color GetLineColor() const;
 		virtual Gdiplus::Color GetTextColor() const;
 		virtual Gdiplus::Color GetActiveTrackColor() const;
+		virtual Gdiplus::Color GetEditBackgroundColor() const;
 
 		virtual Gdiplus::Color GetActiveStartColor() const;
 		virtual Gdiplus::Color GetActiveEndColor() const;

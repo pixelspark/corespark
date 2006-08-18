@@ -30,6 +30,7 @@ namespace tj {
 		DWORD WINAPI ThreadProc(LPVOID lpParam) {
 			Thread* tr = (Thread*)lpParam;
 			if(tr!=0) {
+				srand(GetTickCount());
 				tr->Run();
 			}
 			return 0;

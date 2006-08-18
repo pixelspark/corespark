@@ -1,4 +1,5 @@
 #include "../include/tjshared.h"
+#include <windowsx.h>
 using namespace tj::shared;
 using namespace Gdiplus;
 
@@ -7,6 +8,7 @@ PropertyGridWnd::PropertyGridWnd(HWND parent): ChildWnd(TL(properties), parent) 
 	ClearThemeCache();
 	_nameWidth = 100;
 	SetStyle(WS_CLIPCHILDREN);
+	SetStyleEx(WS_EX_CONTROLPARENT);
 	Layout();
 	_editBackground = 0;
 	_editFont = 0;

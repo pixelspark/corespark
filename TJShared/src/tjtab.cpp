@@ -1,4 +1,5 @@
 #include "../include/tjshared.h"
+#include <windowsx.h>
 using namespace Gdiplus;
 using namespace tj::shared;
 
@@ -157,11 +158,11 @@ bool TabWnd::IsInHotkeyMode() {
 }
 
 
-ref<Pane> TabWnd::AddPane(std::wstring name, ref<Wnd> wnd) {
+ref<Pane> TabWnd::AddPane(std::wstring name, ref<Wnd> wnd, bool closable) {
 	assert(wnd);
 	wnd->Show(false);
 	SetParent(wnd->GetWindow(), _wnd);
-	ref<Pane> pane = GC::Hold(new Pane(name,wnd,false));
+	ref<Pane> pane = GC::Hold(new Pane(name,wnd,false, closable));
 	_panes.push_back(pane);
 	if(_panes.size()==1) {
 		SelectPane(0);
@@ -314,9 +315,13 @@ LRESULT TabWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 						}
 						it++;
 					}
-					_root->AddOrphanPane(_current);
+
 					ref<Wnd> wnd = _current->GetWindow();
 					if(wnd) wnd->Show(false);
+
+					if(!_current->IsClosable()) {
+						_root->AddOrphanPane(_current);
+					}
 					_current = 0;
 					SelectPane(0);
 					Update();

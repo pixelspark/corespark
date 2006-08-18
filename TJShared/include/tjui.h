@@ -19,6 +19,16 @@ class EXPORTED GraphicsInit {
 		virtual ~GraphicsInit();
 };
 
+class EXPORTED Displays: public virtual Object {
+	public:
+		Displays();
+		virtual ~Displays();
+		void AddDisplay(HMONITOR hm);
+		RECT GetDisplayRectangle(int idx);
+	protected:
+		std::vector<HMONITOR> _displays;
+};
+
 class EXPORTED Wnd: public virtual Object {
 	friend class FloatingPane;
 
@@ -42,6 +52,7 @@ class EXPORTED Wnd: public virtual Object {
 		void UnsetStyleEx(DWORD style);
 		bool IsMouseOver();
 		virtual void SetFullScreen(bool f);
+		virtual void SetFullScreen(bool f, int display);
 		bool IsFullScreen();
 
 		// Scrolling
@@ -63,8 +74,8 @@ class EXPORTED Wnd: public virtual Object {
 		virtual bool IsSplitter();
 		void SetEatHotkeys(bool e);
 
-		std::wstring GetText();
-		void SetText(std::wstring text);
+		virtual std::wstring GetText();
+		virtual void SetText(std::wstring text);
 		void SetSize(int w, int h);
 		tj::shared::Rectangle GetClientRectangle();
 		tj::shared::Rectangle GetWindowRectangle();

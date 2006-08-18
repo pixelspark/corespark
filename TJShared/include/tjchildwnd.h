@@ -4,6 +4,7 @@
 class EXPORTED ChildWnd: public Wnd {
 	public:
 		ChildWnd(const wchar_t* title, HWND parent, bool wantDoubleClick=true, bool useDoubleBuffering=true);
+		virtual void Fill(LayoutFlags flags, tj::shared::Rectangle& rect);
 		virtual void Fill();
 		virtual void LeaveHotkeyMode(wchar_t key=0);
 };

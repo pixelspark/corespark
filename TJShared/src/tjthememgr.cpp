@@ -1,4 +1,5 @@
 #include "../include/tjshared.h"
+#include <windowsx.h>
 using namespace tj::shared;
 
 std::vector< ref<Theme> > ThemeManager::_themes;

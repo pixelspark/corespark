@@ -184,23 +184,31 @@ void OpAdd::Execute(ref<VM> vm) {
 	ref<Scriptable> a = stack->Pop();
 	ref<Scriptable> b = stack->Pop();
 
-	if(a.IsCastableTo<ScriptInt>() && b.IsCastableTo<ScriptInt>()) {
-		ref<ScriptInt> ia = a;
-		ref<ScriptInt> ib = b;
-		stack->Push(GC::Hold(new ScriptValue<int>(ia->GetValue()+ib->GetValue())));
-	}
-	else if(a.IsCastableTo<ScriptDouble>() && b.IsCastableTo<ScriptDouble>()) {
-		ref<ScriptDouble> ia = a;
-		ref<ScriptDouble> ib = b;
-		stack->Push(GC::Hold(new ScriptValue<double>(ia->GetValue()+ib->GetValue())));
-	}
-	else if(a.IsCastableTo<ScriptString>()||b.IsCastableTo<ScriptString>()) {
-		
-		ref<ScriptString> ns = GC::Hold(new ScriptString(ScriptContext::GetValue<std::wstring>(b,L"")+ScriptContext::GetValue<std::wstring>(a,L"")));
-		stack->Push(ns);
+	// if any of the parameters is a string, do concatenation
+	if(a.IsCastableTo<ScriptString>() || b.IsCastableTo<ScriptString>()) {
+		std::wstring as = ScriptContext::GetValue<std::wstring>(a,L"");
+		std::wstring bs = ScriptContext::GetValue<std::wstring>(b,L"");
+		stack->Push(GC::Hold(new ScriptString(bs+as)));
 	}
 	else {
-		stack->Push(GC::Hold(new ScriptValue<int>(0)));
+		double va = 0.0;
+		double vb = 0.0;
+
+		if(a.IsCastableTo<ScriptDouble>()) {
+			va = ref<ScriptDouble>(a)->GetValue();
+		}
+		else {
+			va = ScriptContext::GetValue<double>(a,0.0);
+		}
+		
+		if(b.IsCastableTo<ScriptDouble>()) {
+			vb = ref<ScriptDouble>(b)->GetValue();
+		}
+		else {
+			vb = ScriptContext::GetValue<double>(b,0.0);
+		}
+
+		stack->Push(GC::Hold(new ScriptDouble(va+vb)));
 	}
 }
 
@@ -209,19 +217,24 @@ void OpSub::Execute(ref<VM> vm) {
 	ref<Scriptable> a = stack->Pop();
 	ref<Scriptable> b = stack->Pop();
 
-	if(a.IsCastableTo<ScriptInt>() && b.IsCastableTo<ScriptInt>()) {
-		ref<ScriptInt> ia = a;
-		ref<ScriptInt> ib = b;
-		stack->Push(GC::Hold(new ScriptInt(ib->GetValue()-ia->GetValue())));
-	}
-	else if(a.IsCastableTo<ScriptDouble>() && b.IsCastableTo<ScriptDouble>()) {
-		ref<ScriptDouble> ia = a;
-		ref<ScriptDouble> ib = b;
-		stack->Push(GC::Hold(new ScriptDouble(ib->GetValue()-ia->GetValue())));
+	double va = 0.0;
+	double vb = 0.0;
+
+	if(a.IsCastableTo<ScriptDouble>()) {
+		va = ref<ScriptDouble>(a)->GetValue();
 	}
 	else {
-		stack->Push(GC::Hold(new ScriptInt(0)));
+		va = ScriptContext::GetValue<double>(a,0.0);
 	}
+	
+	if(b.IsCastableTo<ScriptDouble>()) {
+		vb = ref<ScriptDouble>(b)->GetValue();
+	}
+	else {
+		vb = ScriptContext::GetValue<double>(b,0.0);
+	}
+
+	stack->Push(GC::Hold(new ScriptDouble(vb-va)));
 }
 
 void OpDiv::Execute(ref<VM> vm) {
@@ -229,19 +242,28 @@ void OpDiv::Execute(ref<VM> vm) {
 	ref<Scriptable> a = stack->Pop();
 	ref<Scriptable> b = stack->Pop();
 
-	if(a.IsCastableTo<ScriptInt>() && b.IsCastableTo<ScriptInt>()) {
-		ref<ScriptInt> ia = a;
-		ref<ScriptInt> ib = b;
-		stack->Push(GC::Hold(new ScriptDouble(double(ib->GetValue())/double(ia->GetValue()))));
-	}
-	else if(a.IsCastableTo<ScriptDouble>() && b.IsCastableTo<ScriptDouble>()) {
-		ref<ScriptDouble> ia = a;
-		ref<ScriptDouble> ib = b;
-		stack->Push(GC::Hold(new ScriptDouble(ib->GetValue()/ia->GetValue())));
+	double va = 0.0;
+	double vb = 0.0;
+
+	if(a.IsCastableTo<ScriptDouble>()) {
+		va = ref<ScriptDouble>(a)->GetValue();
 	}
 	else {
-		stack->Push(GC::Hold(new ScriptInt(0)));
+		va = ScriptContext::GetValue<double>(a,0.0);
 	}
+	
+	if(b.IsCastableTo<ScriptDouble>()) {
+		vb = ref<ScriptDouble>(b)->GetValue();
+	}
+	else {
+		vb = ScriptContext::GetValue<double>(b,0.0);
+	}
+
+	if(va==0.0) {
+		throw ScriptException(L"Division by zero");
+	}
+
+	stack->Push(GC::Hold(new ScriptDouble(vb/va)));
 }
 
 void OpMul::Execute(ref<VM> vm) {
@@ -249,29 +271,24 @@ void OpMul::Execute(ref<VM> vm) {
 	ref<Scriptable> a = stack->Pop();
 	ref<Scriptable> b = stack->Pop();
 
-	if(a.IsCastableTo<ScriptInt>() && b.IsCastableTo<ScriptInt>()) {
-		ref<ScriptInt> ia = a;
-		ref<ScriptInt> ib = b;
-		stack->Push(GC::Hold(new ScriptInt(ia->GetValue()*ib->GetValue())));
-	}
-	else if(a.IsCastableTo<ScriptDouble>() && b.IsCastableTo<ScriptDouble>()) {
-		ref<ScriptDouble> ia = a;
-		ref<ScriptDouble> ib = b;
-		stack->Push(GC::Hold(new ScriptDouble(ia->GetValue()*ib->GetValue())));
-	}
-	else if(a.IsCastableTo<ScriptDouble>() && b.IsCastableTo<ScriptInt>()) {
-		ref<ScriptDouble> da = a;
-		ref<ScriptInt> ib = b;
-		stack->Push(GC::Hold(new ScriptDouble(da->GetValue()*ib->GetValue())));
-	}
-	else if(b.IsCastableTo<ScriptDouble>() && a.IsCastableTo<ScriptInt>()) {
-		ref<ScriptDouble> da = b;
-		ref<ScriptInt> ib = a;
-		stack->Push(GC::Hold(new ScriptDouble(da->GetValue()*ib->GetValue())));
+	double va = 0.0;
+	double vb = 0.0;
+
+	if(a.IsCastableTo<ScriptDouble>()) {
+		va = ref<ScriptDouble>(a)->GetValue();
 	}
 	else {
-		stack->Push(GC::Hold(new ScriptInt(0)));
+		va = ScriptContext::GetValue<double>(a,0.0);
 	}
+	
+	if(b.IsCastableTo<ScriptDouble>()) {
+		vb = ref<ScriptDouble>(b)->GetValue();
+	}
+	else {
+		vb = ScriptContext::GetValue<double>(b,0.0);
+	}
+
+	stack->Push(GC::Hold(new ScriptDouble(va*vb)));
 }
 
 OpBranchIf::OpBranchIf(int scriptlet) {

@@ -30,6 +30,7 @@
 #include "tjscriptparameter.h"
 #include "tjscriptscope.h"
 #include "types/tjstatictypes.h"
+#include "tjscriptiterator.h"
 
 #pragma warning(pop)
 

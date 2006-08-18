@@ -21,8 +21,26 @@ void ChildWnd::LeaveHotkeyMode(wchar_t key) {
 	}
 }
 
+void ChildWnd::Fill(LayoutFlags flags, tj::shared::Rectangle& rect) {
+	switch(flags) {
+		case LayoutFill:
+		case LayoutTop:
+		case LayoutBottom:
+		case LayoutRight:
+		case LayoutLeft:
+			Move(rect.GetLeft(), rect.GetTop(), rect.GetWidth(), rect.GetHeight());
+			rect.SetWidth(0);
+			rect.SetHeight(0);
+			break;
+		case LayoutHide:
+		default:
+			Move(0,0,0,0);
+	}	
+}
+
 void ChildWnd::Fill() {
-	RECT r;
-	GetClientRect(::GetParent(_wnd), &r);
-	SetWindowPos(_wnd, 0, 0, 0, r.right-r.left, r.bottom-r.top, SWP_NOZORDER);
+	RECT rc;
+	HWND parent = ::GetParent(_wnd);
+	GetClientRect(parent, &rc);
+	Move(rc.left, rc.top, rc.right, rc.bottom);
 }

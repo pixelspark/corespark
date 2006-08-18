@@ -50,7 +50,7 @@ Gdiplus::Font* Theme::GetGUIFont() const {
 
 Gdiplus::Font* Theme::GetGUIFontSmall() const {
 	if(_fontSmall==0) {
-		_fontSmall = new Font(L"Tahoma", 8, FontStyleRegular, UnitPixel, 0);
+		_fontSmall = new Font(L"Tahoma", 9, FontStyleRegular, UnitPixel, 0);
 	}
 	return _fontSmall;
 }
@@ -62,6 +62,10 @@ std::wstring Theme::GetName() const {
 
 Color Theme::GetBackgroundColor() const {
 	return Color(0,0,0);
+}
+
+Color Theme::GetEditBackgroundColor() const {
+	return GetBackgroundColor();
 }
 
 Color Theme::GetTimeBackgroundColor() const {
@@ -223,6 +227,10 @@ Color BrightTheme::GetBackgroundColor() const {
 
 Color BrightTheme::GetTimeBackgroundColor() const {
 	return Color(235,235,235);
+}
+
+Color BrightTheme::GetEditBackgroundColor() const {
+	return GetBackgroundColor();
 }
 
 Color BrightTheme::GetPropertyBackgroundColor() const {

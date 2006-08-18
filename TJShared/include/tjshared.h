@@ -7,38 +7,10 @@
 	#define EXPORTED
 #endif
 
-#undef _WIN32_IE
-#undef _WIN32_WINNT
-#define _WIN32_WINNT 0x0600
-#define _WIN32_IE 0x0600
-#define _CRT_SECURE_CPP_OVERLOAD_SECURE_NAMES 1
+#include "tjpch.h"
 
-#include <assert.h>
-#include <time.h>
-#include <math.h>
-#include <stdio.h>
-#include <string.h>
-#include <wchar.h>
-
-#include <map>
-#include <string>
-#include <sstream>
-#include <algorithm>
-#include <vector>
-#include <set>
-#include <list>
-#include <iomanip>
-#include <fstream>
-
-#include <windows.h>
-#include <windowsx.h>
-#include <commctrl.h>
-#include <atlbase.h>
-#include <dshow.h>
-#include <Gdiplus.h>
-
-// TODO: move tinyxml to other folder
-#include "../../Libraries/tinyxml.h"
+#pragma warning(push)
+#pragma warning(disable: 4251) // about protected members needing dll access
 
 namespace tj {
 	namespace shared {
@@ -63,6 +35,7 @@ namespace tj {
 		#include "tjtheme.h"
 		#include "tjthememgr.h"
 		#include "tjcache.h"
+		#include "tjlayout.h"
 		#include "tjui.h"
 		#include "tjchildwnd.h"
 		#include "tjcontextmenu.h"
@@ -90,7 +63,10 @@ namespace tj {
 		#include "tjpropertygrid.h"
 		#include "tjfilewriter.h"
 		#include "tjtoolbarwnd.h"
+		#include "tjbrowserwnd.h"
 	}
 }
+
+#pragma warning(pop)
 
 #endif

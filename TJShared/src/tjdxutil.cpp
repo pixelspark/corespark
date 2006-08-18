@@ -1,4 +1,6 @@
 #include "../include/tjshared.h"
+#include <atlbase.h>
+#include <dshow.h>
 using namespace tj::shared;
 
 HRESULT DXRotRegistration::AddGraphToRot(IUnknown *pUnkGraph, DWORD *pdwRegister)  {
@@ -60,31 +62,7 @@ DXRotRegistration::~DXRotRegistration() {
 	 RemoveGraphFromRot(_magic);
 }
 
-CComPtr<IPin> DXTools::GetPin(CComPtr<IBaseFilter> filter, PIN_DIRECTION dir) {
-    bool found = false;
-    CComPtr<IEnumPins> pinEnum;
-    CComPtr<IPin> pin;
-
-    // Begin by enumerating all the pins on a filter
-	if(FAILED(filter->EnumPins(&pinEnum))) {
-		return NULL;
-	}
-
-    // Now look for a pin that matches the direction characteristic.
-    // When we've found it, we'll return with it.
-    while(pinEnum->Next(1, &pin, 0)==S_OK) {
-        PIN_DIRECTION cdir;
-        pin->QueryDirection(&cdir);
-
-		if(dir==cdir) {
-			found = true;
-			break;
-		}
-    }
-
-	return found?pin:NULL;
-}
-
+/*
 HRESULT DXTools::SaveGraphFile(CComPtr<IGraphBuilder> pGraph, std::wstring wszPath) {
     const WCHAR wszStreamName[] = L"ActiveMovieGraph"; 
     HRESULT hr;
@@ -118,35 +96,7 @@ HRESULT DXTools::SaveGraphFile(CComPtr<IGraphBuilder> pGraph, std::wstring wszPa
     return hr;
 }
 
-HRESULT DXTools::LoadGraphFile(CComPtr<IGraphBuilder> pGraph, std::wstring name) {
-    IStorage *pStorage = 0;
-
-    if (S_OK != StgIsStorageFile(name.c_str())) {
-        return E_FAIL;
-    }
-
-    HRESULT hr = StgOpenStorage(name.c_str(), 0,STGM_TRANSACTED | STGM_READ | STGM_SHARE_DENY_WRITE, 0, 0, &pStorage);
-
-    if (FAILED(hr)) {
-        return hr;
-    }
-
-    IPersistStream *pPersistStream = 0;
-    hr = pGraph->QueryInterface(IID_IPersistStream, reinterpret_cast<void**>(&pPersistStream));
-
-    if (SUCCEEDED(hr)) {
-        IStream *pStream = 0;
-        pStorage->OpenStream(L"ActiveMovieGraph", 0,STGM_READ | STGM_SHARE_EXCLUSIVE, 0, &pStream);
-
-        if(SUCCEEDED(hr)) {
-            hr = pPersistStream->Load(pStream);
-            pStream->Release();
-        }
-        pPersistStream->Release();
-    }
-    pStorage->Release();
-    return hr;
-}
+*/
 
 int DXTools::GetDuration(std::wstring file) {
 	if(GetFileAttributes(file.c_str())==INVALID_FILE_ATTRIBUTES) {

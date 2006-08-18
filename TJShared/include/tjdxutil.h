@@ -14,9 +14,8 @@ class EXPORTED DXRotRegistration {
 
 class EXPORTED DXTools {
 	public:
-		static CComPtr<IPin> GetPin(CComPtr<IBaseFilter> filter, PIN_DIRECTION dir);
-		static HRESULT SaveGraphFile(CComPtr<IGraphBuilder> graph, std::wstring path);
-		static HRESULT LoadGraphFile(CComPtr<IGraphBuilder> graph, std::wstring name);
+		/*static HRESULT SaveGraphFile(CComPtr<IGraphBuilder> graph, std::wstring path);
+		static HRESULT LoadGraphFile(CComPtr<IGraphBuilder> graph, std::wstring name);*/
 		static int GetDuration(std::wstring file);
 };
 

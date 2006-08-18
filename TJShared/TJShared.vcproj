@@ -171,7 +171,9 @@
 			OutputDirectory="Release"
 			IntermediateDirectory="Release"
 			ConfigurationType="2"
+			UseOfATL="2"
 			CharacterSet="1"
+			WholeProgramOptimization="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -194,10 +196,11 @@
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
 				WholeProgramOptimization="true"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;TJSHARED_EXPORTS"
+				PreprocessorDefinitions="WIN32;_WINDOWS;_USRDLL;TJSHARED_EXPORTS;NDEBUG"
 				MinimalRebuild="true"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
+				PrecompiledHeaderThrough=""
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
@@ -213,7 +216,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="gdiplus.lib comctl32.lib strmiids.lib quartz.lib ../libraries/tinyxml.lib"
+				AdditionalDependencies="gdiplus.lib comctl32.lib strmiids.lib quartz.lib ../libraries/tinyxml.lib comsupp.lib"
 				OutputFile="$(OutDir)\..\..\Release\tjshared.dll"
 				LinkIncremental="0"
 				GenerateManifest="true"
@@ -344,6 +347,10 @@
 			>
 			<File
 				RelativePath=".\src\tjarguments.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\tjbrowserwnd.cpp"
 				>
 			</File>
 			<File
@@ -517,6 +524,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\include\tjbrowserwnd.h"
+				>
+			</File>
+			<File
 				RelativePath=".\include\tjcache.h"
 				>
 			</File>
@@ -589,6 +600,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\include\tjlayout.h"
+				>
+			</File>
+			<File
 				RelativePath=".\include\tjlistener.h"
 				>
 			</File>
@@ -614,6 +629,10 @@
 			</File>
 			<File
 				RelativePath=".\include\tjpane.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tjpch.h"
 				>
 			</File>
 			<File
