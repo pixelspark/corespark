@@ -446,10 +446,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\tjrectangle.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\src\tjresourcemgr.cpp"
 				>
 			</File>

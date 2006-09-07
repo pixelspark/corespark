@@ -17,9 +17,7 @@ HRESULT DXRotRegistration::AddGraphToRot(IUnknown *pUnkGraph, DWORD *pdwRegister
         return E_FAIL;
 	}
 
-    wsprintfW(wsz, L"TJShow FilterGraph %08x pid %08x\0", (DWORD_PTR)pUnkGraph, GetCurrentProcessId());
-
-    hr = CreateItemMoniker(L"!", wsz, &pMoniker);
+	hr = CreateItemMoniker(L"!", wsz, &pMoniker);
     if (SUCCEEDED(hr)) {
         // Use the ROTFLAGS_REGISTRATIONKEEPSALIVE to ensure a strong reference
         // to the object.  Using this flag will cause the object to remain
@@ -53,7 +51,7 @@ DXRotRegistration::DXRotRegistration(IGraphBuilder* ig) {
 	assert(ig!=0);
 	HRESULT hr = AddGraphToRot(ig, &_magic);
     if(FAILED(hr)) {
-		MessageBox(0L, L"ROT registration failed",L"", MB_OK);
+		Log::Write(L"TJShared/DXRotRegistration", L"ROT registration failed!");
 		_magic = 0;
     }
 }
