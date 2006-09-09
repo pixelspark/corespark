@@ -39,11 +39,7 @@ FloatingPane::FloatingPane(RootWnd* rw, ref<Pane> p, TabWnd* source): Wnd(L"Floa
 	SetParent(paneWnd->GetWindow(), _wnd);
 
 	// set window title
-	int n = GetWindowTextLength(paneWnd->GetWindow());
-	wchar_t* buf = new wchar_t[n+2];
-	GetWindowText(paneWnd->GetWindow(), buf, n+1);
-	SetWindowText(_wnd, buf);
-	delete[] buf;
+	SetWindowText(_wnd, p->GetTitle().c_str());
 
 	Layout();
 	paneWnd->Show(true);

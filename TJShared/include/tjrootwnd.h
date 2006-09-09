@@ -30,6 +30,7 @@ class EXPORTED RootWnd: public Wnd {
 		std::vector< ref<Pane> >* GetOrphanPanes();
 		void RemoveOrphanPane(ref<Pane> pane);
 		void RemoveWindow(ref<Wnd> w);
+		void RenameWindow(ref<Wnd> w, std::wstring name);
 
 		/* Notification API */
 		void AddNotification(std::wstring message, std::wstring icon, int time=-1);

@@ -8,6 +8,33 @@ RootWnd::RootWnd(std::wstring title): Wnd(title.c_str(),0, TJ_DEFAULT_CLASS_NAME
 RootWnd::~RootWnd() {
 }
 
+void RootWnd::RenameWindow(ref<Wnd> w, std::wstring n) {
+	if(!w) return;
+
+	// rename in orphan panes
+	std::vector< ref<Pane> >::iterator it = _orphans.begin();
+	while(it!=_orphans.end()) {
+		ref<Pane> pane = *it;
+		if(pane->_wnd==w) {
+			pane->_title = n;
+			break;
+		}
+		it++;
+	}
+
+	// rename in floating panes
+	std::vector< ref<FloatingPane> >::iterator ita = _floatingPanes.begin();
+	while(ita!=_floatingPanes.end()) {
+		ref<FloatingPane> pane = *ita;
+		if(pane->_pane->_wnd==w) {
+			pane->SetText(n.c_str());
+			pane->_pane->_title = n;
+			break;
+		}
+		ita++;
+	}
+}
+
 void RootWnd::RemoveWindow(ref<Wnd> w) {
 	if(!w) return;
 
