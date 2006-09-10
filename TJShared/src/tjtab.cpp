@@ -42,6 +42,13 @@ void TabWnd::SetDraggingPane(ref<Pane> pane) {
 
 void TabWnd::Paint(Graphics& g) {
 	if(_headerHeight>0) {
+		// do we have focus?
+		/*bool focus = false;
+		HWND focusWnd = GetFocus();
+		if(_current && (IsChild(_current->GetWindow()->GetWindow(), focusWnd)|| focusWnd==_current->GetWindow()->GetWindow())) {
+			focus = true;
+		}*/
+
 		RECT rect;
 		GetClientRect(_wnd, &rect);
 		ref<Theme> theme = ThemeManager::GetTheme();
@@ -91,6 +98,7 @@ void TabWnd::Paint(Graphics& g) {
 			RectF bound;
 			g.MeasureString(pane->_title.c_str(), (INT)pane->_title.length(), theme->GetGUIFontBold(), PointF(0.0f, 0.0f), &bound);				
 			
+			// border
 			if(pane==_current) {
 				LinearGradientBrush lbr(PointF(0.0f, 0.0f), PointF(0.0f, float(_headerHeight)), theme->GetActiveStartColor(), theme->GetActiveEndColor());
 				g.FillRectangle(&lbr, RectF(float(left+1), 2.0f, float(bound.Width+2), float(_headerHeight)));
@@ -98,6 +106,7 @@ void TabWnd::Paint(Graphics& g) {
 				g.FillRectangle(&backBrush, RectF(float(left+2), 3.0f, float(bound.Width), float(_headerHeight)));
 			}
 			
+			// gradient achter actieve tab of dragging tab (niet border)
 			if((pane==_current && pane!=_dragging) || pane==_dragging) {
 				Color start = theme->GetTabButtonColorStart();
 				Color end = theme->GetTabButtonColorEnd();
@@ -217,6 +226,7 @@ void TabWnd::SelectPane(unsigned int index) {
 		}
 		pane->_wnd->Show(true);
 		_current = pane;
+		SetFocus(_current->_wnd->GetWindow());
 	}
 	catch(...) {
 	}
@@ -251,18 +261,50 @@ LRESULT TabWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	if(msg==WM_SIZE) {
 		Layout();
 	}
-	else if(msg==WM_PARENTNOTIFY && wp==WM_DESTROY) {
-		// child deleted
-		/*HWND child = (HWND)lp;
-		std::vector< ref<Pane> >::iterator it = _panes.begin();
-		while(it!=_panes.end()) {
-			ref<Pane> pane = *it;
-			if(pane->_wnd->GetWindow()==child) {
-				_panes.erase(it);
-				break;
+	else if(msg==WM_PARENTNOTIFY||msg==WM_KILLFOCUS) {
+		Repaint();
+	}
+	else if(msg==WM_APPCOMMAND) {
+		if(GET_APPCOMMAND_LPARAM(lp)==APPCOMMAND_BROWSER_BACKWARD) {
+			int cid = 0;
+			std::vector< ref<Pane> >::iterator it = _panes.begin();
+			while(it!=_panes.end()) {
+				if(*it==_current) {
+					break;
+				}
+				cid++;
+				it++;
 			}
-			it++;
-		}*/
+
+			cid--;
+			if(cid<0) {
+				cid = 0;
+			}
+
+			SelectPane(cid);
+			Update();
+			return TRUE;
+		}
+		else if(GET_APPCOMMAND_LPARAM(lp)==APPCOMMAND_BROWSER_FORWARD) {
+			int cid = 0;
+			std::vector< ref<Pane> >::iterator it = _panes.begin();
+			while(it!=_panes.end()) {
+				if(*it==_current) {
+					break;
+				}
+				cid++;
+				it++;
+			}
+
+			cid++;
+			if(cid>int(_panes.size()-1)) {
+				cid = int(_panes.size())-1;
+			}
+
+			SelectPane(cid);
+			Update();
+			return TRUE;
+		}
 	}
 	else if(msg==WM_LBUTTONUP || msg==WM_LBUTTONDOWN) {
 		int x = GET_X_LPARAM(lp);
