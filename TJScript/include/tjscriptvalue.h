@@ -2,6 +2,13 @@
 #define _TJSCRIPTVALUE_H
 namespace tj {
 	namespace script {
+		class SCRIPT_EXPORTED ScriptConstants {
+			public:
+				static tj::shared::ref<Scriptable> Null();
+
+			protected:
+				static tj::shared::ref<Scriptable> _null;
+		};
 
 		template<typename T> class ScriptValue: public Scriptable {
 			public:

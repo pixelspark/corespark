@@ -14,14 +14,6 @@ namespace tj {
 				return a ScriptNull instance. */
 				virtual tj::shared::ref<Scriptable> Execute(Command command, tj::shared::ref<ParameterList> params) = 0;
 		};
-
-		class SCRIPT_EXPORTED ScriptConstants {
-			public:
-				static tj::shared::ref<Scriptable> Null();
-
-			protected:
-				static tj::shared::ref<Scriptable> _null;
-		};
 	}
 }
 

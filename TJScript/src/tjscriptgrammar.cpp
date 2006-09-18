@@ -257,7 +257,7 @@ struct ScriptGrammar : public grammar<ScriptGrammar> {
 				 (identifier >> !(ch_p('(')[ScriptInstruction<OpPushParameter>(self._stack)] >> !parameterList >> ')'));
 
 			methodCallConstruct = 
-				methodCall[ScriptInstruction<OpCallGlobal>(self._stack)] >> !(ch_p(".") >> (methodCall[ScriptInstruction<OpCall>(self._stack)] % ch_p('.')));
+				methodCall[ScriptInstruction<OpCallGlobal>(self._stack)] >> *indexOperator >> !(ch_p(".") >> ((methodCall[ScriptInstruction<OpCall>(self._stack)] >> *(indexOperator)) % ch_p('.')));
 
 			/* Operators */
 			equalsOperator = 
@@ -287,9 +287,6 @@ struct ScriptGrammar : public grammar<ScriptGrammar> {
 			mulOperator =
 				(str_p("*") >> factor)[ScriptInstruction<OpMul>(self._stack)];
 
-			indexOperator = 
-				ch_p('[') >> expression >> ch_p(']')[ScriptInstruction<OpIndex>(self._stack)];
-
 			/* If/else */
 			ifConstruct =
 				keyword_p("if") >> ch_p('(') >> expression >> ch_p(')') >> block[ScriptIf(self._stack, self._script)] >> 
@@ -299,7 +296,7 @@ struct ScriptGrammar : public grammar<ScriptGrammar> {
 			// Something that returns a value (methodCall must be last in this rule because of the
 			// eps_p, which otherwise pushes a global even when the rest of methodCall doesn't match
 			expression = 
-				function | (term >> *(indexOperator | plusOperator | minOperator | equalsOperator | notEqualsOperator | orOperator | andOperator | xorOperator));
+				function | (term >> *(plusOperator | minOperator | equalsOperator | notEqualsOperator | orOperator | andOperator | xorOperator));
 
 			// declared with var something = function() {..}
 			function =
@@ -314,8 +311,11 @@ struct ScriptGrammar : public grammar<ScriptGrammar> {
 			term = 
 				factor >> *(mulOperator|divOperator);
 
+			indexOperator = 
+				ch_p('[') >> expression >> ch_p(']')[ScriptInstruction<OpIndex>(self._stack)];
+
 			factor =
-				newConstruct | negatedFactor | (ch_p('(') >> expression >> ch_p(')')) | value | methodCallConstruct;
+				(newConstruct | negatedFactor | (ch_p('(') >> expression >> ch_p(')')) | value | methodCallConstruct);
 
 			negatedFactor = 
 				((ch_p('!')|ch_p('-')) >> factor)[ScriptInstruction<OpNegate>(self._stack)];

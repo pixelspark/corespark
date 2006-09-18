@@ -8,7 +8,6 @@ class EXPORTED RunnableApplication {
 	public:
 		virtual ~RunnableApplication();
 		virtual void Message(MSG& msg) = 0;
-		virtual void Initialize(ref<Arguments> args) = 0;
 };
 
 class EXPORTED Core {

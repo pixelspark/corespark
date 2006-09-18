@@ -212,6 +212,25 @@ Brush* Theme::GetApplicationBackgroundBrush(HWND root, HWND child) const {
 
 	return lbr;
 }
+
+Gdiplus::Color Theme::GetProgressBackStart() const {
+	return Color(201,201,201);
+}
+
+Gdiplus::Color Theme::GetProgressBackEnd() const {
+	return Color(255,255,255);
+}
+
+Gdiplus::Color Theme::GetProgressGlassStart() const {
+	return Color(211,255,255,255);
+}
+Gdiplus::Color Theme::GetProgressGlassEnd() const {
+	return Color(43,255,255,255);
+}
+
+Gdiplus::Color Theme::GetProgressColor() const {
+	return Color(0,211,40);
+}
 	
 // Bright theme
 

@@ -32,7 +32,6 @@ void Core::AddAction(ref<Runnable> rm, bool wait) {
 
 void Core::Run(RunnableApplication* app, ref<Arguments> args) {
 	_app = app;
-	_app->Initialize(args);
 
     while(true) {
 		DWORD result; 

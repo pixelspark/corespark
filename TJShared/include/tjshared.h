@@ -64,6 +64,7 @@ namespace tj {
 		#include "tjfilewriter.h"
 		#include "tjtoolbarwnd.h"
 		#include "tjbrowserwnd.h"
+		#include "tjprogresswnd.h"
 	}
 }
 

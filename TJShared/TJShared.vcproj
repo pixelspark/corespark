@@ -438,6 +438,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\tjprogresswnd.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\tjpropertygrid.cpp"
 				>
 			</File>
@@ -629,6 +633,10 @@
 			</File>
 			<File
 				RelativePath=".\include\tjpch.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tjprogresswnd.h"
 				>
 			</File>
 			<File

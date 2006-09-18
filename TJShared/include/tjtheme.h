@@ -50,6 +50,13 @@ class EXPORTED Theme: public virtual Object {
 
 		virtual Gdiplus::Color GetToolbarColorStart() const;
 		virtual Gdiplus::Color GetToolbarColorEnd() const;
+
+		// ProgressWnd
+		virtual Gdiplus::Color GetProgressBackStart() const;
+		virtual Gdiplus::Color GetProgressBackEnd() const;
+		virtual Gdiplus::Color GetProgressGlassStart() const;
+		virtual Gdiplus::Color GetProgressGlassEnd() const;
+		virtual Gdiplus::Color GetProgressColor() const;
 		
 		virtual HCURSOR GetGrabCursor() const;
 		virtual HCURSOR GetGrabbedCursor() const;

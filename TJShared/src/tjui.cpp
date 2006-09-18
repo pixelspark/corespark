@@ -300,6 +300,7 @@ void Wnd::RegisterClasses() {
 	GetClassInfoEx(0, L"EDIT", &wc);
 	wc.lpszClassName = TJ_PROPERTY_EDIT_CLASS_NAME;
 	wc.lpfnWndProc = PropertyEditWndProc;
+
 	if(!RegisterClassEx(&wc)) {
 		Throw(L"Could not register class", ExceptionTypeError);
 	}

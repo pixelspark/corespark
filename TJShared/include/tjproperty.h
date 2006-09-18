@@ -52,9 +52,13 @@ template<typename T> class GenericProperty: public Property {
 
 		virtual HWND Create(HWND parent) {
 			if(_wnd!=0) return _wnd;
-			_wnd = ::CreateWindowEx(WS_EX_CLIENTEDGE, TJ_PROPERTY_EDIT_CLASS_NAME, Stringify(*_value).c_str(), ES_AUTOHSCROLL|WS_CHILD, 0, 0, 100, 100, parent, (HMENU)0, GetModuleHandle(NULL), 0);
+			HINSTANCE hinst;
+			hinst = GetModuleHandle(NULL);
+			_wnd = ::CreateWindowEx(WS_EX_CLIENTEDGE, TJ_PROPERTY_EDIT_CLASS_NAME, Stringify(*_value).c_str(), ES_AUTOHSCROLL|WS_CHILD, 0, 0, 100, 100, parent, (HMENU)0, hinst, 0);
 			if(_wnd==0) {
-				Throw(L"Property window creation failed", ExceptionTypeError);
+				int x = GetLastError();
+				MessageBox(0L, Stringify(x).c_str(), L"", MB_OK|MB_ICONERROR);
+				Throw(L"Property window creation failed ", ExceptionTypeError);
 			}
 			return _wnd;
 		}
