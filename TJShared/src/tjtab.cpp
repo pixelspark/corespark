@@ -8,6 +8,7 @@ TabWnd::TabWnd(HWND parent, RootWnd* root): ChildWnd(L"TabWnd", parent) {
 	_headerHeight = defaultHeaderHeight;
 	_hotkey = L'O';
 	_root = root;
+	_detachAttachAllowed = true;
 
 	std::wstring fn = ResourceManager::Instance()->Get(L"icons/tab_close.png");
 	_closeIcon = Bitmap::FromFile(fn.c_str(), TRUE);
@@ -20,6 +21,11 @@ TabWnd::TabWnd(HWND parent, RootWnd* root): ChildWnd(L"TabWnd", parent) {
 TabWnd::~TabWnd() {
 	delete _closeIcon;
 	delete _addIcon;
+}
+
+void TabWnd::SetDetachAttachAllowed(bool allow) {
+	_detachAttachAllowed = allow;
+	Repaint();
 }
 
 void TabWnd::Rename(ref<Wnd> wnd, std::wstring name) {
@@ -122,7 +128,7 @@ void TabWnd::Paint(Graphics& g) {
 			idx++;
 		}
 
-		if(left<(rect.right-rect.left-2*_headerHeight)) {
+		if(_detachAttachAllowed && left<(rect.right-rect.left-2*_headerHeight)) {
 			g.DrawImage(_addIcon, RectF(float(rect.right-rect.left-2*_headerHeight), 0.0f, float(_headerHeight-2), float(_headerHeight-2)));
 			g.DrawImage(_closeIcon, RectF(float(rect.right-rect.left-_headerHeight), 0.0f, float(_headerHeight-2), float(_headerHeight-2)));
 		}
@@ -344,7 +350,7 @@ LRESULT TabWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 
 		RECT rect;
 		GetClientRect(_wnd, &rect);
-		if(left<(rect.right-rect.left-2*_headerHeight) && msg==WM_LBUTTONDOWN) {
+		if(_detachAttachAllowed && left<(rect.right-rect.left-2*_headerHeight) && msg==WM_LBUTTONDOWN) {
 			if(x>rect.right-rect.left-_headerHeight) {
 				// close button
 				if(_current && _root) {
@@ -459,6 +465,8 @@ void TabWnd::DoContextMenu(int x, int y) {
 }
 
 void TabWnd::Detach(ref<Pane> p) {
+	if(!_detachAttachAllowed) return;
+
 	std::vector< ref<Pane> >::iterator it = _panes.begin();
 	while(it!=_panes.end()) {
 		if(*it == p) {
@@ -478,6 +486,8 @@ void TabWnd::Detach(ref<Pane> p) {
 }
 
 void TabWnd::Attach(ref<Pane> p) {
+	if(!_detachAttachAllowed) return;
+
 	AddPane(p);
 	SetParent(p->GetWindow()->GetWindow(), _wnd);
 	Update();

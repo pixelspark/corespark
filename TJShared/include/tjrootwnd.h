@@ -10,7 +10,7 @@ class EXPORTED RootWnd: public Wnd {
 	friend class NotificationWnd; 
 
 	public:
-		RootWnd(std::wstring title);
+		RootWnd(std::wstring title, const wchar_t* className=TJ_DEFAULT_CLASS_NAME, bool useDoubleBuffering=true);
 		virtual ~RootWnd();
 		virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 		ref<FloatingPane> AddFloatingPane(ref<Pane> pane, TabWnd* source);

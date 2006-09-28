@@ -289,7 +289,14 @@ void Wnd::RegisterClasses() {
 	if(!RegisterClassEx(&wc)) {
 		Throw(L"Could not register class",ExceptionTypeError);
 	}
+
+	wc.lpszClassName = TJ_GL_CLASS_NAME;
+	wc.style |= CS_OWNDC|CS_VREDRAW;
+	if(!RegisterClassEx(&wc)) {
+		Throw(L"Could not register class", ExceptionTypeError);
+	}
 	
+	wc.style = CS_HREDRAW|CS_DBLCLKS;
 	wc.lpszClassName = TJ_DEFAULT_NDBL_CLASS_NAME;
 	wc.style = CS_HREDRAW /* |CS_VREDRAW */;
 

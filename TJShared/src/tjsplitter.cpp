@@ -7,12 +7,16 @@ using namespace tj::shared;
 const float SplitterWnd::snapMargin = 0.07f;
 
 SplitterWnd::SplitterWnd(HWND parent, ref<Wnd> a, ref<Wnd> b, Orientation o): ChildWnd(L"Splitter", parent, true, false) {
-	assert(a!=0);
-	assert(b!=0);
 	SetStyle(WS_CLIPCHILDREN);
 	SetStyle(WS_CLIPSIBLINGS);
-	SetParent(a->GetWindow(),_wnd);
-	SetParent(b->GetWindow(),_wnd);
+	if(a) {
+		SetParent(a->GetWindow(),_wnd);
+	}
+
+	if(b) {
+		SetParent(b->GetWindow(),_wnd);
+	}
+
 	_a = a;
 	_b = b;
 	Layout();
@@ -35,10 +39,10 @@ void SplitterWnd::EnterHotkeyMode() {
 void SplitterWnd::LeaveHotkeyMode(wchar_t key) {
 	/*Wnd* parent = GetParent();
 	if(parent!=0) parent->LeaveHotkeyMode(key);*/
-	if(_a->GetPreferredHotkey()==key) {
+	if(_a && _a->GetPreferredHotkey()==key) {
 		_a->EnterHotkeyMode();
 	}
-	else if(_b->GetPreferredHotkey()==key) {
+	else if(_b && _b->GetPreferredHotkey()==key) {
 		_b->EnterHotkeyMode();
 	}
 }
@@ -53,17 +57,17 @@ void SplitterWnd::Layout() {
 
 	if(_orientation==OrientationHorizontal) {
 		int heightA = (int)floor(_ratio*(rc.bottom-rc.top));
-		int heightB = (rc.bottom-rc.top)-heightA;
+		int heightB = (rc.bottom-rc.top)-heightA-1;
 
-		SetWindowPos(_a->GetWindow(), 0, 0, 0, rc.right-rc.left, heightA-(barHeight/2),SWP_NOZORDER);
-		SetWindowPos(_b->GetWindow(), 0, 0, heightA+(barHeight/2), rc.right-rc.left, heightB-(barHeight/2),SWP_NOZORDER);
+		if(_a) SetWindowPos(_a->GetWindow(), 0, 0, 0, rc.right-rc.left, heightA-(barHeight/2),SWP_NOZORDER);
+		if(_b) SetWindowPos(_b->GetWindow(), 0, 0, heightA+(barHeight/2), rc.right-rc.left-1, heightB-(barHeight/2),SWP_NOZORDER);
 	}
 	else if(_orientation==OrientationVertical) {
 		int widthA = (int)floor(_ratio*(rc.right-rc.left));
-		int widthB = (rc.right-rc.left)-widthA;
+		int widthB = (rc.right-rc.left)-widthA-1;
 
-		SetWindowPos(_a->GetWindow(), 0, 0, 0, widthA-(barHeight/2), rc.bottom-rc.top, SWP_NOZORDER);
-		SetWindowPos(_b->GetWindow(), 0, widthA+(barHeight/2), 0, widthB-(barHeight/2),rc.bottom-rc.top,SWP_NOZORDER);
+		if(_a) SetWindowPos(_a->GetWindow(), 0, 0, 0, widthA-(barHeight/2), rc.bottom-rc.top, SWP_NOZORDER);
+		if(_b) SetWindowPos(_b->GetWindow(), 0, widthA+(barHeight/2), 0, widthB-(barHeight/2),rc.bottom-rc.top-1,SWP_NOZORDER);
 	}
 }
 
@@ -96,36 +100,11 @@ void SplitterWnd::Paint(Graphics& g) {
 			int bH = int(_ratio * (rc.right-rc.left)-(barHeight/2)); // top of the bar
 			g.FillRectangle(abr, bH-2, 0, barHeight+4, rc.bottom-rc.top);
 		}
+		g.FillRectangle(abr, 0, rc.bottom-5, rc.right-rc.left, 5);
+		g.FillRectangle(abr, rc.right-5, 0, 5, rc.bottom-rc.top);
 
 		delete abr;
 	}
-
-	/*Color start, end;
-	if(_dragging) {
-		start = theme->GetActiveStartColor();
-		end = theme->GetActiveEndColor();
-	}
-	else {
-		start = theme->GetSplitterStartColor();
-		end = theme->GetSplitterEndColor();
-	}
-
-	RECT r;
-	GetClientRect(_wnd,&r);
-	if(_orientation==OrientationHorizontal) {
-		int bH = int(_ratio * (r.bottom-r.top)-(barHeight/2)); // top of the bar
-
-		LinearGradientBrush br(PointF(0, REAL(bH-1)),PointF(0, REAL(bH+barHeight+2)), start,end);
-		g.FillRectangle(&br, 0,bH-2,r.right-r.left, barHeight+4);
-	}
-	else if(_orientation==OrientationVertical) {
-		int bH = int(_ratio * (r.right-r.left)-(barHeight/2)); // top of the bar
-
-		LinearGradientBrush br(PointF(REAL(bH-1),0),PointF(REAL(bH+barHeight+2),0), start,end);
-		g.FillRectangle(&br, bH-2, 0, barHeight+4, r.bottom-r.top);
-	}*/
-
-
 }
 
 LRESULT SplitterWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
@@ -215,8 +194,8 @@ wchar_t SplitterWnd::GetPreferredHotkey() {
 }
 
 void SplitterWnd::Update() {
-	_a->Update();
-	_b->Update();
+	if(_a) _a->Update();
+	if(_b) _b->Update();
 }
 
 bool SplitterWnd::IsInHotkeyMode() {

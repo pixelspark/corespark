@@ -31,6 +31,7 @@ class EXPORTED TabWnd: public ChildWnd {
 		void Detach(ref<Pane> p);
 		void Attach(ref<Pane> p);
 		bool RevealWindow(ref<Wnd> w);
+		void SetDetachAttachAllowed(bool allow);
 	
 	protected:
 		void SetDraggingPane(ref<Pane> pane);
@@ -46,6 +47,7 @@ class EXPORTED TabWnd: public ChildWnd {
 		int _dragStartX, _dragStartY;
 		Gdiplus::Bitmap* _closeIcon;
 		Gdiplus::Bitmap* _addIcon;
+		bool _detachAttachAllowed;
 
 		const static int TearOffLimit = 15;
 		enum {defaultHeaderHeight = 21};

@@ -9,6 +9,7 @@
 #define TJ_PROPERTY_EDIT_TIME_CLASS_NAME (L"TjPropertyEditTimeWndClass")
 #define TJ_PROPERTY_LABEL_CLASS_NAME (L"TjPropertyLabelWndClass")
 #define TJ_TAB_PANEL_CLASS_NAME (L"TjTabPanelWndClass")
+#define TJ_GL_CLASS_NAME (L"TjGLWndClass")
 #define WM_TJ_PRINT (WM_USER+2)
 #define ISVKKEYDOWN(vk_code) ((GetAsyncKeyState(vk_code) & 0x8000))
 
