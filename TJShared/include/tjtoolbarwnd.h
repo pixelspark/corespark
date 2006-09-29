@@ -7,12 +7,30 @@
 class EXPORTED ToolbarItem {
 	public:
 		ToolbarItem(int command=0, Gdiplus::Bitmap* bmp=0);
+		ToolbarItem(int command, std::wstring icon);
 		~ToolbarItem();
 		bool IsSeparator() const;
 		void SetSeparator(bool s);
+		virtual int GetCommand() const;
+		virtual Gdiplus::Bitmap* GetIcon();
+
+	protected:
 		int _command;
 		Gdiplus::Bitmap* _icon;
 		bool _separator;
+};
+
+class EXPORTED StateToolbarItem: public ToolbarItem {
+	public:
+		StateToolbarItem(int command, std::wstring iconOn, std::wstring iconOff);
+		virtual ~StateToolbarItem();
+		virtual void SetState(bool on);
+		virtual Gdiplus::Bitmap* GetIcon();
+		bool IsOn() const;
+
+	protected:
+		bool _on;
+		Gdiplus::Bitmap* _onImage;
 };
 
 class EXPORTED ToolbarWnd: public ChildWnd {

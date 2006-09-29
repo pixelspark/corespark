@@ -10,6 +10,13 @@ ToolbarItem::ToolbarItem(int command, Gdiplus::Bitmap* bmp) {
 	_command = command;
 }
 
+ToolbarItem::ToolbarItem(int command, std::wstring rid) {
+	_separator = false;
+	std::wstring path = ResourceManager::Instance()->Get(rid);
+	_icon = Bitmap::FromFile(path.c_str(), TRUE);
+	_command = command;
+}
+
 ToolbarItem::~ToolbarItem() {
 	delete _icon;
 };
@@ -22,6 +29,38 @@ void ToolbarItem::SetSeparator(bool s) {
 	_separator = s;
 }
 
+Gdiplus::Bitmap* ToolbarItem::GetIcon() {
+	return _icon;
+}
+
+int ToolbarItem::GetCommand() const {
+	return _command;
+}
+
+// StateToolbarItem
+StateToolbarItem::StateToolbarItem(int c, std::wstring on, std::wstring off): ToolbarItem(c, off) {
+	std::wstring path = ResourceManager::Instance()->Get(on);
+	_onImage = Bitmap::FromFile(path.c_str(), TRUE);
+	_on = false;
+}
+
+StateToolbarItem::~StateToolbarItem() {
+	delete _onImage;
+}
+
+void StateToolbarItem::SetState(bool on) {
+	_on = on;
+}
+
+bool StateToolbarItem::IsOn() const {
+	return _on;
+}
+
+Gdiplus::Bitmap* StateToolbarItem::GetIcon() {
+	return _on?_onImage:(ToolbarItem::GetIcon());
+}
+
+// ToolbarWnd
 ToolbarWnd::ToolbarWnd(HWND parent): ChildWnd(L"", parent) {
 	SetWantMouseLeave(true);
 	_in = false;
@@ -72,7 +111,7 @@ LRESULT ToolbarWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		int idx = GET_X_LPARAM(lp)/ButtonSize;
 		if(idx>=0 && idx < (int)_items.size()) {
 			ref<ToolbarItem> item = _items.at(idx);
-			OnCommand(item->_command);
+			OnCommand(item->GetCommand());
 		}
 		Repaint();
 	}
@@ -124,9 +163,9 @@ void ToolbarWnd::Paint(Gdiplus::Graphics& g) {
 			g.FillRectangle(&glas, RectF(float(x)+1.0f, 1.0f, float(ButtonSize)-2.0f, float(rc.GetHeight())-3.0f));
 		}
 
-		g.DrawImage(item->_icon, RectF(float(x)+4.0f, 4.0f, 16.0f, 16.0f));
+		g.DrawImage(item->GetIcon(), RectF(float(x)+4.0f, 4.0f, 16.0f, 16.0f));
 
-		if(item->_separator) {
+		if(item->IsSeparator()) {
 			Pen pn(theme->GetActiveStartColor());
 			g.DrawLine(&pn, PointF(float(x)+24.0f, 4.0f), PointF(float(x)+24.0f, float(rc.GetHeight())-4.0f));
 		}
