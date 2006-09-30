@@ -4,66 +4,11 @@
 using namespace Gdiplus;
 using namespace tj::shared;
 
-ToolbarItem::ToolbarItem(int command, Gdiplus::Bitmap* bmp) {
-	_separator = false;
-	_icon = bmp;
-	_command = command;
-}
-
-ToolbarItem::ToolbarItem(int command, std::wstring rid) {
-	_separator = false;
-	std::wstring path = ResourceManager::Instance()->Get(rid);
-	_icon = Bitmap::FromFile(path.c_str(), TRUE);
-	_command = command;
-}
-
-ToolbarItem::~ToolbarItem() {
-	delete _icon;
-};
-
-bool ToolbarItem::IsSeparator() const {
-	return _separator;
-}
-
-void ToolbarItem::SetSeparator(bool s) {
-	_separator = s;
-}
-
-Gdiplus::Bitmap* ToolbarItem::GetIcon() {
-	return _icon;
-}
-
-int ToolbarItem::GetCommand() const {
-	return _command;
-}
-
-// StateToolbarItem
-StateToolbarItem::StateToolbarItem(int c, std::wstring on, std::wstring off): ToolbarItem(c, off) {
-	std::wstring path = ResourceManager::Instance()->Get(on);
-	_onImage = Bitmap::FromFile(path.c_str(), TRUE);
-	_on = false;
-}
-
-StateToolbarItem::~StateToolbarItem() {
-	delete _onImage;
-}
-
-void StateToolbarItem::SetState(bool on) {
-	_on = on;
-}
-
-bool StateToolbarItem::IsOn() const {
-	return _on;
-}
-
-Gdiplus::Bitmap* StateToolbarItem::GetIcon() {
-	return _on?_onImage:(ToolbarItem::GetIcon());
-}
-
 // ToolbarWnd
 ToolbarWnd::ToolbarWnd(HWND parent): ChildWnd(L"", parent) {
 	SetWantMouseLeave(true);
 	_in = false;
+	_idx = -1;
 }
 
 ToolbarWnd::~ToolbarWnd() {
@@ -100,6 +45,10 @@ wchar_t ToolbarWnd::GetPreferredHotkey() {
 LRESULT ToolbarWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	if(msg==WM_MOUSEMOVE||msg==WM_MOUSEHOVER||msg==WM_LBUTTONDOWN) {
 		_in = true;
+
+		if(!ISVKKEYDOWN(VK_LBUTTON)||msg==WM_LBUTTONDOWN) {
+			_idx = GET_X_LPARAM(lp)/ButtonSize;
+		}
 		// track leave event
 		Repaint();
 	}
@@ -108,9 +57,9 @@ LRESULT ToolbarWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		Repaint();
 	}
 	else if(msg==WM_LBUTTONUP) {
-		int idx = GET_X_LPARAM(lp)/ButtonSize;
-		if(idx>=0 && idx < (int)_items.size()) {
-			ref<ToolbarItem> item = _items.at(idx);
+		//_idx = GET_X_LPARAM(lp)/ButtonSize;
+		if(_idx>=0 && _idx < (int)_items.size()) {
+			ref<ToolbarItem> item = _items.at(_idx);
 			OnCommand(item->GetCommand());
 		}
 		Repaint();
@@ -122,13 +71,6 @@ LRESULT ToolbarWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 }
 
 void ToolbarWnd::Paint(Gdiplus::Graphics& g) {
-	POINT cp;
-	RECT wrc;
-	GetWindowRect(_wnd, &wrc);
-	GetCursorPos(&cp);
-	cp.x -= wrc.left; cp.y -= wrc.top;
-	int mouseOver = cp.x/ButtonSize;
-
 	tj::shared::Rectangle rc = GetClientRectangle();
 	ref<Theme> theme = ThemeManager::GetTheme();
 	
@@ -151,7 +93,7 @@ void ToolbarWnd::Paint(Gdiplus::Graphics& g) {
 	int idx = 0;
 	while(it!=_items.end()) {
 		ref<ToolbarItem> item = *it;
-		if(mouseOver==idx && _in) {
+		if(idx==_idx && _in) {
 			if(ISVKKEYDOWN(VK_LBUTTON)) {
 				LinearGradientBrush active(PointF(0.0f, 0.0f), PointF(0.0f, float(rc.GetHeight())), theme->GetHighlightColorStart(), theme->GetHighlightColorEnd());
 				g.FillRectangle(&active, RectF(float(x)+1.0f, 1.0f, 22.0f, 21.0f));
@@ -174,4 +116,79 @@ void ToolbarWnd::Paint(Gdiplus::Graphics& g) {
 		it++;
 		idx++;
 	}
+
+	// draw description text if in & selected
+	if(_in && _idx >=0 && _idx < int(_items.size())) {
+		int lx = _items.size()*ButtonSize;
+		ref<ToolbarItem> item = _items.at(_idx);
+		std::wstring text = item->GetText();
+		SolidBrush br(theme->GetActiveEndColor());
+		StringFormat sf;
+		sf.SetAlignment(StringAlignmentNear);
+		sf.SetLineAlignment(StringAlignmentCenter);
+		g.DrawString(text.c_str(), (int)text.length(), theme->GetGUIFont(), RectF(float(lx), 0.0f, float(rc.GetWidth()), 24.0f), &sf, &br);
+	}
+}
+
+// ToolbarItem
+ToolbarItem::ToolbarItem(int command, Gdiplus::Bitmap* bmp, std::wstring text) {
+	_separator = false;
+	_icon = bmp;
+	_command = command;
+	_text = text;
+}
+
+ToolbarItem::ToolbarItem(int command, std::wstring rid, std::wstring text) {
+	_separator = false;
+	std::wstring path = ResourceManager::Instance()->Get(rid);
+	_icon = Bitmap::FromFile(path.c_str(), TRUE);
+	_command = command;
+	_text = text;
+}
+
+ToolbarItem::~ToolbarItem() {
+	delete _icon;
+};
+
+std::wstring ToolbarItem::GetText() const {
+	return _text;
+}
+
+bool ToolbarItem::IsSeparator() const {
+	return _separator;
+}
+
+void ToolbarItem::SetSeparator(bool s) {
+	_separator = s;
+}
+
+Gdiplus::Bitmap* ToolbarItem::GetIcon() {
+	return _icon;
+}
+
+int ToolbarItem::GetCommand() const {
+	return _command;
+}
+
+// StateToolbarItem
+StateToolbarItem::StateToolbarItem(int c, std::wstring on, std::wstring off, std::wstring text): ToolbarItem(c, off,text) {
+	std::wstring path = ResourceManager::Instance()->Get(on);
+	_onImage = Bitmap::FromFile(path.c_str(), TRUE);
+	_on = false;
+}
+
+StateToolbarItem::~StateToolbarItem() {
+	delete _onImage;
+}
+
+void StateToolbarItem::SetState(bool on) {
+	_on = on;
+}
+
+bool StateToolbarItem::IsOn() const {
+	return _on;
+}
+
+Gdiplus::Bitmap* StateToolbarItem::GetIcon() {
+	return _on?_onImage:(ToolbarItem::GetIcon());
 }

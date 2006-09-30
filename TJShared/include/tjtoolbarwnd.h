@@ -6,23 +6,25 @@
 
 class EXPORTED ToolbarItem {
 	public:
-		ToolbarItem(int command=0, Gdiplus::Bitmap* bmp=0);
-		ToolbarItem(int command, std::wstring icon);
+		ToolbarItem(int command=0, Gdiplus::Bitmap* bmp=0, std::wstring text=L"");
+		ToolbarItem(int command, std::wstring icon, std::wstring text=L"");
 		~ToolbarItem();
 		bool IsSeparator() const;
 		void SetSeparator(bool s);
 		virtual int GetCommand() const;
 		virtual Gdiplus::Bitmap* GetIcon();
+		virtual std::wstring GetText() const;
 
 	protected:
 		int _command;
 		Gdiplus::Bitmap* _icon;
 		bool _separator;
+		std::wstring _text;
 };
 
 class EXPORTED StateToolbarItem: public ToolbarItem {
 	public:
-		StateToolbarItem(int command, std::wstring iconOn, std::wstring iconOff);
+		StateToolbarItem(int command, std::wstring iconOn, std::wstring iconOff, std::wstring text=L"");
 		virtual ~StateToolbarItem();
 		virtual void SetState(bool on);
 		virtual Gdiplus::Bitmap* GetIcon();
@@ -49,7 +51,7 @@ class EXPORTED ToolbarWnd: public ChildWnd {
 		std::vector< ref<ToolbarItem> > _items;
 		static const int ButtonSize = 24;
 		bool _in;
-
+		int _idx;
 };
 
 #pragma warning(pop)

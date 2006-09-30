@@ -56,7 +56,7 @@ void SplitterWnd::Layout() {
 	GetClientRect(_wnd, &rc);
 
 	if(_orientation==OrientationHorizontal) {
-		int heightA = (int)floor(_ratio*(rc.bottom-rc.top));
+		int heightA = (int)floor(_ratio*(rc.bottom-rc.top))-1;
 		int heightB = (rc.bottom-rc.top)-heightA-1;
 
 		if(_a) SetWindowPos(_a->GetWindow(), 0, 0, 0, rc.right-rc.left, heightA-(barHeight/2),SWP_NOZORDER);
@@ -66,7 +66,7 @@ void SplitterWnd::Layout() {
 		int widthA = (int)floor(_ratio*(rc.right-rc.left));
 		int widthB = (rc.right-rc.left)-widthA-1;
 
-		if(_a) SetWindowPos(_a->GetWindow(), 0, 0, 0, widthA-(barHeight/2), rc.bottom-rc.top, SWP_NOZORDER);
+		if(_a) SetWindowPos(_a->GetWindow(), 0, 0, 0, widthA-(barHeight/2), rc.bottom-rc.top-1, SWP_NOZORDER);
 		if(_b) SetWindowPos(_b->GetWindow(), 0, widthA+(barHeight/2), 0, widthB-(barHeight/2),rc.bottom-rc.top-1,SWP_NOZORDER);
 	}
 }
