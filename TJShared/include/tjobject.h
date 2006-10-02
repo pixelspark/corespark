@@ -7,14 +7,14 @@ class EXPORTED Object {
 	public:
 		template<class T> inline ref<T> This() {
 			if(_resource!=0) {
-				Resource<T>* tr = reinterpret_cast< Resource<T>* >(_resource);
+				tj::shared::intern::Resource<T>* tr = reinterpret_cast< tj::shared::intern::Resource<T>* >(_resource);
 				return tr->Reference();
 			}
 			return 0;
 		}
 
 	private:
-		Resource<Object>* _resource;
+		tj::shared::intern::Resource<Object>* _resource;
 };
 
 #endif

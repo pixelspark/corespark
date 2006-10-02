@@ -16,83 +16,86 @@ class NullPointerException: public Exception {
 // T must be a pointer, like MyClass*
 template<typename T> class ref;
 template<typename T> class weak;
+class GC;
 
-template< typename T > class Resource {
-	friend class ref<T>;
-	friend class weak<T>;
-	friend class GC;
+namespace intern {
+	template< typename T > class Resource {
+		friend class tj::shared::ref<T>;
+		friend class tj::shared::weak<T>;
+		friend class tj::shared::GC;
 
-	public:
-		virtual ~Resource() {
-			if(_rc!=0 || _weakrc!=0) {
-					throw Exception(L"Resource deleted while still referenced!",ExceptionTypeWarning);
+		public:
+			virtual ~Resource() {
+				if(_rc!=0 || _weakrc!=0) {
+						throw Exception(L"Resource deleted while still referenced!",ExceptionTypeWarning);
+				}
+
+				this->Release();
+				GC::DecrementLive(sizeof(T));
 			}
 
-			this->Release();
-			GC::DecrementLive(sizeof(T));
-		}
-
-		inline void AddReference() {
-			InterlockedIncrement(&_rc);
-		}
-
-		inline void DeleteReference() {
-			InterlockedDecrement(&_rc);
-			if(_rc==0 && _weakrc ==0) {
-				delete this;
+			inline void AddReference() {
+				InterlockedIncrement(&_rc);
 			}
-			else if(_rc==0) {
-				Release();
+
+			inline void DeleteReference() {
+				InterlockedDecrement(&_rc);
+				if(_rc==0 && _weakrc ==0) {
+					delete this;
+				}
+				else if(_rc==0) {
+					Release();
+				}
 			}
-		}
 
-		inline void AddWeakReference() {
-			InterlockedIncrement(&_weakrc);
-		}
-
-		inline void DeleteWeakReference() {
-			InterlockedDecrement(&_weakrc);
-			if(_rc==0 && _weakrc==0) {
-				delete this;
+			inline void AddWeakReference() {
+				InterlockedIncrement(&_weakrc);
 			}
-		}
 
-		inline ref<T> Reference() {
-			return ref<T>(this);
-		}
-
-		inline weak<T> WeakReference() {
-			return weak<T>(this);
-		}
-
-		inline T* GetData() { return _data; }
-
-		T* _data;
-	protected:
-		Resource(T* x) { 
-			_rc = 0;
-			_weakrc = 0;
-			_data = x;
-			GC::IncrementLive(sizeof(T));
-		}
-  
-		void Release() {
-			if(_data!=0) {
-				T* temp = _data;
-				_data = 0;
-				delete temp;
+			inline void DeleteWeakReference() {
+				InterlockedDecrement(&_weakrc);
+				if(_rc==0 && _weakrc==0) {
+					delete this;
+				}
 			}
-		}
 
-		long _rc;
-		long _weakrc;
-};
+			inline ref<T> Reference() {
+				return ref<T>(this);
+			}
+
+			inline weak<T> WeakReference() {
+				return weak<T>(this);
+			}
+
+			inline T* GetData() { return _data; }
+
+			T* _data;
+		protected:
+			Resource(T* x) { 
+				_rc = 0;
+				_weakrc = 0;
+				_data = x;
+				GC::IncrementLive(sizeof(T));
+			}
+	  
+			void Release() {
+				if(_data!=0) {
+					T* temp = _data;
+					_data = 0;
+					delete temp;
+				}
+			}
+
+			long _rc;
+			long _weakrc;
+	};
+}
 
 template<typename T> class ref {
-	friend class Resource<T>;
+	friend class tj::shared::intern::Resource<T>;
 
 	public:
-		inline ref(Resource<T>* rx=0) {
+		inline ref(tj::shared::intern::Resource<T>* rx=0) {
 			_res = rx;
 			if(_res!=0) {
 				_res->AddReference();
@@ -114,7 +117,7 @@ template<typename T> class ref {
 				T* rt = dynamic_cast<T*>(org._res->_data);				
 				if(rt==0) throw BadCastException();
 
-				_res = reinterpret_cast<Resource<T>* >(org._res);
+				_res = reinterpret_cast<tj::shared::intern::Resource<T>* >(org._res);
 				if(_res!=0) {
 					_res->AddReference();
 				}
@@ -128,7 +131,7 @@ template<typename T> class ref {
 		}
 
 		inline ref<T>& operator=(const ref<T>& o) {
-			Resource<T>* old = _res;
+			tj::shared::intern::Resource<T>* old = _res;
 			_res = o._res;
 
 			if(_res!=0) {
@@ -194,14 +197,14 @@ template<typename T> class ref {
 			return dynamic_cast<X*>(_res->_data)!=0;	
 		}
 
-		Resource<T>* _res;
+		tj::shared::intern::Resource<T>* _res;
 };
 
 template<typename T> class weak {
-	friend class Resource<T>;
+	friend class tj::shared::intern::Resource<T>;
 
 	public:
-		inline weak(Resource<T>* rx=0) {
+		inline weak(tj::shared::intern::Resource<T>* rx=0) {
 			_res = rx;
 			if(_res!=0) {
 			_res->AddWeakReference();
@@ -223,7 +226,7 @@ template<typename T> class weak {
 				T* rt = dynamic_cast<T*>(org._res->_data);				
 				if(rt==0) throw BadCastException();
 
-				_res = reinterpret_cast<Resource<T>* >(org._res);
+				_res = reinterpret_cast<tj::shared::intern::Resource<T>* >(org._res);
 				if(_res!=0) {
 					_res->AddWeakReference();
 				}
@@ -237,7 +240,7 @@ template<typename T> class weak {
 		}
 
 		inline weak<T>& operator=(const ref<T>& o) {
-			Resource<T>* old = _res;
+			tj::shared::intern::Resource<T>* old = _res;
 			_res = o._res;
 
 			if(_res!=0) {
@@ -286,7 +289,7 @@ template<typename T> class weak {
 			return ref<T>(0);
 		}
 
-		Resource<T>* _res;
+		tj::shared::intern::Resource<T>* _res;
 };
 
 #endif

@@ -16,7 +16,7 @@ class EXPORTED GC {
 		static inline void SetObjectPointer(...) {
 		}
 		
-		static inline void SetObjectPointer(Object* object, Resource<Object>* rs) {
+		static inline void SetObjectPointer(Object* object, tj::shared::intern::Resource<Object>* rs) {
 			object->_resource = rs;
 		}
 
@@ -24,8 +24,8 @@ class EXPORTED GC {
 };
 
 template<class T> ref<T> GC::Hold(T* x) {
-	Resource<T>* rs = new Resource<T>(x);
-	SetObjectPointer(x, reinterpret_cast< Resource<Object>* >(rs));
+	tj::shared::intern::Resource<T>* rs = new tj::shared::intern::Resource<T>(x);
+	SetObjectPointer(x, reinterpret_cast< tj::shared::intern::Resource<Object>* >(rs));
 	return rs->Reference();
 }
 

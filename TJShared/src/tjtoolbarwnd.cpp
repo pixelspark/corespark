@@ -119,7 +119,7 @@ void ToolbarWnd::Paint(Gdiplus::Graphics& g) {
 
 	// draw description text if in & selected
 	if(_in && _idx >=0 && _idx < int(_items.size())) {
-		int lx = _items.size()*ButtonSize;
+		int lx = int(_items.size())*ButtonSize;
 		ref<ToolbarItem> item = _items.at(_idx);
 		std::wstring text = item->GetText();
 		SolidBrush br(theme->GetActiveEndColor());

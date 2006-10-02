@@ -7,7 +7,8 @@
 class RootWnd;
 
 class EXPORTED ResourceManager: public virtual Object {
-	friend class Resource<ResourceManager>; // so it can call the destructor
+	friend class tj::shared::intern::Resource<ResourceManager>; // so it can call the destructor
+
 	public:
 		static ref<ResourceManager> Instance();
 
