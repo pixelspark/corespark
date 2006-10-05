@@ -18,7 +18,7 @@ class EXPORTED NotificationWnd: public Wnd {
 			NotificationTimeoutForever = 0,
 			NotificationTimeoutDefault = -1,
 		};
-
+		
 	protected:
 		std::wstring _text;
 		Gdiplus::Bitmap* _icon;
@@ -26,7 +26,7 @@ class EXPORTED NotificationWnd: public Wnd {
 		int _index;
 
 		const static int DefaultNotificationHeight;
-		const static int DefaultNotificationMargin;
+		const static int DefaultNotificationMargin;	
 		const static int DefaultNotificationTimeout;
 };
 

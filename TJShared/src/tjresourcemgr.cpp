@@ -12,7 +12,6 @@ ResourceManager::ResourceManager() {
 	GetModuleFileName(GetModuleHandle(NULL), buf, MAX_PATH);
 	PathRemoveFileSpec(buf);
 	_paths.push_back(std::wstring(buf));
-	_root = 0;
 }
 
 ResourceManager::~ResourceManager() {
@@ -22,11 +21,11 @@ void ResourceManager::AddSearchPath(std::wstring path) {
 	_paths.push_back(path);
 }
 
-void ResourceManager::SetRootWindowForNotifications(RootWnd* rw) {
-	_root = rw;
+void ResourceManager::SetListener(ref<ResourceListener> l) {
+	_listener = l;
 }
 
-std::wstring ResourceManager::Get(std::wstring ident) {
+std::wstring ResourceManager::Get(std::wstring ident, bool silent) {
 	std::vector<std::wstring>::iterator it = _paths.begin();
 	while(it!=_paths.end()) {
 		std::wstring path = *it + L"\\"+ident;
@@ -42,9 +41,10 @@ std::wstring ResourceManager::Get(std::wstring ident) {
 		return ident;
 	}
 
-	// Add a notification, the threadsafe way©
-	ref<Runnable> rn = GC::Hold(new AddNotificationRunnable(_root, TL(resource_not_found)+ident, L"icons/notifications/error.png", NotificationWnd::NotificationTimeoutDefault));
-	Core::Instance()->AddAction(rn);
+	Log::Write(L"TJShared/ResourceManager", std::wstring(L"Resource not found: ")+ident);
+	if(!silent && _listener) {
+		return _listener->OnResourceNotFound(ident);
+	}
 
 	return L"";
 }
@@ -55,4 +55,7 @@ ref<ResourceManager> ResourceManager::Instance() {
 	}
 
 	return _instance;
+}
+
+ResourceListener::~ResourceListener() {
 }

@@ -1,6 +1,8 @@
 #include "../include/tjshared.h"
 #include <commctrl.h>
 #include <windowsx.h>
+#define ISVKKEYDOWN(vk_code) ((GetAsyncKeyState(vk_code) & 0x8000))
+
 using namespace tj::shared;
 using namespace Gdiplus;
 
@@ -674,16 +676,7 @@ LRESULT Wnd::PreMessage(UINT msg, WPARAM wp, LPARAM lp) {
 
 		EndPaint(_wnd, &ps);
 		return 0;
-	}
-	else if(msg==WM_TJ_PRINT) {
-		Graphics* g = (Graphics*)lp;
-
-		//if((lp&PRF_CHILDREN)!=0) {
-			RecursivePaintChildren(GetWindow(), GetWindow(), *g);
-		//}
-
-		return 0;
-	}
+	}	
 	else {
 		return Message(msg, wp, lp);
 	}

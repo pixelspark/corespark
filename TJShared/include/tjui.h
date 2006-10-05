@@ -1,17 +1,6 @@
 #ifndef _TJUI_H
 #define _TJUI_H
-
-/** Common GUI classes for usage by both plugins and the program itself **/
-#define TJ_DEFAULT_CLASS_NAME (L"TjWndClass")
-#define TJ_DEFAULT_NDBL_CLASS_NAME (L"TjWndClassNdbl")
-#define TJ_PROPERTY_EDIT_CLASS_NAME (L"TjPropertyEditWndClass")
-#define TJ_PROPERTY_EDIT_NUMERIC_CLASS_NAME (L"TjPropertyEditNumericWndClass")
-#define TJ_PROPERTY_EDIT_TIME_CLASS_NAME (L"TjPropertyEditTimeWndClass")
-#define TJ_PROPERTY_LABEL_CLASS_NAME (L"TjPropertyLabelWndClass")
-#define TJ_TAB_PANEL_CLASS_NAME (L"TjTabPanelWndClass")
-#define TJ_GL_CLASS_NAME (L"TjGLWndClass")
-#define WM_TJ_PRINT (WM_USER+2)
-#define ISVKKEYDOWN(vk_code) ((GetAsyncKeyState(vk_code) & 0x8000))
+#include "../include/tjplatform.h"
 
 /** Class for initializing GDI+ **/
 class EXPORTED GraphicsInit {
@@ -39,7 +28,6 @@ class EXPORTED Wnd: public virtual Object {
 		
 		virtual void Show(bool s);
 		bool IsShown() const;
-		HWND GetWindow();
 		void Repaint();
 		void SetQuitOnClose(bool q);
 		virtual void Layout();
@@ -86,6 +74,8 @@ class EXPORTED Wnd: public virtual Object {
 
 		void SetWantMouseLeave(bool t);
 		bool GetWantMouseLeave() const;
+
+		HWND GetWindow();
 
 	protected:
 		virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);

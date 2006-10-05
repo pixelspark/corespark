@@ -636,6 +636,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\include\tjplatform.h"
+				>
+			</File>
+			<File
 				RelativePath=".\include\tjprogresswnd.h"
 				>
 			</File>

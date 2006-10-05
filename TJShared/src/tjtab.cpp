@@ -1,5 +1,5 @@
 #include "../include/tjshared.h"
-#include <windowsx.h>
+#include "../include/tjplatform.h"
 using namespace Gdiplus;
 using namespace tj::shared;
 
