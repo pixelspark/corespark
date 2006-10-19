@@ -17,6 +17,7 @@ namespace tj {
 		#include "tjexception.h"
 		#include "tjreference.h"
 		#include "tjobject.h"
+		#include "tjiterator.h"
 		#include "tjhash.h"
 		#include "tjserializable.h"
 		#include "tjrectangle.h"
