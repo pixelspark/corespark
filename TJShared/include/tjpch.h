@@ -23,6 +23,7 @@
 #include <list>
 #include <iomanip>
 #include <fstream>
+#include <deque>
 
 #include <windows.h>
 #include <Gdiplus.h>

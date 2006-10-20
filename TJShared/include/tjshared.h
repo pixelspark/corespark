@@ -29,6 +29,7 @@ namespace tj {
 		#include "tjcriticalsection.h"
 		#include "tjlanguage.h"
 		#include "tjlistener.h"
+		#include "tjaction.h"
 		#include "tjcode.h"
 		#include "tjdxutil.h"
 		#include "tjarguments.h"

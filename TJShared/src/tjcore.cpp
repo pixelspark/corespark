@@ -6,6 +6,14 @@ ref<Core> Core::_instance;
 RunnableApplication::~RunnableApplication() {
 }
 
+void RunnableApplication::AddCommandHistory(ref<Action> action) {
+	if(_undo.size()>=KUndoMemory) {
+		_undo.pop_front();
+	}
+
+	_undo.push_back(action);
+}
+
 Runnable::~Runnable() {
 }
 

@@ -8,6 +8,10 @@ class EXPORTED RunnableApplication {
 	public:
 		virtual ~RunnableApplication();
 		virtual void Message(MSG& msg) = 0;
+		virtual void AddCommandHistory(ref<Action> action);
+
+		static const int KUndoMemory = 10;
+		std::deque< ref<Action> > _undo;
 };
 
 class EXPORTED Core {
