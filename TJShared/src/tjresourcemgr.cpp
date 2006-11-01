@@ -21,6 +21,10 @@ void ResourceManager::AddSearchPath(std::wstring path) {
 	_paths.push_back(path);
 }
 
+void ResourceManager::RemoveSearchPath(std::wstring path) {
+	std::remove(_paths.begin(), _paths.end(), path);
+}
+
 void ResourceManager::SetListener(ref<ResourceListener> l) {
 	_listener = l;
 }
@@ -58,4 +62,15 @@ ref<ResourceManager> ResourceManager::Instance() {
 }
 
 ResourceListener::~ResourceListener() {
+}
+
+/* ResourceBundle */
+ResourceBundle::ResourceBundle(ref<ResourceManager> mgr, std::wstring path): _path(path), _mgr(mgr) {
+	assert(_mgr);
+
+	_mgr->AddSearchPath(_path);
+}
+
+ResourceBundle::~ResourceBundle() {
+	_mgr->RemoveSearchPath(_path);
 }

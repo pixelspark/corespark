@@ -21,6 +21,7 @@ class EXPORTED ResourceManager: public virtual Object {
 		/** Returns a full path to the specified resource.**/
 		std::wstring Get(std::wstring identifier, bool silent=false);
 		void AddSearchPath(std::wstring path);
+		void RemoveSearchPath(std::wstring path);
 		void SetListener(ref<ResourceListener> listener);
 
 	protected:
@@ -29,6 +30,16 @@ class EXPORTED ResourceManager: public virtual Object {
 		static ref<ResourceManager> _instance;
 		std::vector<std::wstring> _paths;
 		ref<ResourceListener> _listener;
+};
+
+class EXPORTED ResourceBundle: public virtual Object {
+	public:
+		ResourceBundle(ref<ResourceManager> mgr, std::wstring path);
+		virtual ~ResourceBundle();
+
+	protected:
+		std::wstring _path;
+		ref<ResourceManager> _mgr;
 };
 
 
