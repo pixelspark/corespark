@@ -3,7 +3,6 @@
 
 /** Playform specific headers not needed by every source unit **/
 #include <windows.h>
-#include <windowsx.h>
 #define ISVKKEYDOWN(vk_code) ((GetAsyncKeyState(vk_code) & 0x8000))
 
 #define TJ_DEFAULT_CLASS_NAME (L"TjWndClass")

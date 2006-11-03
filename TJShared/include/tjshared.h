@@ -23,6 +23,7 @@ namespace tj {
 		#include "tjrectangle.h"
 		#include "tjcolor.h"
 		#include "tjutil.h"
+		#include "tjfile.h"
 		#include "tjflags.h"
 		#include "tjrange.h"
 		#include "tjthread.h"

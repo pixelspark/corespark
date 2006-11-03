@@ -213,12 +213,12 @@ Brush* Theme::GetApplicationBackgroundBrush(HWND root, HWND child) const {
 	return lbr;
 }
 
-Gdiplus::Color Theme::GetProgressBackStart() const {
-	return Color(201,201,201);
+/*Gdiplus::Color Theme::GetProgressBackStart() const {
+	return Color(0,0,0);
 }
 
 Gdiplus::Color Theme::GetProgressBackEnd() const {
-	return Color(255,255,255);
+	return Color(54,54,54);
 }
 
 Gdiplus::Color Theme::GetProgressGlassStart() const {
@@ -229,11 +229,31 @@ Gdiplus::Color Theme::GetProgressGlassEnd() const {
 }
 
 Gdiplus::Color Theme::GetProgressColor() const {
+	return Color(0,44,215);
+} */
+
+Color Theme::GetProgressBackStart() const {
+	return Color(201,201,201);
+}
+
+Color Theme::GetProgressBackEnd() const {
+	return Color(255,255,255);
+}
+
+Color Theme::GetProgressGlassStart() const {
+	return Color(211,255,255,255);
+}
+
+Color Theme::GetProgressGlassEnd() const {
+	return Color(43,255,255,255);
+}
+
+Color Theme::GetProgressColor() const {
 	return Color(0,211,40);
 }
+
 	
 // Bright theme
-
 BrightTheme::BrightTheme() {
 }
 
@@ -341,6 +361,27 @@ Color BrightTheme::GetGlassColorStart() const {
 Color BrightTheme::GetGlassColorEnd() const {
 	return Color(100,255,255,255);
 }
+
+Color BrightTheme::GetProgressBackStart() const {
+	return Color(201,201,201);
+}
+
+Color BrightTheme::GetProgressBackEnd() const {
+	return Color(255,255,255);
+}
+
+Color BrightTheme::GetProgressGlassStart() const {
+	return Color(211,255,255,255);
+}
+
+Color BrightTheme::GetProgressGlassEnd() const {
+	return Color(43,255,255,255);
+}
+
+Color BrightTheme::GetProgressColor() const {
+	return Color(0,211,40);
+}
+	
 
 Brush* BrightTheme::GetApplicationBackgroundBrush(HWND root, HWND child) const {
 	RECT rootrc, childrc;

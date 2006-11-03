@@ -118,6 +118,13 @@ class BrightTheme: public Theme {
 
 		virtual Gdiplus::Color GetToolbarColorStart() const;
 		virtual Gdiplus::Color GetToolbarColorEnd() const;
+
+		// ProgressWnd
+		virtual Gdiplus::Color GetProgressBackStart() const;
+		virtual Gdiplus::Color GetProgressBackEnd() const;
+		virtual Gdiplus::Color GetProgressGlassStart() const;
+		virtual Gdiplus::Color GetProgressGlassEnd() const;
+		virtual Gdiplus::Color GetProgressColor() const;
 };
 
 #pragma warning(pop)

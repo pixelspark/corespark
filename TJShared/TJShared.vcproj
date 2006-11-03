@@ -398,6 +398,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\tjfile.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\tjfilewriter.cpp"
 				>
 			</File>
@@ -577,6 +581,10 @@
 			</File>
 			<File
 				RelativePath=".\include\tjexception.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tjfile.h"
 				>
 			</File>
 			<File
