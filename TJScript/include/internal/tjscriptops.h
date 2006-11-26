@@ -40,6 +40,15 @@ namespace tj {
 				virtual inline std::wstring GetName() {return L"OpParameter";}
 		};
 
+		// takes a value object and adds it to a parameter list (first parameter with key="1", second "2" etc
+		// [parameterlist] [value] => [parameterlist]
+		class OpNamelessParameter: public Op {
+			public:
+				virtual ~OpNamelessParameter() {}
+				virtual void Execute(tj::shared::ref<VM> stack);
+				virtual inline std::wstring GetName() { return L"OpNamelessParameter"; };
+		};
+
 		// creates a parameterlist on the stack
 		// ... => [parameterlist]
 		class  OpPushParameter: public Op {

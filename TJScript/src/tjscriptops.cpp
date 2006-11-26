@@ -30,6 +30,14 @@ void OpParameter::Execute(ref<VM> vm) {
 	stack->Push(parameter);
 }
 
+void OpNamelessParameter::Execute(ref<VM> vm) {
+	ref<ScriptStack> stack = vm->GetStack();
+	ref<Scriptable> value = stack->Pop();
+	ref<ScriptParameterList> parameter = stack->Pop();
+	parameter->AddNamelessParameter(value);
+	stack->Push(parameter);
+}
+
 void OpPushParameter::Execute(ref<VM> vm) {
 	vm->GetStack()->Push(GC::Hold(new ScriptParameterList()));
 }

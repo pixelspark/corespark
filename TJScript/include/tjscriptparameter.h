@@ -11,16 +11,19 @@ namespace tj {
 
 		template<typename T> class RequiredParameter {
 			public:
-				inline RequiredParameter(tj::shared::ref<ParameterList> p, std::wstring name, T defaultValue) {
+				inline RequiredParameter(tj::shared::ref<ParameterList> p, std::wstring name, T defaultValue, int namelessIndex=-1) {
 					if(!p) {
 						throw ParameterException(name);
 					}
 					
-					if(p->find(name)==p->end()) {
-						throw ParameterException(name);
+					tj::shared::ref<Scriptable> v;
+					if(p->find(name)!=p->end()) {
+						v = (*(p->find(name))).second;
 					}
-
-					tj::shared::ref<Scriptable> v = (*(p->find(name))).second;
+					else if(namelessIndex>=0 && p->find(Stringify(namelessIndex))!=p->end()) {
+						v = (*p->find(Stringify(namelessIndex))).second;
+					}
+					
 					if(v==0) {
 						throw ParameterException(name);
 					}
@@ -41,24 +44,23 @@ namespace tj {
 
 		template<typename T> class OptionalParameter {
 			public:
-				inline OptionalParameter(tj::shared::ref<ParameterList> p, std::wstring name, T defaultValue) {
+				inline OptionalParameter(tj::shared::ref<ParameterList> p, std::wstring name, T defaultValue, int namelessIndex=-1) {
 					if(p) {
-						value = defaultValue;
-					}
-					else {
-						if(p->find(name)==p->end()) {
-							value = defaultValue;
+						tj::shared::ref<Scriptable> v;
+						if(p->find(name)!=p->end()) {
+							v = (*(p->find(name))).second;
 						}
-						else {
-							tj::shared::ref<Scriptable> v = (*(p->find(name))).second;
-							if(v==0) {
-								value = defaultValue;
-							}
-							else {
-								value = ScriptContext::GetValue<T>(v, defaultValue);
-							}
+						else if(namelessIndex>=0 && p->find(Stringify(namelessIndex))!=p->end()) {
+							v = (*(p->find(Stringify(namelessIndex)))).second;
+						}
+
+						if(v) {
+							value = ScriptContext::GetValue<T>(v, defaultValue);
+							return;
 						}
 					}
+
+					value = defaultValue;
 				}
 
 				inline operator T&() {

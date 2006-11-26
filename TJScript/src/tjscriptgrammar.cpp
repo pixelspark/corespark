@@ -244,10 +244,11 @@ struct ScriptGrammar : public grammar<ScriptGrammar> {
 				keyword_p("break")[ScriptInstruction<OpBreak>(self._stack)];
 
 			keyValuePair = 
-				identifier >> (ch_p('=')|ch_p(':')) >> expression;
+				eps_p(lexeme_d[alpha_p >> *(alnum_p|ch_p('_'))] >> (ch_p('=')|ch_p(':'))) 
+				>> identifier >> (ch_p('=')|ch_p(':')) >> expression;
 
 			parameterList = 
-				(keyValuePair[ScriptInstruction<OpParameter>(self._stack)] % ch_p(','));
+				( (keyValuePair[ScriptInstruction<OpParameter>(self._stack)]|expression[ScriptInstruction<OpNamelessParameter>(self._stack)]) % ch_p(','));
 
 			assignment = 
 				lexeme_d[keyword_p("var")] >> identifier >> 

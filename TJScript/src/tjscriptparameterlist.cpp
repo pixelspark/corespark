@@ -20,6 +20,7 @@ ref<Scriptable> ScriptParameterList::Execute(Command command, tj::shared::ref<Pa
 
 ScriptParameterList::ScriptParameterList() {
 	_params = GC::Hold(new ParameterList());
+	_namelessCount = 0;
 }
 
 ScriptParameterList::~ScriptParameterList() {
@@ -27,4 +28,9 @@ ScriptParameterList::~ScriptParameterList() {
 
 void ScriptParameterList::Set(std::wstring k, ref<Scriptable> v) {
 	_params->operator[](k) = v;
+}
+
+void ScriptParameterList::AddNamelessParameter(ref<Scriptable> t) {
+	Set(Stringify(_namelessCount), t);
+	_namelessCount++;
 }
