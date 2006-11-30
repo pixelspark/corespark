@@ -31,6 +31,9 @@ namespace tj {
 					value = ScriptContext::GetValue<T>(v, defaultValue);
 				}
 
+				inline ~RequiredParameter() {
+				}
+
 				inline operator T&() {
 					return value;
 				}
@@ -61,6 +64,9 @@ namespace tj {
 					}
 
 					value = defaultValue;
+				}
+
+				inline ~OptionalParameter() {
 				}
 
 				inline operator T&() {
