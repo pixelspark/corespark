@@ -439,7 +439,8 @@ class VistaTheme: public Theme {
 		}
 
 		virtual Gdiplus::Color GetActiveStartColor() const {
-			return Color(242,251,254);
+			//return Color(242,251,254);
+			return GetActiveEndColor();
 		}
 
 		virtual Gdiplus::Color GetActiveEndColor() const {
@@ -491,7 +492,7 @@ class VistaTheme: public Theme {
 			GetWindowRect(root, &rootrc);
 			GetWindowRect(child, &childrc);
 
-			Gdiplus::LinearGradientBrush* lbr = new Gdiplus::LinearGradientBrush(PointF(0.0f, -float(childrc.top-rootrc.top)), PointF(0.0f,float(rootrc.bottom-rootrc.top)), GetActiveStartColor(), GetActiveEndColor());
+			Gdiplus::LinearGradientBrush* lbr = new Gdiplus::LinearGradientBrush(PointF(0.0f, -float(childrc.top-rootrc.top)), PointF(0.0f,float(rootrc.bottom-rootrc.top)), Color(242,251,254), GetActiveEndColor());
 			lbr->SetWrapMode(WrapModeClamp);
 			REAL factors[3] = {1.0f, 0.0f, 0.0f};
 			REAL positions[3] = {0.0f, 0.25f ,1.0f};

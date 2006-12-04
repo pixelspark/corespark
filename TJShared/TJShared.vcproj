@@ -446,6 +446,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\tjpath.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\tjprogresswnd.cpp"
 				>
 			</File>
@@ -649,6 +653,10 @@
 			</File>
 			<File
 				RelativePath=".\include\tjpane.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tjpath.h"
 				>
 			</File>
 			<File

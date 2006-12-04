@@ -13,7 +13,7 @@ class EXPORTED TabWnd: public ChildWnd {
 		virtual wchar_t GetPreferredHotkey();
 		void SetHotkey(wchar_t hotkey);
 		virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
-		ref<Pane> AddPane(std::wstring name, ref<Wnd> wnd, bool closable=false);
+		ref<Pane> AddPane(std::wstring name, ref<Wnd> wnd, bool closable=false, bool select=false);
 		ref<Pane> AddPane(ref<Pane> pane);
 		ref<Pane> GetPane(int index);
 		void RemovePane(ref<Wnd> wnd);

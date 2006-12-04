@@ -7,8 +7,8 @@ ref<Scriptable> ScriptRangeType::Construct(tj::shared::ref<ParameterList> p) {
 		return 0;
 	}
 
-	RequiredParameter<int> from(p, L"from", 0);
-	RequiredParameter<int> to(p, L"to", 0);
+	RequiredParameter<int> from(p, L"from", 0,0);
+	RequiredParameter<int> to(p, L"to", 0,1);
 
 	if(to.Get()<from.Get()) {
 		return 0;

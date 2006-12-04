@@ -46,10 +46,13 @@ class EXPORTED ToolbarWnd: public ChildWnd {
 		virtual void Add(ref<ToolbarItem> item);
 		virtual void OnCommand(int c);
 		virtual void Fill(LayoutFlags f, tj::shared::Rectangle& r);
+		virtual int GetTotalButtonWidth();
 
 	protected:
 		std::vector< ref<ToolbarItem> > _items;
-		static const int ButtonSize = 24;
+		static const int KButtonSize = 24;
+		static const int KIconWidth = 16;
+		static const int KIconHeight = 16;
 		bool _in;
 		int _idx;
 };

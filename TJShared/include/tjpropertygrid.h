@@ -16,8 +16,8 @@ class EXPORTED PropertyGridWnd: public ChildWnd {
 			Layout();
 		}
 
-		void Inspect(ref<Inspectable> isp);
-		void Inspect(Inspectable* isp);
+		void Inspect(ref<Inspectable> isp, ref<Path> p = 0);
+		void Inspect(Inspectable* isp, ref<Path> p = 0);
 		inline HWND GetWindow() { return _wnd; }
 		LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 		void Layout();
@@ -35,7 +35,10 @@ class EXPORTED PropertyGridWnd: public ChildWnd {
 		std::vector< ref<Property> > _properties;
 		int _nameWidth;
 		ref<Inspectable> _subject;
+		ref<PathWnd> _path;
 		bool _isDraggingSplitter;
+
+		const static int KPathHeight = 22;
 };
 
 #pragma warning(pop)

@@ -63,6 +63,7 @@ namespace tj {
 		#include "tjcolorproperty.h"
 		#include "tjlistproperty.h"
 		#include "tjtextproperty.h"
+		#include "tjpath.h"
 		#include "tjpropertygrid.h"
 		#include "tjfilewriter.h"
 		#include "tjtoolbarwnd.h"

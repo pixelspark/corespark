@@ -7,7 +7,7 @@ ref<Scriptable> ScriptHashType::Construct(tj::shared::ref<ParameterList> p) {
 		return 0;
 	}
 
-	RequiredParameter<std::wstring> data(p, L"data", L"");
+	RequiredParameter<std::wstring> data(p, L"data", L"",0);
 	return GC::Hold(new ScriptHash(data.Get()));
 }
 

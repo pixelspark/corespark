@@ -9,12 +9,13 @@ PropertyGridWnd::PropertyGridWnd(HWND parent): ChildWnd(TL(properties), parent) 
 	_nameWidth = 100;
 	SetStyle(WS_CLIPCHILDREN);
 	SetStyleEx(WS_EX_CONTROLPARENT);
-	Layout();
 	_editBackground = 0;
 	_editFont = 0;
 	_isDraggingSplitter = false;
+	_path = GC::Hold(new PathWnd(_wnd));
+	_path->Show(true);
+	Layout();
 	Show(true);
-	
 }
 
 PropertyGridWnd::~PropertyGridWnd() {
@@ -72,7 +73,7 @@ void PropertyGridWnd::Paint(Graphics& g) {
 	SolidBrush br(theme->GetPropertyBackgroundColor());
 	g.FillRectangle(&br,-1,-1,r.right-r.left+1,r.bottom-r.top+1);
 
-	int cH = 0;
+	int cH = KPathHeight;
 	int hI = 0;
 	std::vector< ref<Property> >::iterator it = _properties.begin();
 
@@ -212,7 +213,11 @@ void PropertyGridWnd::Layout() {
 	RECT rect;
 	GetClientRect(_wnd, &rect);
 
-	int cH = 0;
+	if(_path) {
+		_path->Move(0,0,rect.right-rect.left, KPathHeight);
+	}
+
+	int cH = KPathHeight;
 	std::vector< ref<Property> >::iterator it = _properties.begin();
 	while(it!=_properties.end()) {
 		ref<Property> pr = *it;
@@ -235,6 +240,7 @@ void PropertyGridWnd::Update() {
 		pr->Update();
 		it++;
 	}
+	_path->Update();
 	Repaint();
 }
 
@@ -243,7 +249,7 @@ void PropertyGridWnd::Clear() {
 	Layout();
 }
 
-void PropertyGridWnd::Inspect(Inspectable* isp) {
+void PropertyGridWnd::Inspect(Inspectable* isp, ref<Path> p) {
 	_properties.clear();
 
 	if(isp==0) {	
@@ -277,12 +283,13 @@ void PropertyGridWnd::Inspect(Inspectable* isp) {
 		it++;
 	}
 
+	_path->SetPath(p);
 	SetFocus(first);
 	ClearThemeCache();
 	Layout();
 }
 
-void PropertyGridWnd::Inspect(ref<Inspectable> isp) {
+void PropertyGridWnd::Inspect(ref<Inspectable> isp, ref<Path> p) {
 	if(!isp) {
 		_properties.clear();
 		return;
@@ -292,5 +299,5 @@ void PropertyGridWnd::Inspect(ref<Inspectable> isp) {
 	if(is==0) {
 		Throw(L"GetPointer==0!", ExceptionTypeError);
 	}
-	Inspect(is);
+	Inspect(is,p);
 }

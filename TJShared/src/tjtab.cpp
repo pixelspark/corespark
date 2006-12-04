@@ -176,16 +176,19 @@ bool TabWnd::IsInHotkeyMode() {
 }
 
 
-ref<Pane> TabWnd::AddPane(std::wstring name, ref<Wnd> wnd, bool closable) {
+ref<Pane> TabWnd::AddPane(std::wstring name, ref<Wnd> wnd, bool closable, bool select) {
 	assert(wnd);
 	wnd->Show(false);
 	SetParent(wnd->GetWindow(), _wnd);
 	ref<Pane> pane = GC::Hold(new Pane(name,wnd,false, closable));
 	_panes.push_back(pane);
-	if(_panes.size()==1) {
+
+	if(select) {
+		SelectPane(int(_panes.size())-1);
+	}
+	else if(!_current) {
 		SelectPane(0);
 	}
-
 	return pane;
 }
 
