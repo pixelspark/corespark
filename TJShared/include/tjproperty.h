@@ -39,6 +39,22 @@ class Inspectable {
 		virtual ref< std::vector< ref<Property> > > GetProperties()=0;
 };
 
+template<typename T> class GenericInspectable: public Inspectable {
+	public:
+		inline GenericInspectable(T* o): _object(o) {
+		}
+
+		virtual ~GenericInspectable() {
+		}
+
+		virtual ref< std::vector< ref<Property> > > GetProperties() {
+			return _object->GetProperties();
+		}
+	
+	protected:
+		T* _object;
+};
+
 template<typename T> class GenericProperty: public Property {
 	public:
 		GenericProperty(std::wstring name, T* value, T* alsoSet, T defaultValue): Property(name) {

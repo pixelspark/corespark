@@ -11,26 +11,71 @@ Path::~Path() {
 }
 
 void Path::Add(std::wstring text, std::wstring icon, ref<Inspectable> is) {
-	_crumbs.push_back(GC::Hold(new Crumb(text,icon,is)));
+	_crumbs.push_back(GC::Hold(new BasicCrumb(text,icon,is)));
+}
+
+ref<Crumb> Path::GetHead() {
+	std::vector<ref<Crumb> >::reverse_iterator rit = _crumbs.rbegin();
+	if(rit!=_crumbs.rend()) {
+		return *rit;
+	}
+	return 0;
 }
 
 void Path::Add(ref<Crumb> r) {
 	_crumbs.push_back(r);
 }
 
-Path::Crumb::Crumb(std::wstring text, std::wstring icon, ref<Inspectable> subject) {
+/* Crumb */
+Crumb::Crumb(std::wstring text, std::wstring icon) {
 	_text = text;
 	std::wstring icfn = ResourceManager::Instance()->Get(icon);
 	_icon = Bitmap::FromFile(icfn.c_str(), TRUE);
-	_subject = subject;
 }
 
-Path::Crumb::~Crumb() {
+Crumb::~Crumb() {
 	delete _icon;
 }
 
+ref< std::vector< ref<Crumb> > > Crumb::GetChildren() {
+	return 0;
+}
+
+ref<Inspectable> Crumb::GetSubject() {
+	return 0;
+}
+
+std::wstring Crumb::GetText() const {
+	return _text;
+}
+
+void Crumb::SetText(const std::wstring& x) {
+	_text = x;
+}
+
+Gdiplus::Bitmap* Crumb::GetIcon() {
+	return _icon;
+}
+
+/* BasicCrumb */
+BasicCrumb::BasicCrumb(std::wstring text, std::wstring icon, ref<Inspectable> subject): Crumb(text,icon) {
+	_subject = subject;
+}
+
+BasicCrumb::~BasicCrumb() {
+}
+
+ref<Inspectable> BasicCrumb::GetSubject() {
+	return _subject;
+}
+
+ref< std::vector< ref<Crumb> > > BasicCrumb::GetChildren() {
+	return 0;
+}
+
 /* PathWnd*/
-PathWnd::PathWnd(HWND parent): ChildWnd(L"", parent, true, true) {
+PathWnd::PathWnd(HWND parent, PropertyGridWnd* pg): ChildWnd(L"", parent, true, true) {
+	_propertyGrid = pg;
 	std::wstring spfn = ResourceManager::Instance()->Get(L"icons/path_separator.png");
 	_separator = Bitmap::FromFile(spfn.c_str(), TRUE);
 	SetWantMouseLeave(true);
@@ -44,16 +89,16 @@ void PathWnd::Update() {
 	Repaint();
 }
 
-ref<Path::Crumb> PathWnd::GetCrumbAt(int x, int* left) {
+ref<Crumb> PathWnd::GetCrumbAt(int x, int* left) {
 	if(_path) {
 		ref<Theme> theme = ThemeManager::GetTheme();
 		HDC dc = GetDC(_wnd);
 		{
 			Graphics g(dc);
-			std::vector< ref<Path::Crumb> >::iterator it = _path->_crumbs.begin();
+			std::vector< ref<Crumb> >::iterator it = _path->_crumbs.begin();
 			int rx = 1;
 			while(it!=_path->_crumbs.end()) {
-				ref<Path::Crumb> crumb = *it;
+				ref<Crumb> crumb = *it;
 				RectF textrc;
 				g.MeasureString(crumb->_text.c_str(), int(crumb->_text.length()), theme->GetGUIFont(), PointF(0.0f,0.0f), &textrc);
 				int totalWidth = int(textrc.Width)+KMarginLeft+KMarginRight+KIconWidth;
@@ -97,10 +142,10 @@ void PathWnd::Paint(Gdiplus::Graphics& g) {
 		SolidBrush tbr(theme->GetActiveEndColor());
 		SolidBrush atbr(theme->GetTextColor());
 
-		std::vector< ref<Path::Crumb> >::iterator it = _path->_crumbs.begin();
+		std::vector< ref<Crumb> >::iterator it = _path->_crumbs.begin();
 		int rx = 1;
 		while(it!=_path->_crumbs.end()) {
-			ref<Path::Crumb> crumb = *it;
+			ref<Crumb> crumb = *it;
 			/*
 
 			| margin_l | icon-size | text-size | margin_r
@@ -137,7 +182,7 @@ void PathWnd::Paint(Gdiplus::Graphics& g) {
 
 				// draw separator after
 				if(_separator!=0) {
-					g.DrawImage(_separator, RectF(float(rx)+textrc.Width+KMarginLeft+KIconWidth,(rc.GetHeight()-KIconWidth)/2.0f, float(KIconWidth), float(KIconWidth)));
+					g.DrawImage(_separator, RectF(float(rx)+textrc.Width+KMarginLeft+KIconWidth-1,(rc.GetHeight()-KIconWidth)/2.0f, float(KIconWidth), float(KIconWidth)));
 				}
 			}
 
@@ -160,7 +205,7 @@ LRESULT PathWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	if(msg==WM_LBUTTONDOWN) {
 		int x = GET_X_LPARAM(lp);
 		int left = 0;
-		ref<Path::Crumb> cr = GetCrumbAt(x,&left);
+		ref<Crumb> cr = GetCrumbAt(x,&left);
 		if(cr) {
 			DoCrumbMenu(cr, left);
 		}
@@ -183,11 +228,56 @@ void PathWnd::SetPath(ref<Path> p) {
 	Update();
 }
 
-void PathWnd::DoCrumbMenu(ref<Path::Crumb> crumb, int x) {
+void PathWnd::DoCrumbMenu(ref<Crumb> crumb, int x) {
+	assert(_path);
+
 	tj::shared::Rectangle rc = GetClientRectangle();
 
 	ContextMenu cm;
 	cm.AddItem(crumb->_text, 0, true, false);
-	int command = cm.DoContextMenu(_wnd, x, rc.GetHeight()-1, true);
 
+	ref< std::vector< ref<Crumb> > > cr = crumb->GetChildren();
+	if(cr && cr->size()>0) {
+		cm.AddSeparator();
+		std::vector< ref<Crumb> >::iterator it = cr->begin();
+		int n = 2;
+		while(it!=cr->end()) {
+			ref<Crumb> child = *it;
+			if(child) {
+				cm.AddItem(child->GetText(), n, false, false);				
+			}
+			it++;
+			n++;
+		}
+	}
+
+	int command = cm.DoContextMenu(_wnd, x, rc.GetHeight()-1, true);
+	ref<Crumb> next = 0;
+	if(command==1) {
+		next = crumb;
+	}
+	else if(command>1) {
+		next = cr->at(command-2);
+	}
+
+	if(next && next!=_path->GetHead()) {
+		ref<Path> np = GC::Hold(new Path());
+		std::vector< ref<Crumb> >::iterator it = _path->_crumbs.begin();
+		while(it!=_path->_crumbs.end()) {
+			ref<Crumb> cr = *it;
+			np->Add(cr);
+			if(cr==crumb) {
+				break;
+			}
+			it++;
+		}
+
+		if(next!=crumb) {
+			np->Add(next);
+		}
+
+		if(_propertyGrid!=0 && next->GetSubject()) {
+			_propertyGrid->Inspect(next->GetSubject(),np);
+		}
+	}
 }

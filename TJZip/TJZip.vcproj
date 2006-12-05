@@ -181,10 +181,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\tjzip.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\src\unzip.cpp"
 				>
 			</File>

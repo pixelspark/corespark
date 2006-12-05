@@ -50,36 +50,36 @@ namespace tj {
 				LoggerWnd* _logger;
 				HANDLE _loggerCreatedEvent;
 		};
+
+		LogThread Log::_logger;
+
+		class FileLogger {
+			protected:
+				FileLogger(std::wstring fileName): _file(fileName.c_str()) {
+				}
+
+				static ref<FileLogger> _instance;
+
+			public:
+				static ref<FileLogger> Instance() {
+					if(!_instance) {
+						_instance = GC::Hold(new FileLogger(L"tjshow.log"));
+					}
+					return _instance;
+				} 
+
+				virtual ~FileLogger() {
+				}
+
+				void Write(std::wstring message) {
+					_file << message;
+					_file.flush();
+				}
+
+				std::wofstream _file;
+		};
 	}
 }
-
-LogThread Log::_logger;
-
-class FileLogger {
-	protected:
-		FileLogger(std::wstring fileName): _file(fileName.c_str()) {
-		}
-
-		static ref<FileLogger> _instance;
-
-	public:
-		static ref<FileLogger> Instance() {
-			if(!_instance) {
-				_instance = GC::Hold(new FileLogger(L"tjshow.log"));
-			}
-			return _instance;
-		} 
-
-		virtual ~FileLogger() {
-		}
-
-		void Write(std::wstring message) {
-			_file << message;
-			_file.flush();
-		}
-
-		std::wofstream _file;
-};
 
 ref<FileLogger> FileLogger::_instance;
 

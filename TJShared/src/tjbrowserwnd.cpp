@@ -167,24 +167,28 @@ void BrowserWnd::Hide(bool t) {
 	Repaint();
 }
 
-class NavigateRunnable: public Runnable {
-	public:
-		NavigateRunnable(CComPtr<IWebBrowser2> br, CComBSTR url) {
-			_browser = br;
-			_url = url;
-		}
+namespace tj {
+	namespace shared {
+		class NavigateRunnable: public Runnable {
+			public:
+				NavigateRunnable(CComPtr<IWebBrowser2> br, CComBSTR url) {
+					_browser = br;
+					_url = url;
+				}
 
-		virtual ~NavigateRunnable() {
-		}
+				virtual ~NavigateRunnable() {
+				}
 
-		virtual void Run() {
-			CComVariant empty;
-			_browser->Navigate(_url, &empty, &empty, &empty, &empty);
-		}
+				virtual void Run() {
+					CComVariant empty;
+					_browser->Navigate(_url, &empty, &empty, &empty, &empty);
+				}
 
-		CComPtr<IWebBrowser2> _browser;
-		CComBSTR _url;
-};
+				CComPtr<IWebBrowser2> _browser;
+				CComBSTR _url;
+		};
+	}
+}
 
 void BrowserWnd::Navigate(std::wstring url) {
 	CComPtr<IWebBrowser2> browser;

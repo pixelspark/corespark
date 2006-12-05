@@ -12,7 +12,7 @@ PropertyGridWnd::PropertyGridWnd(HWND parent): ChildWnd(TL(properties), parent) 
 	_editBackground = 0;
 	_editFont = 0;
 	_isDraggingSplitter = false;
-	_path = GC::Hold(new PathWnd(_wnd));
+	_path = GC::Hold(new PathWnd(_wnd, this));
 	_path->Show(true);
 	Layout();
 	Show(true);
@@ -119,6 +119,9 @@ LRESULT PropertyGridWnd::Message(UINT msg, WPARAM wParam, LPARAM lParam) {
 	if(msg==WM_CLOSE) {
 		ShowWindow(_wnd,SW_HIDE);
 		return 1;
+	}
+	else if(msg==WM_CONTEXTMENU) {
+		return 0;
 	}
 	else if(msg==WM_COMMAND) {
 		if(HIWORD(wParam)==EN_UPDATE||HIWORD(wParam)==BN_CLICKED||HIWORD(wParam)==CBN_SELCHANGE) {
