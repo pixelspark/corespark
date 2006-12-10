@@ -10,6 +10,7 @@ class EXPORTED Crumb: public virtual Object {
 		Crumb(std::wstring text, std::wstring icon);
 		virtual ~Crumb();
 		std::wstring GetText() const;
+		std::wstring GetTextTrimmed() const;
 		Gdiplus::Bitmap* GetIcon();
 		virtual ref< std::vector< ref<Crumb> > > GetChildren();
 		virtual ref<Inspectable> GetSubject();
@@ -18,6 +19,7 @@ class EXPORTED Crumb: public virtual Object {
 	protected:
 		std::wstring _text;
 		Gdiplus::Bitmap* _icon;
+		static const int KMaxTextLength = 15;
 };
 
 class EXPORTED BasicCrumb: public Crumb {

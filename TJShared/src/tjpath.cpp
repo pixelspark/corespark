@@ -45,6 +45,13 @@ ref<Inspectable> Crumb::GetSubject() {
 	return 0;
 }
 
+std::wstring Crumb::GetTextTrimmed() const {
+	if(_text.length()>KMaxTextLength) {
+		return _text.substr(0, KMaxTextLength-4)+L"...";
+	}
+	return _text;
+}
+
 std::wstring Crumb::GetText() const {
 	return _text;
 }
@@ -100,7 +107,7 @@ ref<Crumb> PathWnd::GetCrumbAt(int x, int* left) {
 			while(it!=_path->_crumbs.end()) {
 				ref<Crumb> crumb = *it;
 				RectF textrc;
-				g.MeasureString(crumb->_text.c_str(), int(crumb->_text.length()), theme->GetGUIFont(), PointF(0.0f,0.0f), &textrc);
+				g.MeasureString(crumb->GetTextTrimmed().c_str(), int(crumb->GetTextTrimmed().length()), theme->GetGUIFont(), PointF(0.0f,0.0f), &textrc);
 				int totalWidth = int(textrc.Width)+KMarginLeft+KMarginRight+KIconWidth;
 				rx += totalWidth;
 
@@ -146,13 +153,14 @@ void PathWnd::Paint(Gdiplus::Graphics& g) {
 		int rx = 1;
 		while(it!=_path->_crumbs.end()) {
 			ref<Crumb> crumb = *it;
+			std::wstring text = crumb->GetTextTrimmed();
 			/*
 
 			| margin_l | icon-size | text-size | margin_r
 
 			*/
 			RectF textrc;
-			g.MeasureString(crumb->_text.c_str(), int(crumb->_text.length()), theme->GetGUIFont(), PointF(0.0f,0.0f), &textrc);
+			g.MeasureString(text.c_str(), int(text.length()), theme->GetGUIFont(), PointF(0.0f,0.0f), &textrc);
 			RectF rtext(float(rx+KMarginLeft+KIconWidth), 4.0f, float(textrc.Width+1), float(15.0f));
 
 			StringFormat sf;
@@ -168,16 +176,16 @@ void PathWnd::Paint(Gdiplus::Graphics& g) {
 					g.FillRectangle(&dbr,RectF(float(rx), 1.0f, float(textrc.Width+KMarginLeft+KMarginRight+KIconWidth), float(rc.GetHeight()-3)));
 				}
 				
-				g.DrawString(crumb->_text.c_str(), int(crumb->_text.length()), theme->GetGUIFont(), rtext, &sf, &atbr);
+				g.DrawString(text.c_str(), int(text.length()), theme->GetGUIFont(), rtext, &sf, &atbr);
 			}
 			else { 
 				if(_over==crumb) {
 					LinearGradientBrush lbr(PointF(0.0f, 0.0f), PointF(0.0f, float(rc.GetHeight())), theme->GetActiveStartColor(), theme->GetActiveEndColor());
 					g.FillRectangle(&lbr,RectF(float(rx), 1.0f, float(textrc.Width+KMarginLeft+KMarginRight+KIconWidth), float(rc.GetHeight()-3)));
-					g.DrawString(crumb->_text.c_str(), int(crumb->_text.length()), theme->GetGUIFont(), rtext, &sf, &atbr);
+					g.DrawString(text.c_str(), int(text.length()), theme->GetGUIFont(), rtext, &sf, &atbr);
 				}
 				else {
-					g.DrawString(crumb->_text.c_str(), int(crumb->_text.length()), theme->GetGUIFont(), rtext, &sf, &tbr);
+					g.DrawString(text.c_str(), int(text.length()), theme->GetGUIFont(), rtext, &sf, &tbr);
 				}
 
 				// draw separator after
@@ -234,7 +242,7 @@ void PathWnd::DoCrumbMenu(ref<Crumb> crumb, int x) {
 	tj::shared::Rectangle rc = GetClientRectangle();
 
 	ContextMenu cm;
-	cm.AddItem(crumb->_text, 0, true, false);
+	cm.AddItem(crumb->GetTextTrimmed(), 0, true, false);
 
 	ref< std::vector< ref<Crumb> > > cr = crumb->GetChildren();
 	if(cr && cr->size()>0) {
