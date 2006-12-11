@@ -6,8 +6,8 @@
 
 class EXPORTED ToolbarItem {
 	public:
-		ToolbarItem(int command=0, Gdiplus::Bitmap* bmp=0, std::wstring text=L"");
-		ToolbarItem(int command, std::wstring icon, std::wstring text=L"");
+		ToolbarItem(int command=0, Gdiplus::Bitmap* bmp=0, std::wstring text=L"", bool separator=false);
+		ToolbarItem(int command, std::wstring icon, std::wstring text=L"", bool separator=false);
 		~ToolbarItem();
 		bool IsSeparator() const;
 		void SetSeparator(bool s);

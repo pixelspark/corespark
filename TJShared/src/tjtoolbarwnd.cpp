@@ -135,15 +135,15 @@ void ToolbarWnd::Paint(Gdiplus::Graphics& g) {
 }
 
 // ToolbarItem
-ToolbarItem::ToolbarItem(int command, Gdiplus::Bitmap* bmp, std::wstring text) {
-	_separator = false;
+ToolbarItem::ToolbarItem(int command, Gdiplus::Bitmap* bmp, std::wstring text, bool separator) {
+	_separator = separator;
 	_icon = bmp;
 	_command = command;
 	_text = text;
 }
 
-ToolbarItem::ToolbarItem(int command, std::wstring rid, std::wstring text) {
-	_separator = false;
+ToolbarItem::ToolbarItem(int command, std::wstring rid, std::wstring text, bool separator) {
+	_separator = separator;
 	std::wstring path = ResourceManager::Instance()->Get(rid);
 	_icon = Bitmap::FromFile(path.c_str(), TRUE);
 	_command = command;
