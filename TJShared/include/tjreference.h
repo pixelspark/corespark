@@ -193,8 +193,8 @@ template<typename T> class ref {
 			return (_res!=r._res);
 		}
 
-		template<class X> inline bool IsCastableTo() {
-			return dynamic_cast<X*>(_res->_data)!=0;	
+		template<class X> inline bool IsCastableTo() const {
+			return dynamic_cast<const X*>(_res->_data)!=0;	
 		}
 
 		tj::shared::intern::Resource<T>* _res;

@@ -277,16 +277,22 @@ struct ScriptGrammar : public grammar<ScriptGrammar> {
 				(str_p("!=") >> expression)[ScriptInstruction<OpEquals>(self._stack)][ScriptInstruction<OpNegate>(self._stack)];
 
 			plusOperator =
-				(str_p("+") >> term)[ScriptInstruction<OpAdd>(self._stack)];
+				(ch_p('+') >> term)[ScriptInstruction<OpAdd>(self._stack)];
 
 			minOperator =
-				(str_p("-") >> term)[ScriptInstruction<OpSub>(self._stack)];
+				(ch_p('-') >> term)[ScriptInstruction<OpSub>(self._stack)];
 
 			divOperator =
-				(str_p("/") >> factor)[ScriptInstruction<OpDiv>(self._stack)];
+				(ch_p('/') >> factor)[ScriptInstruction<OpDiv>(self._stack)];
 
 			mulOperator =
-				(str_p("*") >> factor)[ScriptInstruction<OpMul>(self._stack)];
+				(ch_p('*') >> factor)[ScriptInstruction<OpMul>(self._stack)];
+
+			gtOperator = 
+				(ch_p('>') >> expression)[ScriptInstruction<OpGreaterThan>(self._stack)];
+
+			ltOperator = 
+				(ch_p('<') >> expression)[ScriptInstruction<OpLessThan>(self._stack)];
 
 			/* If/else */
 			ifConstruct =
@@ -297,7 +303,7 @@ struct ScriptGrammar : public grammar<ScriptGrammar> {
 			// Something that returns a value (methodCall must be last in this rule because of the
 			// eps_p, which otherwise pushes a global even when the rest of methodCall doesn't match
 			expression = 
-				function | (term >> *(plusOperator | minOperator | equalsOperator | notEqualsOperator | orOperator | andOperator | xorOperator));
+				function | (term >> *(plusOperator | minOperator | gtOperator | ltOperator | equalsOperator | notEqualsOperator | orOperator | andOperator | xorOperator));
 
 			// declared with var something = function() {..}
 			function =
@@ -356,7 +362,7 @@ struct ScriptGrammar : public grammar<ScriptGrammar> {
 		rule<ScannerT> block, function, functionConstruct, ifConstruct, comment, assignment, value, identifier, declaredParameter, keyValuePair, parameterList, methodCall, expression, statement, blockConstruct, blockInFunction, blockInFor, script, returnConstruct, breakStatement, forConstruct, newConstruct, methodCallConstruct;
 		
 		// operators
-		rule<ScannerT> term, factor, negatedFactor, indexOperator, equalsOperator, notEqualsOperator, plusOperator, minOperator, divOperator, mulOperator, orOperator, andOperator, xorOperator;		
+		rule<ScannerT> term, factor, negatedFactor, indexOperator, equalsOperator, notEqualsOperator, plusOperator, minOperator, divOperator, mulOperator, orOperator, andOperator, xorOperator, gtOperator, ltOperator;		
 
 		rule<ScannerT> const& start() const { 
 			return script;

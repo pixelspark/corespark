@@ -76,6 +76,7 @@ class EXPORTED Wnd: public virtual Object {
 		bool GetWantMouseLeave() const;
 
 		HWND GetWindow();
+		virtual std::wstring GetTabTitle() const;
 
 	protected:
 		virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);

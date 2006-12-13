@@ -201,6 +201,24 @@ namespace tj {
 				virtual inline std::wstring GetName() {return L"OpOr";}
 		};
 
+		// [number][number] => [bool]
+		class OpGreaterThan: public Op {
+			public:
+				virtual ~OpGreaterThan() {};
+				virtual void Execute(tj::shared::ref<VM> vm);
+				virtual inline std::wstring GetName() {return L"OpGreaterThan";}
+		};
+
+		
+		// [number][number] => [bool]
+		class OpLessThan: public Op {
+			public:
+				virtual ~OpLessThan() {};
+				virtual void Execute(tj::shared::ref<VM> vm);
+				virtual inline std::wstring GetName() {return L"OpLessThan";}
+		};
+
+
 		// [bool] [bool] => [bool]
 		class OpXor: public Op {
 			public:

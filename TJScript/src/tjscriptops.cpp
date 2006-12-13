@@ -331,6 +331,38 @@ void OpReturnValue::Execute(ref<VM> vm) {
 	vm->Return(true);
 }
 
+// OpGreaterThan
+void OpGreaterThan::Execute(ref<VM> vm) {
+	ref<Scriptable> a = vm->GetStack()->Pop();
+	ref<Scriptable> b = vm->GetStack()->Pop();
+
+	if(a.IsCastableTo<ScriptDouble>() && b.IsCastableTo<ScriptDouble>()) {
+		double va = ref<ScriptDouble>(a)->GetValue();
+		double vb = ref<ScriptDouble>(b)->GetValue();
+		bool result = vb>va;
+		vm->GetStack()->Push(GC::Hold(new ScriptBool(result)));
+	}
+	else {
+		vm->GetStack()->Push(ScriptConstants::Null());
+	}
+}
+
+// OpLessThan
+void OpLessThan::Execute(ref<VM> vm) {
+	ref<Scriptable> a = vm->GetStack()->Pop();
+	ref<Scriptable> b = vm->GetStack()->Pop();
+
+	if(a.IsCastableTo<ScriptDouble>() && b.IsCastableTo<ScriptDouble>()) {
+		double va = ref<ScriptDouble>(a)->GetValue();
+		double vb = ref<ScriptDouble>(b)->GetValue();
+		bool result = vb<va;
+		vm->GetStack()->Push(GC::Hold(new ScriptBool(result)));
+	}
+	else {
+		vm->GetStack()->Push(ScriptConstants::Null());
+	}
+}
+
 // OpOr
 void OpOr::Execute(ref<VM> vm) {
 	ref<Scriptable> a = vm->GetStack()->Pop();

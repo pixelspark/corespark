@@ -15,6 +15,7 @@ class EXPORTED Pane: public virtual Object {
 		ref<Wnd> GetWindow();
 		std::wstring GetTitle() const;
 		bool IsClosable() const;
+		virtual void SetTitle(std::wstring c);
 
 	protected:
 		std::wstring _title;

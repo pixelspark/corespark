@@ -761,6 +761,10 @@ bool Wnd::GetWantMouseLeave() const {
 	return _wantsMouseLeave;
 }
 
+std::wstring Wnd::GetTabTitle() const {
+	return L"";
+}
+
 LRESULT CALLBACK PropertyEditNumericWndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) {
 	static int begin_y = -1;
 	static int begin_value = -1;

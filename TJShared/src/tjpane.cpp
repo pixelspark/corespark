@@ -11,8 +11,21 @@ Pane::Pane(std::wstring title, ref<Wnd> window, bool detached, bool closable) {
 Pane::~Pane() {
 }
 
+void Pane::SetTitle(std::wstring c) {
+	_title = c;
+}
+
 std::wstring Pane::GetTitle() const {
-	return _title;
+	std::wstring childTitle = _wnd->GetTabTitle();
+	if(childTitle.length()>0) {
+		if(_title.length()>0) {
+			return _title + L": " + childTitle;
+		}
+		return childTitle;
+	}
+	else {
+		return _title;
+	}
 }
 
 bool Pane::IsClosable() const {

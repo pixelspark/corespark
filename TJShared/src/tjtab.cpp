@@ -34,7 +34,7 @@ void TabWnd::Rename(ref<Wnd> wnd, std::wstring name) {
 	while(it!=_panes.end()) {
 		ref<Pane> p = *it;
 		if(p->_wnd ==wnd) {
-			p->_title = name;
+			p->SetTitle(name);
 			Update();
 			return;
 		}
@@ -103,7 +103,8 @@ void TabWnd::Paint(Graphics& g) {
 			}
 
 			RectF bound;
-			g.MeasureString(pane->_title.c_str(), (INT)pane->_title.length(), theme->GetGUIFontBold(), PointF(0.0f, 0.0f), &bound);				
+			std::wstring title = pane->GetTitle();
+			g.MeasureString(title.c_str(), (INT)title.length(), theme->GetGUIFontBold(), PointF(0.0f, 0.0f), &bound);				
 			
 			// border
 			if(pane==_current) {
@@ -124,7 +125,7 @@ void TabWnd::Paint(Graphics& g) {
 				g.FillRectangle(&lbr, RectF(float(left+1), 2.0f, float(bound.Width+2), float(_headerHeight-2)));
 			}
 
-			g.DrawString(pane->_title.c_str(), (INT)pane->_title.length(), theme->GetGUIFontBold(), PointF(float(left+2), 3.0f), &textBrush);
+			g.DrawString(title.c_str(), (INT)title.length(), theme->GetGUIFontBold(), PointF(float(left+2), 3.0f), &textBrush);
 
 			left += int(bound.Width) + 4;
 			it++;
@@ -336,7 +337,8 @@ LRESULT TabWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 				continue;
 			}
 			RectF bound;
-			g.MeasureString(pane->_title.c_str(), (INT)pane->_title.length(), theme->GetGUIFontBold(), PointF(0.0f, 0.0f), &bound);				
+			std::wstring title = pane->GetTitle();
+			g.MeasureString(title.c_str(), (INT)title.length(), theme->GetGUIFontBold(), PointF(0.0f, 0.0f), &bound);				
 			left += int(bound.Width) + 4;
 			if(x<left) {
 				if(msg==WM_LBUTTONUP) {
@@ -518,7 +520,8 @@ ref<Pane> TabWnd::GetPaneAt(int x) {
 			continue;
 		}
 		RectF bound;
-		g.MeasureString(pane->_title.c_str(), (INT)pane->_title.length(), theme->GetGUIFontBold(), PointF(0.0f, 0.0f), &bound);				
+		std::wstring title = pane->GetTitle();
+		g.MeasureString(title.c_str(), (INT)title.length(), theme->GetGUIFontBold(), PointF(0.0f, 0.0f), &bound);				
 		left += int(bound.Width) + 4;
 		if(x<left) {
 			return pane;
