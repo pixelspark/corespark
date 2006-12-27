@@ -47,6 +47,8 @@ class EXPORTED ToolbarWnd: public ChildWnd {
 		virtual void OnCommand(int c);
 		virtual void Fill(LayoutFlags f, tj::shared::Rectangle& r);
 		virtual int GetTotalButtonWidth();
+		virtual void SetBackground(bool t);
+		virtual void SetBackgroundColor(Gdiplus::Color c);
 
 	protected:
 		std::vector< ref<ToolbarItem> > _items;
@@ -55,6 +57,8 @@ class EXPORTED ToolbarWnd: public ChildWnd {
 		static const int KIconHeight = 16;
 		bool _in;
 		int _idx;
+		bool _bk;
+		Gdiplus::Color _bkColor;
 };
 
 #pragma warning(pop)

@@ -10,12 +10,14 @@ class EXPORTED Pane: public virtual Object {
 	friend class RootWnd;
 
 	public:
-		Pane(std::wstring, ref<Wnd>, bool detached, bool closable);
+		Pane(std::wstring, ref<Wnd>, bool detached, bool closable, std::wstring icon=L"");
 		virtual ~Pane();
 		ref<Wnd> GetWindow();
+		Gdiplus::Bitmap* GetIcon();
 		std::wstring GetTitle() const;
 		bool IsClosable() const;
 		virtual void SetTitle(std::wstring c);
+		bool HasIcon() const;
 
 	protected:
 		std::wstring _title;
@@ -23,6 +25,7 @@ class EXPORTED Pane: public virtual Object {
 		bool _detached;
 		bool _fullscreen;
 		bool _closable;
+		Gdiplus::Bitmap* _icon;
 };
 
 class FloatingPane: public Wnd {

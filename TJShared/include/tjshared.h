@@ -39,6 +39,7 @@ namespace tj {
 		#include "tjthememgr.h"
 		#include "tjcache.h"
 		#include "tjlayout.h"
+		#include "tjdialogs.h"
 		#include "tjui.h"
 		#include "tjchildwnd.h"
 		#include "tjcontextmenu.h"
@@ -69,6 +70,7 @@ namespace tj {
 		#include "tjtoolbarwnd.h"
 		#include "tjbrowserwnd.h"
 		#include "tjprogresswnd.h"
+		#include "tjsplash.h"
 	}
 }
 

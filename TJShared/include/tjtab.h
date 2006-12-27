@@ -13,11 +13,12 @@ class EXPORTED TabWnd: public ChildWnd {
 		virtual wchar_t GetPreferredHotkey();
 		void SetHotkey(wchar_t hotkey);
 		virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
-		ref<Pane> AddPane(std::wstring name, ref<Wnd> wnd, bool closable=false, bool select=false);
+		ref<Pane> AddPane(std::wstring name, ref<Wnd> wnd, bool closable=false, bool select=false, std::wstring icon=L"");
 		ref<Pane> AddPane(ref<Pane> pane);
 		ref<Pane> GetPane(int index);
 		void RemovePane(ref<Wnd> wnd);
 		void SelectPane(unsigned int index);
+		void SelectPane(ref<Wnd> wnd);
 		virtual void Layout();
 		virtual void Update();
 		virtual void LeaveHotkeyMode(wchar_t key);
@@ -37,6 +38,7 @@ class EXPORTED TabWnd: public ChildWnd {
 		void SetDraggingPane(ref<Pane> pane);
 		void DoContextMenu(int x, int y);
 		void DoAddMenu(int x, int y);
+		void SelectPane(ref<Pane> pane);
 
 		wchar_t _hotkey;
 		std::vector< ref<Pane> > _panes;
@@ -50,7 +52,9 @@ class EXPORTED TabWnd: public ChildWnd {
 		bool _detachAttachAllowed;
 
 		const static int TearOffLimit = 15;
-		enum {defaultHeaderHeight = 21};
+		enum {defaultHeaderHeight = 23};
+		const static int KIconWidth = 16;
+		const static int KRealIconWidth = 14;
 };
 
 #pragma warning(pop)

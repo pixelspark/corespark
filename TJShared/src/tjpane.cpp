@@ -1,18 +1,31 @@
 #include "../include/tjshared.h"
 using namespace tj::shared;
+using namespace Gdiplus;
 
-Pane::Pane(std::wstring title, ref<Wnd> window, bool detached, bool closable) {
+Pane::Pane(std::wstring title, ref<Wnd> window, bool detached, bool closable, std::wstring icon) {
 	_title = title;
 	_wnd = window;
 	_detached = detached;
 	_closable = closable;
+	if(icon.length()>0) {
+		std::wstring path = ResourceManager::Instance()->Get(icon,true);
+		_icon = Bitmap::FromFile(path.c_str(), TRUE);
+	}
+	else {
+		_icon = 0;
+	}
 }
 
 Pane::~Pane() {
+	delete _icon;
 }
 
 void Pane::SetTitle(std::wstring c) {
 	_title = c;
+}
+
+Gdiplus::Bitmap* Pane::GetIcon() {
+	return _icon;
 }
 
 std::wstring Pane::GetTitle() const {
@@ -34,6 +47,10 @@ bool Pane::IsClosable() const {
 
 ref<Wnd> Pane::GetWindow() {
 	return _wnd;
+}
+
+bool Pane::HasIcon() const {
+	return _icon!=0;
 }
 
 FloatingPane::FloatingPane(RootWnd* rw, ref<Pane> p, TabWnd* source): Wnd(L"FloatingPane", 0, TJ_DEFAULT_CLASS_NAME, false) {

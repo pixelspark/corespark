@@ -11,9 +11,9 @@ TabWnd::TabWnd(HWND parent, RootWnd* root): ChildWnd(L"TabWnd", parent) {
 	_root = root;
 	_detachAttachAllowed = true;
 
-	std::wstring fn = ResourceManager::Instance()->Get(L"icons/tab_close.png");
+	std::wstring fn = ResourceManager::Instance()->Get(L"icons/shared/tab_close.png");
 	_closeIcon = Bitmap::FromFile(fn.c_str(), TRUE);
-	fn = ResourceManager::Instance()->Get(L"icons/tab_add.png");
+	fn = ResourceManager::Instance()->Get(L"icons/shared/tab_add.png");
 	_addIcon = Bitmap::FromFile(fn.c_str(), TRUE);
 	Layout();
 	Show(true);
@@ -111,9 +111,9 @@ void TabWnd::Paint(Graphics& g) {
 				//LinearGradientBrush lbr(PointF(0.0f, 0.0f), PointF(0.0f, float(_headerHeight)), theme->GetActiveStartColor(), theme->GetActiveEndColor());
 				LinearGradientBrush lbr(PointF(0.0f, 0.0f), PointF(0.0f, float(_headerHeight)), theme->GetActiveEndColor(), theme->GetActiveEndColor());
 				
-				g.FillRectangle(&lbr, RectF(float(left+1), 2.0f, float(bound.Width+2), float(_headerHeight)));
+				g.FillRectangle(&lbr, RectF(float(left+1), 2.0f, float(bound.Width+2+(pane->HasIcon()?KIconWidth:0)), float(_headerHeight)));
 				SolidBrush backBrush(theme->GetBackgroundColor());
-				g.FillRectangle(&backBrush, RectF(float(left+2), 3.0f, float(bound.Width), float(_headerHeight)));
+				g.FillRectangle(&backBrush, RectF(float(left+2), 3.0f, float(bound.Width+(pane->HasIcon()?KIconWidth:0)), float(_headerHeight)));
 			}
 			
 			// gradient achter actieve tab of dragging tab (niet border)
@@ -122,17 +122,23 @@ void TabWnd::Paint(Graphics& g) {
 				Color end = theme->GetTabButtonColorEnd();
 
 				LinearGradientBrush lbr(PointF(0.0f, 0.0f), PointF(0.0f, float(_headerHeight)), start, end);
-				g.FillRectangle(&lbr, RectF(float(left+1), 2.0f, float(bound.Width+2), float(_headerHeight-2)));
+				g.FillRectangle(&lbr, RectF(float(left+1), 2.0f, float(bound.Width+2+(pane->HasIcon()?KIconWidth:0)), float(_headerHeight-2)));
+			
+				LinearGradientBrush gbr(PointF(0.0f, 0.0f), PointF(0.0f, float(_headerHeight)/2.0f), theme->GetGlassColorStart(), theme->GetGlassColorEnd());
+				g.FillRectangle(&gbr, RectF(float(left+1), 2.0f, float(bound.Width+2+(pane->HasIcon()?KIconWidth:0)), float(_headerHeight/2.0f-2)));
 			}
 
-			g.DrawString(title.c_str(), (INT)title.length(), theme->GetGUIFontBold(), PointF(float(left+2), 3.0f), &textBrush);
+			if(pane->HasIcon()) {
+				g.DrawImage(pane->GetIcon(),RectF(float(left+4), 4.0f, (float)KRealIconWidth, (float)KRealIconWidth));
+			}
+			g.DrawString(title.c_str(), (INT)title.length(), theme->GetGUIFontBold(), PointF(float(left+2+(pane->HasIcon()?KIconWidth:0)), 4.0f), &textBrush);
 
-			left += int(bound.Width) + 4;
+			left += int(bound.Width) + 4 + (pane->HasIcon()?KIconWidth:0);
 			it++;
 			idx++;
 		}
-
-		if(_detachAttachAllowed && left<(rect.right-rect.left-2*_headerHeight)) {
+ 
+		if(_detachAttachAllowed && left<(rect.right-rect.left-2*_headerHeight) && _addIcon!=0 && _closeIcon!=0) {
 			g.DrawImage(_addIcon, RectF(float(rect.right-rect.left-2*_headerHeight), 0.0f, float(_headerHeight-2), float(_headerHeight-2)));
 			g.DrawImage(_closeIcon, RectF(float(rect.right-rect.left-_headerHeight), 0.0f, float(_headerHeight-2), float(_headerHeight-2)));
 		}
@@ -177,11 +183,11 @@ bool TabWnd::IsInHotkeyMode() {
 }
 
 
-ref<Pane> TabWnd::AddPane(std::wstring name, ref<Wnd> wnd, bool closable, bool select) {
+ref<Pane> TabWnd::AddPane(std::wstring name, ref<Wnd> wnd, bool closable, bool select, std::wstring icon) {
 	assert(wnd);
 	wnd->Show(false);
 	SetParent(wnd->GetWindow(), _wnd);
-	ref<Pane> pane = GC::Hold(new Pane(name,wnd,false, closable));
+	ref<Pane> pane = GC::Hold(new Pane(name,wnd,false, closable, icon));
 	_panes.push_back(pane);
 
 	if(select) {
@@ -233,16 +239,31 @@ void TabWnd::RemovePane(ref<Wnd> wnd) {
 void TabWnd::SelectPane(unsigned int index) {
 	try {
 		ref<Pane> pane = _panes.at(index);
-
-		if(_current) {
-			_current->_wnd->Show(false);
-		}
-		pane->_wnd->Show(true);
-		_current = pane;
-		SetFocus(_current->_wnd->GetWindow());
+		SelectPane(pane);
 	}
 	catch(...) {
 	}
+}
+
+void TabWnd::SelectPane(ref<Wnd> wnd) {
+	std::vector< ref<Pane> >::iterator it = _panes.begin();
+	while(it!=_panes.end()) {
+		ref<Pane> pane = *it;
+		if(pane->GetWindow()==wnd) {
+			SelectPane(pane);
+			return;
+		}
+		it++;
+	}
+}
+
+void TabWnd::SelectPane(ref<Pane> pane) {
+	if(_current) {
+		_current->_wnd->Show(false);
+	}
+	pane->_wnd->Show(true);
+	_current = pane;
+	SetFocus(_current->_wnd->GetWindow());
 
 	Layout();
 }
@@ -339,7 +360,7 @@ LRESULT TabWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 			RectF bound;
 			std::wstring title = pane->GetTitle();
 			g.MeasureString(title.c_str(), (INT)title.length(), theme->GetGUIFontBold(), PointF(0.0f, 0.0f), &bound);				
-			left += int(bound.Width) + 4;
+			left += int(bound.Width) + 4 + (pane->HasIcon()?KIconWidth:0);
 			if(x<left) {
 				if(msg==WM_LBUTTONUP) {
 					SelectPane(idx);
@@ -522,7 +543,7 @@ ref<Pane> TabWnd::GetPaneAt(int x) {
 		RectF bound;
 		std::wstring title = pane->GetTitle();
 		g.MeasureString(title.c_str(), (INT)title.length(), theme->GetGUIFontBold(), PointF(0.0f, 0.0f), &bound);				
-		left += int(bound.Width) + 4;
+		left += int(bound.Width) + 4 + (pane->HasIcon()?KIconWidth:0);
 		if(x<left) {
 			return pane;
 		}

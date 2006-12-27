@@ -21,6 +21,7 @@ class EXPORTED SliderWnd: public ChildWnd {
 		virtual void SetColor(int idx);
 		void SetShowValue(bool show);
 		void SetSnapToHalf(bool snap);
+		virtual void Fill(LayoutFlags flags, tj::shared::Rectangle& rect);
 	protected:
 		wchar_t _hotkey;
 		Listener* _listener;
@@ -33,6 +34,8 @@ class EXPORTED SliderWnd: public ChildWnd {
 		float _mark;
 		bool _showValue;
 		bool _snapHalf;
+
+		const static int KMinimumWidth = 30;
 };
 
 #pragma warning(pop)

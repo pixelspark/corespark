@@ -30,6 +30,7 @@ class EXPORTED Core {
 		std::vector< ref<Runnable> > _actions;
 		Event _actionEvent;
 		Event _actionsProcessedEvent;
+		GraphicsInit _init;
 
 		void ProcessActions();
 };

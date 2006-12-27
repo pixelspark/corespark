@@ -22,7 +22,6 @@ GraphicsInit::GraphicsInit() {
 	sex.dwSize = sizeof(INITCOMMONCONTROLSEX);
 	sex.dwICC = ICC_STANDARD_CLASSES|ICC_TAB_CLASSES|ICC_PROGRESS_CLASS|ICC_UPDOWN_CLASS|ICC_USEREX_CLASSES|ICC_WIN95_CLASSES;
 	InitCommonControlsEx(&sex);
-
 }
 
 GraphicsInit::~GraphicsInit() {
@@ -502,6 +501,11 @@ LRESULT Wnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	else if(msg==WM_MOUSEMOVE) {
 		SetWantMouseLeave(_wantsMouseLeave);
 	}
+	/* CRASHES
+	else if(msg==WM_SIZE) {
+		Layout();
+	}
+	*/
 
 	return DefWindowProc(_wnd, msg, wp, lp);
 }

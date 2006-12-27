@@ -24,6 +24,34 @@ void Language::Translate(HWND wnd) {
 	Translate(menu);
 }
 
+void Language::LoadDirectory(std::wstring dir) {
+	WIN32_FIND_DATAW d;
+	ZeroMemory(&d,sizeof(d));
+
+	std::wstring pathfilter = dir + L"\\*.tjs";
+
+	HANDLE hsr = FindFirstFile(pathfilter.c_str(), &d);
+	wchar_t buf[MAX_PATH+1];
+
+	do {
+		if(hsr==INVALID_HANDLE_VALUE) {
+			continue;
+		}
+
+		std::wstring naam = dir + L"\\";
+		naam += d.cFileName;
+
+		if(GetFullPathName(naam.c_str(), MAX_PATH,buf,0)==0) {
+			continue;
+		}
+
+		Log::Write(L"TJShared/Language/DirLoad" , std::wstring(L"Loading language file ")+naam);
+		Load(naam);
+	} 
+	while(FindNextFile(hsr, &d));
+	FindClose(hsr);
+}
+
 void Language::Translate(HMENU menu) {
 	int count = GetMenuItemCount(menu);
 	if(count>0) {

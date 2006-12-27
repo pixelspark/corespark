@@ -9,6 +9,7 @@ ToolbarWnd::ToolbarWnd(HWND parent): ChildWnd(L"", parent) {
 	SetWantMouseLeave(true);
 	_in = false;
 	_idx = -1;
+	_bk = false;
 }
 
 ToolbarWnd::~ToolbarWnd() {
@@ -22,6 +23,16 @@ void ToolbarWnd::OnCommand(int c) {
 }
 
 void ToolbarWnd::Layout() {
+}
+
+void ToolbarWnd::SetBackground(bool t) {
+	_bk = t;
+	Repaint();
+}
+
+void ToolbarWnd::SetBackgroundColor(Gdiplus::Color c) {
+	_bkColor = c;
+	Repaint();
 }
 
 void ToolbarWnd::Fill(LayoutFlags f, tj::shared::Rectangle& r) {
@@ -78,13 +89,22 @@ void ToolbarWnd::Paint(Gdiplus::Graphics& g) {
 	tj::shared::Rectangle rc = GetClientRectangle();
 	ref<Theme> theme = ThemeManager::GetTheme();
 	
-	SolidBrush zwart(theme->GetBackgroundColor());
-	g.FillRectangle(&zwart, rc);
+	if(_bk) {
+		LinearGradientBrush lbl(PointF(0.0f, 0.0f), PointF(float(rc.GetWidth()/2)+2.0f,0.0f), theme->GetBackgroundColor(), _bkColor);
+		g.FillRectangle(&lbl, RectF(float(rc.GetLeft()), float(rc.GetTop()), float(rc.GetWidth()/2.0f)+2.0f, float(rc.GetHeight())));
 
-	LinearGradientBrush br(PointF(0.0f, 0.0f), PointF(0.0f, float(rc.GetHeight())), theme->GetToolbarColorStart(), theme->GetToolbarColorEnd());
-	SolidBrush dbr(theme->GetDisabledOverlayColor());
-	g.FillRectangle(&br, rc);
-	g.FillRectangle(&dbr, rc);
+		LinearGradientBrush lbr(PointF(float(rc.GetWidth()/2)-1.0f, 0.0f), PointF(float(rc.GetWidth())+1.0f, 0.0f), _bkColor, theme->GetBackgroundColor());
+		g.FillRectangle(&lbr, RectF(float(rc.GetLeft()+rc.GetWidth()/2.0f)+1.0f, float(rc.GetTop()), float(rc.GetWidth()/2.0f), float(rc.GetHeight())));
+	}
+	else {
+		SolidBrush zwart(theme->GetBackgroundColor());
+		g.FillRectangle(&zwart, rc);
+
+		LinearGradientBrush br(PointF(0.0f, 0.0f), PointF(0.0f, float(rc.GetHeight())), theme->GetToolbarColorStart(), theme->GetToolbarColorEnd());
+		SolidBrush dbr(theme->GetDisabledOverlayColor());
+		g.FillRectangle(&br, rc);
+		g.FillRectangle(&dbr, rc);
+	}
 
 	LinearGradientBrush glas(PointF(0.0f,0.0f), PointF(0.0f,float(rc.GetHeight())/2.0f), theme->GetGlassColorStart(), theme->GetGlassColorEnd());
 	g.FillRectangle(&glas, RectF(0.0f, 0.0f, float(rc.GetWidth()), float(rc.GetHeight())/2.0f));

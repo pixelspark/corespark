@@ -386,6 +386,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\tjdialogs.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\tjdxutil.cpp"
 				>
 			</File>
@@ -475,6 +479,10 @@
 			</File>
 			<File
 				RelativePath=".\src\tjslider.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\tjsplash.cpp"
 				>
 			</File>
 			<File
@@ -573,6 +581,10 @@
 			</File>
 			<File
 				RelativePath=".\include\tjcriticalsection.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tjdialogs.h"
 				>
 			</File>
 			<File
@@ -717,6 +729,10 @@
 			</File>
 			<File
 				RelativePath=".\include\tjslider.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tjsplash.h"
 				>
 			</File>
 			<File
