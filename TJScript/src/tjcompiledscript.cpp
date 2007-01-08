@@ -8,7 +8,7 @@ CompiledScript::CompiledScript() {
 CompiledScript::~CompiledScript() {
 }
 
-ref<Scriptlet> CompiledScript::CreateScriptlet(Scriptlet::ScriptletType type) {
+ref<Scriptlet> CompiledScript::CreateScriptlet(ScriptletType type) {
 	ref<Scriptlet> s = GC::Hold(new Scriptlet(type));
 	_scriptlets.push_back(s);
 	return s;

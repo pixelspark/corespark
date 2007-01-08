@@ -2,22 +2,12 @@
 using namespace tj::shared;
 using namespace tj::script;
 
-VM::VM(int stackLimit) {
-	_stack = GC::Hold(new ScriptStack(stackLimit));
-	_global = GC::Hold(new ScriptScope());
+VM::VM(int stackLimit): _stack(stackLimit) {
+	_scope = 0;
 	_debug = false;
 }
 
 VM::~VM() {
-}
-
-ref<ScriptContext> VM::GetContext() {
-	ref<ScriptContext> c = _context.Reference();
-	if(!c) {
-		throw ScriptException(L"Context not set in VM");
-	}
-
-	return c;
 }
 
 void VM::SetDebug(bool d) {
@@ -27,14 +17,14 @@ void VM::SetDebug(bool d) {
 void VM::Call(ref<Scriptlet> s, ref<ScriptParameterList> p) {
 	// set stack size in caller for stack recovery
 	if(!_call.empty()) {
-		ref<StackFrame> current = *(_call.rbegin());
-		current->_stackSize = _stack->GetSize();
+		StackFrame& current = GetStackFrame();
+		current._stackSize = _stack.GetSize();
 	}
 	_call.push_back(GC::Hold(new StackFrame(s,0)));
 
 	ScriptScope* ss = new ScriptScope(p);
-	ss->SetPrevious(_global);
-	_global = GC::Hold(ss);
+	ss->SetPrevious(_scope);
+	_scope = GC::Hold(ss);
 }
 
 void VM::Call(int n) {
@@ -47,59 +37,52 @@ function scriptlet is encountered, and Break does the same thing until a loop sc
 and quits that loop too. **/
 void VM::Return(bool returnValue) {
 	while(true) {
-		ref<StackFrame> frame = *(_call.rbegin());
+		bool isFunction = GetStackFrame()->_scriptlet->IsFunction();
 		_call.pop_back();
-		_global = _global->GetPrevious();
-		if(frame->_scriptlet->IsFunction()) {
+		_scope = _scope->GetPrevious();
+		if(isFunction) {
 			break;
 		}
 	}
 
-	ref<Scriptable> returnedValue = _stack->Top();
-	ref<StackFrame> current = *(_call.rbegin());
-	while(_stack->GetSize() > current->_stackSize) {
-		_stack->Pop();
+	ref<Scriptable> returnedValue = _stack.Top();
+	StackFrame& current = GetStackFrame();
+	while(_stack.GetSize() > current._stackSize) {
+		_stack.Pop();
 	}
 
 	if(returnValue) {
-		_stack->Push(returnedValue);
+		_stack.Push(returnedValue);
 	}
 	else {
-		_stack->Push(ScriptConstants::Null());
+		_stack.Push(ScriptConstants::Null());
 	}
 }
 
 void VM::Break() {
 	while(true) {
-		ref<StackFrame> frame = *(_call.rbegin());
-		if(frame->_scriptlet->IsFunction()) {
+		StackFrame& frame = GetStackFrame();
+		
+		if(frame._scriptlet->IsFunction()) {
 			throw ScriptException(L"Cannot break out of function; please use a return statement!");
 		}
+
+		_scope = _scope->GetPrevious();
+		bool isLoop = frame._scriptlet->IsLoop();
 		_call.pop_back();
-		_global = _global->GetPrevious();
-		if(frame->_scriptlet->IsLoop()) {
+		if(isLoop) {
 			break;
 		}
 	}
 }
 
-ref<CompiledScript> VM::GetScript() {
-	return _script;
-}
-
-void VM::Execute(ref<ScriptContext> c, ref<CompiledScript> script) {
+void VM::Execute(ref<ScriptContext> c, ref<CompiledScript> script, ref<ScriptScope> scope) {
 	_script = script;
 	_context = c; // weak reference
+	_scope = scope;
 
 	// maybe work with pc?
 	ref<VM> vm = This<VM>();
-	if(!_call.empty()) {
-		_call.clear();
-	}
-
-	if(!_stack->IsEmpty()) {
-		_stack->Clear();
-	}
 
 	ref<Scriptlet> main = script->GetMainScriptlet();
 	_call.push_back(GC::Hold(new StackFrame(main,0)));
@@ -110,19 +93,16 @@ void VM::Execute(ref<ScriptContext> c, ref<CompiledScript> script) {
 			ref<Scriptlet> scriptlet = current->_scriptlet;
 
 			if(current->_pc>=scriptlet->_code.size()) {
-				if(_debug) {
-					Log::Write(L"TJScript/VM", L"Scriptlet ended");
-				}
 				_call.pop_back();
 				if(!_call.empty()) {
 					// attempt stack repair if necessary
 					current = *(_call.rbegin());
-					if(_stack->GetSize()<current->_stackSize) {
+					if(_stack.GetSize()<current->_stackSize) {
 						throw ScriptException(L"Scriptlet damaged caller's stack");
 					}
-					else if(_stack->GetSize()>current->_stackSize) {
-						while(_stack->GetSize()>current->_stackSize) {
-							_stack->Pop();
+					else if(_stack.GetSize()>current->_stackSize) {
+						while(_stack.GetSize()>current->_stackSize) {
+							_stack.Pop();
 							if(_debug) {
 								Log::Write(L"TJScript/VM", L"Pop repair");
 							}
@@ -130,12 +110,12 @@ void VM::Execute(ref<ScriptContext> c, ref<CompiledScript> script) {
 					}
 
 					if(scriptlet->IsFunction()) {
-						_stack->Push(ScriptConstants::Null());
+						_stack.Push(ScriptConstants::Null());
 					}
 				}
 				
 				if(scriptlet!=main) {
-					_global = _global->GetPrevious();
+					_scope = _scope->GetPrevious();
 				}
 			}
 			else {
@@ -151,47 +131,26 @@ void VM::Execute(ref<ScriptContext> c, ref<CompiledScript> script) {
 					op->Execute(vm);
 				}
 				catch(BreakpointException&) {
-					//std::wostringstream wos;
-					//wos << L"A breakpoint was triggered. Stack dump: " << _stack->Dump();
-					//...
+					throw;
 				}
 			}
 		}
 	}
-	catch(Exception&) {
+	catch(Exception& e) {
 		_script = 0;
-		Log::Write(L"TJScript/VM", std::wstring(L"Stack dump: ")+_stack->Dump());
-		throw;
+		Log::Write(L"TJScript/VM", std::wstring(L"Stack dump: ")+_stack.Dump());
+		Log::Write(L"TJScript/VM", Wcs(e.GetFile())+L"/"+Stringify(e.GetLine())+L": "+e.GetMsg());
 	}
 
 	_script = 0;
 	_context = ref<ScriptContext>(0);
-}
+	_scope = 0;
 
-ref<ScriptStack> VM::GetStack() {
-	return _stack;
-}
+	if(!_call.empty()) {
+		_call.clear();
+	}
 
-void VM::SetGlobal(ref<Scriptable> g) {
-	_global->SetPrevious(g);
-}
-
-ref<ScriptScope> VM::GetGlobal() {
-	return _global;
-}
-
-ref<StackFrame> VM::GetStackFrame() {
-	return *(_call.rbegin());
-}
-
-/* Scriptlet */
-Scriptlet::Scriptlet(ScriptletType t) {
-	_type = t;
-}
-
-Scriptlet::~Scriptlet() {
-}
-
-void Scriptlet::Add(ref<Op> op) {
-	_code.push_back(op);
+	if(!_stack.IsEmpty()) {
+		_stack.Clear();
+	}
 }

@@ -12,49 +12,49 @@ std::wstring OpPush::GetName() {
 }
 
 void OpPush::Execute(ref<VM> vm) {
-	vm->GetStack()->Push(_value);
+	vm->GetStack().Push(_value);
 }
 
 void OpPop::Execute(ref<VM> vm) {
-	vm->GetStack()->Pop();
+	vm->GetStack().Pop();
 }
 
 void OpParameter::Execute(ref<VM> vm) {
-	ref<ScriptStack> stack = vm->GetStack();
-	ref<Scriptable> value = stack->Pop();
-	ref<Scriptable> key = stack->Pop();
-	ref<ScriptParameterList> parameter = stack->Pop();
+	ScriptStack& stack = vm->GetStack();
+	ref<Scriptable> value = stack.Pop();
+	ref<Scriptable> key = stack.Pop();
+	ref<ScriptParameterList> parameter = stack.Pop();
 
 	ref< ScriptValue<std::wstring> > keyString = key;
 	parameter->Set(keyString->GetValue(), value);
-	stack->Push(parameter);
+	stack.Push(parameter);
 }
 
 void OpNamelessParameter::Execute(ref<VM> vm) {
-	ref<ScriptStack> stack = vm->GetStack();
-	ref<Scriptable> value = stack->Pop();
-	ref<ScriptParameterList> parameter = stack->Pop();
+	ScriptStack& stack = vm->GetStack();
+	ref<Scriptable> value = stack.Pop();
+	ref<ScriptParameterList> parameter = stack.Pop();
 	parameter->AddNamelessParameter(value);
-	stack->Push(parameter);
+	stack.Push(parameter);
 }
 
 void OpPushParameter::Execute(ref<VM> vm) {
-	vm->GetStack()->Push(GC::Hold(new ScriptParameterList()));
+	vm->GetStack().Push(GC::Hold(new ScriptParameterList()));
 }
 
 void OpCall::Execute(ref<VM> vm) {
-	ref<ScriptStack> stack = vm->GetStack();
-	ref<Scriptable> parameterList = stack->Pop();
+	ScriptStack& stack = vm->GetStack();
+	ref<Scriptable> parameterList = stack.Pop();
 	ref<ScriptParameterList> list;
 	if(parameterList.IsCastableTo<ScriptParameterList>()) {
 		list = parameterList;
 	}
 	else {
-		stack->Push(parameterList);
+		stack.Push(parameterList);
 	}
 
-	ref< ScriptValue<std::wstring> > funcName = stack->Pop();
-	ref<Scriptable> target = stack->Pop();
+	ref< ScriptValue<std::wstring> > funcName = stack.Pop();
+	ref<Scriptable> target = stack.Pop();
 
 	ref<Scriptable> result = target->Execute(funcName->GetValue(), list?list->_params:0);
 	if(!result) {
@@ -67,14 +67,14 @@ void OpCall::Execute(ref<VM> vm) {
 		vm->Call(scriptlet, list);
 	}
 	else {
-		stack->Push(result);
+		stack.Push(result);
 	}
 }
 
 void OpIndex::Execute(ref<VM> vm) {
-	ref<ScriptStack> stack = vm->GetStack();
-	ref<Scriptable> index = stack->Pop();
-	ref<Scriptable> object = stack->Pop();
+	ScriptStack& stack = vm->GetStack();
+	ref<Scriptable> index = stack.Pop();
+	ref<Scriptable> object = stack.Pop();
 
 	ref<ParameterList> pl = GC::Hold(new ParameterList());
 	pl->insert(std::pair<std::wstring, ref<Scriptable> >(L"key", index));
@@ -82,23 +82,23 @@ void OpIndex::Execute(ref<VM> vm) {
 	if(result==0) {
 		throw ScriptException(L"Object does not support get(key=...) method, array index cannot be used");
 	}
-	stack->Push(result);
+	stack.Push(result);
 }
 
 
 void OpCallGlobal::Execute(ref<VM> vm) {
-	ref<ScriptStack> stack = vm->GetStack();
-	ref<Scriptable> parameterList = stack->Pop();
+	ScriptStack& stack = vm->GetStack();
+	ref<Scriptable> parameterList = stack.Pop();
 	ref<ScriptParameterList> list;
 	if(parameterList.IsCastableTo<ScriptParameterList>()) {
 		list = parameterList;
 	}
 	else {
-		stack->Push(parameterList);
+		stack.Push(parameterList);
 	}
 
-	ref< ScriptValue<std::wstring> > funcName = stack->Pop();
-	ref<Scriptable> target = vm->GetGlobal();
+	ref< ScriptValue<std::wstring> > funcName = stack.Pop();
+	ref<Scriptable> target = vm->GetCurrentScope();
 
 	ref<Scriptable> result = target->Execute(funcName->GetValue(), list?list->_params:0);
 	if(!result) {
@@ -111,22 +111,21 @@ void OpCallGlobal::Execute(ref<VM> vm) {
 		vm->Call(scriptlet, list);
 	}
 	else {
-		stack->Push(result);
+		stack.Push(result);
 	}
 }
 
 void OpSave::Execute(ref<VM> vm) {
-	ref<ScriptStack> stack = vm->GetStack();
-
-	ref<Scriptable> object = stack->Pop();
-	ref< ScriptValue<std::wstring> > varName = stack->Pop();
-	vm->GetGlobal()->Set(varName->GetValue(), object);
+	ScriptStack& stack = vm->GetStack();
+	ref<Scriptable> object = stack.Pop();
+	ref< ScriptValue<std::wstring> > varName = stack.Pop();
+	vm->GetCurrentScope()->Set(varName->GetValue(), object);
 }
 
 void OpEquals::Execute(ref<VM> vm) {
-	ref<ScriptStack> stack = vm->GetStack();
-	ref<Scriptable> objectA = stack->Pop();
-	ref<Scriptable> objectB = stack->Pop();
+	ScriptStack& stack = vm->GetStack();
+	ref<Scriptable> objectA = stack.Pop();
+	ref<Scriptable> objectB = stack.Pop();
 
 	bool result = false;
 
@@ -161,42 +160,42 @@ void OpEquals::Execute(ref<VM> vm) {
 		result = (objectA==objectB);
 	}
 
-	stack->Push(GC::Hold(new ScriptBool(result)));
+	stack.Push(GC::Hold(new ScriptBool(result)));
 }
 
 void OpNegate::Execute(ref<VM> vm) {
-	ref<ScriptStack> stack = vm->GetStack();
-	ref<Scriptable> top = stack->Pop();
+	ScriptStack& stack = vm->GetStack();
+	ref<Scriptable> top = stack.Pop();
 	if(top.IsCastableTo<ScriptBool>()) {
 		ref<ScriptBool> b = top;
 		ref<ScriptBool> n = GC::Hold(new ScriptBool(!b->GetValue()));
-		stack->Push(n);
+		stack.Push(n);
 	}
 	else if(top.IsCastableTo<ScriptInt>()) {
 		ref<ScriptInt> b = top;
 		ref<ScriptInt> n = GC::Hold(new ScriptInt(-b->GetValue()));
-		stack->Push(n);
+		stack.Push(n);
 	}
 	else if(top.IsCastableTo<ScriptDouble>()) {
 		ref<ScriptDouble> b = top;
 		ref<ScriptDouble> n = GC::Hold(new ScriptDouble(-b->GetValue()));
-		stack->Push(n);
+		stack.Push(n);
 	}
 	else {
-		stack->Push(GC::Hold(new ScriptBool(false)));
+		stack.Push(GC::Hold(new ScriptBool(false)));
 	}
 }
 
 void OpAdd::Execute(ref<VM> vm) {
-	ref<ScriptStack> stack = vm->GetStack();
-	ref<Scriptable> a = stack->Pop();
-	ref<Scriptable> b = stack->Pop();
+	ScriptStack& stack = vm->GetStack();
+	ref<Scriptable> a = stack.Pop();
+	ref<Scriptable> b = stack.Pop();
 
 	// if any of the parameters is a string, do concatenation
 	if(a.IsCastableTo<ScriptString>() || b.IsCastableTo<ScriptString>()) {
 		std::wstring as = ScriptContext::GetValue<std::wstring>(a,L"");
 		std::wstring bs = ScriptContext::GetValue<std::wstring>(b,L"");
-		stack->Push(GC::Hold(new ScriptString(bs+as)));
+		stack.Push(GC::Hold(new ScriptString(bs+as)));
 	}
 	else {
 		double va = 0.0;
@@ -216,14 +215,14 @@ void OpAdd::Execute(ref<VM> vm) {
 			vb = ScriptContext::GetValue<double>(b,0.0);
 		}
 
-		stack->Push(GC::Hold(new ScriptDouble(va+vb)));
+		stack.Push(GC::Hold(new ScriptDouble(va+vb)));
 	}
 }
 
 void OpSub::Execute(ref<VM> vm) {
-	ref<ScriptStack> stack = vm->GetStack();
-	ref<Scriptable> a = stack->Pop();
-	ref<Scriptable> b = stack->Pop();
+	ScriptStack& stack = vm->GetStack();
+	ref<Scriptable> a = stack.Pop();
+	ref<Scriptable> b = stack.Pop();
 
 	double va = 0.0;
 	double vb = 0.0;
@@ -242,13 +241,13 @@ void OpSub::Execute(ref<VM> vm) {
 		vb = ScriptContext::GetValue<double>(b,0.0);
 	}
 
-	stack->Push(GC::Hold(new ScriptDouble(vb-va)));
+	stack.Push(GC::Hold(new ScriptDouble(vb-va)));
 }
 
 void OpDiv::Execute(ref<VM> vm) {
-	ref<ScriptStack> stack = vm->GetStack();
-	ref<Scriptable> a = stack->Pop();
-	ref<Scriptable> b = stack->Pop();
+	ScriptStack& stack = vm->GetStack();
+	ref<Scriptable> a = stack.Pop();
+	ref<Scriptable> b = stack.Pop();
 
 	double va = 0.0;
 	double vb = 0.0;
@@ -271,13 +270,13 @@ void OpDiv::Execute(ref<VM> vm) {
 		throw ScriptException(L"Division by zero");
 	}
 
-	stack->Push(GC::Hold(new ScriptDouble(vb/va)));
+	stack.Push(GC::Hold(new ScriptDouble(vb/va)));
 }
 
 void OpMul::Execute(ref<VM> vm) {
-	ref<ScriptStack> stack = vm->GetStack();
-	ref<Scriptable> a = stack->Pop();
-	ref<Scriptable> b = stack->Pop();
+	ScriptStack& stack = vm->GetStack();
+	ref<Scriptable> a = stack.Pop();
+	ref<Scriptable> b = stack.Pop();
 
 	double va = 0.0;
 	double vb = 0.0;
@@ -296,7 +295,7 @@ void OpMul::Execute(ref<VM> vm) {
 		vb = ScriptContext::GetValue<double>(b,0.0);
 	}
 
-	stack->Push(GC::Hold(new ScriptDouble(va*vb)));
+	stack.Push(GC::Hold(new ScriptDouble(va*vb)));
 }
 
 OpBranchIf::OpBranchIf(int scriptlet) {
@@ -304,8 +303,8 @@ OpBranchIf::OpBranchIf(int scriptlet) {
 }
 
 void OpBranchIf::Execute(tj::shared::ref<VM> vm) {
-	ref<ScriptStack> stack = vm->GetStack();
-	ref<Scriptable> top = stack->Top();
+	ScriptStack& stack = vm->GetStack();
+	ref<Scriptable> top = stack.Top();
 	
 	bool r = ScriptContext::GetValue<bool>(top,false);
 	if(r) {
@@ -320,7 +319,7 @@ OpLoadScriptlet::OpLoadScriptlet(int scriptlet) {
 
 void OpLoadScriptlet::Execute(tj::shared::ref<VM> vm) {
 	ref<Scriptlet> sc = vm->GetScript()->GetScriptlet(_scriptlet);
-	vm->GetStack()->Push(GC::Hold(new ScriptFunction(sc)));
+	vm->GetStack().Push(GC::Hold(new ScriptFunction(sc)));
 }
 
 void OpReturn::Execute(tj::shared::ref<VM> vm) {
@@ -333,68 +332,68 @@ void OpReturnValue::Execute(ref<VM> vm) {
 
 // OpGreaterThan
 void OpGreaterThan::Execute(ref<VM> vm) {
-	ref<Scriptable> a = vm->GetStack()->Pop();
-	ref<Scriptable> b = vm->GetStack()->Pop();
+	ref<Scriptable> a = vm->GetStack().Pop();
+	ref<Scriptable> b = vm->GetStack().Pop();
 
 	if(a.IsCastableTo<ScriptDouble>() && b.IsCastableTo<ScriptDouble>()) {
 		double va = ref<ScriptDouble>(a)->GetValue();
 		double vb = ref<ScriptDouble>(b)->GetValue();
 		bool result = vb>va;
-		vm->GetStack()->Push(GC::Hold(new ScriptBool(result)));
+		vm->GetStack().Push(GC::Hold(new ScriptBool(result)));
 	}
 	else {
-		vm->GetStack()->Push(ScriptConstants::Null());
+		vm->GetStack().Push(ScriptConstants::Null());
 	}
 }
 
 // OpLessThan
 void OpLessThan::Execute(ref<VM> vm) {
-	ref<Scriptable> a = vm->GetStack()->Pop();
-	ref<Scriptable> b = vm->GetStack()->Pop();
+	ref<Scriptable> a = vm->GetStack().Pop();
+	ref<Scriptable> b = vm->GetStack().Pop();
 
 	if(a.IsCastableTo<ScriptDouble>() && b.IsCastableTo<ScriptDouble>()) {
 		double va = ref<ScriptDouble>(a)->GetValue();
 		double vb = ref<ScriptDouble>(b)->GetValue();
 		bool result = vb<va;
-		vm->GetStack()->Push(GC::Hold(new ScriptBool(result)));
+		vm->GetStack().Push(GC::Hold(new ScriptBool(result)));
 	}
 	else {
-		vm->GetStack()->Push(ScriptConstants::Null());
+		vm->GetStack().Push(ScriptConstants::Null());
 	}
 }
 
 // OpOr
 void OpOr::Execute(ref<VM> vm) {
-	ref<Scriptable> a = vm->GetStack()->Pop();
-	ref<Scriptable> b = vm->GetStack()->Pop();
+	ref<Scriptable> a = vm->GetStack().Pop();
+	ref<Scriptable> b = vm->GetStack().Pop();
 
 	bool ba = ScriptContext::GetValue<bool>(a, false);
 	bool bb = ScriptContext::GetValue<bool>(b, false);
 
-	vm->GetStack()->Push(GC::Hold(new ScriptBool(ba||bb)));
+	vm->GetStack().Push(GC::Hold(new ScriptBool(ba||bb)));
 }
 
 // OpAnd
 void OpAnd::Execute(ref<VM> vm) {
-	ref<Scriptable> a = vm->GetStack()->Pop();
-	ref<Scriptable> b = vm->GetStack()->Pop();
+	ref<Scriptable> a = vm->GetStack().Pop();
+	ref<Scriptable> b = vm->GetStack().Pop();
 
 	bool ba = ScriptContext::GetValue<bool>(a, false);
 	bool bb = ScriptContext::GetValue<bool>(b, false);
 
-	vm->GetStack()->Push(GC::Hold(new ScriptBool(ba&&bb)));
+	vm->GetStack().Push(GC::Hold(new ScriptBool(ba&&bb)));
 }
 
 // OpXor: TT=>F FF=>F TF=>T FT=>T
 // Xor: (a||b) && !(a==b)
 void OpXor::Execute(ref<VM> vm) {
-	ref<Scriptable> a = vm->GetStack()->Pop();
-	ref<Scriptable> b = vm->GetStack()->Pop();
+	ref<Scriptable> a = vm->GetStack().Pop();
+	ref<Scriptable> b = vm->GetStack().Pop();
 
 	bool ba = ScriptContext::GetValue<bool>(a, false);
 	bool bb = ScriptContext::GetValue<bool>(b, false);
 
-	vm->GetStack()->Push(GC::Hold(new ScriptBool( (ba||bb) && !(ba==bb) )));
+	vm->GetStack().Push(GC::Hold(new ScriptBool( (ba||bb) && !(ba==bb) )));
 }
 
 void OpBreak::Execute(ref<VM> vm) {
@@ -402,27 +401,27 @@ void OpBreak::Execute(ref<VM> vm) {
 }
 
 void OpNew::Execute(ref<VM> vm) {
-	ref<ScriptStack> stack = vm->GetStack();
-	ref<Scriptable> parameterList = stack->Pop();
+	ScriptStack& stack = vm->GetStack();
+	ref<Scriptable> parameterList = stack.Pop();
 	ref<ScriptParameterList> list;
 	if(parameterList.IsCastableTo<ScriptParameterList>()) {
 		list = parameterList;
 	}
 	else {
-		stack->Push(parameterList);
+		stack.Push(parameterList);
 	}
 
-	ref< ScriptString > funcName = stack->Pop();
+	ref< ScriptString > funcName = stack.Pop();
 	
 	ref<Scriptable> instance = vm->GetContext()->GetType(funcName->GetValue())->Construct(list?list->_params:0);
-	stack->Push(instance);
+	stack.Push(instance);
 }
 
 void OpIterate::Execute(ref<VM> vm) {
-	ref<Scriptable> iterable = vm->GetStack()->Pop();
-	ref<Scriptable> varName = vm->GetStack()->Pop();
-	vm->GetStack()->Push(varName);
-	vm->GetStack()->Push(iterable);
+	ref<Scriptable> iterable = vm->GetStack().Pop();
+	ref<Scriptable> varName = vm->GetStack().Pop();
+	vm->GetStack().Push(varName);
+	vm->GetStack().Push(iterable);
 	
 	ref<Scriptable> value = iterable->Execute(L"next", 0);
 	if(value==0) {
@@ -430,17 +429,16 @@ void OpIterate::Execute(ref<VM> vm) {
 	}
 	else if(!value.IsCastableTo<ScriptNull>()) {
 		// set pc of this stack frame one back, so this instruction will be called again
-		ref<StackFrame> frame = vm->GetStackFrame();
-		frame->_pc--;
+		StackFrame& frame = vm->GetStackFrame();
+		frame._pc--;
 
 		//set variable
-		vm->GetGlobal()->Set(ref<ScriptString>(varName)->GetValue(), value);
+		vm->GetCurrentScope()->Set(ref<ScriptString>(varName)->GetValue(), value);
 
 		vm->Call(_scriptlet);
 	}
 	else {
-		vm->GetStack()->Pop();
-		vm->GetStack()->Pop();
+		vm->GetStack().Pop();
+		vm->GetStack().Pop();
 	}
 }
-

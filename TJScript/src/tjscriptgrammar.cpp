@@ -126,7 +126,7 @@ struct ScriptLog {
 
 
 struct ScriptPushScriptlet {
-	ScriptPushScriptlet(ref<ScriptletStack> stack, ref<CompiledScript> script, Scriptlet::ScriptletType t) {
+	ScriptPushScriptlet(ref<ScriptletStack> stack, ref<CompiledScript> script, ScriptletType t) {
 		_script = script;
 		_stack = stack;
 		_function = t;
@@ -144,7 +144,7 @@ struct ScriptPushScriptlet {
 
 	mutable ref<ScriptletStack> _stack;
 	mutable ref<CompiledScript> _script;
-	mutable Scriptlet::ScriptletType _function;
+	mutable ScriptletType _function;
 };
 
 struct ScriptLoadScriptlet {
@@ -205,7 +205,7 @@ struct ScriptGrammar : public grammar<ScriptGrammar> {
     ScriptGrammar(ref<CompiledScript> script) {
 		_script = script;
 		_stack = GC::Hold(new ScriptletStack());
-		ref<Scriptlet> s = _script->CreateScriptlet(Scriptlet::ScriptletFunction);
+		ref<Scriptlet> s = _script->CreateScriptlet(ScriptletFunction);
 		_stack->Push(s, _script->GetScriptletIndex(s));
 	}
 
@@ -258,7 +258,10 @@ struct ScriptGrammar : public grammar<ScriptGrammar> {
 				 (identifier >> !(ch_p('(')[ScriptInstruction<OpPushParameter>(self._stack)] >> !parameterList >> ')'));
 
 			methodCallConstruct = 
-				methodCall[ScriptInstruction<OpCallGlobal>(self._stack)] >> *indexOperator >> !(ch_p(".") >> ((methodCall[ScriptInstruction<OpCall>(self._stack)] >> *(indexOperator)) % ch_p('.')));
+				methodCall[ScriptInstruction<OpCallGlobal>(self._stack)] >> followingMethodCall;
+
+			followingMethodCall = 
+				*indexOperator >> !(ch_p(".") >> ((methodCall[ScriptInstruction<OpCall>(self._stack)] >> *(indexOperator)) % ch_p('.')));
 
 			/* Operators */
 			equalsOperator = 
@@ -331,13 +334,13 @@ struct ScriptGrammar : public grammar<ScriptGrammar> {
 				functionConstruct | returnConstruct | breakStatement | assignment | expression;
 
 			blockInFunction =
-				ch_p('{')[ScriptPushScriptlet(self._stack, self._script,Scriptlet::ScriptletFunction)] >> *((blockConstruct >> *eol_p)|comment) >> ch_p('}');
+				ch_p('{')[ScriptPushScriptlet(self._stack, self._script,ScriptletFunction)] >> *((blockConstruct >> *eol_p)|comment) >> ch_p('}');
 
 			blockInFor =
-				ch_p('{')[ScriptPushScriptlet(self._stack, self._script,Scriptlet::ScriptletLoop)] >> *((blockConstruct >> *eol_p)|comment) >> ch_p('}');
+				ch_p('{')[ScriptPushScriptlet(self._stack, self._script,ScriptletLoop)] >> *((blockConstruct >> *eol_p)|comment) >> ch_p('}');
 
 			block =
-				ch_p('{')[ScriptPushScriptlet(self._stack, self._script,Scriptlet::ScriptletAny)] >> *((blockConstruct >> *eol_p)|comment) >> ch_p('}');
+				ch_p('{')[ScriptPushScriptlet(self._stack, self._script,ScriptletAny)] >> *((blockConstruct >> *eol_p)|comment) >> ch_p('}');
 
 			blockConstruct =
 				ifConstruct | forConstruct | (statement >> !ch_p(';'));
@@ -349,7 +352,7 @@ struct ScriptGrammar : public grammar<ScriptGrammar> {
 				((keyword_p("for") >> ch_p('(') >> keyword_p("var") >> identifier >> ch_p(':') >> expression >> ch_p(')')) >> blockInFor) [ScriptIterate(self._stack, self._script)];
 
 			newConstruct = 
-				(keyword_p("new") >> identifier >> !(ch_p('(')[ScriptInstruction<OpPushParameter>(self._stack)] >> !parameterList >> ')'))[ScriptInstruction<OpNew>(self._stack)];
+				((keyword_p("new") >> identifier >> !(ch_p('(')[ScriptInstruction<OpPushParameter>(self._stack)] >> !parameterList >> ')'))[ScriptInstruction<OpNew>(self._stack)]) >> followingMethodCall;
 
 			script = 
 				*((blockConstruct >> *eol_p)|comment) >> end_p;
@@ -359,7 +362,7 @@ struct ScriptGrammar : public grammar<ScriptGrammar> {
         rule<ScannerT> stringValue, intValue, boolValue, doubleValue, nullValue;
 
 		// constructs
-		rule<ScannerT> block, function, functionConstruct, ifConstruct, comment, assignment, value, identifier, declaredParameter, keyValuePair, parameterList, methodCall, expression, statement, blockConstruct, blockInFunction, blockInFor, script, returnConstruct, breakStatement, forConstruct, newConstruct, methodCallConstruct;
+		rule<ScannerT> block, function, functionConstruct, ifConstruct, comment, assignment, value, identifier, declaredParameter, keyValuePair, parameterList, methodCall, expression, statement, blockConstruct, blockInFunction, blockInFor, script, returnConstruct, breakStatement, forConstruct, newConstruct, methodCallConstruct, followingMethodCall;
 		
 		// operators
 		rule<ScannerT> term, factor, negatedFactor, indexOperator, equalsOperator, notEqualsOperator, plusOperator, minOperator, divOperator, mulOperator, orOperator, andOperator, xorOperator, gtOperator, ltOperator;		

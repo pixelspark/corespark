@@ -4,6 +4,7 @@
 namespace tj {
 	namespace script {
 		class ScriptScope;
+		class VM;
 
 		class SCRIPT_EXPORTED ScriptContext: public virtual tj::shared::Object {
 			friend class ScriptThread;
@@ -13,11 +14,10 @@ namespace tj {
 				virtual ~ScriptContext();
 				virtual tj::shared::ref<CompiledScript> Compile(std::wstring source);
 				virtual tj::shared::ref<CompiledScript> CompileFile(std::wstring file);
-				virtual void Execute(tj::shared::ref<CompiledScript> scr);
+				virtual void Execute(tj::shared::ref<CompiledScript> scr, tj::shared::ref<ScriptScope> scope=0);
 				virtual tj::shared::ref<ScriptThread> CreateExecutionThread(tj::shared::ref<CompiledScript> scr);
 				void SetDebug(bool d);
 				void SetOptimize(bool o);
-				tj::shared::ref<ScriptScope> GetGlobal();
 
 				template<typename T> static T GetValue(tj::shared::ref<Scriptable> s, T defaultValue) {
 					if(s.IsCastableTo< ScriptValue<T> >()) {
@@ -46,12 +46,12 @@ namespace tj {
 
 			protected:
 				tj::shared::ref<VM> _vm;
+				tj::shared::ref<ScriptScope> _global;
 				static std::map< std::wstring, tj::shared::ref<ScriptType> > _staticTypes;
 				std::map< std::wstring, tj::shared::ref<ScriptType> > _types;
 				bool _optimize;
 				tj::shared::CriticalSection _running;
 		};
-
 	}
 }
 

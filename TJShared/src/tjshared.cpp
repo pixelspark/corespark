@@ -21,3 +21,14 @@ long GC::GetLiveCount() {
 long GC::GetSize() {
 	return _gc_size;
 }
+
+void GC::Log(const char* tp, bool allocate) {
+	if(allocate) {
+		OutputDebugStringA("A ");
+	}
+	else {
+		OutputDebugStringA("D ");
+	}
+	OutputDebugStringA(tp);
+	OutputDebugStringA("\r\n");
+}

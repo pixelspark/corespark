@@ -25,7 +25,42 @@ ref<Scriptable> ScriptScope::GetPrevious() {
 }
 
 ref<Scriptable> ScriptScope::Execute(Command command, ref<ParameterList> params) {
-	if(_vars.find(command)==_vars.end()) {
+	if(command==L"delete") {
+		RequiredParameter<std::wstring> name(params, L"var", L"", 0);
+		std::map<std::wstring, ref<Scriptable> >::iterator it = _vars.find(name);
+		if(it!=_vars.end()) {
+			_vars.erase(it);
+		}
+		else if(_previous) {
+			ref<Scriptable> sc = _previous->Execute(command, params);
+			if(!sc) {
+				return ScriptConstants::Null();
+			}
+		}
+		else {
+			return ScriptConstants::Null();
+		}
+	}
+	else if(command==L"exists") {
+		RequiredParameter<std::wstring> name(params, L"var", L"", 0);
+		bool exists = _vars.find(name)!=_vars.end();
+		if(!exists) {
+			if(_previous) {
+				ref<Scriptable> ret = _previous->Execute(command, params);
+				if(!ret || !ret.IsCastableTo<ScriptBool>()) {
+					return ScriptConstants::False();
+				}
+				return ret;
+			}
+			else {
+				return ScriptConstants::False();
+			}
+		}
+		else {
+			return ScriptConstants::True();
+		}
+	}
+	else if(_vars.find(command)==_vars.end()) {
 		if(_previous) {
 			return _previous->Execute(command, params);
 		}

@@ -5,9 +5,13 @@ namespace tj {
 		class SCRIPT_EXPORTED ScriptConstants {
 			public:
 				static tj::shared::ref<Scriptable> Null();
+				static tj::shared::ref<Scriptable> True();
+				static tj::shared::ref<Scriptable> False();
 
 			protected:
 				static tj::shared::ref<Scriptable> _null;
+				static tj::shared::ref<Scriptable> _true;
+				static tj::shared::ref<Scriptable> _false;
 		};
 
 		template<typename T> class ScriptValue: public Scriptable {

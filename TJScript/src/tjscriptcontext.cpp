@@ -4,7 +4,8 @@ using namespace tj::script;
 
 ScriptContext::ScriptContext(ref<Scriptable> global) {
 	_vm = GC::Hold(new VM());
-	_vm->SetGlobal(global);
+	_global = GC::Hold(new ScriptScope());
+	_global->SetPrevious(global);
 	_optimize = true;
 }
 
@@ -15,14 +16,18 @@ void ScriptContext::SetOptimize(bool o) {
 	_optimize = o;
 }
 
-void ScriptContext::Execute(ref<CompiledScript> scr) {
+void ScriptContext::Execute(ref<CompiledScript> scr, ref<ScriptScope> scope) {
 	ThreadLock lock(&_running);
 	assert(scr);
-	_vm->Execute(This<ScriptContext>(), scr);
-}
 
-ref<ScriptScope> ScriptContext::GetGlobal() {
-	return _vm->GetGlobal();
+	if(scope) {
+		scope->SetPrevious(_global);
+		_vm->Execute(This<ScriptContext>(), scr, scope);
+		scope->SetPrevious(0);
+	}
+	else {
+		_vm->Execute(This<ScriptContext>(), scr, _global);
+	}
 }
 
 ref<ScriptThread> ScriptContext::CreateExecutionThread(ref<CompiledScript> scr) {

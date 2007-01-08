@@ -41,6 +41,11 @@ namespace intern {
 			inline void DeleteReference() {
 				InterlockedDecrement(&_rc);
 				if(_rc==0 && _weakrc ==0) {
+
+					#ifdef TJSHARED_MEMORY_TRACE
+					GC::Log(typeid(this).name(), false);
+					#endif
+
 					delete this;
 				}
 				else if(_rc==0) {

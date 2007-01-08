@@ -12,3 +12,4 @@ template<class T> struct ScriptTypeRegistration {
 ScriptTypeRegistration<ScriptArrayType> arrayRegistration(L"Array");
 ScriptTypeRegistration<ScriptRangeType> rangeRegistration(L"Range");
 ScriptTypeRegistration<ScriptHashType> hashRegistration(L"Hash");
+ScriptTypeRegistration<ScriptMathType> mathRegistration(L"Math");

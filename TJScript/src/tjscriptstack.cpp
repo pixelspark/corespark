@@ -17,6 +17,13 @@ ref<Scriptable> ScriptStack::Pop() {
 	return last;
 }
 
+void ScriptStack::Clear() {
+	while(_sp>-1) {
+		_stack[_sp] = 0;
+		_sp--;
+	}
+}
+
 std::wstring ScriptStack::Dump() {
 	std::wostringstream wos;
 	

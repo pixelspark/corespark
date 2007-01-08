@@ -7,8 +7,10 @@
 	#define EXPORTED
 #endif
 
-#include "tjpch.h"
+// define TJSHARED_MEMORY_TRACE if you want to get a log of allocations/deallocations
+#undef TJSHARED_MEMORY_TRACE
 
+#include "tjpch.h"
 #pragma warning(push)
 #pragma warning(disable: 4251) // about protected members needing dll access
 

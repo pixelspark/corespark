@@ -39,9 +39,7 @@ namespace tj {
 					return _stack[_sp];
 				}
 
-				inline void Clear() {
-					_sp = -1;
-				}
+				void Clear();
 
 				tj::shared::ref<Scriptable> Pop();
 				std::wstring Dump();
@@ -50,6 +48,11 @@ namespace tj {
 				tj::shared::ref<Scriptable>* _stack;
 				int _limit;
 				int _sp;
+
+			private:
+				// disallow copy
+				ScriptStack(ScriptStack& other) {
+				}
 		};
 
 	}

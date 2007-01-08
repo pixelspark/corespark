@@ -11,6 +11,7 @@ class EXPORTED GC {
 		static long GetLiveCount();
 		static long GetSize();
 		template<typename T> static ref< T > Hold(T* x);
+		static void Log(const char* name, bool allocate);
 
 	protected:
 		static inline void SetObjectPointer(...) {
@@ -26,6 +27,11 @@ class EXPORTED GC {
 template<class T> ref<T> GC::Hold(T* x) {
 	tj::shared::intern::Resource<T>* rs = new tj::shared::intern::Resource<T>(x);
 	SetObjectPointer(x, reinterpret_cast< tj::shared::intern::Resource<Object>* >(rs));
+	
+	#ifdef TJSHARED_MEMORY_TRACE
+		Log(typeid(x).name(),true);
+	#endif
+
 	return rs->Reference();
 }
 

@@ -3,12 +3,6 @@
 
 namespace tj {
 	namespace script {
-		class Op {
-			public:
-				virtual void Execute(tj::shared::ref<VM> vm) = 0;
-				virtual inline std::wstring GetName() = 0;
-		};
-
 		// pushes a value on the stack
 		// ... => [Scriptable]
 		class  OpPush: public Op {
