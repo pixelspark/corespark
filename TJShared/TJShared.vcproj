@@ -466,6 +466,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\tjreadonlyproperty.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\tjresourcemgr.cpp"
 				>
 			</File>

@@ -22,6 +22,21 @@ Theme::~Theme() {
 	DestroyCursor(_grabbed);
 }
 
+void Theme::DrawToolbarBackground(Gdiplus::Graphics& g, float x, float y, float w, float h) {
+	tj::shared::Rectangle rc(RectF(x,y,w,h));
+
+	SolidBrush zwart(GetBackgroundColor());
+	g.FillRectangle(&zwart, rc);
+
+	LinearGradientBrush br(PointF(x, y), PointF(x, y+float(rc.GetHeight())), GetToolbarColorStart(), GetToolbarColorEnd());
+	SolidBrush dbr(GetDisabledOverlayColor());
+	g.FillRectangle(&br, rc);
+	g.FillRectangle(&dbr, rc);
+
+	LinearGradientBrush glas(PointF(x,y), PointF(x,y+float(rc.GetHeight())/2.0f), GetGlassColorStart(), GetGlassColorEnd());
+	g.FillRectangle(&glas, RectF(x,y, float(rc.GetWidth()), float(rc.GetHeight())/2.0f));
+}
+
 HCURSOR Theme::GetGrabCursor() const {
 	return _grab;
 }

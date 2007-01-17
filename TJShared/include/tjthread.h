@@ -45,8 +45,8 @@ class EXPORTED Event {
 			return _event;
 		}
 
-		void Wait() {
-			WaitForSingleObject(_event, 0);
+		void Wait(int ms=0) {
+			WaitForSingleObject(_event, ms);
 		}
 
 	protected:

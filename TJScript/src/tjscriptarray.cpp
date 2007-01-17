@@ -63,6 +63,14 @@ ScriptArray::ScriptArray() {
 ScriptArray::~ScriptArray() {
 }
 
+std::map<std::wstring, tj::shared::ref<Scriptable> >::iterator ScriptArray::GetBegin() {
+	return _array.begin();
+}
+
+std::map<std::wstring, tj::shared::ref<Scriptable> >::iterator ScriptArray::GetEnd() {
+	return _array.end();
+}
+
 ref<Scriptable> ScriptArray::Execute(Command c, ref<ParameterList> p) {
 	ThreadLock lock(&_lock);
 
@@ -84,7 +92,7 @@ ref<Scriptable> ScriptArray::Execute(Command c, ref<ParameterList> p) {
 		return ScriptConstants::Null();
 	}
 	else if(c==L"toString") {
-		return GC::Hold(new ScriptString(L"ScriptArray"));
+		return GC::Hold(new ScriptString(L"[ScriptArray]"));
 	}
 	else if(c==L"keys") {
 		return GC::Hold(new ScriptArrayIterator(This<ScriptArray>(), true));

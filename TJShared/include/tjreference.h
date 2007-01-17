@@ -288,10 +288,14 @@ template<typename T> class weak {
 		}
 
 		inline ref<T> Reference() {
-			if(_res && _res->_rc>0) {
+			if(_res!=0 && _res->_rc>0) {
 				return _res->Reference();
 			}
 			return ref<T>(0);
+		}
+
+		inline bool IsValid() const {
+			return _res!=0 && _res->_rc>0;
 		}
 
 		tj::shared::intern::Resource<T>* _res;

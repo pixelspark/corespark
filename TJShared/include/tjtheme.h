@@ -71,6 +71,9 @@ class EXPORTED Theme: public virtual Object {
 			SliderMacro,
 		};
 
+		// utility methods
+		virtual void DrawToolbarBackground(Gdiplus::Graphics& g, float x, float y, float w, float h);
+
 	protected:
 		mutable Gdiplus::Font* _font;
 		mutable Gdiplus::Font* _fontBold;

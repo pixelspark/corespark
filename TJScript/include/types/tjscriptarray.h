@@ -18,6 +18,8 @@ namespace tj {
 				virtual ~ScriptArray();
 				virtual tj::shared::ref<Scriptable> Execute(Command c, tj::shared::ref<ParameterList> p);
 				void Set(tj::shared::ref<ParameterList> p);
+				std::map<std::wstring, tj::shared::ref<Scriptable> >::iterator GetBegin();
+				std::map<std::wstring, tj::shared::ref<Scriptable> >::iterator GetEnd();
 
 			protected:
 				std::map<std::wstring, tj::shared::ref<Scriptable> > _array;
