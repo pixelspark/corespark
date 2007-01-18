@@ -33,7 +33,7 @@ namespace tj {
 								return val;
 							}
 						}
-						return ScriptConstants::Null(); // no more elements
+						return ScriptConstants::Null; // no more elements
 					}
 					return 0;
 				};
@@ -81,7 +81,7 @@ ref<Scriptable> ScriptArray::Execute(Command c, ref<ParameterList> p) {
 		if(p) {
 			Set(p);
 		}
-		return ScriptConstants::Null();
+		return ScriptConstants::Null;
 	}
 	else if(c==L"get") {
 		RequiredParameter<std::wstring> key(p, L"key", L"");
@@ -89,7 +89,7 @@ ref<Scriptable> ScriptArray::Execute(Command c, ref<ParameterList> p) {
 			return _array[key.Get()];
 		}
 
-		return ScriptConstants::Null();
+		return ScriptConstants::Null;
 	}
 	else if(c==L"toString") {
 		return GC::Hold(new ScriptString(L"[ScriptArray]"));
@@ -104,7 +104,7 @@ ref<Scriptable> ScriptArray::Execute(Command c, ref<ParameterList> p) {
 		return _array[c];
 	}
 	else {
-		return ScriptConstants::Null();
+		return ScriptConstants::Null;
 	}
 }
 

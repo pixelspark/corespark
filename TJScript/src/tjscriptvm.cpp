@@ -15,6 +15,9 @@ void VM::SetDebug(bool d) {
 }
 
 void VM::Call(ref<Scriptlet> s, ref<ScriptParameterList> p) {
+	/*if(s->IsEmpty()) {
+		return;
+	}*/
 	// set stack size in caller for stack recovery
 	if(!_call.empty()) {
 		StackFrame& current = GetStackFrame();
@@ -55,7 +58,7 @@ void VM::Return(bool returnValue) {
 		_stack.Push(returnedValue);
 	}
 	else {
-		_stack.Push(ScriptConstants::Null());
+		_stack.Push(ScriptConstants::Null);
 	}
 }
 
@@ -110,7 +113,7 @@ void VM::Execute(ref<ScriptContext> c, ref<CompiledScript> script, ref<ScriptSco
 					}
 
 					if(scriptlet->IsFunction()) {
-						_stack.Push(ScriptConstants::Null());
+						_stack.Push(ScriptConstants::Null);
 					}
 				}
 				

@@ -34,6 +34,10 @@ namespace tj {
 					return _type==ScriptletLoop;
 				}
 
+				inline bool IsEmpty() const {
+					return _code.size()==0;
+				}
+
 			protected:
 				std::vector< tj::shared::ref<Op> > _code;
 				ScriptletType _type;

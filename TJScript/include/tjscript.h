@@ -4,7 +4,7 @@
 #ifdef TJSCRIPT_EXPORTS 
 	#define SCRIPT_EXPORTED __declspec(dllexport)
 #else
-	#define SCRIPT_EXPORTED
+	#define SCRIPT_EXPORTED __declspec(dllimport)
 #endif
 
 #pragma warning(push)

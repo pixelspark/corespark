@@ -160,15 +160,16 @@ void OpEquals::Execute(ref<VM> vm) {
 		result = (objectA==objectB);
 	}
 
-	stack.Push(GC::Hold(new ScriptBool(result)));
+	stack.Push(result?ScriptConstants::True:ScriptConstants::False);
 }
 
 void OpNegate::Execute(ref<VM> vm) {
 	ScriptStack& stack = vm->GetStack();
 	ref<Scriptable> top = stack.Pop();
+
 	if(top.IsCastableTo<ScriptBool>()) {
 		ref<ScriptBool> b = top;
-		ref<ScriptBool> n = GC::Hold(new ScriptBool(!b->GetValue()));
+		ref<ScriptBool> n = b->GetValue()?ScriptConstants::False:ScriptConstants::True;
 		stack.Push(n);
 	}
 	else if(top.IsCastableTo<ScriptInt>()) {
@@ -182,7 +183,7 @@ void OpNegate::Execute(ref<VM> vm) {
 		stack.Push(n);
 	}
 	else {
-		stack.Push(GC::Hold(new ScriptBool(false)));
+		stack.Push(ScriptConstants::False);
 	}
 }
 
@@ -339,10 +340,10 @@ void OpGreaterThan::Execute(ref<VM> vm) {
 		double va = ref<ScriptDouble>(a)->GetValue();
 		double vb = ref<ScriptDouble>(b)->GetValue();
 		bool result = vb>va;
-		vm->GetStack().Push(GC::Hold(new ScriptBool(result)));
+		vm->GetStack().Push(result?ScriptConstants::True:ScriptConstants::False);
 	}
 	else {
-		vm->GetStack().Push(ScriptConstants::Null());
+		vm->GetStack().Push(ScriptConstants::Null);
 	}
 }
 
@@ -355,10 +356,10 @@ void OpLessThan::Execute(ref<VM> vm) {
 		double va = ref<ScriptDouble>(a)->GetValue();
 		double vb = ref<ScriptDouble>(b)->GetValue();
 		bool result = vb<va;
-		vm->GetStack().Push(GC::Hold(new ScriptBool(result)));
+		vm->GetStack().Push(result?ScriptConstants::True:ScriptConstants::False);
 	}
 	else {
-		vm->GetStack().Push(ScriptConstants::Null());
+		vm->GetStack().Push(ScriptConstants::Null);
 	}
 }
 
@@ -381,7 +382,7 @@ void OpAnd::Execute(ref<VM> vm) {
 	bool ba = ScriptContext::GetValue<bool>(a, false);
 	bool bb = ScriptContext::GetValue<bool>(b, false);
 
-	vm->GetStack().Push(GC::Hold(new ScriptBool(ba&&bb)));
+	vm->GetStack().Push((ba&&bb)?ScriptConstants::True:ScriptConstants::False);
 }
 
 // OpXor: TT=>F FF=>F TF=>T FT=>T
@@ -392,8 +393,8 @@ void OpXor::Execute(ref<VM> vm) {
 
 	bool ba = ScriptContext::GetValue<bool>(a, false);
 	bool bb = ScriptContext::GetValue<bool>(b, false);
-
-	vm->GetStack().Push(GC::Hold(new ScriptBool( (ba||bb) && !(ba==bb) )));
+	bool result = ((ba||bb) && !(ba==bb));
+	vm->GetStack().Push(result?ScriptConstants::True:ScriptConstants::False);
 }
 
 void OpBreak::Execute(ref<VM> vm) {

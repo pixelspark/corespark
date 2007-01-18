@@ -34,7 +34,7 @@ ref<Scriptable> ScriptRange::Execute(Command c, ref<ParameterList> p) {
 		int ret = _a;
 
 		if(_a>_b) {
-			return ScriptConstants::Null();
+			return ScriptConstants::Null;
 		}
 
 		_a++;

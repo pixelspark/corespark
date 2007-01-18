@@ -244,7 +244,7 @@ struct ScriptGrammar : public grammar<ScriptGrammar> {
 				keyword_p("break")[ScriptInstruction<OpBreak>(self._stack)];
 
 			keyValuePair = 
-				eps_p(lexeme_d[alpha_p >> *(alnum_p|ch_p('_'))] >> (ch_p('=')|ch_p(':'))) 
+				eps_p(lexeme_d[alpha_p >> *(alnum_p|ch_p('_'))] >> (ch_p('=')|ch_p(':')) >> (~ch_p('='))) 
 				>> identifier >> (ch_p('=')|ch_p(':')) >> expression;
 
 			parameterList = 

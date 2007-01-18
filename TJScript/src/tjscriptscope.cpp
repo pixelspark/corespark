@@ -34,11 +34,11 @@ ref<Scriptable> ScriptScope::Execute(Command command, ref<ParameterList> params)
 		else if(_previous) {
 			ref<Scriptable> sc = _previous->Execute(command, params);
 			if(!sc) {
-				return ScriptConstants::Null();
+				return ScriptConstants::Null;
 			}
 		}
 		else {
-			return ScriptConstants::Null();
+			return ScriptConstants::Null;
 		}
 	}
 	else if(command==L"exists") {
@@ -48,16 +48,16 @@ ref<Scriptable> ScriptScope::Execute(Command command, ref<ParameterList> params)
 			if(_previous) {
 				ref<Scriptable> ret = _previous->Execute(command, params);
 				if(!ret || !ret.IsCastableTo<ScriptBool>()) {
-					return ScriptConstants::False();
+					return ScriptConstants::False;
 				}
 				return ret;
 			}
 			else {
-				return ScriptConstants::False();
+				return ScriptConstants::False;
 			}
 		}
 		else {
-			return ScriptConstants::True();
+			return ScriptConstants::True;
 		}
 	}
 	else if(_vars.find(command)==_vars.end()) {
@@ -65,7 +65,7 @@ ref<Scriptable> ScriptScope::Execute(Command command, ref<ParameterList> params)
 			return _previous->Execute(command, params);
 		}
 		else {
-			return ScriptConstants::Null();
+			return ScriptConstants::Null;
 		}
 	}
 	else {

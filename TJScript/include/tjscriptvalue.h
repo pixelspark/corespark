@@ -2,16 +2,19 @@
 #define _TJSCRIPTVALUE_H
 namespace tj {
 	namespace script {
-		class SCRIPT_EXPORTED ScriptConstants {
+		class SCRIPT_EXPORTED ScriptConstantsInitializer {
 			public:
-				static tj::shared::ref<Scriptable> Null();
-				static tj::shared::ref<Scriptable> True();
-				static tj::shared::ref<Scriptable> False();
+				ScriptConstantsInitializer();
+		};
 
-			protected:
-				static tj::shared::ref<Scriptable> _null;
-				static tj::shared::ref<Scriptable> _true;
-				static tj::shared::ref<Scriptable> _false;
+		class ScriptConstants {
+			public:
+				static SCRIPT_EXPORTED tj::shared::ref<Scriptable> True;
+				static SCRIPT_EXPORTED tj::shared::ref<Scriptable> False;
+				static SCRIPT_EXPORTED tj::shared::ref<Scriptable> Null;
+
+			private:
+				static ScriptConstantsInitializer _init;
 		};
 
 		template<typename T> class ScriptValue: public Scriptable {
