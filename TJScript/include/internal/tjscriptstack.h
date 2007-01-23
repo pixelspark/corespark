@@ -39,8 +39,8 @@ namespace tj {
 					return _stack[_sp];
 				}
 
+				void Pop(int size);
 				void Clear();
-
 				tj::shared::ref<Scriptable> Pop();
 				std::wstring Dump();
 

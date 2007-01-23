@@ -5,6 +5,8 @@ using namespace tj::shared;
 
 #define ISVKKEYDOWN(vk_code) ((GetAsyncKeyState(vk_code) & 0x8000))
 
+const int SliderWnd::KDraggerWidth = 18;
+
 SliderWnd::SliderWnd(HWND parent, const wchar_t* title): ChildWnd(title, parent) {
 	_value = 0.0f;
 	_hotkey = L'\0';
@@ -145,8 +147,8 @@ void SliderWnd::Paint(Graphics& g) {
 	g.DrawLine(&pn, (REAL)mx, mty, (REAL)mx+4,mty);
 
 	// dragger
-	const static int draggerWidth = 22;
-	x = (rect.right-rect.left)/2 - draggerWidth/2;
+	const static int draggerWidth = KDraggerWidth; // TODO make class constant
+	x = (rect.right-rect.left)/2 - KDraggerWidth/2;
 	int y = rect.bottom - int(_value*int(rect.bottom-rect.top));
 	SolidBrush border(colorEnd);
 	g.FillRectangle(&border, RectF(float(x), float(y), float(draggerWidth), 6.0f));
@@ -159,12 +161,12 @@ void SliderWnd::Paint(Graphics& g) {
 
 	if(_showValue) {
 		std::wostringstream os;
-		os << int(_value*100) << L'%';
+		os << int(_value*100);
 		std::wstring msg = os.str();
 		StringFormat sf;
 		sf.SetAlignment(StringAlignmentCenter);
 		SolidBrush tbr(theme->GetTextColor());
-		g.DrawString(msg.c_str(), (INT)msg.length(), theme->GetGUIFont(), RectF(0.0f, float(rect.bottom+15), float(rect.right), 16.0f), &sf, &tbr);
+		g.DrawString(msg.c_str(), (INT)msg.length(), theme->GetGUIFontSmall(), RectF(0.0f, float(rect.bottom+15), float(rect.right), 16.0f), &sf, &tbr);
 	}
 }
 

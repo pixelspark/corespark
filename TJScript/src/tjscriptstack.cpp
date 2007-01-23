@@ -17,6 +17,18 @@ ref<Scriptable> ScriptStack::Pop() {
 	return last;
 }
 
+void ScriptStack::Pop(int size) {
+	assert(size>=0);
+
+	if(_sp<0) {
+		throw ScriptException(L"Stack underflow");
+	}
+
+	for(;_sp>size;_sp--) {
+		_stack[_sp] = 0;
+	}
+}
+
 void ScriptStack::Clear() {
 	while(_sp>-1) {
 		_stack[_sp] = 0;

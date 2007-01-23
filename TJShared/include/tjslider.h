@@ -36,6 +36,7 @@ class EXPORTED SliderWnd: public ChildWnd {
 		bool _snapHalf;
 
 		const static int KMinimumWidth = 30;
+		const static int KDraggerWidth;
 };
 
 #pragma warning(pop)

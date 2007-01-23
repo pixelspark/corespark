@@ -103,13 +103,8 @@ void VM::Execute(ref<ScriptContext> c, ref<CompiledScript> script, ref<ScriptSco
 					if(_stack.GetSize()<current->_stackSize) {
 						throw ScriptException(L"Scriptlet damaged caller's stack");
 					}
-					else if(_stack.GetSize()>current->_stackSize) {
-						while(_stack.GetSize()>current->_stackSize) {
-							_stack.Pop();
-							if(_debug) {
-								Log::Write(L"TJScript/VM", L"Pop repair");
-							}
-						}
+					else {
+						_stack.Pop(current->_stackSize);
 					}
 
 					if(scriptlet->IsFunction()) {
@@ -141,19 +136,19 @@ void VM::Execute(ref<ScriptContext> c, ref<CompiledScript> script, ref<ScriptSco
 	}
 	catch(Exception& e) {
 		_script = 0;
+		_context = ref<ScriptContext>(0);
+		_scope = 0;
+		_call.clear();
+		_stack.Clear();
+
 		Log::Write(L"TJScript/VM", std::wstring(L"Stack dump: ")+_stack.Dump());
 		Log::Write(L"TJScript/VM", Wcs(e.GetFile())+L"/"+Stringify(e.GetLine())+L": "+e.GetMsg());
+		throw;
 	}
 
 	_script = 0;
 	_context = ref<ScriptContext>(0);
 	_scope = 0;
-
-	if(!_call.empty()) {
-		_call.clear();
-	}
-
-	if(!_stack.IsEmpty()) {
-		_stack.Clear();
-	}
+	_call.clear();
+	_stack.Clear();
 }

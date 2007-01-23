@@ -33,6 +33,10 @@ int CompiledScript::GetScriptletIndex(ref<Scriptlet> scriptlet) {
 	throw ScriptException(L"Scriptlet not found in compiled script");
 }
 
+int CompiledScript::GetScriptletCount() const {
+	return (int)_scriptlets.size();
+}
+
 void CompiledScript::Optimize() {
 	/* possible optimizations that can be done at compile-time (which means here):
 	- Removal of empty scriptlets, and the calls referring to them (OpBranchIf should probably be

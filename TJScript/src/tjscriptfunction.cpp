@@ -12,3 +12,10 @@ ref<Scriptable> ScriptFunction::Execute(Command c, ref<ParameterList> plist) {
 
 ScriptFunction::~ScriptFunction() {
 }
+
+ref<Scriptable> ScriptDelegate::Execute(Command c, ref<ParameterList> p) {
+	if(c==L"toString") {
+		return GC::Hold(new ScriptString(L"[delegate]"));
+	}
+	return 0;
+}
