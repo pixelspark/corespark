@@ -15,9 +15,9 @@ void VM::SetDebug(bool d) {
 }
 
 void VM::Call(ref<Scriptlet> s, ref<ScriptParameterList> p) {
-	/*if(s->IsEmpty()) {
+	if(s->IsEmpty()) {
 		return;
-	}*/
+	}
 	// set stack size in caller for stack recovery
 	if(!_call.empty()) {
 		StackFrame& current = GetStackFrame();
@@ -104,7 +104,9 @@ void VM::Execute(ref<ScriptContext> c, ref<CompiledScript> script, ref<ScriptSco
 						throw ScriptException(L"Scriptlet damaged caller's stack");
 					}
 					else {
+						//Log::Write(L"TJScript/VM", L"Pre-PR: "+_stack.Dump());
 						_stack.Pop(current->_stackSize);
+						//Log::Write(L"TJScript/VM", L"Post-PR: "+_stack.Dump());
 					}
 
 					if(scriptlet->IsFunction()) {
@@ -121,6 +123,7 @@ void VM::Execute(ref<ScriptContext> c, ref<CompiledScript> script, ref<ScriptSco
 				
 				if(_debug) {
 					Log::Write(L"TJScript/VM/Execute",Stringify(_script->GetScriptletIndex(current->_scriptlet))+L": "+op->GetName());
+					//Log::Write(L"TJScript/VM/Execute", L"    "+_stack.Dump());
 				}
 
 				current->_pc++;

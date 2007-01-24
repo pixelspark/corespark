@@ -12,7 +12,7 @@ ref<Scriptable> ScriptStack::Pop() {
 	}
 	
 	ref<Scriptable> last = _stack[_sp];
-	_stack[_sp] = 0; // so the reference will be destroyed
+	//_stack[_sp] = 0; // so the reference will be destroyed
 	_sp--;
 	return last;
 }
@@ -23,10 +23,11 @@ void ScriptStack::Pop(int size) {
 	if(_sp<0) {
 		throw ScriptException(L"Stack underflow");
 	}
+	_sp = size-1;
 
-	for(;_sp>size;_sp--) {
-		_stack[_sp] = 0;
-	}
+	//for(;_sp>size;_sp--) {
+		//_stack[_sp] = 0;
+	//}
 }
 
 void ScriptStack::Clear() {

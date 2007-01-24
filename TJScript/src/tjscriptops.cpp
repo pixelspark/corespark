@@ -205,12 +205,18 @@ void OpAdd::Execute(ref<VM> vm) {
 		if(a.IsCastableTo<ScriptDouble>()) {
 			va = ref<ScriptDouble>(a)->GetValue();
 		}
+		else if(a.IsCastableTo<ScriptInt>()) {
+			va = (double)ref<ScriptInt>(a)->GetValue();
+		}
 		else {
 			va = ScriptContext::GetValue<double>(a,0.0);
 		}
 		
 		if(b.IsCastableTo<ScriptDouble>()) {
 			vb = ref<ScriptDouble>(b)->GetValue();
+		}
+		else if(b.IsCastableTo<ScriptInt>()) {
+			vb = (double)ref<ScriptInt>(b)->GetValue();
 		}
 		else {
 			vb = ScriptContext::GetValue<double>(b,0.0);
@@ -231,12 +237,18 @@ void OpSub::Execute(ref<VM> vm) {
 	if(a.IsCastableTo<ScriptDouble>()) {
 		va = ref<ScriptDouble>(a)->GetValue();
 	}
+	else if(a.IsCastableTo<ScriptInt>()) {
+		va = (double)ref<ScriptInt>(a)->GetValue();
+	}
 	else {
 		va = ScriptContext::GetValue<double>(a,0.0);
 	}
 	
 	if(b.IsCastableTo<ScriptDouble>()) {
 		vb = ref<ScriptDouble>(b)->GetValue();
+	}
+	else if(b.IsCastableTo<ScriptInt>()) {
+		vb = (double)ref<ScriptInt>(b)->GetValue();
 	}
 	else {
 		vb = ScriptContext::GetValue<double>(b,0.0);
@@ -256,12 +268,18 @@ void OpDiv::Execute(ref<VM> vm) {
 	if(a.IsCastableTo<ScriptDouble>()) {
 		va = ref<ScriptDouble>(a)->GetValue();
 	}
+	else if(a.IsCastableTo<ScriptInt>()) {
+		va = (double)ref<ScriptInt>(a)->GetValue();
+	}
 	else {
 		va = ScriptContext::GetValue<double>(a,0.0);
 	}
 	
 	if(b.IsCastableTo<ScriptDouble>()) {
 		vb = ref<ScriptDouble>(b)->GetValue();
+	}
+	else if(b.IsCastableTo<ScriptInt>()) {
+		vb = (double)ref<ScriptInt>(b)->GetValue();
 	}
 	else {
 		vb = ScriptContext::GetValue<double>(b,0.0);
@@ -285,12 +303,18 @@ void OpMul::Execute(ref<VM> vm) {
 	if(a.IsCastableTo<ScriptDouble>()) {
 		va = ref<ScriptDouble>(a)->GetValue();
 	}
+	else if(a.IsCastableTo<ScriptInt>()) {
+		va = (double)ref<ScriptInt>(a)->GetValue();
+	}
 	else {
 		va = ScriptContext::GetValue<double>(a,0.0);
 	}
 	
 	if(b.IsCastableTo<ScriptDouble>()) {
 		vb = ref<ScriptDouble>(b)->GetValue();
+	}
+	else if(b.IsCastableTo<ScriptInt>()) {
+		vb = (double)ref<ScriptInt>(b)->GetValue();
 	}
 	else {
 		vb = ScriptContext::GetValue<double>(b,0.0);

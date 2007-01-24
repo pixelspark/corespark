@@ -358,8 +358,12 @@ class ScriptGrammar : public grammar<ScriptGrammar> {
 				negatedFactor = 
 					((ch_p('!')|ch_p('-')) >> factor)[ScriptInstruction<OpNegate>(&self)];
 
+				/* after methodCallConstruct completed, add a OpPop so there's nothing left on the stack; otherwise
+					for(var i: new Range(0,100)) { log(i); } will work for the first iteration, but will fail the next,
+					because the null returned from log is still on the stack where it shouldn't be.
+				*/
 				statement = 
-					functionConstruct | returnConstruct | breakStatement | assignment | expression;
+					functionConstruct | returnConstruct | breakStatement | assignment | methodCallConstruct[ScriptInstruction<OpPop>(&self)];
 
 				blockInFunction =
 					ch_p('{')[ScriptPushScriptlet(&self,ScriptletFunction)] >> *((blockConstruct >> *eol_p)|comment) >> ch_p('}');
