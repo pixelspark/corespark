@@ -91,14 +91,9 @@ void SplashThread::Run() {
 	_wnd->Show(true);
 
 	MSG msg;
-	while(GetMessage(&msg,0,0,0)) {
-		if(msg.message == WM_USER) {
-			break;
-		}
-		else {
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-		}
+	while(GetMessage(&msg,0,0,0) && msg.message!=WM_USER) {
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
 	}
 
 	GdiplusShutdown(ptr);

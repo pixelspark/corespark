@@ -20,14 +20,10 @@ ref<Scriptable> ScriptStack::Pop() {
 void ScriptStack::Pop(int size) {
 	assert(size>=0);
 
-	if(_sp<0) {
+	if(size > _sp+1) {
 		throw ScriptException(L"Stack underflow");
 	}
 	_sp = size-1;
-
-	//for(;_sp>size;_sp--) {
-		//_stack[_sp] = 0;
-	//}
 }
 
 void ScriptStack::Clear() {

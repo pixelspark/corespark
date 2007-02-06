@@ -104,9 +104,7 @@ void VM::Execute(ref<ScriptContext> c, ref<CompiledScript> script, ref<ScriptSco
 						throw ScriptException(L"Scriptlet damaged caller's stack");
 					}
 					else {
-						//Log::Write(L"TJScript/VM", L"Pre-PR: "+_stack.Dump());
 						_stack.Pop(current->_stackSize);
-						//Log::Write(L"TJScript/VM", L"Post-PR: "+_stack.Dump());
 					}
 
 					if(scriptlet->IsFunction()) {
@@ -120,12 +118,6 @@ void VM::Execute(ref<ScriptContext> c, ref<CompiledScript> script, ref<ScriptSco
 			}
 			else {
 				ref<Op> op = scriptlet->_code.at(current->_pc);
-				
-				if(_debug) {
-					Log::Write(L"TJScript/VM/Execute",Stringify(_script->GetScriptletIndex(current->_scriptlet))+L": "+op->GetName());
-					//Log::Write(L"TJScript/VM/Execute", L"    "+_stack.Dump());
-				}
-
 				current->_pc++;
 
 				try {
@@ -133,6 +125,11 @@ void VM::Execute(ref<ScriptContext> c, ref<CompiledScript> script, ref<ScriptSco
 				}
 				catch(BreakpointException&) {
 					throw;
+				}
+
+				if(_debug) {
+					Log::Write(L"TJScript/VM/Execute",Stringify(_script->GetScriptletIndex(current->_scriptlet))+L": "+op->GetName());
+					//Log::Write(L"TJScript/VM/Execute", L"    "+_stack.Dump());
 				}
 			}
 		}
