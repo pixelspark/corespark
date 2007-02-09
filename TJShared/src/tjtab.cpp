@@ -342,6 +342,7 @@ LRESULT TabWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	}
 	else if(msg==WM_LBUTTONUP || msg==WM_LBUTTONDOWN) {
 		int x = GET_X_LPARAM(lp);
+		int y = GET_Y_LPARAM(lp);
 
 		std::vector< ref<Pane> >::iterator it = _panes.begin();
 		unsigned int idx = 0; 
@@ -380,7 +381,7 @@ LRESULT TabWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		RECT rect;
 		GetClientRect(_wnd, &rect);
 		if(_detachAttachAllowed && left<(rect.right-rect.left-2*_headerHeight) && msg==WM_LBUTTONDOWN) {
-			if(x>rect.right-rect.left-_headerHeight) {
+			if(x>rect.right-rect.left-_headerHeight && y<_headerHeight) {
 				// close button
 				if(_current && _root) {
 					std::vector< ref<Pane> >::iterator it = _panes.begin();
