@@ -68,6 +68,8 @@ class EXPORTED Wnd: public virtual Object {
 		void SetSize(int w, int h);
 		tj::shared::Rectangle GetClientRectangle();
 		tj::shared::Rectangle GetWindowRectangle();
+		virtual void Fill(LayoutFlags flags, tj::shared::Rectangle& rect);
+		void Fill();
 
 		Wnd* GetParent();
 		Wnd* GetRootWindow();

@@ -218,7 +218,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="gdiplus.lib comctl32.lib strmiids.lib quartz.lib ../libraries/tinyxml.lib comsupp.lib"
 				OutputFile="$(OutDir)\..\..\Release\tjshared.dll"
-				LinkIncremental="0"
+				LinkIncremental="2"
 				GenerateManifest="true"
 				GenerateDebugInformation="true"
 				GenerateMapFile="true"

@@ -25,6 +25,7 @@ class EXPORTED SplashThread: public Thread {
 		int _w, _h;
 		std::wstring _path;
 		ref<SplashWnd> _wnd;
+		Event _closeEvent;
 };
 
 #endif

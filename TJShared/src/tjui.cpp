@@ -292,7 +292,7 @@ void Wnd::RegisterClasses() {
 	}
 
 	wc.lpszClassName = TJ_GL_CLASS_NAME;
-	wc.style |= CS_OWNDC|CS_VREDRAW;
+	wc.style = CS_CLASSDC|CS_HREDRAW;
 	if(!RegisterClassEx(&wc)) {
 		Throw(L"Could not register class", ExceptionTypeError);
 	}
@@ -767,6 +767,30 @@ bool Wnd::GetWantMouseLeave() const {
 
 std::wstring Wnd::GetTabTitle() const {
 	return L"";
+}
+
+void Wnd::Fill(LayoutFlags flags, tj::shared::Rectangle& rect) {
+	switch(flags) {
+		case LayoutFill:
+		case LayoutTop:
+		case LayoutBottom:
+		case LayoutRight:
+		case LayoutLeft:
+			Move(rect.GetLeft(), rect.GetTop(), rect.GetWidth(), rect.GetHeight());
+			rect.SetWidth(0);
+			rect.SetHeight(0);
+			break;
+		case LayoutHide:
+		default:
+			Move(0,0,0,0);
+	}	
+}
+
+void Wnd::Fill() {
+	RECT rc;
+	HWND parent = ::GetParent(_wnd);
+	GetClientRect(parent, &rc);
+	Move(rc.left, rc.top, rc.right, rc.bottom);
 }
 
 LRESULT CALLBACK PropertyEditNumericWndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) {

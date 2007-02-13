@@ -47,10 +47,6 @@ LRESULT SplashWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	if(msg==WM_LBUTTONDOWN) {
 		CloseWindow(_wnd);
 	}
-	else if(msg==WM_CLOSE) {
-		PostThreadMessage(GetCurrentThreadId(), WM_USER, 0, 0);
-	
-	}
 	else if(msg==WM_SIZE) {
 		Layout();
 	}
@@ -77,10 +73,12 @@ void SplashThread::Hide() {
 	if(_wnd) {
 		_wnd->Message(WM_CLOSE, 0, 0);
 	}
+	_closeEvent.Signal();
 }
 
 void SplashThread::Run() {
 	SetName("SplashThread");
+	MSG msg;
 
 	// init GDI+
 	ULONG_PTR ptr;
@@ -90,11 +88,30 @@ void SplashThread::Run() {
 	_wnd = GC::Hold(new SplashWnd(_path, _w, _h));
 	_wnd->Show(true);
 
-	MSG msg;
-	while(GetMessage(&msg,0,0,0) && msg.message!=WM_USER) {
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
+	HANDLE handles[1] = { _closeEvent.GetHandle() };
+
+	while(true) {
+		while(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) { 
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+
+		int result = MsgWaitForMultipleObjects(1, handles, FALSE, 1000, QS_ALLINPUT|QS_ALLPOSTMESSAGE); 
+
+		// The result tells us the type of event we have.
+		if(result==(WAIT_OBJECT_0 + 1)) {
+			// New messages have arrived
+			continue;
+		} 
+		else if(result==WAIT_ABANDONED) {
+			continue;
+		}
+		else if(result==WAIT_OBJECT_0) {
+			break; // show is over
+		}
 	}
+
+	Log::Write(L"TJShared/SplashThread", L"Splash thread ends");
 
 	GdiplusShutdown(ptr);
 }

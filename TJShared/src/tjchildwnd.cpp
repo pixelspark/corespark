@@ -20,27 +20,3 @@ void ChildWnd::LeaveHotkeyMode(wchar_t key) {
 		InvalidateRect(parent, &rc, FALSE);
 	}
 }
-
-void ChildWnd::Fill(LayoutFlags flags, tj::shared::Rectangle& rect) {
-	switch(flags) {
-		case LayoutFill:
-		case LayoutTop:
-		case LayoutBottom:
-		case LayoutRight:
-		case LayoutLeft:
-			Move(rect.GetLeft(), rect.GetTop(), rect.GetWidth(), rect.GetHeight());
-			rect.SetWidth(0);
-			rect.SetHeight(0);
-			break;
-		case LayoutHide:
-		default:
-			Move(0,0,0,0);
-	}	
-}
-
-void ChildWnd::Fill() {
-	RECT rc;
-	HWND parent = ::GetParent(_wnd);
-	GetClientRect(parent, &rc);
-	Move(rc.left, rc.top, rc.right, rc.bottom);
-}
