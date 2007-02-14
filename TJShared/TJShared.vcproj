@@ -533,6 +533,10 @@
 				RelativePath=".\src\tjutil.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\src\tjvector.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -781,6 +785,10 @@
 			</File>
 			<File
 				RelativePath=".\include\tjutil.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tjvector.h"
 				>
 			</File>
 		</Filter>

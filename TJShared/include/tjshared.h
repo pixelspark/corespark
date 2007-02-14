@@ -73,6 +73,7 @@ namespace tj {
 		#include "tjbrowserwnd.h"
 		#include "tjprogresswnd.h"
 		#include "tjsplash.h"
+		#include "tjvector.h"
 	}
 }
 

@@ -111,7 +111,5 @@ void SplashThread::Run() {
 		}
 	}
 
-	Log::Write(L"TJShared/SplashThread", L"Splash thread ends");
-
 	GdiplusShutdown(ptr);
 }
