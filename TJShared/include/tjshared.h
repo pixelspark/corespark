@@ -33,7 +33,6 @@ namespace tj {
 		#include "tjlanguage.h"
 		#include "tjlistener.h"
 		#include "tjaction.h"
-		#include "tjcode.h"
 		#include "tjdxutil.h"
 		#include "tjarguments.h"
 		#include "tjtea.h"
@@ -63,6 +62,8 @@ namespace tj {
 		#include "tjproperty.h"
 		#include "tjpropertyseparator.h"
 		#include "tjreadonlyproperty.h"
+		#include "tjvector.h"
+		#include "tjcode.h"
 		#include "tjcolorproperty.h"
 		#include "tjlistproperty.h"
 		#include "tjtextproperty.h"
@@ -73,7 +74,6 @@ namespace tj {
 		#include "tjbrowserwnd.h"
 		#include "tjprogresswnd.h"
 		#include "tjsplash.h"
-		#include "tjvector.h"
 	}
 }
 

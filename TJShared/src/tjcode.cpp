@@ -33,3 +33,39 @@ unsigned int CodeWriter::GetCapacity() {
 CodeWriter::~CodeWriter() {
 	delete[] _buffer;
 }
+
+template<> CodeWriter& CodeWriter::Add(const tj::shared::Vector& v) {
+	Add<float>(v.x);
+	Add<float>(v.y);
+	Add<float>(v.z);
+	return *this;
+}
+
+template<> tj::shared::Vector Code::Get(unsigned int& position) {
+	Vector v(0.0f, 0.0f, 0.0f);
+	v.x = Get<float>(position);
+	v.y = Get<float>(position);
+	v.z = Get<float>(position);
+	return v;
+}
+
+template<> CodeWriter& CodeWriter::Add(const std::wstring& x) {
+	Add<unsigned int>((unsigned int)x.length());
+	std::wstring::const_iterator it = x.begin();
+	while(it!=x.end()) {
+		wchar_t c = *it;
+		Add<wchar_t>(c);
+		it++;
+	}
+	return *this;
+}
+
+template<> std::wstring Code::Get(unsigned int& position) {
+	unsigned int length = Get<unsigned int>(position);
+	std::wostringstream os;
+	for(unsigned int a=0;a<length;a++) {
+		os << (Get<wchar_t>(position));
+	}
+
+	return os.str();
+}

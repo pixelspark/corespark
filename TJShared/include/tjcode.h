@@ -23,7 +23,8 @@ class EXPORTED Code: public virtual Object {
 		unsigned int _size;
 };
 
-template<> std::wstring Code::Get(unsigned int& position);
+template<> EXPORTED std::wstring Code::Get(unsigned int& position);
+template<> EXPORTED tj::shared::Vector Code::Get(unsigned int& position);
 
 class EXPORTED CodeWriter: public virtual Object {
 	public:
@@ -32,7 +33,7 @@ class EXPORTED CodeWriter: public virtual Object {
 		unsigned int GetCapacity();
 		unsigned int GetSize();
 
-		template<typename T> CodeWriter& Add(T x) {
+		template<typename T> CodeWriter& Add(const T& x) {
 			unsigned int size = sizeof(T)/sizeof(char);
 			if(_pos+size>_size) {
 				// TODO: Grow buffer here..
@@ -57,7 +58,8 @@ class EXPORTED CodeWriter: public virtual Object {
 		char* _buffer;
 };
 
-template<> CodeWriter& CodeWriter::Add(std::wstring x);
+template<> EXPORTED CodeWriter& CodeWriter::Add(const std::wstring& x);
+template<> EXPORTED CodeWriter& CodeWriter::Add(const tj::shared::Vector& v);
 
 #pragma pack(pop)
 #endif
