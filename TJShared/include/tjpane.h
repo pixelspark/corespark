@@ -37,7 +37,6 @@ class FloatingPane: public Wnd {
 		virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 		virtual void Layout();
 		virtual void Paint(Gdiplus::Graphics& g);
-		virtual wchar_t GetPreferredHotkey();
 
 	protected:
 		ref<Pane> _pane;

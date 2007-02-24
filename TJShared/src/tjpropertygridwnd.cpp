@@ -35,36 +35,6 @@ void PropertyGridWnd::ClearThemeCache() {
 	_editFont = CreateFont(-10, 0, 0, 0, 400, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, DEFAULT_PITCH, TL(ui_font));
 }
 
-void PropertyGridWnd::EnterHotkeyMode() {
-	if(_properties.size()<1) {
-		// no properties -> no fun
-		return;
-	}
-
-	ChildWnd::EnterHotkeyMode();
-}
-
-void PropertyGridWnd::LeaveHotkeyMode(wchar_t key) {
-	if(IsInHotkeyMode()) {
-		_inHotkeyMode = false;
-
-		if(key!=L'\0'&& key >= L'0' && key <= L'9') {
-			unsigned int index = key - L'0';
-			try {
-				ref<Property> prop = _properties.at(index);
-				SetFocus(prop->GetWindow());
-			}
-			catch(...) {
-			}
-		}
-	}
-	Update();
-}
-
-wchar_t PropertyGridWnd::GetPreferredHotkey() {
-	return L'P';
-}
-
 void PropertyGridWnd::Paint(Graphics& g) {
 	RECT r;
 	GetClientRect(_wnd, &r);
@@ -78,7 +48,7 @@ void PropertyGridWnd::Paint(Graphics& g) {
 	std::vector< ref<Property> >::iterator it = _properties.begin();
 
 	// TODO: cache theme colors over here
-	float stringLeft = IsInHotkeyMode()?(6.0f+16.0f):5.0f;
+	float stringLeft = 5.0f;
 	while(it!=_properties.end()) {
 		ref<Property> p = *it;
 		if(!p) continue;
@@ -100,13 +70,6 @@ void PropertyGridWnd::Paint(Graphics& g) {
 		SolidBrush tb(theme->GetTextColor());
 		
 		g.DrawString(ws.c_str(), (int)ws.length(),bold?theme->GetGUIFontBold():theme->GetGUIFont(), PointF(stringLeft, float(cH+5)), &tb);
-		
-		if(IsInHotkeyMode()&&hI<=9) {
-			std::wostringstream wos;
-			wos << hI;
-			std::wstring id = wos.str();
-			DrawHotkey(&g, id.c_str(),8+3, cH+(p->GetHeight()/2)+3+1);
-		}
 		
 		cH += p->GetHeight() + 6;
 
@@ -278,9 +241,7 @@ void PropertyGridWnd::Inspect(Inspectable* isp, ref<Path> p) {
 			if(first==0) {
 				first = f;
 			}
-			// make sure we're not having any GWL_USERDATA stuff attached to our HWND, as the hotkey-system
-			// might choke on it
-			//SetWindowLong(pr->GetWindow(), GWL_USERDATA,0);
+
 			_properties.push_back(pr);
 		}
 		it++;

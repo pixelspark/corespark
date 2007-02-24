@@ -25,10 +25,6 @@ void LoggerWnd::Log(std::wstring ws) {
 	//PostMessage(_list, LB_ADDSTRING, 0, ws.c_str());
 }
 
-wchar_t LoggerWnd::GetPreferredHotkey() {
-	return L'L';
-}
-
 void LoggerWnd::Layout() {
 	RECT rc; 
 	GetClientRect(_wnd, &rc);

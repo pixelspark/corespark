@@ -22,9 +22,6 @@ class EXPORTED PropertyGridWnd: public ChildWnd {
 		LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 		void Layout();
 		void ClearThemeCache();
-		virtual wchar_t GetPreferredHotkey();
-		void EnterHotkeyMode();
-		void LeaveHotkeyMode(wchar_t key=L'\0');
 		virtual void Paint(Gdiplus::Graphics& g);
 		void Clear();
 

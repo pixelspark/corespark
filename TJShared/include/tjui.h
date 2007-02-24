@@ -54,14 +54,8 @@ class EXPORTED Wnd: public virtual Object {
 		void SetHorizontalScrollInfo(Range<unsigned int> rng, unsigned int pageSize);
 		void SetVerticalScrollInfo(Range<unsigned int> rng, unsigned int pageSize);
 
-		// Hotkeys
-		virtual bool IsInHotkeyMode(); // returns true if its child windows should show hotkeys
-		virtual wchar_t GetPreferredHotkey()=0;
-		virtual void EnterHotkeyMode();
-		virtual void LeaveHotkeyMode(wchar_t key=L'\0');
 		virtual void Move(int x, int y, int w, int h);
 		virtual bool IsSplitter();
-		void SetEatHotkeys(bool e);
 
 		virtual std::wstring GetText();
 		virtual void SetText(std::wstring text);
@@ -82,9 +76,7 @@ class EXPORTED Wnd: public virtual Object {
 
 	protected:
 		virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
-		void DrawHotkey(Gdiplus::Graphics* g, const wchar_t* wc, int x, int y);
 		HWND _wnd;
-		bool _inHotkeyMode;
 		bool _fullScreen;
 		bool _wantsMouseLeave;
 	
@@ -92,7 +84,6 @@ class EXPORTED Wnd: public virtual Object {
 		Gdiplus::Bitmap* _buffer;
 		bool _doubleBuffered;
 		bool _quitOnClose;
-		bool _eatHotkeys;
 		unsigned int _horizontalPos;
 		unsigned int _verticalPos;
 		unsigned int _horizontalPageSize;

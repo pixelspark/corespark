@@ -54,10 +54,6 @@ LRESULT SplashWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	return Wnd::Message(msg, wp, lp);
 }
 
-wchar_t SplashWnd::GetPreferredHotkey() {
-	return L'S';
-}
-
 /* Splash thread */
 SplashThread::SplashThread(std::wstring path, int w, int h) {
 	_path = path;

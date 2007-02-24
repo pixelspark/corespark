@@ -128,7 +128,6 @@ LRESULT FloatingPane::Message(UINT msg, WPARAM wp, LPARAM lp) {
 }
 
 void FloatingPane::Layout() {
-	//HWND child = GetWindow(_wnd, GW_CHILD);
 	HWND child = _pane->GetWindow()->GetWindow();
 	if(child!=0) {
 		RECT r;
@@ -139,8 +138,4 @@ void FloatingPane::Layout() {
 
 
 void FloatingPane::Paint(Gdiplus::Graphics& g) {
-}
-
-wchar_t FloatingPane::GetPreferredHotkey() {
-	return L'P';
 }

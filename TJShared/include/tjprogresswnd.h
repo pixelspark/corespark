@@ -7,7 +7,6 @@ class EXPORTED ProgressWnd: public ChildWnd {
 		virtual ~ProgressWnd();
 		virtual void Paint(Gdiplus::Graphics& g);
 		virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
-		virtual wchar_t GetPreferredHotkey();
 		void SetIndeterminate(bool t);
 		void SetValue(float x);
 		void Update();

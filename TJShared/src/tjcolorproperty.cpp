@@ -64,10 +64,6 @@ LRESULT ColorChooserWnd::Message(UINT msg, WPARAM wp,LPARAM lp) {
 	return ChildWnd::Message(msg,wp,lp);
 }
 
-wchar_t ColorChooserWnd::GetPreferredHotkey() {
-	return L'\0';
-}
-
 ColorProperty::ColorProperty(std::wstring name,unsigned char* red, unsigned char* green, unsigned char* blue,unsigned char* tred, unsigned char* tgreen, unsigned char* tblue): Property(name), _red(red), _green(green), _blue(blue), _wnd(0), _tRed(tred), _tGreen(tgreen), _tBlue(tblue) {
 }
 

@@ -9,7 +9,6 @@ const int SliderWnd::KDraggerWidth = 18;
 
 SliderWnd::SliderWnd(HWND parent, const wchar_t* title): ChildWnd(title, parent) {
 	_value = 0.0f;
-	_hotkey = L'\0';
 	_hasFocus = false;
 	_listener = 0;
 	_displayValue = 0.0f;
@@ -284,14 +283,6 @@ LRESULT SliderWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	}
 
 	return ChildWnd::Message(msg, wp, lp);
-}
-
-wchar_t SliderWnd::GetPreferredHotkey() {
-	return _hotkey;
-}
-
-void SliderWnd::SetHotkey(wchar_t hotkey) {
-	_hotkey = hotkey;
 }
 
 void SliderWnd::SetListener(Listener* listener) {

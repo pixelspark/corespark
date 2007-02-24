@@ -205,10 +205,6 @@ void PathWnd::Paint(Gdiplus::Graphics& g) {
 	}
 }
 
-wchar_t PathWnd::GetPreferredHotkey() {
-	return L'P';
-}
-
 LRESULT PathWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	if(msg==WM_LBUTTONDOWN) {
 		int x = GET_X_LPARAM(lp);

@@ -6,16 +6,13 @@
 
 class EXPORTED ButtonWnd: public ChildWnd {
 	public:
-		ButtonWnd(HWND parent, wchar_t hotkey, ref<Listener> listener, const wchar_t* image, const wchar_t* text=0);
+		ButtonWnd(HWND parent, ref<Listener> listener, const wchar_t* image, const wchar_t* text=0);
 		virtual ~ButtonWnd();
 		virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
-		virtual wchar_t GetPreferredHotkey();
-		virtual void EnterHotkeyMode();
 		virtual void Paint(Gdiplus::Graphics& g);
 		virtual void SetListener(ref<Listener> lf);
 		
 	protected:
-		wchar_t _hotkey;
 		std::wstring _text;
 		Gdiplus::Bitmap* _image;
 		ref<Listener> _listener;
@@ -25,7 +22,7 @@ class EXPORTED ButtonWnd: public ChildWnd {
 class EXPORTED StateButtonWnd: public ButtonWnd {
 	public:
 		enum ButtonState {On, Off, Other};
-		StateButtonWnd(HWND parent, wchar_t hotkey, ref<Listener> listener, const wchar_t* imageOn, const wchar_t* imageOff, const wchar_t* imageOther);
+		StateButtonWnd(HWND parent, ref<Listener> listener, const wchar_t* imageOn, const wchar_t* imageOff, const wchar_t* imageOther);
 		virtual ~StateButtonWnd();
 		virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 		void SetOn(ButtonState o);

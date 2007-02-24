@@ -10,7 +10,6 @@ class EXPORTED NotificationWnd: public Wnd {
 		virtual ~NotificationWnd();
 		virtual void Show(bool t);
 		virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
-		virtual wchar_t GetPreferredHotkey();
 		virtual void Paint(Gdiplus::Graphics& g);
 		int GetIndex();
 

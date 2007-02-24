@@ -6,7 +6,6 @@ class EXPORTED LoggerWnd: public Wnd {
 		LoggerWnd(HWND parent);
 		virtual ~LoggerWnd();
 		void Log(std::wstring ws);
-		wchar_t GetPreferredHotkey();
 		virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 		virtual void Layout();
 		virtual void Paint(Gdiplus::Graphics& g);

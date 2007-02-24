@@ -41,10 +41,6 @@ void EditWnd::Paint(Gdiplus::Graphics& g) {
 	g.FillRectangle(&back, GetClientRectangle());
 }
 
-wchar_t EditWnd::GetPreferredHotkey() {
-	return L'E';
-}
-
 void EditWnd::Layout() {
 	RECT rc;
 	GetClientRect(_wnd, &rc);

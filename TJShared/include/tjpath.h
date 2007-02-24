@@ -53,7 +53,6 @@ class PathWnd: public ChildWnd {
 		virtual ~PathWnd();
 		virtual void Update();
 		virtual void Paint(Gdiplus::Graphics& g);
-		virtual wchar_t GetPreferredHotkey();
 		virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 		virtual void SetPath(ref<Path> p);
 		virtual ref<Crumb> GetCrumbAt(int x, int* left=0);

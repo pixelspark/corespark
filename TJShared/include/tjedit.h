@@ -5,7 +5,6 @@ class EXPORTED EditWnd: public ChildWnd {
 	public:
 		EditWnd(HWND parent);
 		virtual ~EditWnd();
-		virtual wchar_t GetPreferredHotkey();
 		virtual std::wstring GetText();
 		void SetCue(std::wstring cue);
 		virtual void Paint(Gdiplus::Graphics& g);

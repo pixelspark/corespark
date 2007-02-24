@@ -75,7 +75,3 @@ LRESULT NotificationWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	}
 	return Wnd::Message(msg, wp, lp);
 }
-
-wchar_t NotificationWnd::GetPreferredHotkey() {
-	return L'\0';
-}

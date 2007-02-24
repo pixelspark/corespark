@@ -122,8 +122,6 @@ Wnd::Wnd(const wchar_t* title, HWND parent, const wchar_t* className, bool usedb
 	_verticalPos = 0;
 	_horizontalPageSize = 1;
 	_verticalPageSize = 1;
-	_inHotkeyMode = false;
-	_eatHotkeys = false;
 	_fullScreen = false;
 	_buffer = 0;
 	_doubleBuffered = usedb;
@@ -209,18 +207,6 @@ void Wnd::SetFullScreen(bool fs, int d) {
 	_fullScreen = fs;
 }
 
-void Wnd::EnterHotkeyMode() {
-	_inHotkeyMode = true;
-	SetFocus(_wnd);
-	_inHotkeyMode = true;
-	
-	RECT rc;
-	GetClientRect(_wnd, &rc);
-	RedrawWindow(_wnd, &rc, 0, RDW_ALLCHILDREN|RDW_INTERNALPAINT);
-	InvalidateRect(_wnd, &rc, FALSE);
-	Repaint();
-}
-
 bool Wnd::IsSplitter() {
 	return false;
 }
@@ -255,9 +241,6 @@ void Wnd::Repaint() {
 
 LRESULT CALLBACK WndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) {
 	if(msg==WM_CREATE) {
-		/*CREATESTRUCT* cs = (CREATESTRUCT*)lp;
-		Wnd* wp = (Wnd*)cs->lpCreateParams;
-		wp->PreMessage(WM_CREATE, 0, 0);*/
 		return 1;
 	}
 	else if(msg==WM_DESTROY) {
@@ -282,7 +265,6 @@ void Wnd::RegisterClasses() {
 	wc.hInstance = GetModuleHandle(NULL);
 	wc.hCursor = LoadCursor(0, IDC_ARROW);
 	wc.hIcon = LoadIcon(wc.hInstance, MAKEINTRESOURCE(101));
-	//wc.hIcon = LoadIcon(wc.hInstance, 0);
 	wc.lpfnWndProc = WndProc;
 	wc.lpszClassName = TJ_DEFAULT_CLASS_NAME;
 	wc.style = CS_HREDRAW|CS_DBLCLKS;
@@ -352,41 +334,6 @@ Wnd* Wnd::GetRootWindow() {
 	}
 
 	return 0;
-}
-
-bool Wnd::IsInHotkeyMode() {
-	return _inHotkeyMode;
-}
-
-void Wnd::LeaveHotkeyMode(wchar_t key) {
-	ReplyMessage(0);
-
-	if(IsInHotkeyMode()) {
-		_inHotkeyMode = false;
-		
-		if(key!=L'\0') {
-			::ChildEnumerator en(_wnd);
-	
-			bool found = false;
-			std::vector<Wnd*>::iterator it = en._children.begin();
-			while(it!=en._children.end()) {
-				Wnd* w = *it;
-				if(w->GetPreferredHotkey()==key) {
-					w->EnterHotkeyMode();
-					found = true;
-					break;
-				}
-				it++;
-			}
-
-			if(!found) {
-				MessageBeep(MB_ICONASTERISK);
-			}
-		}
-	}
-	
-	//Application::Instance()->FullRepaint();
-	Update();
 }
 
 bool Wnd::IsMouseOver() {
@@ -470,58 +417,14 @@ LRESULT Wnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		Repaint();
 		return 0;
 	}
-	else if(msg==WM_LBUTTONDOWN||msg==WM_LBUTTONUP) {
-		//LeaveHotkeyMode();
-	}
-	else if(msg==WM_KEYDOWN) {
-		if(_eatHotkeys) {
-			/*ref<View> vw = Application::Instance()->GetView();
-			if(vw) {
-				if(wp==VK_SPACE) {
-					vw->Command(ID_JUMP);
-				}
-				else if(wp==L'C') {
-					vw->Command(ID_CREATE_CUE);
-				}
-			}*/
-		}
-
-		if(IsInHotkeyMode()) {
-			LeaveHotkeyMode((wchar_t)wp);
-		}
-	}
 	else if(msg==WM_SETFOCUS) {
 		return 0;
-	}
-	else if(msg==WM_KILLFOCUS) {
-		if(IsInHotkeyMode()) {
-			LeaveHotkeyMode(L'\0');
-		}
 	}
 	else if(msg==WM_MOUSEMOVE) {
 		SetWantMouseLeave(_wantsMouseLeave);
 	}
-	/* CRASHES
-	else if(msg==WM_SIZE) {
-		Layout();
-	}
-	*/
 
 	return DefWindowProc(_wnd, msg, wp, lp);
-}
-
-void Wnd::DrawHotkey(Graphics* g, const wchar_t* str, int x, int y) {
-	assert(str!=0);	
-	ref<Theme> theme = ThemeManager::GetTheme();
-
-	RectF blockrc(float(x-8), float(y-8), 16.0f, 16.0f);
-	SolidBrush br(theme->GetTextColor());
-	SolidBrush line(theme->GetLineColor());
-	LinearGradientBrush lbr(Gdiplus::Point(x, y-8), Gdiplus::Point(x,y+8), theme->GetActiveStartColor(),theme->GetActiveEndColor());
-	g->FillRectangle(&lbr,blockrc);
-	StringFormat sf;
-	sf.SetAlignment(StringAlignmentCenter);
-	g->DrawString(str,(int)wcslen(str),theme->GetGUIFontBold(),blockrc,&sf,&br);
 }
 
 void Wnd::SetQuitOnClose(bool q) {
@@ -584,10 +487,6 @@ void Wnd::SetHorizontalPos(unsigned int p) {
 	si.nPos = p;
 	SetScrollInfo(_wnd, SB_HORZ, &si, TRUE);
 	_horizontalPos = p;
-}
-
-void Wnd::SetEatHotkeys(bool e) {
-	_eatHotkeys = e;
 }
 
 void Wnd::SetHorizontalScrollInfo(Range<unsigned int> rng, unsigned int pageSize) {
@@ -660,22 +559,6 @@ LRESULT Wnd::PreMessage(UINT msg, WPARAM wp, LPARAM lp) {
 				Paint(buffered);
 			}
 			org.DrawImage(_buffer,0,0);
-		}
-
-		Wnd* parent = GetParent();
-		if(parent!=0) {
-			if(parent->IsInHotkeyMode()) { 
-				wchar_t hotkey = GetPreferredHotkey();
-				if(hotkey!=L'\0') {
-					RECT rc;
-					GetClientRect(_wnd, &rc);
-					//Graphics org(ps.hdc);
-					std::wostringstream os;
-					os << hotkey;
-					std::wstring hk = os.str();
-					DrawHotkey(&org, hk.c_str(), (rc.right-rc.left)/2, (rc.bottom-rc.top)/2);
-				}
-			}
 		}
 
 		EndPaint(_wnd, &ps);

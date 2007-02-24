@@ -30,23 +30,6 @@ SplitterWnd::SplitterWnd(HWND parent, ref<Wnd> a, ref<Wnd> b, Orientation o): Ch
 SplitterWnd::~SplitterWnd() {
 }
 
-
-void SplitterWnd::EnterHotkeyMode() {
-	Wnd* parent = GetParent();
-	if(parent!=0) parent->EnterHotkeyMode();
-}
-
-void SplitterWnd::LeaveHotkeyMode(wchar_t key) {
-	/*Wnd* parent = GetParent();
-	if(parent!=0) parent->LeaveHotkeyMode(key);*/
-	if(_a && _a->GetPreferredHotkey()==key) {
-		_a->EnterHotkeyMode();
-	}
-	else if(_b && _b->GetPreferredHotkey()==key) {
-		_b->EnterHotkeyMode();
-	}
-}
-
 bool SplitterWnd::IsSplitter() {
 	return true;
 }
@@ -189,17 +172,7 @@ void SplitterWnd::Collapse() {
 	Repaint();
 }
 
-wchar_t SplitterWnd::GetPreferredHotkey() {
-	return L'\0';
-}
-
 void SplitterWnd::Update() {
 	if(_a) _a->Update();
 	if(_b) _b->Update();
-}
-
-bool SplitterWnd::IsInHotkeyMode() {
-	Wnd* parent = GetParent();
-	if(parent==0) return false;
-	return parent->IsInHotkeyMode();
 }

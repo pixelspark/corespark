@@ -158,10 +158,6 @@ LRESULT BrowserWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	return ChildWnd::Message(msg, wp, lp);
 }
 
-wchar_t BrowserWnd::GetPreferredHotkey() {
-	return L'B';
-}
-
 void BrowserWnd::Hide(bool t) {
 	((CAxWindow*)_ax)->ShowWindow(t?SW_HIDE:SW_SHOW);
 	Repaint();

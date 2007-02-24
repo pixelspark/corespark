@@ -67,10 +67,6 @@ void ProgressWnd::Paint(Gdiplus::Graphics& g) {
 
 }
 
-wchar_t ProgressWnd::GetPreferredHotkey() {
-	return L'P';
-}
-
 void ProgressWnd::SetValue(float x) {
 	_value = x;
 	Repaint();

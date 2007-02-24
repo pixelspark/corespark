@@ -9,8 +9,6 @@ class EXPORTED SliderWnd: public ChildWnd {
 		SliderWnd(HWND parent, const wchar_t* title);
 		virtual ~SliderWnd();
 		virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
-		virtual wchar_t GetPreferredHotkey();
-		void SetHotkey(wchar_t hotkey);
 		void SetListener(Listener* listener);
 		float GetValue() const;
 		void SetValue(float f, bool notify=true);
@@ -23,7 +21,6 @@ class EXPORTED SliderWnd: public ChildWnd {
 		void SetSnapToHalf(bool snap);
 		virtual void Fill(LayoutFlags flags, tj::shared::Rectangle& rect);
 	protected:
-		wchar_t _hotkey;
 		Listener* _listener;
 		float _value;
 		float _displayValue;

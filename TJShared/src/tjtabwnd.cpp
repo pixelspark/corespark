@@ -7,7 +7,6 @@ using namespace tj::shared;
 TabWnd::TabWnd(HWND parent, RootWnd* root): ChildWnd(L"TabWnd", parent) {
 	SetStyle(WS_CLIPCHILDREN|WS_CLIPSIBLINGS);
 	_headerHeight = defaultHeaderHeight;
-	_hotkey = L'O';
 	_root = root;
 	_detachAttachAllowed = true;
 
@@ -145,43 +144,13 @@ void TabWnd::Paint(Graphics& g) {
 	}
 }
 
-void TabWnd::SetHotkey(wchar_t key) {
-	_hotkey = key;
-}
-
 ref<Wnd> TabWnd::GetCurrentPane() {
 	return _current->_wnd;
-}
-
-wchar_t TabWnd::GetPreferredHotkey() {
-	if(_current) {
-		return _current->_wnd->GetPreferredHotkey();
-	}
-	return L'\0';
 }
 
 void TabWnd::Clear() {
 	_panes.clear();
 }
-
-void TabWnd::LeaveHotkeyMode(wchar_t key) {
-	if(_current) {
-		_current->_wnd->LeaveHotkeyMode(key);
-	}
-}
-
-void TabWnd::EnterHotkeyMode() {
-	if(_current) {
-		_current->_wnd->EnterHotkeyMode();
-	}
-}
-
-bool TabWnd::IsInHotkeyMode() {
-	Wnd* parent = GetParent();
-	if(parent==0) return false;
-	return parent->IsInHotkeyMode();
-}
-
 
 ref<Pane> TabWnd::AddPane(std::wstring name, ref<Wnd> wnd, bool closable, bool select, std::wstring icon) {
 	assert(wnd);

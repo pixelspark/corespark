@@ -7,7 +7,6 @@ class EXPORTED SplashWnd: public Wnd {
 		virtual ~SplashWnd();
 		virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 		virtual void Paint(Gdiplus::Graphics& g);
-		virtual wchar_t GetPreferredHotkey();
 		virtual void Layout();
 
 	protected:

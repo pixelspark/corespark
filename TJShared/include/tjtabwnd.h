@@ -10,8 +10,6 @@ class EXPORTED TabWnd: public ChildWnd {
 	public:
 		TabWnd(HWND parent, RootWnd* root);
 		virtual ~TabWnd();
-		virtual wchar_t GetPreferredHotkey();
-		void SetHotkey(wchar_t hotkey);
 		virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 		ref<Pane> AddPane(std::wstring name, ref<Wnd> wnd, bool closable=false, bool select=false, std::wstring icon=L"");
 		ref<Pane> AddPane(ref<Pane> pane);
@@ -21,9 +19,6 @@ class EXPORTED TabWnd: public ChildWnd {
 		void SelectPane(ref<Wnd> wnd);
 		virtual void Layout();
 		virtual void Update();
-		virtual void LeaveHotkeyMode(wchar_t key);
-		virtual void EnterHotkeyMode();
-		virtual bool IsInHotkeyMode();
 		virtual void Clear();
 		virtual void Paint(Gdiplus::Graphics& g);
 		void Rename(ref<Wnd> pane, std::wstring name);
@@ -40,7 +35,6 @@ class EXPORTED TabWnd: public ChildWnd {
 		void DoAddMenu(int x, int y);
 		void SelectPane(ref<Pane> pane);
 
-		wchar_t _hotkey;
 		std::vector< ref<Pane> > _panes;
 		ref<Pane> _current;
 		ref<Pane> _dragging;

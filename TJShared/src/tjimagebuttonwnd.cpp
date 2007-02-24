@@ -2,8 +2,7 @@
 using namespace Gdiplus;
 using namespace tj::shared;
 
-ButtonWnd::ButtonWnd(HWND parent, wchar_t hotkey, ref<Listener> listener, const wchar_t* image, const wchar_t* text): ChildWnd(L"", parent, false, true) {
-	_hotkey = hotkey;
+ButtonWnd::ButtonWnd(HWND parent, ref<Listener> listener, const wchar_t* image, const wchar_t* text): ChildWnd(L"", parent, false, true) {
 	_listener = listener;
 	std::wstring fn = ResourceManager::Instance()->Get(image);
 	_image =  Bitmap::FromFile(fn.c_str(),TRUE);
@@ -21,13 +20,6 @@ ButtonWnd::~ButtonWnd() {
 
 void ButtonWnd::SetListener(ref<Listener> lr) {
 	_listener = lr;
-}
-
-void ButtonWnd::EnterHotkeyMode() {
-	if(_listener) {
-		_listener->Notify(this, NotificationClick);
-	}
-	Repaint();
 }
 
 void ButtonWnd::Paint(Graphics& g) {
@@ -96,13 +88,9 @@ LRESULT ButtonWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	return ChildWnd::Message(msg,wp,lp);
 }
 
-wchar_t ButtonWnd::GetPreferredHotkey() {
-	return _hotkey;
-}
-
 /* StateButtonWnd */
-StateButtonWnd::StateButtonWnd(HWND parent, wchar_t hotkey, ref<Listener> listener, const wchar_t* imageOn, const wchar_t* imageOff, const wchar_t* imageOther):
-ButtonWnd(parent,hotkey, listener, imageOn) {
+StateButtonWnd::StateButtonWnd(HWND parent, ref<Listener> listener, const wchar_t* imageOn, const wchar_t* imageOff, const wchar_t* imageOther):
+ButtonWnd(parent, listener, imageOn) {
 	std::wstring fn = ResourceManager::Instance()->Get(imageOff);
 	_offImage =  Bitmap::FromFile(fn.c_str(),TRUE);
 	fn = ResourceManager::Instance()->Get(imageOn);

@@ -10,7 +10,6 @@ class EXPORTED ColorChooserWnd: public ChildWnd {
 		virtual ~ColorChooserWnd();
 		virtual void Paint(Gdiplus::Graphics& g);
 		virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
-		virtual wchar_t GetPreferredHotkey();
 
 	protected:
 		unsigned char* _red;

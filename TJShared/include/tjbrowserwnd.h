@@ -36,7 +36,6 @@ class EXPORTED BrowserWnd: public ChildWnd {
 		BrowserWnd(HWND parent, std::wstring title);
 		virtual ~BrowserWnd();
 		virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
-		virtual wchar_t GetPreferredHotkey();
 		virtual void Paint(Gdiplus::Graphics& g);
 		void Hide(bool t);
 		void Navigate(std::wstring url);

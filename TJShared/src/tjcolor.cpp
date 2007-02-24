@@ -18,3 +18,12 @@ void RGBColor::Load(TiXmlElement* you) {
 RGBColor::operator Gdiplus::Color() {
 	return Gdiplus::Color(r,g,b);
 }
+
+ColorWnd::ColorWnd(HWND parent, unsigned char r, unsigned char g, unsigned char b): ChildWnd(L"Color", parent) {
+	_r = r;
+	_g = g;
+	_b = b;
+}
+
+ColorWnd::~ColorWnd() {
+}

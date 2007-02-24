@@ -49,10 +49,6 @@ void ToolbarWnd::Fill(LayoutFlags f, tj::shared::Rectangle& r) {
 	}
 }
 
-wchar_t ToolbarWnd::GetPreferredHotkey() {
-	return L'T';
-}
-
 LRESULT ToolbarWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	if(msg==WM_MOUSEMOVE||msg==WM_MOUSEHOVER||msg==WM_LBUTTONDOWN) {
 		_in = true;
