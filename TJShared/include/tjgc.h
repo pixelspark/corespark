@@ -1,39 +1,39 @@
 #ifndef _TJGC_H
 #define _TJGC_H
 
-#pragma warning(push)
-#pragma warning(disable: 4251)
+namespace tj {
+	namespace shared {
+		class EXPORTED GC {
+			public:
+				static void IncrementLive(size_t size=0);
+				static void DecrementLive(size_t size=0);
+				static long GetLiveCount();
+				static long GetSize();
+				template<typename T> static ref< T > Hold(T* x);
+				static void Log(const char* name, bool allocate);
 
-class EXPORTED GC {
-	public:
-		static void IncrementLive(size_t size=0);
-		static void DecrementLive(size_t size=0);
-		static long GetLiveCount();
-		static long GetSize();
-		template<typename T> static ref< T > Hold(T* x);
-		static void Log(const char* name, bool allocate);
+			protected:
+				static inline void SetObjectPointer(...) {
+				}
+				
+				static inline void SetObjectPointer(Object* object, tj::shared::intern::Resource<Object>* rs) {
+					object->_resource = rs;
+				}
 
-	protected:
-		static inline void SetObjectPointer(...) {
+				static std::map< void*, std::wstring> _objects;
+		};
+
+		template<class T> ref<T> GC::Hold(T* x) {
+			tj::shared::intern::Resource<T>* rs = new tj::shared::intern::Resource<T>(x);
+			SetObjectPointer(x, reinterpret_cast< tj::shared::intern::Resource<Object>* >(rs));
+			
+			#ifdef TJSHARED_MEMORY_TRACE
+				Log(typeid(x).name(),true);
+			#endif
+
+			return rs->Reference();
 		}
-		
-		static inline void SetObjectPointer(Object* object, tj::shared::intern::Resource<Object>* rs) {
-			object->_resource = rs;
-		}
-
-		static std::map< void*, std::wstring> _objects;
-};
-
-template<class T> ref<T> GC::Hold(T* x) {
-	tj::shared::intern::Resource<T>* rs = new tj::shared::intern::Resource<T>(x);
-	SetObjectPointer(x, reinterpret_cast< tj::shared::intern::Resource<Object>* >(rs));
-	
-	#ifdef TJSHARED_MEMORY_TRACE
-		Log(typeid(x).name(),true);
-	#endif
-
-	return rs->Reference();
+	}
 }
 
-#pragma warning(pop)
 #endif

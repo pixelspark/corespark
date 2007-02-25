@@ -1,23 +1,22 @@
 #ifndef _TJLOG_H
 #define _TJLOG_H
 
-#pragma warning(push)
-#pragma warning(disable:4251)
+namespace tj {
+	namespace shared {
+		class LogThread;
 
-class LogThread;
-
-class EXPORTED Log: public virtual Object {
-	public:
-		static void Write(std::wstring source, std::wstring message);
-		static void Show(bool s);
-		static void SetWriteToFile(bool f);
-		static std::wstring GetContents();
-	protected:
-		static LogThread _logger;
-		static CriticalSection _lock;
-		static bool _writeToFile;
-};
-
-#pragma warning(pop)
+		class EXPORTED Log: public virtual Object {
+			public:
+				static void Write(std::wstring source, std::wstring message);
+				static void Show(bool s);
+				static void SetWriteToFile(bool f);
+				static std::wstring GetContents();
+			protected:
+				static LogThread _logger;
+				static CriticalSection _lock;
+				static bool _writeToFile;
+		};
+	}
+}
 
 #endif

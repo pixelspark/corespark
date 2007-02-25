@@ -218,15 +218,16 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="gdiplus.lib comctl32.lib strmiids.lib quartz.lib ../libraries/tinyxml.lib comsupp.lib"
 				OutputFile="$(OutDir)\..\..\Release\tjshared.dll"
-				LinkIncremental="2"
 				GenerateManifest="true"
 				GenerateDebugInformation="true"
-				GenerateMapFile="true"
+				GenerateMapFile="false"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
+				OptimizeForWindows98="1"
 				LinkTimeCodeGeneration="1"
 				SetChecksum="true"
+				SupportUnloadOfDelayLoadedDLL="false"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -354,27 +355,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\tjbrowserwnd.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\tjchildwnd.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\src\tjcode.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\src\tjcolor.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\tjcolorproperty.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\tjcontextmenu.cpp"
 				>
 			</File>
 			<File
@@ -386,15 +371,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\tjdialogs.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\src\tjdxutil.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\tjedit.cpp"
 				>
 			</File>
 			<File
@@ -414,10 +391,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\tjimagebuttonwnd.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\src\tjlanguage.cpp"
 				>
 			</File>
@@ -430,35 +403,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\tjloggerwnd.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\tjnotificationwnd.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\src\tjobject.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\tjpane.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\tjpath.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\tjprogresswnd.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\tjpropertygridwnd.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\tjpropertyseparator.cpp"
 				>
 			</File>
 			<File
@@ -466,27 +411,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\tjrootwnd.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\src\tjshared.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\tjsliderwnd.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\tjsplash.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\tjsplitterwnd.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\tjtabwnd.cpp"
 				>
 			</File>
 			<File
@@ -494,31 +419,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\tjtextproperty.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\tjtheme.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\tjthememgr.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\src\tjthread.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\tjtoolbarwnd.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\tjtooltip.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\tjui.cpp"
 				>
 			</File>
 			<File
@@ -529,6 +430,254 @@
 				RelativePath=".\src\tjvector.cpp"
 				>
 			</File>
+			<Filter
+				Name="ui"
+				>
+				<File
+					RelativePath=".\src\ui\tjbrowserwnd.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ui\tjchildwnd.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ui\tjcontextmenu.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ui\tjdialogs.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ui\tjeditwnd.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ui\tjimagebuttonwnd.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ui\tjloggerwnd.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ui\tjnotificationwnd.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ui\tjpane.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ui\tjpathwnd.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ui\tjprogresswnd.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ui\tjpropertygridwnd.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ui\tjrootwnd.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ui\tjsliderwnd.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ui\tjsplashwnd.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ui\tjsplitterwnd.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ui\tjtabwnd.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ui\tjtheme.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ui\tjthememgr.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ui\tjtoolbarwnd.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ui\tjtooltipwnd.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ui\tjwnd.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="properties"
+				>
+				<File
+					RelativePath=".\src\properties\tjcolorproperty.cpp"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Debug|Pocket PC 2003 (ARMV4)"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Pocket PC 2003 (ARMV4)"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\src\properties\tjpropertyseparator.cpp"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Debug|Pocket PC 2003 (ARMV4)"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Pocket PC 2003 (ARMV4)"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\src\properties\tjtextproperty.cpp"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Debug|Pocket PC 2003 (ARMV4)"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Pocket PC 2003 (ARMV4)"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\src\properties\tjvectorproperty.cpp"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Debug|Pocket PC 2003 (ARMV4)"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Pocket PC 2003 (ARMV4)"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"
+						/>
+					</FileConfiguration>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -548,15 +697,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\include\tjbrowserwnd.h"
-				>
-			</File>
-			<File
 				RelativePath=".\include\tjcache.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\tjchildwnd.h"
 				>
 			</File>
 			<File
@@ -568,31 +709,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\include\tjcolorproperty.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\tjcontextmenu.h"
-				>
-			</File>
-			<File
 				RelativePath=".\include\tjcore.h"
 				>
 			</File>
 			<File
-				RelativePath=".\include\tjcriticalsection.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\tjdialogs.h"
-				>
-			</File>
-			<File
 				RelativePath=".\include\tjdxutil.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\tjedit.h"
 				>
 			</File>
 			<File
@@ -620,10 +741,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\include\tjimagebuttonwnd.h"
-				>
-			</File>
-			<File
 				RelativePath=".\include\tjiterator.h"
 				>
 			</File>
@@ -640,31 +757,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\include\tjlistproperty.h"
-				>
-			</File>
-			<File
 				RelativePath=".\include\tjlog.h"
 				>
 			</File>
 			<File
-				RelativePath=".\include\tjloggerwnd.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\tjnotificationwnd.h"
-				>
-			</File>
-			<File
 				RelativePath=".\include\tjobject.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\tjpane.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\tjpath.h"
 				>
 			</File>
 			<File
@@ -676,27 +773,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\include\tjprogresswnd.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\tjproperty.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\tjpropertygridwnd.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\tjpropertyseparator.h"
-				>
-			</File>
-			<File
 				RelativePath=".\include\tjrange.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\tjreadonlyproperty.h"
 				>
 			</File>
 			<File
@@ -712,10 +789,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\include\tjrootwnd.h"
-				>
-			</File>
-			<File
 				RelativePath=".\include\tjserializable.h"
 				>
 			</File>
@@ -724,51 +797,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\include\tjsliderwnd.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\tjsplash.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\tjsplitterwnd.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\tjtabwnd.h"
-				>
-			</File>
-			<File
 				RelativePath=".\include\tjtea.h"
 				>
 			</File>
 			<File
-				RelativePath=".\include\tjtextproperty.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\tjtheme.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\tjthememgr.h"
-				>
-			</File>
-			<File
 				RelativePath=".\include\tjthread.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\tjtoolbarwnd.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\tjtooltip.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\tjui.h"
 				>
 			</File>
 			<File
@@ -779,6 +812,130 @@
 				RelativePath=".\include\tjvector.h"
 				>
 			</File>
+			<Filter
+				Name="ui"
+				>
+				<File
+					RelativePath=".\include\ui\tjbrowserwnd.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\ui\tjchildwnd.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\ui\tjcontextmenu.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\ui\tjdialogs.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\ui\tjeditwnd.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\ui\tjimagebuttonwnd.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\ui\tjloggerwnd.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\ui\tjnotificationwnd.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\ui\tjpane.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\ui\tjpathwnd.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\ui\tjprogresswnd.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\ui\tjpropertygridwnd.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\ui\tjrootwnd.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\ui\tjsliderwnd.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\ui\tjsplitterwnd.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\ui\tjtabwnd.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\ui\tjtheme.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\ui\tjthememgr.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\ui\tjtoolbarwnd.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\ui\tjtooltipwnd.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\ui\tjui.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\ui\tjwnd.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="properties"
+				>
+				<File
+					RelativePath=".\include\properties\tjcolorproperty.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\properties\tjlistproperty.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\properties\tjproperties.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\properties\tjpropertyseparator.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\properties\tjreadonlyproperty.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\properties\tjtextproperty.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\properties\tjvectorproperty.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Resource Files"
