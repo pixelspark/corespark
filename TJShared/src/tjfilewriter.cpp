@@ -38,12 +38,12 @@ FileReader::~FileReader() {
 
 void FileReader::Read(std::string filename, ref<Serializable> ser) {
 	TiXmlDocument document(filename);
-	if(!document.LoadFile()) Throw(L"Could not load file. Please check if you have permission to read the file and that it is not in use by other applications. ", ExceptionTypeError);
+	if(!document.LoadFile()) Throw(TL(file_load_failed), ExceptionTypeError);
 
 	TiXmlElement* root = document.RootElement();
-	if(root==0) Throw(L"The file was loaded, but there was something wrong with its structure. Check if the file isn't damaged or was created by another version of the program.", ExceptionTypeError);
+	if(root==0) Throw(TL(file_format_invalid), ExceptionTypeError);
 	TiXmlElement* modelElement = root->FirstChildElement("model");
-	if(modelElement==0) Throw(L"The file was loaded, but there was something wrong with its structure. Check if the file isn't damaged or was created by another version of the program.", ExceptionTypeError);
+	if(modelElement==0) Throw(TL(file_format_invalid), ExceptionTypeError);
 	
 	ser->Load(modelElement);
 }

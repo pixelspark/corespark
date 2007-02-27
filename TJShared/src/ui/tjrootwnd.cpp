@@ -116,7 +116,7 @@ void RootWnd::RemoveTabWindow(TabWnd* tw) {
 }
 
 void RootWnd::AddNotification(std::wstring text, std::wstring icon, int time) {
-	int highestIndex = -1;
+	int highestIndex = 0;
 	std::vector< ref<NotificationWnd> >::iterator it = _notifications.begin();
 	while(it!=_notifications.end()) {
 		ref<NotificationWnd> wnd = *it;

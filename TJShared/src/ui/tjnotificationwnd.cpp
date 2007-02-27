@@ -27,6 +27,7 @@ NotificationWnd::NotificationWnd(std::wstring text, std::wstring icon, int time,
 		SetTimer(GetWindow(), 1337, time, 0L);
 	}
 	SetWindowPos(GetWindow(), 0L, DefaultNotificationMargin,DefaultNotificationMargin+h*(DefaultNotificationMargin+DefaultNotificationHeight), rc.right-rc.left-(2*DefaultNotificationMargin), DefaultNotificationHeight, SWP_NOZORDER);
+	SetWindowPos(GetWindow(), HWND_TOPMOST, 0, 0, 0, 0, SWP_NOACTIVATE|SWP_NOMOVE | SWP_NOSIZE);
 	Show(true);
 }
 

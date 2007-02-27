@@ -147,6 +147,10 @@ void Wnd::SetFullScreen(bool fs) {
 	_fullScreen = fs;
 }
 
+void Wnd::Focus() {
+	::SetFocus(_wnd);
+}
+
 void Wnd::SetFullScreen(bool fs, int d) {
 	if(fs) {
 		if(!_fullScreen) {

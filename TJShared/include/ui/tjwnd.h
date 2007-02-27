@@ -84,6 +84,7 @@ namespace tj {
 
 				HWND GetWindow();
 				virtual std::wstring GetTabTitle() const;
+				virtual void Focus();
 
 			protected:
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
