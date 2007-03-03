@@ -279,8 +279,15 @@ class ScriptGrammar : public grammar<ScriptGrammar> {
 					( (keyValuePair[ScriptInstruction<OpParameter>(&self)]|expression[ScriptInstruction<OpNamelessParameter>(&self)]) % ch_p(','));
 
 				assignment = 
+					assignmentWithVar | assignmentWithoutVar;
+
+				assignmentWithVar = 
 					lexeme_d[keyword_p("var")] >> identifier >> 
 					((ch_p('=') >> expression)[ScriptInstruction<OpSave>(&self)]|eps_p[ScriptPushNull(&self)][ScriptInstruction<OpSave>(&self)]);
+
+				assignmentWithoutVar =
+					eps_p(lexeme_d[(alpha_p >> *(alnum_p|ch_p('_')))] >> ch_p('=')) 
+						>> identifier >> ch_p('=') >> expression[ScriptInstruction<OpSave>(&self)];
 
 				methodCall =
 					 (identifier >> !(ch_p('(')[ScriptInstruction<OpPushParameter>(&self)] >> !parameterList >> ')'));
@@ -401,7 +408,7 @@ class ScriptGrammar : public grammar<ScriptGrammar> {
 			rule<ScannerT> stringValue, intValue, boolValue, doubleValue, nullValue;
 
 			// constructs
-			rule<ScannerT> scriptBody, block, function, functionConstruct, ifConstruct, comment, assignment, value, identifier, declaredParameter, keyValuePair, parameterList, methodCall, expression, statement, blockConstruct, blockInFunction, blockInFor, script, returnConstruct, breakStatement, forConstruct, newConstruct, methodCallConstruct, followingMethodCall, delegateConstruct;
+			rule<ScannerT> scriptBody, block, function, functionConstruct, ifConstruct, comment, assignment, assignmentWithVar, assignmentWithoutVar, value, identifier, declaredParameter, keyValuePair, parameterList, methodCall, expression, statement, blockConstruct, blockInFunction, blockInFor, script, returnConstruct, breakStatement, forConstruct, newConstruct, methodCallConstruct, followingMethodCall, delegateConstruct;
 			
 			// operators
 			rule<ScannerT> term, factor, negatedFactor, indexOperator, equalsOperator, notEqualsOperator, plusOperator, minOperator, divOperator, mulOperator, orOperator, andOperator, xorOperator, gtOperator, ltOperator;		

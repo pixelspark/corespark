@@ -96,18 +96,11 @@ template<typename StringType> std::pair<StringType,StringType> Split (const Stri
 	return std::pair<StringType,StringType>(inString.substr(0, end), inString.substr(end+1));
 }
 
-const wchar_t* Language::Get(std::wstring key) {
-	try {
-		std::map<std::wstring, wchar_t*>::iterator it = _instance._strings.find(key);
-		if(it!=_instance._strings.end()) {
-			return it->second;
-		}
+const wchar_t* Language::Get(const std::wstring& key) {
+	std::map<std::wstring, wchar_t*>::const_iterator it = _instance._strings.find(key);
+	if(it!=_instance._strings.end()) {
+		return it->second;
 	}
-	catch(...) {
-		//Log::Write(L"TJShared/Language", std::wstring(L"String not found: ")+key);
-		return L"...";
-	}
-
 	//Log::Write(L"TJShared/Language", std::wstring(L"String not found: ")+key);
 	return L"...";
 }

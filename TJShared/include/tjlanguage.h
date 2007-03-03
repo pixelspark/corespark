@@ -5,7 +5,7 @@ namespace tj {
 	namespace shared {
 		class EXPORTED Language: public virtual Object {
 			public:
-				static const wchar_t* Get(std::wstring id);
+				static const wchar_t* Get(const std::wstring& id);
 				static void Load(std::wstring file);
 				static void LoadDirectory(std::wstring dir);
 
