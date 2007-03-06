@@ -21,7 +21,7 @@ HWND TextProperty::GetWindow() {
 }
 HWND TextProperty::Create(HWND parent) {
 	if(_wnd!=0) return _wnd;
-	_wnd = ::CreateWindowEx(WS_EX_CLIENTEDGE, TJ_PROPERTY_EDIT_CLASS_NAME, Stringify(*_value).c_str(), WS_VSCROLL|ES_AUTOHSCROLL|WS_CHILD|ES_MULTILINE|ES_WANTRETURN|ES_AUTOVSCROLL, 0, 0, 100, 100, parent, (HMENU)0, GetModuleHandle(NULL), 0);
+	_wnd = ::CreateWindowEx(WS_EX_CLIENTEDGE, TJ_PROPERTY_EDIT_CLASS_NAME, Stringify(*_value).c_str(), WS_VSCROLL|WS_CHILD|ES_MULTILINE|ES_WANTRETURN|ES_AUTOVSCROLL, 0, 0, 100, 100, parent, (HMENU)0, GetModuleHandle(NULL), 0);
 	if(_wnd==0) {
 		Throw(L"Property window creation failed", ExceptionTypeError);
 	}
