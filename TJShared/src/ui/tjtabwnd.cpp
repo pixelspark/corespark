@@ -14,6 +14,7 @@ TabWnd::TabWnd(HWND parent, RootWnd* root): ChildWnd(L"TabWnd", parent) {
 	_closeIcon = Bitmap::FromFile(fn.c_str(), TRUE);
 	fn = ResourceManager::Instance()->Get(L"icons/shared/tab_add.png");
 	_addIcon = Bitmap::FromFile(fn.c_str(), TRUE);
+	_childStyle = false;
 	Layout();
 	Show(true);
 }
@@ -86,7 +87,12 @@ void TabWnd::Paint(Graphics& g) {
 		g.SetCompositingQuality(CompositingQualityDefault);
 		
 		Pen border(theme->GetActiveEndColor(), 1.0f);
-		g.DrawRectangle(&border, RectF(1.0f, float(_headerHeight-1), float(rect.right-rect.left-2), float(rect.bottom-rect.top-_headerHeight)));
+		if(!_childStyle) {
+			g.DrawRectangle(&border, RectF(1.0f, float(_headerHeight-1), float(rect.right-rect.left-2), float(rect.bottom-rect.top-_headerHeight)));
+		}
+		else {
+			g.DrawLine(&border, 0.0f, float(_headerHeight-1), float(rect.right-rect.left), float(_headerHeight-1));
+		}
 		//g.SetSmoothingMode(SmoothingModeHighQuality);
 		//g.SetCompositingQuality(CompositingQualityHighQuality);
 
@@ -111,8 +117,11 @@ void TabWnd::Paint(Graphics& g) {
 				LinearGradientBrush lbr(PointF(0.0f, 0.0f), PointF(0.0f, float(_headerHeight)), theme->GetActiveEndColor(), theme->GetActiveEndColor());
 				
 				g.FillRectangle(&lbr, RectF(float(left+1), 2.0f, float(bound.Width+2+(pane->HasIcon()?KIconWidth:0)), float(_headerHeight)));
-				SolidBrush backBrush(theme->GetBackgroundColor());
-				g.FillRectangle(&backBrush, RectF(float(left+2), 3.0f, float(bound.Width+(pane->HasIcon()?KIconWidth:0)), float(_headerHeight)));
+
+				if(!_childStyle) {
+					SolidBrush backBrush(theme->GetBackgroundColor());
+					g.FillRectangle(&backBrush, RectF(float(left+2), 3.0f, float(bound.Width+(pane->HasIcon()?KIconWidth:0)), float(_headerHeight)));
+				}
 			}
 			
 			// gradient achter actieve tab of dragging tab (niet border)
@@ -137,11 +146,16 @@ void TabWnd::Paint(Graphics& g) {
 			idx++;
 		}
  
-		if(_detachAttachAllowed && left<(rect.right-rect.left-2*_headerHeight) && _addIcon!=0 && _closeIcon!=0) {
+		if(!_childStyle && _detachAttachAllowed && left<(rect.right-rect.left-2*_headerHeight) && _addIcon!=0 && _closeIcon!=0) {
 			g.DrawImage(_addIcon, RectF(float(rect.right-rect.left-2*_headerHeight), 0.0f, float(_headerHeight-2), float(_headerHeight-2)));
 			g.DrawImage(_closeIcon, RectF(float(rect.right-rect.left-_headerHeight), 0.0f, float(_headerHeight-2), float(_headerHeight-2)));
 		}
 	}
+}
+
+void TabWnd::SetChildStyle(bool c) {
+	_childStyle = c;
+	Repaint();
 }
 
 ref<Wnd> TabWnd::GetCurrentPane() {
@@ -169,8 +183,10 @@ ref<Pane> TabWnd::AddPane(std::wstring name, ref<Wnd> wnd, bool closable, bool s
 }
 
 ref<Pane> TabWnd::AddPane(ref<Pane> pane) {
-	assert(pane);
+	assert(pane && pane->GetWindow());
 	pane->GetWindow()->Show(false);
+	SetParent(pane->GetWindow()->GetWindow(), GetWindow());
+
 	_panes.push_back(pane);
 	if(_panes.size()==1) {
 		SelectPane(0);
@@ -246,13 +262,12 @@ void TabWnd::Layout() {
 	GetClientRect(GetWindow(), &rc);
 
 	if(_current) {	
-		SetWindowPos(_current->GetWindow()->GetWindow(), 0, 2,rc.top+_headerHeight,rc.right-rc.left-3,rc.bottom-rc.top-_headerHeight-1, SWP_NOZORDER);
+		SetWindowPos(_current->GetWindow()->GetWindow(), 0, _childStyle?0:2,rc.top+_headerHeight,rc.right-rc.left-3,rc.bottom-rc.top-_headerHeight-1, SWP_NOZORDER);
 		
 		std::vector< ref<Pane> >::iterator it = _panes.begin();
 		while(it!=_panes.end()) {
 			ref<Pane> pane = *it;
-			SetWindowPos(pane->GetWindow()->GetWindow(), 0, 2,rc.top+_headerHeight,rc.right-rc.left-3,rc.bottom-rc.top-_headerHeight-1, SWP_NOZORDER|SWP_NOREDRAW|SWP_NOACTIVATE);
-		
+			SetWindowPos(pane->GetWindow()->GetWindow(), 0, _childStyle?0:2,rc.top+_headerHeight,rc.right-rc.left-3,rc.bottom-rc.top-_headerHeight-1, SWP_NOZORDER|SWP_NOREDRAW|SWP_NOACTIVATE);
 			it++;
 		}
 	}

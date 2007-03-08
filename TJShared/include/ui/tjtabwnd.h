@@ -3,7 +3,6 @@
 
 namespace tj {
 	namespace shared {
-
 		class EXPORTED TabWnd: public ChildWnd {
 			friend class FloatingPane;
 
@@ -21,6 +20,8 @@ namespace tj {
 				virtual void Update();
 				virtual void Clear();
 				virtual void Paint(Gdiplus::Graphics& g);
+				void SetChildStyle(bool c);
+				
 				void Rename(ref<Wnd> pane, std::wstring name);
 				ref<Wnd> GetCurrentPane();
 				ref<Pane> GetPaneAt(int x);
@@ -44,6 +45,7 @@ namespace tj {
 				Gdiplus::Bitmap* _closeIcon;
 				Gdiplus::Bitmap* _addIcon;
 				bool _detachAttachAllowed;
+				bool _childStyle;
 
 				const static int TearOffLimit = 15;
 				enum {defaultHeaderHeight = 23};

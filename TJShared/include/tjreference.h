@@ -284,6 +284,14 @@ namespace tj {
 					return (_res!=r._res);
 				}
 
+				template<typename TT> inline bool operator==(const weak<TT>& r) {
+					return (_res==r._res);
+				}
+
+				template<typename TT> inline bool operator!=(const weak<TT>& r) {
+					return (_res!=r._res);
+				}
+
 				template<class X> inline bool IsCastableTo() {
 					if(_res==0 || _res->_data == 0) return false;
 					return dynamic_cast<X*>(_res->_data)!=0;	

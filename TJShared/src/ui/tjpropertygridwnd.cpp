@@ -26,6 +26,11 @@ PropertyGridWnd::~PropertyGridWnd() {
 	_editFont = 0;
 }
 
+void PropertyGridWnd::SetNameWidth(int w) {
+	_nameWidth = w;
+	Repaint();
+}
+
 void PropertyGridWnd::ClearThemeCache() {
 	if(_editBackground!=0) DeleteObject(_editBackground);
 	Color back = ThemeManager::GetTheme()->GetPropertyBackgroundColor();

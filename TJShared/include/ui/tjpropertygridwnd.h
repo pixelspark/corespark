@@ -23,6 +23,7 @@ namespace tj {
 				void ClearThemeCache();
 				virtual void Paint(Gdiplus::Graphics& g);
 				void Clear();
+				void SetNameWidth(int w);
 
 				HBRUSH _editBackground;
 				HFONT _editFont;
