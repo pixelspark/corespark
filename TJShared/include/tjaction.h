@@ -13,10 +13,16 @@ namespace tj {
 
 				virtual ~Action();
 				virtual void Execute() = 0;
-				virtual void Undo() = 0;
-				virtual UndoSupport GetUndoSupport() const = 0;
-				virtual std::wstring GetName() const = 0;
+				virtual void Undo();
 
+				UndoSupport GetUndoSupport() const;
+				std::wstring GetName() const;
+
+			protected:
+				Action(const std::wstring& name, UndoSupport sup);
+				Action(UndoSupport sup);
+				std::wstring _name;
+				UndoSupport _sup;
 				
 		};
 	}
