@@ -82,6 +82,7 @@ ref< std::vector< ref<Crumb> > > BasicCrumb::GetChildren() {
 
 /* PathWnd*/
 PathWnd::PathWnd(HWND parent, PropertyGridWnd* pg): ChildWnd(L"", parent, true, true) {
+	SetStyle(WS_CLIPSIBLINGS);
 	_propertyGrid = pg;
 	std::wstring spfn = ResourceManager::Instance()->Get(L"icons/path_separator.png");
 	_separator = Bitmap::FromFile(spfn.c_str(), TRUE);

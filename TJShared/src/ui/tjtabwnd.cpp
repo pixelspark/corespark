@@ -262,12 +262,12 @@ void TabWnd::Layout() {
 	GetClientRect(GetWindow(), &rc);
 
 	if(_current) {	
-		SetWindowPos(_current->GetWindow()->GetWindow(), 0, _childStyle?0:2,rc.top+_headerHeight,rc.right-rc.left-3,rc.bottom-rc.top-_headerHeight-1, SWP_NOZORDER);
+		SetWindowPos(_current->GetWindow()->GetWindow(), 0, _childStyle?0:2,rc.top+_headerHeight,rc.right-rc.left-(_childStyle?1:3),rc.bottom-rc.top-_headerHeight-1, SWP_NOZORDER);
 		
 		std::vector< ref<Pane> >::iterator it = _panes.begin();
 		while(it!=_panes.end()) {
 			ref<Pane> pane = *it;
-			SetWindowPos(pane->GetWindow()->GetWindow(), 0, _childStyle?0:2,rc.top+_headerHeight,rc.right-rc.left-3,rc.bottom-rc.top-_headerHeight-1, SWP_NOZORDER|SWP_NOREDRAW|SWP_NOACTIVATE);
+			SetWindowPos(pane->GetWindow()->GetWindow(), 0, _childStyle?0:2,rc.top+_headerHeight,rc.right-rc.left-(_childStyle?1:3),rc.bottom-rc.top-_headerHeight-1, SWP_NOZORDER|SWP_NOREDRAW|SWP_NOACTIVATE);
 			it++;
 		}
 	}

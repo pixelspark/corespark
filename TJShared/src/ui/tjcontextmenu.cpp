@@ -31,7 +31,7 @@ void ContextMenu::AddItem(std::wstring name, int command, bool hilite, bool radi
 	mif.wID = command;
 	mif.fType = MFT_STRING | (radiocheck?MFT_RADIOCHECK:0);
 
-	if(_index%20==0) {
+	if(_index%20==0 && _index>0) {
 		mif.fType = MFT_MENUBREAK;
 	}
 

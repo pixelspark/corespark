@@ -7,7 +7,7 @@ using namespace Gdiplus;
 PropertyGridWnd::PropertyGridWnd(HWND parent): ChildWnd(TL(properties), parent) {
 	ClearThemeCache();
 	_nameWidth = 100;
-	SetStyle(WS_CLIPCHILDREN);
+	SetStyle(WS_CLIPCHILDREN|WS_CLIPSIBLINGS);
 	SetStyleEx(WS_EX_CONTROLPARENT);
 	_editBackground = 0;
 	_editFont = 0;
@@ -48,7 +48,7 @@ void PropertyGridWnd::Paint(Graphics& g) {
 	SolidBrush br(theme->GetPropertyBackgroundColor());
 	g.FillRectangle(&br,-1,-1,r.right-r.left+1,r.bottom-r.top+1);
 
-	int cH = KPathHeight;
+	int cH = KPathHeight-GetVerticalPos();
 	int hI = 0;
 	std::vector< ref<Property> >::iterator it = _properties.begin();
 
@@ -81,6 +81,11 @@ void PropertyGridWnd::Paint(Graphics& g) {
 		it++;
 		hI++;
 	}
+}
+
+void PropertyGridWnd::OnScroll(ScrollDirection dir) {
+	Layout();
+	Repaint();
 }
 
 LRESULT PropertyGridWnd::Message(UINT msg, WPARAM wParam, LPARAM lParam) {
@@ -140,11 +145,8 @@ LRESULT PropertyGridWnd::Message(UINT msg, WPARAM wParam, LPARAM lParam) {
 		SetTextColor((HDC)wParam, RGB(text.GetRed(),text.GetGreen(),text.GetBlue()));
 		return (LRESULT)(HBRUSH)_editBackground;
 	}
-	else if(msg==WM_SIZE) {
-		Layout();
-		return 0;
-	}
 	else if(msg==WM_ACTIVATE) {
+		OnSize(GetClientArea());
 		Layout();
 		return 0;
 	}
@@ -181,26 +183,57 @@ LRESULT PropertyGridWnd::Message(UINT msg, WPARAM wParam, LPARAM lParam) {
 }
 
 void PropertyGridWnd::Layout() {
-	RECT rect;
-	GetClientRect(GetWindow(), &rect);
+	Area rect = GetClientArea();
 
 	if(_path) {
-		_path->Move(0,0,rect.right-rect.left, KPathHeight);
+		_path->Move(0,0,rect.GetWidth(), KPathHeight);
+		SetWindowPos(_path->GetWindow(), HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE|SWP_NOSIZE|SWP_NOACTIVATE);
 	}
 
-	int cH = KPathHeight;
+	int cH = KPathHeight - GetVerticalPos();
+	std::vector<ref<Property> >::iterator it = _properties.begin();
+
+	while(it!=_properties.end()) {
+		ref<Property> pr = *it;
+		if(pr) {
+			HWND vw = pr->GetWindow();
+			int h = pr->GetHeight();
+			SendMessage(vw, WM_SETFONT, (WPARAM)(HFONT)_editFont, FALSE);
+			LONG style = GetWindowLong(vw, GWL_STYLE);
+			style |= WS_CLIPSIBLINGS;
+			SetWindowLong(vw, GWL_STYLE, style);
+			SetWindowPos(vw, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE|SWP_NOSIZE|SWP_NOACTIVATE);
+			SetWindowPos(vw, 0,  _nameWidth, cH+3,  rect.GetWidth()-_nameWidth-3, h, SWP_NOZORDER);
+			ShowWindow(vw, SW_SHOW);
+			cH += h + 6;
+		}
+		it++;
+	}
+	Repaint();
+}
+
+void PropertyGridWnd::OnSize(const Area& ns) {
+	Area rect = GetClientArea();
+	// Get total property height
+	int totalHeight = 0;
 	std::vector< ref<Property> >::iterator it = _properties.begin();
 	while(it!=_properties.end()) {
 		ref<Property> pr = *it;
-		assert(pr!=0);
-		HWND vw = pr->GetWindow();
-		int h = pr->GetHeight();
-		SendMessage(vw, WM_SETFONT, (WPARAM)(HFONT)_editFont, FALSE);
-		SetWindowPos(vw, 0,  _nameWidth, cH+3,  rect.right-rect.left-_nameWidth-3, h, SWP_NOZORDER);
-		ShowWindow(vw, SW_SHOW);
-		cH += h + 6;
+		if(pr) {
+			totalHeight += pr->GetHeight() + 6;
+		}
 		it++;
 	}
+
+	if(totalHeight>rect.GetHeight()) {
+		SetVerticallyScrollable(true);
+		SetVerticalScrollInfo(Range<unsigned int>(0, totalHeight+KPathHeight), rect.GetHeight());
+	}
+	else {
+		SetVerticallyScrollable(false);
+		SetVerticalPos(0);
+	}
+	Layout();
 	Repaint();
 }
 
@@ -255,6 +288,7 @@ void PropertyGridWnd::Inspect(Inspectable* isp, ref<Path> p) {
 	_path->SetPath(p);
 	SetFocus(first);
 	ClearThemeCache();
+	OnSize(GetClientArea());
 	Layout();
 }
 

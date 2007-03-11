@@ -24,6 +24,8 @@ namespace tj {
 				virtual void Paint(Gdiplus::Graphics& g);
 				void Clear();
 				void SetNameWidth(int w);
+				virtual void OnScroll(ScrollDirection dir);
+				virtual void OnSize(const Area& ar);
 
 				HBRUSH _editBackground;
 				HFONT _editFont;
