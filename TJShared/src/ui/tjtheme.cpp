@@ -84,7 +84,7 @@ Color Theme::GetEditBackgroundColor() const {
 }
 
 Color Theme::GetTimeBackgroundColor() const {
-	return Color(20,20,20);
+	return Color(15,15,15);
 }
 
 Color Theme::GetPropertyBackgroundColor() const {
@@ -280,7 +280,7 @@ Color BrightTheme::GetBackgroundColor() const {
 }
 
 Color BrightTheme::GetTimeBackgroundColor() const {
-	return Color(235,235,235);
+	return Color(245,245,245);
 }
 
 Color BrightTheme::GetEditBackgroundColor() const {
@@ -304,11 +304,13 @@ Color BrightTheme::GetActiveTrackColor() const {
 }
 
 Color BrightTheme::GetActiveStartColor() const {
-	return Color(139,139,139);
+	//return Color(139,139,139);
+	return Color(149,149,149);
 }
 
 Color BrightTheme::GetActiveEndColor() const {
-	return Color(166,166,166);
+	//return Color(166,166,166);
+	return Color(176,176,176);
 }
 
 Color BrightTheme::GetSplitterStartColor() const {

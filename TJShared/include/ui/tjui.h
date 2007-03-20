@@ -27,5 +27,6 @@
 #include "tjpathwnd.h"
 #include "tjsplashwnd.h"
 #include "tjpropertygridwnd.h"
+#include "tjlistwnd.h"
 
 #endif

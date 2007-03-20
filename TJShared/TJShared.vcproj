@@ -484,6 +484,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ui\tjlistwnd.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ui\tjloggerwnd.cpp"
 					>
 				</File>
@@ -871,6 +875,10 @@
 				</File>
 				<File
 					RelativePath=".\include\ui\tjimagebuttonwnd.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\ui\tjlistwnd.h"
 					>
 				</File>
 				<File

@@ -61,7 +61,6 @@ namespace tj {
 		};
 
 		template<> EXPORTED CodeWriter& CodeWriter::Add(const std::wstring& x);
-		template<> EXPORTED CodeWriter& CodeWriter::Add(const tj::shared::Vector& v);
 	}
 }
 

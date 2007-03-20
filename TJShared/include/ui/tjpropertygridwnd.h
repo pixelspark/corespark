@@ -37,7 +37,7 @@ namespace tj {
 				ref<PathWnd> _path;
 				bool _isDraggingSplitter;
 
-				const static int KPathHeight = 22;
+				const static int KPathHeight = 24;
 		};
 	}
 }

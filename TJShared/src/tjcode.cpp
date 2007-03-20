@@ -34,13 +34,6 @@ CodeWriter::~CodeWriter() {
 	delete[] _buffer;
 }
 
-template<> CodeWriter& CodeWriter::Add(const tj::shared::Vector& v) {
-	Add<float>(v.x);
-	Add<float>(v.y);
-	Add<float>(v.z);
-	return *this;
-}
-
 template<> tj::shared::Vector Code::Get(unsigned int& position) {
 	Vector v(0.0f, 0.0f, 0.0f);
 	v.x = Get<float>(position);
