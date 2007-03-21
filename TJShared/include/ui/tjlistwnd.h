@@ -26,19 +26,21 @@ namespace tj {
 				virtual float GetColumnX(int id);
 				virtual float GetColumnWidth(int id);
 
-				// implement
+			protected:
+				// implemented by child
 				virtual int GetItemCount() = 0;
-				virtual int GetItemHeight();
 				virtual void PaintItem(int id, Gdiplus::Graphics& g, Area& row) = 0;
+				virtual int GetItemHeightInPixels();
 				virtual void OnClickItem(int id, int col);
 				virtual void OnRightClickItem(int id, int col);
 				virtual void OnDoubleClickItem(int id, int col);
 
-			protected:
 				int GetRowIDByHeight(int h);
-				std::map<int,Column> _cols;
-				const static int KColumnHeaderHeight = 24;
+				virtual int GetHeaderHeightInPixels() const;
 				const static float KMinimumColumnWidth;
+			
+			private:
+				std::map<int,Column> _cols;	
 				int _draggingCol;
 				int _dragStartX;
 				int _selected;

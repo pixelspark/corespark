@@ -36,13 +36,15 @@ void ToolbarWnd::SetBackgroundColor(Gdiplus::Color c) {
 }
 
 void ToolbarWnd::Fill(LayoutFlags f, Area& r) {
+	ref<Theme> theme = ThemeManager::GetTheme();
+	int h = theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
 	if(f==LayoutTop) {
-		SetWindowPos(GetWindow(), 0, r.GetLeft(), r.GetTop(), r.GetWidth(), KButtonSize, SWP_NOZORDER);
-		r.Narrow(0,KButtonSize,0,0);
+		SetWindowPos(GetWindow(), 0, r.GetLeft(), r.GetTop(), r.GetWidth(), h, SWP_NOZORDER);
+		r.Narrow(0,h,0,0);
 	}
 	else if(f==LayoutBottom) {
-		SetWindowPos(GetWindow(), 0, r.GetLeft(), r.GetTop()+r.GetHeight()-KButtonSize, r.GetWidth(), KButtonSize, SWP_NOZORDER);
-		r.Narrow(0,0,0,KButtonSize);
+		SetWindowPos(GetWindow(), 0, r.GetLeft(), r.GetTop()+r.GetHeight()-h, r.GetWidth(), h, SWP_NOZORDER);
+		r.Narrow(0,0,0,h);
 	}
 	else {
 		ChildWnd::Fill(f, r);
@@ -54,7 +56,9 @@ LRESULT ToolbarWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		_in = true;
 
 		if(!ISVKKEYDOWN(VK_LBUTTON)||msg==WM_LBUTTONDOWN) {
-			_idx = GET_X_LPARAM(lp)/KButtonSize;
+			ref<Theme> theme = ThemeManager::GetTheme();
+			int bs = theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
+			_idx = GET_X_LPARAM(lp)/bs;
 		}
 		// track leave event
 		Repaint();
@@ -78,12 +82,14 @@ LRESULT ToolbarWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 }
 
 int ToolbarWnd::GetTotalButtonWidth() {
-	return int(_items.size())*KButtonSize;
+	ref<Theme> theme = ThemeManager::GetTheme();
+	return int(_items.size())*theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
 }
 
 void ToolbarWnd::Paint(Gdiplus::Graphics& g) {
 	Area rc = GetClientArea();
 	ref<Theme> theme = ThemeManager::GetTheme();
+	int buttonSize = theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
 	
 	if(_bk) {
 		LinearGradientBrush lbl(PointF(0.0f, 0.0f), PointF(float(rc.GetWidth()/2)+2.0f,0.0f), theme->GetBackgroundColor(), _bkColor);
@@ -122,7 +128,7 @@ void ToolbarWnd::Paint(Gdiplus::Graphics& g) {
 				LinearGradientBrush active(PointF(0.0f, 0.0f), PointF(0.0f, float(rc.GetHeight())), theme->GetActiveStartColor(), theme->GetActiveEndColor());
 				g.FillRectangle(&active, RectF(float(x)+1.0f, 1.0f, 22.0f, 21.0f));
 			}
-			g.FillRectangle(&glas, RectF(float(x)+1.0f, 1.0f, float(KButtonSize)-2.0f, float(rc.GetHeight())-3.0f));
+			g.FillRectangle(&glas, RectF(float(x)+1.0f, 1.0f, float(buttonSize)-2.0f, float(rc.GetHeight())-3.0f));
 		}
 
 		g.DrawImage(item->GetIcon(), RectF(float(x)+4.0f, 4.0f, 16.0f, 16.0f));
@@ -132,14 +138,14 @@ void ToolbarWnd::Paint(Gdiplus::Graphics& g) {
 			g.DrawLine(&pn, PointF(float(x)+24.0f, 4.0f), PointF(float(x)+24.0f, float(rc.GetHeight())-4.0f));
 		}
 
-		x += KButtonSize;
-		it++;
+		x += buttonSize;
+		++it;
 		idx++;
 	}
 
 	// draw description text if in & selected
 	if(_in && _idx >=0 && _idx < int(_items.size())) {
-		int lx = int(_items.size())*KButtonSize;
+		int lx = int(_items.size())*buttonSize;
 		ref<ToolbarItem> item = _items.at(_idx);
 		std::wstring text = item->GetText();
 		SolidBrush br(theme->GetActiveEndColor());

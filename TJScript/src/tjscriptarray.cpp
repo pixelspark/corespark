@@ -24,12 +24,12 @@ namespace tj {
 						if(_it!=_array->_array.end()) {
 							if(_key) {
 								std::wstring key = (*_it).first;
-								_it++;
+								++_it;
 								return GC::Hold(new ScriptString(key));
 							}
 							else {
 								ref<Scriptable> val = (*_it).second;
-								_it++;
+								++_it;
 								return val;
 							}
 						}
@@ -113,6 +113,6 @@ void ScriptArray::Set(ref<ParameterList> p) {
 	while(it!=p->end()) {
 		std::pair< const std::wstring, ref<Scriptable> > data = *it;
 		_array[data.first] = data.second;
-		it++;
+		++it;
 	}
 }

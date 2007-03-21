@@ -118,7 +118,7 @@ ref<Crumb> PathWnd::GetCrumbAt(int x, int* left) {
 					}
 					return crumb;
 				}
-				it++;
+				++it;
 			}
 		}
 		ReleaseDC(GetWindow(), dc);
@@ -201,7 +201,7 @@ void PathWnd::Paint(Gdiplus::Graphics& g) {
 			}
 
 			rx += int(textrc.Width)+KMarginLeft+KMarginRight+KIconWidth;
-			it++;
+			++it;
 		}
 	}
 }
@@ -251,7 +251,7 @@ void PathWnd::DoCrumbMenu(ref<Crumb> crumb, int x) {
 			if(child) {
 				cm.AddItem(child->GetText(), n, false, false);				
 			}
-			it++;
+			++it;
 			n++;
 		}
 	}
@@ -274,7 +274,7 @@ void PathWnd::DoCrumbMenu(ref<Crumb> crumb, int x) {
 			if(cr==crumb) {
 				break;
 			}
-			it++;
+			++it;
 		}
 
 		if(next!=crumb) {

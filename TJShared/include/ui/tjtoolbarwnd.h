@@ -51,7 +51,6 @@ namespace tj {
 
 			protected:
 				std::vector< ref<ToolbarItem> > _items;
-				static const int KButtonSize = 24;
 				static const int KIconWidth = 16;
 				static const int KIconHeight = 16;
 				bool _in;

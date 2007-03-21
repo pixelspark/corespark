@@ -78,7 +78,7 @@ void PropertyGridWnd::Paint(Graphics& g) {
 		
 		cH += p->GetHeight() + 6;
 
-		it++;
+		++it;
 		hI++;
 	}
 }
@@ -109,7 +109,7 @@ LRESULT PropertyGridWnd::Message(UINT msg, WPARAM wParam, LPARAM lParam) {
 					prw->Changed();
 					break;
 				}
-				it++;
+				++it;
 			}
 		}
 		else if(HIWORD(wParam)==EN_SETFOCUS) {
@@ -207,7 +207,7 @@ void PropertyGridWnd::Layout() {
 			ShowWindow(vw, SW_SHOW);
 			cH += h + 6;
 		}
-		it++;
+		++it;
 	}
 	Repaint();
 }
@@ -222,7 +222,7 @@ void PropertyGridWnd::OnSize(const Area& ns) {
 		if(pr) {
 			totalHeight += pr->GetHeight() + 6;
 		}
-		it++;
+		++it;
 	}
 
 	if(totalHeight>rect.GetHeight()) {
@@ -242,7 +242,7 @@ void PropertyGridWnd::Update() {
 	while(it!=_properties.end()) {
 		ref<Property> pr = (*it);
 		pr->Update();
-		it++;
+		++it;
 	}
 	_path->Update();
 	Repaint();
@@ -282,7 +282,7 @@ void PropertyGridWnd::Inspect(Inspectable* isp, ref<Path> p) {
 
 			_properties.push_back(pr);
 		}
-		it++;
+		++it;
 	}
 
 	_path->SetPath(p);

@@ -8,7 +8,7 @@ ScriptScope::ScriptScope(ref<ScriptParameterList> p) {
 		while(it!=p->_params->end()) {
 			std::pair< const std::wstring, tj::shared::ref<Scriptable> > data = *it;
 			_vars[data.first] = data.second;
-			it++;
+			++it;
 		}
 	}
 }

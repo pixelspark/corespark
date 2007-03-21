@@ -37,6 +37,19 @@ void Theme::DrawToolbarBackground(Gdiplus::Graphics& g, float x, float y, float 
 	g.FillRectangle(&glas, RectF(x,y, float(rc.GetWidth()), float(rc.GetHeight())/2.0f));
 }
 
+int Theme::GetMeasureInPixels(Measure m) const {
+	switch(m) {
+		case MeasureToolbarHeight:
+		case MeasureListHeaderHeight:
+			return 24;
+
+		case MeasureListItemHeight:
+			return 19;
+	}
+
+	return -1;
+}
+
 HCURSOR Theme::GetGrabCursor() const {
 	return _grab;
 }
@@ -486,11 +499,11 @@ namespace tj {
 				}
 
 				virtual Gdiplus::Color GetTimeSelectionColorEnd() const {
-					return Color(50,255,255,255);
+					return Color(100,0,0,100);
 				}
-				
+
 				virtual Gdiplus::Color GetTimeSelectionColorStart() const {
-					return Color(0,255,255,255);
+					return Color(50, 0, 0, 100);
 				}
 
 				virtual Gdiplus::Color GetTabButtonColorStart() const {

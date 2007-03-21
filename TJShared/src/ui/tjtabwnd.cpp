@@ -38,7 +38,7 @@ void TabWnd::Rename(ref<Wnd> wnd, std::wstring name) {
 			Update();
 			return;
 		}
-		it++;
+		++it;
 	}
 }
 
@@ -103,7 +103,7 @@ void TabWnd::Paint(Graphics& g) {
 		while(it!=_panes.end()) {
 			ref<Pane> pane = *it;
 			if(pane->_detached) {
-				it++;
+				++it;
 				continue;
 			}
 
@@ -142,7 +142,7 @@ void TabWnd::Paint(Graphics& g) {
 			g.DrawString(title.c_str(), (INT)title.length(), theme->GetGUIFontBold(), PointF(float(left+2+(pane->HasIcon()?KIconWidth:0)), 4.0f), &textBrush);
 
 			left += int(bound.Width) + 4 + (pane->HasIcon()?KIconWidth:0);
-			it++;
+			++it;
 			idx++;
 		}
  
@@ -216,7 +216,7 @@ void TabWnd::RemovePane(ref<Wnd> wnd) {
 			_panes.erase(it);
 			return;
 		}
-		it++;
+		++it;
 	}
 	SelectPane(0);
 }
@@ -238,7 +238,7 @@ void TabWnd::SelectPane(ref<Wnd> wnd) {
 			SelectPane(pane);
 			return;
 		}
-		it++;
+		++it;
 	}
 }
 
@@ -268,7 +268,7 @@ void TabWnd::Layout() {
 		while(it!=_panes.end()) {
 			ref<Pane> pane = *it;
 			SetWindowPos(pane->GetWindow()->GetWindow(), 0, _childStyle?0:2,rc.top+_headerHeight,rc.right-rc.left-(_childStyle?1:3),rc.bottom-rc.top-_headerHeight-(_childStyle?0:1), SWP_NOZORDER|SWP_NOREDRAW|SWP_NOACTIVATE);
-			it++;
+			++it;
 		}
 	}
 
@@ -291,7 +291,7 @@ LRESULT TabWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 					break;
 				}
 				cid++;
-				it++;
+				++it;
 			}
 
 			cid--;
@@ -311,7 +311,7 @@ LRESULT TabWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 					break;
 				}
 				cid++;
-				it++;
+				++it;
 			}
 
 			cid++;
@@ -338,7 +338,7 @@ LRESULT TabWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		while(it!=_panes.end()) {
 			ref<Pane> pane = *it;
 			if(pane->_detached) {
-				it++;
+				++it;
 				idx++;
 				continue;
 			}
@@ -359,7 +359,7 @@ LRESULT TabWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 				break;
 			}
 			idx++;
-			it++;
+			++it;
 		}
 
 		RECT rect;
@@ -375,7 +375,7 @@ LRESULT TabWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 							_panes.erase(it);
 							break;
 						}
-						it++;
+						++it;
 					}
 
 					ref<Wnd> wnd = _current->GetWindow();
@@ -487,7 +487,7 @@ void TabWnd::Detach(ref<Pane> p) {
 			_panes.erase(it);
 			break;
 		}
-		it++;
+		++it;
 	}
 
 	if(p==_current) {
@@ -521,7 +521,7 @@ ref<Pane> TabWnd::GetPaneAt(int x) {
 	while(it!=_panes.end()) {
 		ref<Pane> pane = *it;
 		if(pane->_detached) {
-			it++;
+			++it;
 			idx++;
 			continue;
 		}
@@ -533,7 +533,7 @@ ref<Pane> TabWnd::GetPaneAt(int x) {
 			return pane;
 		}
 		idx++;
-		it++;
+		++it;
 	}
 
 	return ref<Pane>(0);
@@ -549,7 +549,7 @@ bool TabWnd::RevealWindow(ref<Wnd> w) {
 			return true;
 		}
 		idx++;
-		it++;
+		++it;
 	}
 
 	return false;
@@ -566,7 +566,7 @@ void TabWnd::DoAddMenu(int x, int y) {
 			m.AddItem(pane->GetTitle(), n, false, false);
 			n++;
 		}
-		it++;
+		++it;
 	}
 
 	int c = m.DoContextMenu(GetWindow(), x,y,true);

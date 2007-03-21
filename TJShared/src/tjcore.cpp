@@ -87,7 +87,7 @@ void Core::ProcessActions() {
 			if(rn) {
 				runnables.push_back(rn);
 			}
-			it++;
+			++it;
 		}
 		_actions.clear();
 		_actionEvent.Reset();
@@ -109,7 +109,7 @@ void Core::ProcessActions() {
 		catch(...) {
 			Log::Write(L"TJShared/Core", L"Unknown exception occurred in GUI thread runnable");
 		}
-		it++;
+		++it;
 	}
 }
 

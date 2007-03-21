@@ -38,7 +38,7 @@ std::wstring ResourceManager::Get(std::wstring ident, bool silent) {
 		if(GetFileAttributes(path.c_str())!=INVALID_FILE_ATTRIBUTES) {
 			return path;
 		}
-		it++;
+		++it;
 	}
 
 	if(GetFileAttributes(ident.c_str())!=INVALID_FILE_ATTRIBUTES) {

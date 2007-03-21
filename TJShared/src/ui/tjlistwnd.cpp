@@ -14,9 +14,15 @@ ListWnd::ListWnd(HWND parent): ChildWnd(L"", parent, true, true) {
 ListWnd::~ListWnd() {
 }
 
+int ListWnd::GetHeaderHeightInPixels() const {
+	ref<Theme> theme = ThemeManager::GetTheme();
+	return theme->GetMeasureInPixels(Theme::MeasureListHeaderHeight);
+}
+
 void ListWnd::Paint(Gdiplus::Graphics &g) {
 	Area area = GetClientArea();
 	ref<Theme> theme = ThemeManager::GetTheme();
+	int headHeight = GetHeaderHeightInPixels();
 
 	SolidBrush back(theme->GetBackgroundColor());
 	g.FillRectangle(&back, area);
@@ -26,17 +32,17 @@ void ListWnd::Paint(Gdiplus::Graphics &g) {
 	// draw items, if they fit
 	int h = -int(GetVerticalPos());
 	int n = GetItemCount();
-	int itemHeight = GetItemHeight();
+	int itemHeight = GetItemHeightInPixels();
 
 	SolidBrush colorEven(theme->GetTimeBackgroundColor());
-	LinearGradientBrush colorSelected(PointF(0.0f, float(h)), PointF(0.0f, float(h+itemHeight)), theme->GetTimeSelectionColorStart(), theme->GetTimeSelectionColorEnd());
+	LinearGradientBrush colorSelected(PointF(0.0f, float(h+headHeight)), PointF(0.0f, float(h+headHeight+itemHeight)), theme->GetTimeSelectionColorStart(), theme->GetTimeSelectionColorEnd());
 
 	for(int a=0;a<n;a++) {
 		if(h>area.GetHeight()) {
 			break;
 		}
 		else if(h>=-2*itemHeight) {
-			Area rowArea(area.GetLeft(), area.GetTop()+KColumnHeaderHeight+h+1, area.GetWidth(), itemHeight);
+			Area rowArea(area.GetLeft(), area.GetTop()+headHeight+h+1, area.GetWidth(), itemHeight);
 			// draw a background if odd
 			if(a==_selected) {
 				g.FillRectangle(&colorSelected, rowArea);
@@ -47,21 +53,21 @@ void ListWnd::Paint(Gdiplus::Graphics &g) {
 			
 			// draw item
 			PaintItem(a, g, rowArea);
-			g.DrawLine(&lineBorder, 0, h+2*itemHeight, area.GetRight(), h+2*itemHeight);
+			g.DrawLine(&lineBorder, 0, h+itemHeight+headHeight, area.GetRight(), h+itemHeight+headHeight);
 		}
 		h += itemHeight;
 	}
 
 	// draw columns
-	theme->DrawToolbarBackground(g, (float)area.GetLeft(), (float)area.GetTop(), (float)area.GetWidth(), (float)KColumnHeaderHeight);
-	g.DrawLine(&border, 0, KColumnHeaderHeight, area.GetWidth(), KColumnHeaderHeight);
+	theme->DrawToolbarBackground(g, (float)area.GetLeft(), (float)area.GetTop(), (float)area.GetWidth(), (float)headHeight);
+	g.DrawLine(&border, 0, headHeight, area.GetWidth(), headHeight);
 
 	StringFormat sf;
 	sf.SetAlignment(StringAlignmentNear);
 	sf.SetLineAlignment(StringAlignmentCenter);
 	sf.SetTrimming(StringTrimmingEllipsisCharacter);
 	//SolidBrush colBr(theme->GetTextColor());
-	LinearGradientBrush colBr(PointF(0.0f, 4.0f), PointF(0.0f, float(KColumnHeaderHeight-8)), theme->GetActiveStartColor(), theme->GetActiveEndColor());
+	LinearGradientBrush colBr(PointF(0.0f, 4.0f), PointF(0.0f, float(headHeight-8)), theme->GetActiveStartColor(), theme->GetActiveEndColor());
 	Pen separator(theme->GetActiveEndColor());
 
 	float x = float(area.GetLeft());
@@ -69,10 +75,10 @@ void ListWnd::Paint(Gdiplus::Graphics &g) {
 	while(it!=_cols.end()) {
 		Column& col = it->second;
 		float w = col._width*area.GetWidth();
-		g.DrawString(col._title.c_str(), (int)col._title.length(), theme->GetGUIFontBold(), RectF(x+3.0f, (float)area.GetTop()+4.0f, w, KColumnHeaderHeight-8.0f), &sf, &colBr);
-		g.DrawLine(&separator, x+w, area.GetTop()+2.0f, x+w, area.GetTop()+KColumnHeaderHeight-4.0f);
+		g.DrawString(col._title.c_str(), (int)col._title.length(), theme->GetGUIFontBold(), RectF(x+3.0f, (float)area.GetTop()+4.0f, w, headHeight-8.0f), &sf, &colBr);
+		g.DrawLine(&separator, x+w, area.GetTop()+2.0f, x+w, area.GetTop()+headHeight-4.0f);
 		x += w;
-		it++;
+		++it;
 	}
 }
 
@@ -94,7 +100,7 @@ float ListWnd::GetColumnX(int id) {
 			return cx;
 		}
 		cx += col._width;
-		it++;
+		++it;
 	}
 	return 0.0f;
 }
@@ -107,7 +113,7 @@ float ListWnd::GetColumnWidth(int id) {
 }
 
 void ListWnd::OnSize(const Area& ns) {
-	int h = (GetItemCount()+1)*GetItemHeight();
+	int h = (GetItemCount()+1)*GetItemHeightInPixels();
 	if(h>ns.GetHeight()) {
 		SetVerticallyScrollable(true);
 		SetVerticalScrollInfo(Range<unsigned int>(0, h), ns.GetHeight());
@@ -137,8 +143,9 @@ LRESULT ListWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	if(msg==WM_LBUTTONDOWN||msg==WM_RBUTTONDOWN||msg==WM_LBUTTONDBLCLK) {
 		int y = GET_Y_LPARAM(lp);
 		int x = GET_X_LPARAM(lp);
+		int ch = GetHeaderHeightInPixels();
 
-		if(y<KColumnHeaderHeight && msg!=WM_LBUTTONDBLCLK) {
+		if(y<ch && msg!=WM_LBUTTONDBLCLK) {
 			_dragStartX = GET_X_LPARAM(lp);
 			Area r = GetClientArea();
 			SetCursor(LoadCursor(NULL, IDC_SIZEWE));
@@ -152,7 +159,7 @@ LRESULT ListWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 					_draggingCol = it->first;
 					break;
 				}
-				it++;
+				++it;
 			}
 
 			if(_draggingCol>=0) {
@@ -181,15 +188,16 @@ LRESULT ListWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 					}
 					break;
 				}
-				it++;
+				++it;
 			}
 		}
 	}
 	else if(msg==WM_MOUSEMOVE) {
 		int y = GET_Y_LPARAM(lp);
 		int x = GET_X_LPARAM(lp);
+		int ch = GetHeaderHeightInPixels();
 
-		if(y<KColumnHeaderHeight) {
+		if(y<ch) {
 			if(_draggingCol>=0) {
 				int dx = GET_X_LPARAM(lp) - _dragStartX;
 				_dragStartX = GET_X_LPARAM(lp);
@@ -215,10 +223,10 @@ LRESULT ListWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		int delta = GET_WHEEL_DELTA_WPARAM(wp);
 		Area a = GetClientArea();
 		
-		if(a.GetHeight()<(1+GetItemCount())*GetItemHeight()) {
+		if(a.GetHeight()<(1+GetItemCount())*GetItemHeightInPixels()) {
 			if(delta<0) {
 				
-				SetVerticalPos(min(int(GetVerticalPos())+10, (1+GetItemCount())*GetItemHeight()-a.GetHeight()));
+				SetVerticalPos(min(int(GetVerticalPos())+10, (1+GetItemCount())*GetItemHeightInPixels()-a.GetHeight()));
 			}
 			else {
 				SetVerticalPos(max(int(GetVerticalPos())-10, 0));
@@ -240,9 +248,9 @@ LRESULT ListWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 }
 
 int ListWnd::GetRowIDByHeight(int y) {
-	int ih = GetItemHeight();
+	int ih = GetItemHeightInPixels();
 	if(ih==0) ih = 1;
-	return (y - KColumnHeaderHeight + int(GetVerticalPos()))/ih;
+	return (y - GetHeaderHeightInPixels() + int(GetVerticalPos()))/ih;
 }
 
 void ListWnd::OnClickItem(int id, int col) {
@@ -254,8 +262,9 @@ void ListWnd::OnRightClickItem(int id, int col) {
 void ListWnd::OnDoubleClickItem(int id, int col) {
 }
 
-int ListWnd::GetItemHeight() {
-	return KColumnHeaderHeight;
+int ListWnd::GetItemHeightInPixels() {
+	ref<Theme> theme = ThemeManager::GetTheme();
+	return theme->GetMeasureInPixels(Theme::MeasureListItemHeight);
 }
 
 void ListWnd::AddColumn(std::wstring name, int id) {

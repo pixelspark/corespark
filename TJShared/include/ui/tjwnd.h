@@ -93,6 +93,7 @@ namespace tj {
 				virtual void Paint(Gdiplus::Graphics& g) = 0;
 				virtual void OnSize(const Area& newSize);
 				virtual void OnScroll(ScrollDirection dir);
+				virtual void OnActivate(bool activate);
 			
 			private:
 				static void RegisterClasses();
@@ -111,7 +112,7 @@ namespace tj {
 				bool _wantsMouseLeave;
 		};
 
-		class ChildEnumerator {
+		/*class ChildEnumerator {
 			public:
 				ChildEnumerator(HWND parent, bool recursive=false);
 				void Add(HWND wnd);
@@ -119,7 +120,7 @@ namespace tj {
 				std::vector<Wnd*> _children;
 				bool _recursive;
 				HWND _for;
-		};
+		};*/
 	}
 }
 

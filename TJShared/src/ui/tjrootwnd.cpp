@@ -19,7 +19,7 @@ void RootWnd::RenameWindow(ref<Wnd> w, std::wstring n) {
 			pane->_title = n;
 			break;
 		}
-		it++;
+		++it;
 	}
 
 	// rename in floating panes
@@ -46,7 +46,7 @@ void RootWnd::RemoveWindow(ref<Wnd> w) {
 			RemoveOrphanPane(pane);
 			break;
 		}
-		it++;
+		++it;
 	}
 
 	// remove from floating panes
@@ -90,7 +90,7 @@ void RootWnd::RemoveFloatingPane(ref<Pane> pn) {
 			_floatingPanes.erase(it);
 			return;
 		}
-		it++;
+		++it;
 	}
 }
 
@@ -111,7 +111,7 @@ void RootWnd::RemoveTabWindow(TabWnd* tw) {
 			_tabWindows.erase(it);
 			return;
 		}
-		it++;
+		++it;
 	}
 }
 
@@ -123,7 +123,7 @@ void RootWnd::AddNotification(std::wstring text, std::wstring icon, int time) {
 		if(wnd) {
 			highestIndex = max(wnd->GetIndex(), highestIndex);
 		}
-		it++;
+		++it;
 	}
 	ref<NotificationWnd> nw = GC::Hold(new NotificationWnd(text,icon,time, highestIndex+1, this));
 	_notifications.push_back(nw);
@@ -137,7 +137,7 @@ void RootWnd::RemoveNotification(NotificationWnd* nw) {
 			_notifications.erase(it);
 			return;
 		}
-		it++;
+		++it;
 	}
 }
 
@@ -153,7 +153,7 @@ void RootWnd::RevealWindow(ref<Wnd> wnd) {
 			SetForegroundWindow(pane->GetWindow());
 			return;
 		}
-		it++;
+		++it;
 	}
 
 	// let the tab windows do their thing
@@ -213,7 +213,7 @@ void RootWnd::RemoveOrphanPane(ref<Pane> pane) {
 			_orphans.erase(it);
 			return;
 		}
-		it++;
+		++it;
 	}
 }
 

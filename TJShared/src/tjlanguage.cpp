@@ -11,7 +11,7 @@ Language::~Language() {
 
 	while(it!=_strings.end()) {
 		delete it->second;
-		it++;
+		++it;
 	}
 }
 

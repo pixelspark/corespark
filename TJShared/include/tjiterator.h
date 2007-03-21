@@ -29,7 +29,7 @@ namespace tj {
 
 				virtual void Next() {
 					if(_it!=_end) {
-						_it++;
+						++_it;
 					}
 				}
 

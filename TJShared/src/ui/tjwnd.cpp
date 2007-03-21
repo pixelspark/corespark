@@ -28,58 +28,6 @@ GraphicsInit::~GraphicsInit() {
 	
 }
 
-BOOL ChildEnumeratorProc(HWND wnd, LPARAM lp) {
-	ChildEnumerator* cp = reinterpret_cast<ChildEnumerator*>((long long)lp);
-	if(cp!=0) {
-		cp->Add(wnd);
-	}
-	return TRUE;
-}
-
-ChildEnumerator::ChildEnumerator(HWND parent, bool recursive): _for(parent) {
-	_recursive = recursive;
-	EnumChildWindows(parent,(WNDENUMPROC)ChildEnumeratorProc, (LPARAM)(long long)this);
-}
-
-void ChildEnumerator::Add(HWND wnd) {
-	Wnd* cw = reinterpret_cast<Wnd*>((long long)GetWindowLong(wnd, GWL_USERDATA));
-	if(cw!=0) {
-		if(_recursive) {
-			_children.push_back(cw);
-			ChildEnumerator enu(wnd, true);
-			std::vector<Wnd*>::iterator it = enu._children.begin();
-			while(it!=enu._children.end()) {
-				_children.push_back(*it);
-				it++;
-			}
-		}
-		else {
-			if(cw->IsSplitter()) {
-				SplitterWnd* sw = dynamic_cast<SplitterWnd*>(cw);
-				if(sw) {
-					_children.push_back(sw->_a.GetPointer()); // TODO: All GetPointers here are DANGEROUS
-					if(sw->_a->IsSplitter()) {
-						SplitterWnd* first = dynamic_cast<SplitterWnd*>(sw->_a.GetPointer());
-						_children.push_back(first->_a.GetPointer());
-						_children.push_back(first->_b.GetPointer());
-					}
-
-					_children.push_back(sw->_b.GetPointer());
-					if(sw->_b->IsSplitter()) {
-						SplitterWnd* first = dynamic_cast<SplitterWnd*>(sw->_b.GetPointer());
-						_children.push_back(first->_a.GetPointer());
-						_children.push_back(first->_b.GetPointer());
-					}
-				}
-			}
-			else {
-				if(GetParent(wnd)!=_for) return;
-				_children.push_back(cw);
-			}
-		}
-	}
-}
-
 Wnd::Wnd(const wchar_t* title, HWND parent, const wchar_t* className, bool usedb, int exStyle) {
 	RegisterClasses();
 	_quitOnClose = false;
@@ -240,21 +188,21 @@ void Wnd::RegisterClasses() {
 	wc.hIcon = LoadIcon(wc.hInstance, MAKEINTRESOURCE(101));
 	wc.lpfnWndProc = WndProc;
 	wc.lpszClassName = TJ_DEFAULT_CLASS_NAME;
-	wc.style = CS_HREDRAW|CS_DBLCLKS;
+	wc.style = CS_DBLCLKS;
 	
 	if(!RegisterClassEx(&wc)) {
 		Throw(L"Could not register class",ExceptionTypeError);
 	}
 
 	wc.lpszClassName = TJ_GL_CLASS_NAME;
-	wc.style = CS_CLASSDC|CS_HREDRAW;
+	wc.style = CS_CLASSDC;
 	if(!RegisterClassEx(&wc)) {
 		Throw(L"Could not register class", ExceptionTypeError);
 	}
 	
 	wc.style = CS_HREDRAW|CS_DBLCLKS;
 	wc.lpszClassName = TJ_DEFAULT_NDBL_CLASS_NAME;
-	wc.style = CS_HREDRAW /* |CS_VREDRAW */;
+	wc.style = CS_HREDRAW;
 
 	if(!RegisterClassEx(&wc)) {
 		Throw(L"Could not register class",ExceptionTypeError);
@@ -424,7 +372,10 @@ void Wnd::Move(int x, int y, int w, int h) {
 }
 
 LRESULT Wnd::PreMessage(UINT msg, WPARAM wp, LPARAM lp) {
-	if(msg==WM_PAINT) {
+	if(msg==WM_ERASEBKGND) {
+		return 1;
+	}
+	else if(msg==WM_PAINT) {
 		int style = GetWindowLong(_wnd, GWL_STYLE);
 		if((style&WS_VISIBLE)==0) {
 			return 0;
@@ -473,10 +424,14 @@ LRESULT Wnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	else if(msg==WM_LBUTTONDOWN) {
 		SetFocus(_wnd);
 	}
+	else if(msg==WM_ACTIVATE) {
+		OnActivate(LOWORD(wp)!=WA_INACTIVE);
+		return 0;
+	}
 	else if(msg==WM_SIZE) {
 		Area size = GetClientArea();
-		size.SetWidth(LOWORD(lp));
-		size.SetHeight(HIWORD(lp));
+		//size.SetWidth(LOWORD(lp));
+		//size.SetHeight(HIWORD(lp));
 		OnSize(size);
 		return 0;
 	}
@@ -664,6 +619,9 @@ void Wnd::Fill() {
 	HWND parent = ::GetParent(_wnd);
 	GetClientRect(parent, &rc);
 	Move(rc.left, rc.top, rc.right, rc.bottom);
+}
+
+void Wnd::OnActivate(bool a) {
 }
 
 LRESULT CALLBACK PropertyEditNumericWndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) {

@@ -48,7 +48,7 @@ template<> CodeWriter& CodeWriter::Add(const std::wstring& x) {
 	while(it!=x.end()) {
 		wchar_t c = *it;
 		Add<wchar_t>(c);
-		it++;
+		++it;
 	}
 	return *this;
 }

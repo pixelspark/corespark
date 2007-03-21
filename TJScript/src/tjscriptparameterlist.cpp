@@ -10,7 +10,7 @@ ref<Scriptable> ScriptParameterList::Execute(Command command, tj::shared::ref<Pa
 		while(it!=_params->end()) {
 			std::pair< std::wstring, tj::shared::ref<Scriptable> > p = *it;
 			wos << p.first << L"; ";
-			it++;
+			++it;
 		}
 
 		return tj::shared::GC::Hold(new ScriptValue<std::wstring>(wos.str()));

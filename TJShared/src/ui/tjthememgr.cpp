@@ -25,7 +25,7 @@ void ThemeManager::RemoveTheme(ref<Theme> thm) {
 			_themes.erase(it);
 			return;
 		}
-		it++;
+		++it;
 	}
 }
 
@@ -39,7 +39,7 @@ int ThemeManager::GetThemeId() {
 			return idx;
 		}
 		idx++;
-		it++;
+		++it;
 	}
 
 	return -1;
@@ -50,7 +50,7 @@ void ThemeManager::ListThemes(HWND list) {
 	while(it!=_themes.end()) {
 		ref<Theme> theme = *it;
 		ListBox_AddString(list, theme->GetName().c_str());
-		it++;
+		++it;
 	}
 }
 

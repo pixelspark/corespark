@@ -44,7 +44,7 @@ namespace tj {
 								maxAge = item._age;
 								maxItem = it;
 							}
-							it++;
+							++it;
 						}
 
 						if(maxItem != _items.end()) _items.erase(maxItem);

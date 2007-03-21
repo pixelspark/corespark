@@ -26,7 +26,7 @@ int CompiledScript::GetScriptletIndex(ref<Scriptlet> scriptlet) {
 		if(s==scriptlet) {
 			return idx;
 		}
-		it++;
+		++it;
 		idx++;
 	}
 

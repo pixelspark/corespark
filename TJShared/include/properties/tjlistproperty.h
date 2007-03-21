@@ -42,7 +42,7 @@ namespace tj {
 					while(it!=_options.end()) {
 						Item item = *it;
 						SendMessage(_wnd, CB_ADDSTRING, 0, (LPARAM)item._name.c_str());
-						it++;
+						++it;
 					}
 					return _wnd;
 				}

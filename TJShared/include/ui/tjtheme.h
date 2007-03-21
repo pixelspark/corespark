@@ -9,6 +9,14 @@ namespace tj {
 				Theme();
 				virtual ~Theme();
 				virtual std::wstring GetName() const;
+
+				enum Measure {
+					MeasureToolbarHeight = 1,
+					MeasureListItemHeight,
+					MeasureListHeaderHeight,
+				};
+
+				// Colors
 				virtual Gdiplus::Color GetBackgroundColor() const;
 				virtual Gdiplus::Color GetEditBackgroundColor() const;
 				virtual Gdiplus::Color GetTimeBackgroundColor() const;
@@ -26,9 +34,6 @@ namespace tj {
 				virtual Gdiplus::Color GetCurrentPositionColor() const;
 				virtual Gdiplus::Color GetTrackDescriptionTextColor() const;
 				virtual Gdiplus::Color GetFaderColor() const;
-				virtual Gdiplus::Font* GetGUIFont() const;
-				virtual Gdiplus::Font* GetGUIFontBold() const;
-				virtual Gdiplus::Font* GetGUIFontSmall() const;
 
 				virtual Gdiplus::Color GetSliderColorStart(int i) const;
 				virtual Gdiplus::Color GetSliderColorEnd(int i) const;
@@ -57,7 +62,15 @@ namespace tj {
 				virtual Gdiplus::Color GetProgressGlassStart() const;
 				virtual Gdiplus::Color GetProgressGlassEnd() const;
 				virtual Gdiplus::Color GetProgressColor() const;
+
+				// fonts
+				virtual Gdiplus::Font* GetGUIFont() const;
+				virtual Gdiplus::Font* GetGUIFontBold() const;
+				virtual Gdiplus::Font* GetGUIFontSmall() const;
 				
+				// measures
+				virtual int GetMeasureInPixels(Theme::Measure m) const;
+
 				virtual HCURSOR GetGrabCursor() const;
 				virtual HCURSOR GetGrabbedCursor() const;
 				virtual Gdiplus::Brush* GetApplicationBackgroundBrush(HWND root, HWND child) const;
