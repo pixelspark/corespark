@@ -34,8 +34,10 @@ namespace tj {
 				virtual void OnClickItem(int id, int col);
 				virtual void OnRightClickItem(int id, int col);
 				virtual void OnDoubleClickItem(int id, int col);
+				virtual void OnColumnSizeChanged();
 
 				int GetRowIDByHeight(int h);
+				virtual Area GetRowArea(int rid);
 				virtual int GetHeaderHeightInPixels() const;
 				const static float KMinimumColumnWidth;
 			

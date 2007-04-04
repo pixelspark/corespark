@@ -36,16 +36,18 @@ void EditWnd::UpdateColor() {
 }
 
 void EditWnd::Paint(Gdiplus::Graphics& g) {
-	ref<Theme> theme = ThemeManager::GetTheme();
+	/*ref<Theme> theme = ThemeManager::GetTheme();
 	SolidBrush back(theme->GetEditBackgroundColor());
-	g.FillRectangle(&back, GetClientArea());
+	g.FillRectangle(&back, GetClientArea());*/
 }
 
 void EditWnd::Layout() {
 	Area rc = GetClientArea();
-	const int ControlHeight = 15;
+	/*const int ControlHeight = 15;
 	int vMargin = (rc.GetBottom()-rc.GetTop()-ControlHeight)/2;
 	SetWindowPos(_ctrl, 0, rc.GetLeft()+2, rc.GetTop()+vMargin, rc.GetWidth()-4, ControlHeight, SWP_NOZORDER);
+	*/
+	SetWindowPos(_ctrl, 0L, rc.GetLeft(), rc.GetTop(), rc.GetWidth(), rc.GetHeight(), SWP_NOZORDER);
 }
 
 LRESULT EditWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {

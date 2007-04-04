@@ -432,7 +432,13 @@ LRESULT Wnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		Area size = GetClientArea();
 		//size.SetWidth(LOWORD(lp));
 		//size.SetHeight(HIWORD(lp));
-		OnSize(size);
+		if(!(size.GetWidth()==0 || size.GetHeight()==0)) {
+			/* window is hidden, don't bother changing layout
+			   Some windows add scrollbars when the area is very small (0,0)
+			   and this prevents them from doing so */
+			OnSize(size);
+		}
+		
 		return 0;
 	}
 	else if(msg==WM_HSCROLL) {

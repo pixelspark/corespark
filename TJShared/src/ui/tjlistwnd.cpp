@@ -6,6 +6,7 @@ using namespace tj::shared;
 const float ListWnd::KMinimumColumnWidth = 0.075f;
 
 ListWnd::ListWnd(HWND parent): ChildWnd(L"", parent, true, true) {
+	SetStyle(WS_CLIPCHILDREN);
 	_draggingCol = -1;
 	_dragStartX = 0;
 	_selected = -1;
@@ -135,8 +136,12 @@ void ListWnd::SetColumnWidth(int id, float w) {
 	std::map<int, Column>::iterator it = _cols.find(id);
 	if(it!=_cols.end()) {
 		it->second._width = w;
+		OnColumnSizeChanged();
 		Repaint();
 	}
+}
+
+void ListWnd::OnColumnSizeChanged() {
 }
 
 LRESULT ListWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
@@ -208,6 +213,7 @@ LRESULT ListWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 					if(_cols[_draggingCol]._width<=KMinimumColumnWidth) {
 						_cols[_draggingCol]._width = KMinimumColumnWidth;
 					}
+					OnColumnSizeChanged();
 				}
 			}
 			Repaint();
@@ -265,6 +271,18 @@ void ListWnd::OnDoubleClickItem(int id, int col) {
 int ListWnd::GetItemHeightInPixels() {
 	ref<Theme> theme = ThemeManager::GetTheme();
 	return theme->GetMeasureInPixels(Theme::MeasureListItemHeight);
+}
+
+Area ListWnd::GetRowArea(int rid) {
+	Area client = GetClientArea();
+	int h = -int(GetVerticalPos())+GetHeaderHeightInPixels();
+	int ih = GetItemHeightInPixels();
+
+	h += (rid*ih);
+	if(h>0 && h<client.GetBottom()) {
+		return Area(client.GetLeft(), client.GetTop()+h, client.GetWidth(), ih);
+	}
+	return Area(0,0,0,0);
 }
 
 void ListWnd::AddColumn(std::wstring name, int id) {
