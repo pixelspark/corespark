@@ -21,6 +21,10 @@ std::wstring Vector::ToString() const {
 	return wos.str();
 }
 
+Vector Vector::Scale(float s) const {
+	return Vector(x*s, y*s, z*s);
+}
+
 Vector Vector::Dot(const Vector& other) const {
 	return Vector(x*other.x, y*other.y, z*other.z);
 }

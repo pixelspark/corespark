@@ -520,6 +520,10 @@ void Wnd::OnSize(const Area& newSize) {
 void Wnd::OnScroll(ScrollDirection dir) {
 }
 
+Gdiplus::Bitmap* Wnd::GetTabIcon() const {
+	return 0;
+}
+
 /* Property edit window */
 LRESULT CALLBACK PropertyEditWndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) {
 	if(msg==WM_KEYDOWN) {

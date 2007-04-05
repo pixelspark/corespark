@@ -313,7 +313,7 @@ Color BrightTheme::GetTextColor() const {
 }
 
 Color BrightTheme::GetActiveTrackColor() const {
-	return Color(230,230,230);
+	return Color(240,240,240);
 }
 
 Color BrightTheme::GetActiveStartColor() const {

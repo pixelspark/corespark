@@ -9,6 +9,7 @@ namespace tj {
 				Vector(const Vector& other);
 				~Vector();
 				Vector Dot(const Vector& other) const;
+				Vector Scale(float n) const;
 				float GetLength() const;
 				std::wstring ToString() const;
 

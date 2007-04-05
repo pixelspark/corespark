@@ -83,7 +83,8 @@ namespace tj {
 				bool GetWantMouseLeave() const;
 
 				HWND GetWindow();
-				virtual std::wstring GetTabTitle() const;
+				virtual std::wstring GetTabTitle() const;		// return an empty string if you don't want to override Pane's title
+				virtual Gdiplus::Bitmap* GetTabIcon() const;	// should return 0 when you don't want to override the tab icon set in Pane
 				virtual void Focus();
 
 			protected:

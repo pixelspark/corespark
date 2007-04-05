@@ -25,7 +25,9 @@ void Pane::SetTitle(std::wstring c) {
 }
 
 Gdiplus::Bitmap* Pane::GetIcon() {
-	return _icon;
+	// If the window specifies a tab icon, return that one instead
+	Gdiplus::Bitmap* ni = _wnd->GetTabIcon();
+	return ni==0?_icon:ni;
 }
 
 std::wstring Pane::GetTitle() const {
@@ -50,7 +52,7 @@ ref<Wnd> Pane::GetWindow() {
 }
 
 bool Pane::HasIcon() const {
-	return _icon!=0;
+	return _icon!=0 || _wnd->GetTabIcon()!=0;
 }
 
 FloatingPane::FloatingPane(RootWnd* rw, ref<Pane> p, TabWnd* source): Wnd(L"FloatingPane", 0, TJ_DEFAULT_CLASS_NAME, false) {

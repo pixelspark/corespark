@@ -16,6 +16,18 @@ Arguments::~Arguments() {
     delete m_cmdline;
 }
 
+bool Arguments::IsSet(const std::wstring& option) {
+	std::vector<wchar_t*>::iterator it = _options.begin();
+	while(it!=_options.end()) {
+		wchar_t* str = *it;
+		if(std::wstring(str)==option) {
+			return true;
+		}
+		++it;
+	}
+	return false;
+}
+
  ////////////////////////////////////////////////////////////////////////////////
     // Parse m_cmdline into individual tokens, which are delimited by spaces. If a
     // token begins with a quote, then that token is terminated by the next quote

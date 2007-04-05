@@ -9,6 +9,7 @@ namespace tj {
 				Arguments(); 
 				virtual ~Arguments();
 				std::vector<wchar_t*>* GetOptions();
+				bool IsSet(const std::wstring& option);
 
 			protected:
 				void Parse();
