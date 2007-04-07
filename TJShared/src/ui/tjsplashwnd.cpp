@@ -9,7 +9,6 @@ SplashWnd::SplashWnd(std::wstring path, int w, int h): Wnd(L"TJShow", 0L) {
 	_image = Bitmap::FromFile(path.c_str(), TRUE);
 	_progress = GC::Hold(new ProgressWnd(GetWindow()));
 	_progress->SetIndeterminate(true);
-	//_progress->SetValue(0.618);
 	_progress->Show(true);
 	
 	RECT rc;

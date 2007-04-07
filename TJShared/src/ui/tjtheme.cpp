@@ -45,6 +45,9 @@ int Theme::GetMeasureInPixels(Measure m) const {
 
 		case MeasureListItemHeight:
 			return 19;
+
+		case MeasureMaximumSnappingDistance:
+			return 2;
 	}
 
 	return -1;

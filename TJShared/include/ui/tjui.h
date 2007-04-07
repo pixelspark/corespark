@@ -4,6 +4,7 @@
 #include "tjtheme.h"
 #include "tjthememgr.h"
 
+#include "tjicon.h"
 #include "tjwnd.h"
 #include "tjchildwnd.h"
 #include "tjcontextmenu.h"

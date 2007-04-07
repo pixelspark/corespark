@@ -14,6 +14,7 @@ namespace tj {
 					MeasureToolbarHeight = 1,
 					MeasureListItemHeight,
 					MeasureListHeaderHeight,
+					MeasureMaximumSnappingDistance,
 				};
 
 				// Colors
