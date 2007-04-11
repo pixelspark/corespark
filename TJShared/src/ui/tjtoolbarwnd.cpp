@@ -157,23 +157,20 @@ void ToolbarWnd::Paint(Gdiplus::Graphics& g) {
 }
 
 // ToolbarItem
-ToolbarItem::ToolbarItem(int command, Gdiplus::Bitmap* bmp, std::wstring text, bool separator) {
+ToolbarItem::ToolbarItem(int command, Gdiplus::Bitmap* bmp, std::wstring text, bool separator): _icon(bmp) {
 	_separator = separator;
-	_icon = bmp;
 	_command = command;
 	_text = text;
 }
 
-ToolbarItem::ToolbarItem(int command, std::wstring rid, std::wstring text, bool separator) {
+ToolbarItem::ToolbarItem(int command, std::wstring rid, std::wstring text, bool separator): _icon(rid) {
 	_separator = separator;
 	std::wstring path = ResourceManager::Instance()->Get(rid);
-	_icon = Bitmap::FromFile(path.c_str(), TRUE);
 	_command = command;
 	_text = text;
 }
 
 ToolbarItem::~ToolbarItem() {
-	delete _icon;
 };
 
 std::wstring ToolbarItem::GetText() const {
@@ -188,7 +185,7 @@ void ToolbarItem::SetSeparator(bool s) {
 	_separator = s;
 }
 
-Gdiplus::Bitmap* ToolbarItem::GetIcon() {
+Icon& ToolbarItem::GetIcon() {
 	return _icon;
 }
 
@@ -197,14 +194,11 @@ int ToolbarItem::GetCommand() const {
 }
 
 // StateToolbarItem
-StateToolbarItem::StateToolbarItem(int c, std::wstring on, std::wstring off, std::wstring text): ToolbarItem(c, off,text) {
-	std::wstring path = ResourceManager::Instance()->Get(on);
-	_onImage = Bitmap::FromFile(path.c_str(), TRUE);
+StateToolbarItem::StateToolbarItem(int c, std::wstring on, std::wstring off, std::wstring text): ToolbarItem(c, off,text), _onIcon(on) {
 	_on = false;
 }
 
 StateToolbarItem::~StateToolbarItem() {
-	delete _onImage;
 }
 
 void StateToolbarItem::SetState(bool on) {
@@ -215,6 +209,6 @@ bool StateToolbarItem::IsOn() const {
 	return _on;
 }
 
-Gdiplus::Bitmap* StateToolbarItem::GetIcon() {
-	return _on?_onImage:(ToolbarItem::GetIcon());
+Icon& StateToolbarItem::GetIcon() {
+	return _on?_onIcon:(ToolbarItem::GetIcon());
 }

@@ -7,6 +7,7 @@ namespace tj {
 			public:
 				Icon(std::wstring rid);
 				virtual ~Icon();
+				Icon(Gdiplus::Bitmap* bmp); // Icon will own and delete bmp!
 				operator Gdiplus::Bitmap*();
 				Gdiplus::Bitmap* GetBitmap();
 				bool IsLoaded() const;

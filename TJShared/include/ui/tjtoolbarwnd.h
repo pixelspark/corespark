@@ -12,12 +12,12 @@ namespace tj {
 				bool IsSeparator() const;
 				void SetSeparator(bool s);
 				virtual int GetCommand() const;
-				virtual Gdiplus::Bitmap* GetIcon();
+				virtual Icon& GetIcon();
 				virtual std::wstring GetText() const;
 
 			protected:
 				int _command;
-				Gdiplus::Bitmap* _icon;
+				Icon _icon;
 				bool _separator;
 				std::wstring _text;
 		};
@@ -27,12 +27,12 @@ namespace tj {
 				StateToolbarItem(int command, std::wstring iconOn, std::wstring iconOff, std::wstring text=L"");
 				virtual ~StateToolbarItem();
 				virtual void SetState(bool on);
-				virtual Gdiplus::Bitmap* GetIcon();
+				virtual Icon& GetIcon();
 				bool IsOn() const;
 
 			protected:
 				bool _on;
-				Gdiplus::Bitmap* _onImage;
+				Icon _onIcon;
 		};
 
 		class EXPORTED ToolbarWnd: public ChildWnd {
