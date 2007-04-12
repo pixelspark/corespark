@@ -17,6 +17,7 @@
 #include <iomanip>
 #include <fstream>
 #include <deque>
+#include <math.h>
 
 #include <windows.h>
 #include <Gdiplus.h>

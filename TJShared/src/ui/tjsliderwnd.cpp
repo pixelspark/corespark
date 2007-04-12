@@ -98,57 +98,55 @@ void SliderWnd::Paint(Graphics& g) {
 	}
 	
 	ref<Theme> theme = ThemeManager::GetTheme();
-	RECT rect;
-	GetClientRect(GetWindow(), &rect);
+	Area rect = GetClientArea();
 
 	Gdiplus::Color colorStart = theme->GetSliderColorStart(_color);
 	Gdiplus::Color colorEnd = theme->GetSliderColorEnd(_color);
 
 	// background
 	SolidBrush backBrush(theme->GetBackgroundColor());
-	g.FillRectangle(&backBrush,Rect(0,0,rect.right-rect.left, rect.bottom-rect.top));
+	g.FillRectangle(&backBrush,rect);
 
 	// middle rectangle, 6 pixels wide
-	rect.top += 5;
-	rect.bottom -= 30;
-	if(!_showValue) rect.bottom += 15;
-	LinearGradientBrush br(PointF(0.0f, float(rect.top-10)), PointF(0.0f, float(rect.bottom-rect.top+15)), colorStart, colorEnd);
+	rect.Narrow(0, 5, 0, 25);
+
+	LinearGradientBrush br(PointF(0.0f, float(rect.GetTop()-10)), PointF(0.0f, float(rect.GetHeight()+15)), colorStart, colorEnd);
 	Pen pn(&br, 1.0f);
 	const static int squareWidth = 6;
-	int x = (rect.right-rect.left)/2 - (squareWidth/2);
-	g.DrawRectangle(&pn, RectF(float(x), float(rect.top), float(squareWidth), float(rect.bottom-rect.top)));
+	int x = rect.GetWidth()/2 - (squareWidth/2);
+	g.DrawRectangle(&pn, RectF(float(x), float(rect.GetTop()), float(squareWidth), float(rect.GetHeight())));
 
 	if(_displayValue>0.0f) {
-		float dvh = (1.0f-_displayValue) * (rect.bottom-rect.top);
-		g.FillRectangle(&br,RectF(float(x+2), float(float(rect.top)+dvh), float(squareWidth-3), float(rect.bottom-rect.top)-dvh));
+		float dvh = (1.0f-_displayValue) * rect.GetHeight();
+		g.FillRectangle(&br,RectF(float(x+2), float(float(rect.GetTop())+dvh), float(squareWidth-4), float(rect.GetHeight())-dvh));
 	}
 
 	// markers
-	int mx = (rect.right-rect.left)/2 + (squareWidth/2);
+	int mx = (rect.GetWidth())/2 + (squareWidth/2);
 	for(float my=0.0f;my<=1.0f;my+=0.1f) {
-		float mty = float(int(rect.bottom) - int(my*int(rect.bottom-rect.top)));
+		float mty = float(int(rect.GetBottom()) - int(my*rect.GetHeight()));
 		g.DrawLine(&pn, (REAL)mx, mty, (REAL)mx+2,mty);
 	}
 
 	if(_mark != _value && _mark <= 1.0f && _mark >= 0.0f) {
-		mx = (rect.right-rect.left)/2 - (squareWidth/2);
+		mx = (rect.GetWidth())/2 - (squareWidth/2);
 		Pen mpn(theme->GetCommandMarkerColor(), 3.0f);
-		float mty = float(int(rect.bottom) - int(_mark*int(rect.bottom-rect.top)));
+		float mty = float(int(rect.GetBottom()) - int(_mark*rect.GetHeight()));
 		g.DrawLine(&mpn, (REAL)mx, mty, (REAL)mx+squareWidth+1,mty);
 	}
 
 	// larger markers at 0.0, 0.5, 1.0
-	float mty = float(int(rect.bottom) - int(0.5f*int(rect.bottom-rect.top)));
+	float mty = float(int(rect.GetBottom()) - int(0.5f*int(rect.GetHeight())));
 	g.DrawLine(&pn, (REAL)mx, mty, (REAL)mx+4,mty);
-	mty = float( int(rect.bottom) - int(1.0f*int(rect.bottom-rect.top)));
+	mty = float( int(rect.GetBottom()) - int(1.0f*int(rect.GetHeight())));
 	g.DrawLine(&pn, (REAL)mx, mty, (REAL)mx+4,mty);
-	mty = float(int(rect.bottom) - int(0.0f*int(rect.bottom-rect.top)));
+	mty = float(int(rect.GetBottom()) - int(0.0f*int(rect.GetHeight())));
 	g.DrawLine(&pn, (REAL)mx, mty, (REAL)mx+4,mty);
 
 	// dragger
 	const static int draggerWidth = KDraggerWidth; // TODO make class constant
-	x = (rect.right-rect.left)/2 - KDraggerWidth/2;
-	int y = rect.bottom - int(_value*int(rect.bottom-rect.top));
+	x = (rect.GetWidth())/2 - KDraggerWidth/2;
+	int y = rect.GetBottom() - int(_value*int(rect.GetHeight()));
 	SolidBrush border(colorEnd);
 	g.FillRectangle(&border, RectF(float(x), float(y), float(draggerWidth), 6.0f));
 	g.FillRectangle(&backBrush, RectF(float(x+1), float(y+1), float(draggerWidth-2), 4.0f));
@@ -165,41 +163,13 @@ void SliderWnd::Paint(Graphics& g) {
 		StringFormat sf;
 		sf.SetAlignment(StringAlignmentCenter);
 		SolidBrush tbr(theme->GetTextColor());
-		g.DrawString(msg.c_str(), (INT)msg.length(), theme->GetGUIFontSmall(), RectF(0.0f, float(rect.bottom+15), float(rect.right), 16.0f), &sf, &tbr);
+		g.DrawString(msg.c_str(), (INT)msg.length(), theme->GetGUIFontSmall(), RectF(0.0f, float(rect.GetBottom())+5.0f, float(rect.GetRight()), 11.0f), &sf, &tbr);
 	}
 }
 
 LRESULT SliderWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	if(msg==WM_CONTEXTMENU) {
 		msg = WM_RBUTTONDOWN;
-	}
-
-	if(msg==WM_MOUSEMOVE || msg==WM_LBUTTONDOWN || msg==WM_RBUTTONDOWN) {
-		if(ISVKKEYDOWN(VK_LBUTTON) || ISVKKEYDOWN(VK_RBUTTON)) {
-			int y = GET_Y_LPARAM(lp);
-			RECT rc;
-			GetClientRect(GetWindow(), &rc);
-			rc.top += 5;
-			rc.bottom -= 30;
-			if(!_showValue) rc.bottom += 15;
-
-			y -= rc.top;
-			float val = float(y)/float(rc.bottom-rc.top);
-
-			if(msg==WM_RBUTTONDOWN) {
-				if(!_flash) {
-					_oldValue = _value;
-					_flash = true;
-				}
-			}
-			
-			if(_snapHalf && val<0.51f && val>0.49f) {
-				SetValue(0.5f);
-			}
-			else {
-				SetValue(1.0f - val);
-			}
-		}
 	}
 	else if(msg==WM_KEYUP || msg==WM_RBUTTONUP) {
 		if(_flash) {
@@ -287,4 +257,30 @@ LRESULT SliderWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 
 void SliderWnd::SetListener(Listener* listener) {
 	_listener = listener;
+}
+
+void SliderWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
+	if(ev==MouseEventMove ||ev==MouseEventLDown || ev==MouseEventRDown) {
+		if(ISVKKEYDOWN(VK_LBUTTON) || ISVKKEYDOWN(VK_RBUTTON)) {
+			Area rc = GetClientArea();
+			rc.Narrow(0,5, 0, _showValue?10:25);
+
+			y -= rc.GetTop();
+			float val = float(y)/rc.GetHeight();
+
+			if(ev==MouseEventRDown) {
+				if(!_flash) {
+					_oldValue = _value;
+					_flash = true;
+				}
+			}
+			
+			if(_snapHalf && val<0.51f && val>0.49f) {
+				SetValue(0.5f);
+			}
+			else {
+				SetValue(1.0f - val);
+			}
+		}
+	}
 }

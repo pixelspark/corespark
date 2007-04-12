@@ -162,6 +162,10 @@ void BrowserWnd::Layout() {
 		_tools->Fill(LayoutTop, r);
 	}
 
+	// manually do the DPI stuff
+	ref<Theme> theme = ThemeManager::GetTheme();
+	r.Multiply(theme->GetDPIScaleFactor());
+
 	if(((CAxWindow*)_ax)->IsWindow()) {
 		((CAxWindow*)_ax)->SetParent(GetWindow());
 		((CAxWindow*)_ax)->MoveWindow(r.GetLeft(),r.GetTop(), r.GetWidth(), r.GetHeight(), TRUE);

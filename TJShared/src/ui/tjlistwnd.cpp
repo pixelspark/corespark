@@ -145,13 +145,40 @@ void ListWnd::OnColumnSizeChanged() {
 }
 
 LRESULT ListWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
-	if(msg==WM_LBUTTONDOWN||msg==WM_RBUTTONDOWN||msg==WM_LBUTTONDBLCLK) {
-		int y = GET_Y_LPARAM(lp);
-		int x = GET_X_LPARAM(lp);
-		int ch = GetHeaderHeightInPixels();
+	if(msg==WM_MOUSEWHEEL) {
+		int delta = GET_WHEEL_DELTA_WPARAM(wp);
+		Area a = GetClientArea();
+		
+		if(a.GetHeight()<(1+GetItemCount())*GetItemHeightInPixels()) {
+			if(delta<0) {
+				
+				SetVerticalPos(min(int(GetVerticalPos())+10, (1+GetItemCount())*GetItemHeightInPixels()-a.GetHeight()));
+			}
+			else {
+				SetVerticalPos(max(int(GetVerticalPos())-10, 0));
+			}
+		}
+		OnScroll(ScrollDirectionVertical);
+	}
+	else if(msg==WM_KEYDOWN) {
+		if(LOWORD(wp)==VK_UP && _selected>0) {
+			_selected--;
+			Repaint();
+		}
+		else if(LOWORD(wp)==VK_DOWN && _selected<(GetItemCount()-1)) {
+			_selected++;
+			Repaint();
+		}
+	}
+	return ChildWnd::Message(msg,wp,lp);
+}
 
-		if(y<ch && msg!=WM_LBUTTONDBLCLK) {
-			_dragStartX = GET_X_LPARAM(lp);
+void ListWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
+	if(ev==MouseEventLDown||ev==MouseEventRDown||ev==MouseEventLDouble) {
+		Pixels ch = GetHeaderHeightInPixels();
+
+		if(y<ch && ev!=MouseEventLDouble) {
+			_dragStartX = x;
 			Area r = GetClientArea();
 			SetCursor(LoadCursor(NULL, IDC_SIZEWE));
 			int cx = 0;
@@ -182,10 +209,10 @@ LRESULT ListWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 				Column& col = it->second;
 				cx += int(col._width*area.GetWidth());
 				if(x<cx) {
-					if(msg==WM_RBUTTONDOWN) {
+					if(ev==MouseEventRDown) {
 						OnRightClickItem(idx, it->first);
 					}
-					else if(msg==WM_LBUTTONDBLCLK) {
+					else if(ev==MouseEventLDouble) {
 						OnDoubleClickItem(idx, it->first);
 					}
 					else {
@@ -197,15 +224,13 @@ LRESULT ListWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 			}
 		}
 	}
-	else if(msg==WM_MOUSEMOVE) {
-		int y = GET_Y_LPARAM(lp);
-		int x = GET_X_LPARAM(lp);
-		int ch = GetHeaderHeightInPixels();
+	else if(ev==MouseEventMove) {
+		Pixels ch = GetHeaderHeightInPixels();
 
 		if(y<ch) {
 			if(_draggingCol>=0) {
-				int dx = GET_X_LPARAM(lp) - _dragStartX;
-				_dragStartX = GET_X_LPARAM(lp);
+				int dx = x - _dragStartX;
+				_dragStartX = x;
 				Area r = GetClientArea();
 				if(r.GetWidth()!=0) {
 					float colWidthChange = float(dx)/float(r.GetWidth());
@@ -219,38 +244,11 @@ LRESULT ListWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 			Repaint();
 		}
 	}	
-	else if(msg==WM_LBUTTONUP) {
+	else if(ev==MouseEventLUp) {
 		_draggingCol = -1;
 		ReleaseCapture();
 		SetCursor(LoadCursor(NULL, IDC_ARROW));		
-		return 0;
 	}
-	else if(msg==WM_MOUSEWHEEL) {
-		int delta = GET_WHEEL_DELTA_WPARAM(wp);
-		Area a = GetClientArea();
-		
-		if(a.GetHeight()<(1+GetItemCount())*GetItemHeightInPixels()) {
-			if(delta<0) {
-				
-				SetVerticalPos(min(int(GetVerticalPos())+10, (1+GetItemCount())*GetItemHeightInPixels()-a.GetHeight()));
-			}
-			else {
-				SetVerticalPos(max(int(GetVerticalPos())-10, 0));
-			}
-		}
-		OnScroll(ScrollDirectionVertical);
-	}
-	else if(msg==WM_KEYDOWN) {
-		if(LOWORD(wp)==VK_UP && _selected>0) {
-			_selected--;
-			Repaint();
-		}
-		else if(LOWORD(wp)==VK_DOWN && _selected<(GetItemCount()-1)) {
-			_selected++;
-			Repaint();
-		}
-	}
-	return ChildWnd::Message(msg,wp,lp);
 }
 
 int ListWnd::GetRowIDByHeight(int y) {

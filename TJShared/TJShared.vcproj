@@ -460,6 +460,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ui\tjthemes.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ui\tjtoolbarwnd.cpp"
 					>
 				</File>

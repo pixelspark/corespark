@@ -40,6 +40,8 @@ void EditWnd::Paint(Gdiplus::Graphics& g) {
 
 void EditWnd::Layout() {
 	Area rc = GetClientArea();
+	ref<Theme> theme = ThemeManager::GetTheme();
+	rc.MultiplyCeil(theme->GetDPIScaleFactor(), theme->GetDPIScaleFactor());
 	SetWindowPos(_ctrl, 0L, rc.GetLeft(), rc.GetTop(), rc.GetWidth(), rc.GetHeight(), SWP_NOZORDER);
 }
 

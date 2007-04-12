@@ -37,13 +37,13 @@ void ToolbarWnd::SetBackgroundColor(Gdiplus::Color c) {
 
 void ToolbarWnd::Fill(LayoutFlags f, Area& r) {
 	ref<Theme> theme = ThemeManager::GetTheme();
-	int h = theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
+	Pixels h = theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
 	if(f==LayoutTop) {
-		SetWindowPos(GetWindow(), 0, r.GetLeft(), r.GetTop(), r.GetWidth(), h, SWP_NOZORDER);
+		Move(r.GetLeft(), r.GetTop(), r.GetWidth(), h);
 		r.Narrow(0,h,0,0);
 	}
 	else if(f==LayoutBottom) {
-		SetWindowPos(GetWindow(), 0, r.GetLeft(), r.GetTop()+r.GetHeight()-h, r.GetWidth(), h, SWP_NOZORDER);
+		Move(r.GetLeft(), r.GetTop()-r.GetHeight()-h, r.GetWidth(), h);
 		r.Narrow(0,0,0,h);
 	}
 	else {
@@ -52,33 +52,36 @@ void ToolbarWnd::Fill(LayoutFlags f, Area& r) {
 }
 
 LRESULT ToolbarWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
-	if(msg==WM_MOUSEMOVE||msg==WM_MOUSEHOVER||msg==WM_LBUTTONDOWN) {
+	if(msg==WM_TIMER) {
+		Repaint();
+	}
+	return ChildWnd::Message(msg,wp,lp);
+}
+
+void ToolbarWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
+	///if(msg==WM_MOUSEMOVE||msg==WM_MOUSEHOVER||msg==WM_LBUTTONDOWN) {
+	if(ev==MouseEventMove||ev==MouseEventLDown) {
 		_in = true;
 
-		if(!ISVKKEYDOWN(VK_LBUTTON)||msg==WM_LBUTTONDOWN) {
+		if(!ISVKKEYDOWN(VK_LBUTTON)||ev==MouseEventLDown) {
 			ref<Theme> theme = ThemeManager::GetTheme();
-			int bs = theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
-			_idx = GET_X_LPARAM(lp)/bs;
+			Pixels bs = theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
+			_idx = x/bs;
 		}
 		// track leave event
 		Repaint();
 	}
-	else if(msg==WM_MOUSELEAVE) {
+	else if(ev==MouseEventLeave) {
 		_in = false;
 		Repaint();
 	}
-	else if(msg==WM_LBUTTONUP) {
-		//_idx = GET_X_LPARAM(lp)/KButtonSize;
+	else if(ev==MouseEventLUp) {
 		if(_idx>=0 && _idx < (int)_items.size()) {
 			ref<ToolbarItem> item = _items.at(_idx);
 			OnCommand(item->GetCommand());
 		}
 		Repaint();
 	}
-	else if(msg==WM_TIMER) {
-		Repaint();
-	}
-	return ChildWnd::Message(msg,wp,lp);
 }
 
 int ToolbarWnd::GetTotalButtonWidth() {

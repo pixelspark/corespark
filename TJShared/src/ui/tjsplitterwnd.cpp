@@ -35,22 +35,32 @@ bool SplitterWnd::IsSplitter() {
 }
 
 void SplitterWnd::Layout() {
-	RECT rc;
-	GetClientRect(GetWindow(), &rc);
+	Area rc = GetClientArea();
+	rc.Narrow(1,1,1,1);
 
 	if(_orientation==OrientationHorizontal) {
-		int heightA = (int)floor(_ratio*(rc.bottom-rc.top))-1;
-		int heightB = (rc.bottom-rc.top)-heightA-1;
+		int heightA = (int)floor(_ratio*(rc.GetHeight()))-barHeight;
+		int heightB = rc.GetHeight()-heightA;
 
-		if(_a) SetWindowPos(_a->GetWindow(), 0, 0, 0, rc.right-rc.left, heightA-(barHeight/2),SWP_NOZORDER);
-		if(_b) SetWindowPos(_b->GetWindow(), 0, 0, heightA+(barHeight/2), rc.right-rc.left-1, heightB-(barHeight/2),SWP_NOZORDER);
+		if(_a) {
+			_a->Move(0, 0, rc.GetWidth(), heightA-barHeight);
+		}
+
+		if(_b) {
+			_b->Move(0, heightA+barHeight-1, rc.GetWidth(), heightB-3);
+		}
 	}
 	else if(_orientation==OrientationVertical) {
-		int widthA = (int)floor(_ratio*(rc.right-rc.left));
-		int widthB = (rc.right-rc.left)-widthA-1;
+		int widthA = (int)floor(_ratio*(rc.GetWidth()))-barHeight;
+		int widthB = rc.GetWidth()-widthA;
 
-		if(_a) SetWindowPos(_a->GetWindow(), 0, 0, 0, widthA-(barHeight/2), rc.bottom-rc.top-1, SWP_NOZORDER);
-		if(_b) SetWindowPos(_b->GetWindow(), 0, widthA+(barHeight/2), 0, widthB-(barHeight/2),rc.bottom-rc.top-1,SWP_NOZORDER);
+		if(_a) {
+			_a->Move(0, 0, widthA, rc.GetHeight());
+		}
+
+		if(_b) {
+			_b->Move(widthA+barHeight-1, 0, widthB-3,rc.GetHeight());
+		}
 	}
 }
 
@@ -69,24 +79,24 @@ void SplitterWnd::Expand() {
 
 void SplitterWnd::Paint(Graphics& g) {
 	ref<Theme> theme = ThemeManager::GetTheme();
-	RECT rc;
-	GetClientRect(GetWindow(), &rc);
+	Area rc = GetClientArea();
 
 	HWND root = GetAncestor(GetWindow(), GA_ROOT);
 	Gdiplus::Brush* abr = theme->GetApplicationBackgroundBrush(root, GetWindow());
 	if(abr!=0) {
-		if(_orientation==OrientationHorizontal) {
-			int bH = int(_ratio * (rc.bottom-rc.top)-(barHeight/2)); // top of the bar
-			g.FillRectangle(abr, 0,bH-2,rc.right-rc.left, barHeight+4);
+		/*if(_orientation==OrientationHorizontal) {
+			int bH = int(_ratio * rc.GetHeight()); // -(barHeight/2)); // top of the bar
+			g.FillRectangle(abr, 0,bH-2,rc.GetWidth(), barHeight+4);
 		}
 		else if(_orientation==OrientationVertical) {
-			int bH = int(_ratio * (rc.right-rc.left)-(barHeight/2)); // top of the bar
-			g.FillRectangle(abr, bH-2, 0, barHeight+4, rc.bottom-rc.top);
+			int bH = int(_ratio * rc.GetWidth()); //-(barHeight/2)); // top of the bar
+			g.FillRectangle(abr, bH-2, 0, barHeight+4, rc.GetHeight());
 		}
-		g.FillRectangle(abr, 0, rc.bottom-5, rc.right-rc.left, 5);
-		g.FillRectangle(abr, rc.right-5, 0, 5, rc.bottom-rc.top);
+		g.FillRectangle(abr, 0, rc.GetBottom()-5, rc.GetWidth(), 5);
+		g.FillRectangle(abr, rc.GetRight()-5, 0, 5, rc.GetHeight());
 
-		delete abr;
+		delete abr;*/
+		g.FillRectangle(abr, rc);
 	}
 }
 

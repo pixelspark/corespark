@@ -31,6 +31,7 @@ namespace tj {
 				void SetDetachAttachAllowed(bool allow);
 			
 			protected:
+				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
 				void SetDraggingPane(ref<Pane> pane);
 				void DoContextMenu(int x, int y);
 				void DoAddMenu(int x, int y);

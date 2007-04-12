@@ -30,9 +30,8 @@ SplashWnd::~SplashWnd() {
 }
 
 void SplashWnd::Paint(Gdiplus::Graphics& g) {
-	RECT rc;
-	GetClientRect(GetWindow(), &rc);
-	g.DrawImage(_image, RectF(float(rc.left), float(rc.top), float(rc.right-rc.left), float(rc.bottom-rc.top)));
+	Area rc = GetClientArea();
+	g.DrawImage(_image, (RectF)rc);
 }
 
 void SplashWnd::Layout() {

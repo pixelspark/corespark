@@ -50,6 +50,7 @@ namespace tj {
 				virtual void SetBackgroundColor(Gdiplus::Color c);
 
 			protected:
+				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
 				std::vector< ref<ToolbarItem> > _items;
 				static const int KIconWidth = 16;
 				static const int KIconHeight = 16;

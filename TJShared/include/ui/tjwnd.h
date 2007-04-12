@@ -30,6 +30,20 @@ namespace tj {
 			ScrollDirectionVertical,
 		};
 
+		enum MouseEvent {
+			MouseEventNone = 0,
+			MouseEventLUp,
+			MouseEventRUp,
+			MouseEventLDown,
+			MouseEventRDown,
+			MouseEventMove,
+			MouseEventLDouble,
+			MouseEventRDouble,
+			MouseEventLeave,
+			MouseEventMDown,
+			MouseEventMUp,
+		};
+
 		class EXPORTED Wnd: public virtual Object {
 			friend class FloatingPane;
 
@@ -65,7 +79,7 @@ namespace tj {
 				void SetHorizontalScrollInfo(Range<unsigned int> rng, unsigned int pageSize);
 				void SetVerticalScrollInfo(Range<unsigned int> rng, unsigned int pageSize);
 
-				virtual void Move(int x, int y, int w, int h);
+				virtual void Move(Pixels x, Pixels y, Pixels w, Pixels h);
 				virtual bool IsSplitter();
 
 				virtual std::wstring GetText();
@@ -95,6 +109,7 @@ namespace tj {
 				virtual void OnSize(const Area& newSize);
 				virtual void OnScroll(ScrollDirection dir);
 				virtual void OnActivate(bool activate);
+				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
 			
 			private:
 				static void RegisterClasses();
@@ -112,16 +127,6 @@ namespace tj {
 				bool _fullScreen;
 				bool _wantsMouseLeave;
 		};
-
-		/*class ChildEnumerator {
-			public:
-				ChildEnumerator(HWND parent, bool recursive=false);
-				void Add(HWND wnd);
-			
-				std::vector<Wnd*> _children;
-				bool _recursive;
-				HWND _for;
-		};*/
 	}
 }
 

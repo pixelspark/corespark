@@ -41,14 +41,13 @@ void PropertyGridWnd::ClearThemeCache() {
 }
 
 void PropertyGridWnd::Paint(Graphics& g) {
-	RECT r;
-	GetClientRect(GetWindow(), &r);
+	Area r = GetClientArea();
 	ref<Theme> theme = ThemeManager::GetTheme();
 
 	SolidBrush br(theme->GetPropertyBackgroundColor());
-	g.FillRectangle(&br,-1,-1,r.right-r.left+1,r.bottom-r.top+1);
+	g.FillRectangle(&br,-1,-1,r.GetWidth()+1,r.GetHeight()+1);
 
-	int cH = KPathHeight-GetVerticalPos();
+	Pixels cH = KPathHeight-GetVerticalPos();
 	int hI = 0;
 	std::vector< ref<Property> >::iterator it = _properties.begin();
 
@@ -63,12 +62,12 @@ void PropertyGridWnd::Paint(Graphics& g) {
 
 		if(GetFocus()==p->GetWindow() || bold) {
 			LinearGradientBrush gbr(Gdiplus::Point(0, cH), Gdiplus::Point(0, cH+p->GetHeight()+10), theme->GetActiveStartColor(), theme->GetActiveEndColor());
-			g.FillRectangle(&gbr, Rect(1, cH+1, r.right-r.left-2, p->GetHeight()+6-2));
+			g.FillRectangle(&gbr, Rect(1, cH+1, r.GetWidth()-2, p->GetHeight()+6-2));
 		}
 
 		if(bold) {
 			SolidBrush dbr(theme->GetDisabledOverlayColor());
-			g.FillRectangle(&dbr, Rect(1, cH+1, r.right-r.left-2, p->GetHeight()+6-2));
+			g.FillRectangle(&dbr, Rect(1, cH+1, r.GetWidth()-2, p->GetHeight()+6-2));
 		}
 
 		std::wstring ws = p->GetName();
@@ -187,8 +186,9 @@ void PropertyGridWnd::Layout() {
 
 	if(_path) {
 		_path->Move(0,0,rect.GetWidth(), KPathHeight);
-		SetWindowPos(_path->GetWindow(), HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE|SWP_NOSIZE|SWP_NOACTIVATE);
 	}
+
+	float df = ThemeManager::GetTheme()->GetDPIScaleFactor();
 
 	int cH = KPathHeight - GetVerticalPos();
 	std::vector<ref<Property> >::iterator it = _properties.begin();
@@ -198,12 +198,15 @@ void PropertyGridWnd::Layout() {
 		if(pr) {
 			HWND vw = pr->GetWindow();
 			int h = pr->GetHeight();
+
 			SendMessage(vw, WM_SETFONT, (WPARAM)(HFONT)_editFont, FALSE);
 			LONG style = GetWindowLong(vw, GWL_STYLE);
 			style |= WS_CLIPSIBLINGS;
+			
+			// Some nice DPI conversions...
 			SetWindowLong(vw, GWL_STYLE, style);
 			SetWindowPos(vw, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE|SWP_NOSIZE|SWP_NOACTIVATE);
-			SetWindowPos(vw, 0,  _nameWidth, cH+3,  rect.GetWidth()-_nameWidth-3, h, SWP_NOZORDER);
+			SetWindowPos(vw, 0,  int(ceil(_nameWidth*df)), int(ceil((cH+3)*df)),  int(ceil((rect.GetWidth()-_nameWidth-3)*df)), int(ceil(h*df)), SWP_NOZORDER);
 			ShowWindow(vw, SW_SHOW);
 			cH += h + 6;
 		}

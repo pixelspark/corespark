@@ -54,6 +54,9 @@ namespace tj {
 
 				virtual void Layout() {
 					Area rc = GetClientArea();
+					ref<Theme> theme = ThemeManager::GetTheme();
+					rc.MultiplyCeil(theme->GetDPIScaleFactor(), theme->GetDPIScaleFactor());
+
 					int w = rc.GetWidth()/3;
 					SetWindowPos(_x, 0L, 0, 0, w, rc.GetHeight(), SWP_NOZORDER);
 					SetWindowPos(_y, 0L, w-1, 0, w, rc.GetHeight(), SWP_NOZORDER);

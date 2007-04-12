@@ -36,6 +36,8 @@ namespace tj {
 				virtual void OnDoubleClickItem(int id, int col);
 				virtual void OnColumnSizeChanged();
 
+				// other stuff
+				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
 				int GetRowIDByHeight(int h);
 				virtual Area GetRowArea(int rid);
 				virtual int GetHeaderHeightInPixels() const;

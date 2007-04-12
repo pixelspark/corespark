@@ -206,31 +206,27 @@ void PathWnd::Paint(Gdiplus::Graphics& g) {
 	}
 }
 
-LRESULT PathWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
-	if(msg==WM_LBUTTONDOWN) {
-		int x = GET_X_LPARAM(lp);
+void PathWnd::SetPath(ref<Path> p) {
+	_path = p;
+	Update();
+}
+
+void PathWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
+	if(ev==MouseEventLDown) {
 		int left = 0;
 		ref<Crumb> cr = GetCrumbAt(x,&left);
 		if(cr) {
 			DoCrumbMenu(cr, left);
 		}
-		return 0;
 	}
-	else if(msg==WM_MOUSEMOVE) {
-		int x = GET_X_LPARAM(lp);
+	else if(ev==MouseEventMove) {
 		_over = GetCrumbAt(x);
 		Repaint();
 	}
-	else if(msg==WM_MOUSELEAVE) {
+	else if(ev==MouseEventLeave) {
 		_over = 0;
 		Repaint();
 	}
-	return ChildWnd::Message(msg,wp,lp);
-}
-
-void PathWnd::SetPath(ref<Path> p) {
-	_path = p;
-	Update();
 }
 
 void PathWnd::DoCrumbMenu(ref<Crumb> crumb, int x) {

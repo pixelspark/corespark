@@ -55,11 +55,11 @@ namespace tj {
 				virtual ~PathWnd();
 				virtual void Update();
 				virtual void Paint(Gdiplus::Graphics& g);
-				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 				virtual void SetPath(ref<Path> p);
-				virtual ref<Crumb> GetCrumbAt(int x, int* left=0);
+				virtual ref<Crumb> GetCrumbAt(Pixels x, int* left=0);
 
 			protected:
+				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
 				virtual void DoCrumbMenu(ref<Crumb> r, int x);
 
 				const static int KMarginLeft = 3;

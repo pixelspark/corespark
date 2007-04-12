@@ -19,7 +19,10 @@ namespace tj {
 				void SetShowValue(bool show);
 				void SetSnapToHalf(bool snap);
 				virtual void Fill(LayoutFlags flags, Area& rect);
+
 			protected:
+				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
+
 				Listener* _listener;
 				float _value;
 				float _displayValue;

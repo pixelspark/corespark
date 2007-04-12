@@ -55,7 +55,7 @@ void NotificationWnd::Paint(Gdiplus::Graphics& g) {
 	g.DrawRectangle(&lbp, rect);
 
 	Area stringRect = rect;
-	stringRect.Narrow(DefaultNotificationHeight, DefaultNotificationMargin, DefaultNotificationMargin, DefaultNotificationMargin);
+	stringRect.Narrow(DefaultNotificationHeight, DefaultNotificationMargin, 0, 0);
 	StringFormat sf;
 	sf.SetLineAlignment(StringAlignmentCenter);
 	

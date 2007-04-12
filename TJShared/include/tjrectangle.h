@@ -3,6 +3,8 @@
 
 namespace tj {
 	namespace shared {
+		typedef int Pixels; // Logical pixels are 1/Theme::KDefaultDPI inches
+
 		template<typename T> class BasicRectangle {
 			public:
 				BasicRectangle(T x=0, T y=0, T w=0, T h=0) {
@@ -107,10 +109,17 @@ namespace tj {
 				}
 
 				template<typename Q> void Multiply(Q wfactor, Q hfactor) {
-					_w *= wfactor;
-					_h *= hfactor;
-					_x *= wfactor;
-					_y *= hfactor;
+					_w = T(_w*wfactor);
+					_h = T(_h*hfactor);
+					_x = T(_x*wfactor);
+					_y = T(_y*hfactor);
+				}
+
+				template<typename Q> void MultiplyCeil(Q wfactor, Q hfactor) {
+					_w = (T)ceil(_w*wfactor);
+					_h = (T)ceil(_h*hfactor);
+					_x = (T)ceil(_x*wfactor);
+					_y = (T)ceil(_y*hfactor);
 				}
 
 				template<typename Q> void Multiply(Q factor) {
@@ -141,7 +150,7 @@ namespace tj {
 				T _x, _y, _w, _h;
 		};
 
-		typedef class BasicRectangle<int> Area;
+		typedef class BasicRectangle<Pixels> Area;
 		typedef class BasicRectangle<float> AreaF;
 	}
 }
