@@ -12,6 +12,9 @@ ContextMenu::~ContextMenu() {
 
 int ContextMenu::DoContextMenu(HWND window, int x, int y, bool correct) {
 	if(correct) {
+		ref<Theme> theme = ThemeManager::GetTheme();
+		x = int(ceil(x*theme->GetDPIScaleFactor()));
+		y = int(ceil(y*theme->GetDPIScaleFactor()));
 		RECT wr;
 		GetWindowRect(window, &wr);
 		x += wr.left;

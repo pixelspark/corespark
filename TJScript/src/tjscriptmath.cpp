@@ -18,63 +18,84 @@ ScriptMath::~ScriptMath() {
 ScriptMath::ScriptMath() {
 }
 
-ref<Scriptable> ScriptMath::Execute(Command c, ref<ParameterList> p) {
-	if(c==L"random") {
-		RequiredParameter<int> from(p,L"from", 0,0);
-		RequiredParameter<int> to(p, L"to", 0,1);
+void ScriptMath::Initialize() {
+	Bind(L"sin", &Sin);
+	Bind(L"cos", &Cos);
+	Bind(L"tan", &Tan);
+	Bind(L"atan", &Atan);
+	Bind(L"atan2", &Atan2);
+	Bind(L"acos", &Acos);
+	Bind(L"asin", &Asin);
+	Bind(L"random", &Random);
+	Bind(L"pi", &Pi);
+	Bind(L"pow", &Pow);
+	Bind(L"fmod", &Fmod);
+}
 
-		if(to.Get()-from.Get()<=0) {
-			throw ScriptException(L"Invalid argument values for from and to");
-		}
+ref<Scriptable> ScriptMath::Sin(ref<ParameterList> p) {
+	RequiredParameter<double> angle(p, L"angle", 0.0, 0);
+	return GC::Hold(new ScriptDouble(sin(angle)));
+}
 
-		int r = (rand()%(to-from+1))+from;
-		return GC::Hold(new ScriptInt(r));
-	}
-	else if(c==L"sin") {
-		RequiredParameter<double> angle(p, L"angle", 0.0, 0);
-		return GC::Hold(new ScriptDouble(sin(angle)));
-	}
-	else if(c==L"cos") {
-		RequiredParameter<double> angle(p, L"angle", 0.0, 0);
-		return GC::Hold(new ScriptDouble(cos(angle)));
-	}
-	else if(c==L"tan") {
-		RequiredParameter<double> angle(p, L"angle", 0.0, 0);
-		return GC::Hold(new ScriptDouble(tan(angle)));
-	}
-	else if(c==L"atan2") {
-		RequiredParameter<double> x(p, L"x", 0.0, 0);
-		RequiredParameter<double> y(p, L"y", 0.0, 1);
-		return GC::Hold(new ScriptDouble(atan2(y,x)));
-	}
-	else if(c==L"atan") {
-		RequiredParameter<double> angle(p, L"angle", 0.0, 0);
-		return GC::Hold(new ScriptDouble(atan(angle)));
-	}
-	else if(c==L"acos") {
-		RequiredParameter<double> angle(p, L"angle", 0.0, 0);
-		return GC::Hold(new ScriptDouble(acos(angle)));
-	}
-	else if(c==L"asin") {
-		RequiredParameter<double> angle(p, L"angle", 0.0, 0);
-		return GC::Hold(new ScriptDouble(asin(angle)));
-	}
-	else if(c==L"fmod") {
-		RequiredParameter<double> a(p, L"a", 0.0, 0);
-		RequiredParameter<double> b(p, L"b", 0.0, 1);
-		return GC::Hold(new ScriptDouble(fmod(a,b)));
-	}
-	else if(c==L"pow") {
-		RequiredParameter<double> a(p, L"a", 0.0, 0);
-		RequiredParameter<double> b(p, L"b", 0.0, 1);
-		return GC::Hold(new ScriptDouble(pow(a,b)));
-	}
-	else if(c==L"pi") {
-		return GC::Hold(new ScriptDouble(PI));
-	}
-	else if(c==L"toString") {
-		return GC::Hold(new ScriptString(L"[ScriptMath]"));
+
+ref<Scriptable> ScriptMath::Cos(ref<ParameterList> p) {
+	RequiredParameter<double> angle(p, L"angle", 0.0, 0);
+	return GC::Hold(new ScriptDouble(cos(angle)));
+}
+
+
+ref<Scriptable> ScriptMath::Tan(ref<ParameterList> p) {
+	RequiredParameter<double> angle(p, L"angle", 0.0, 0);
+	return GC::Hold(new ScriptDouble(tan(angle)));
+}
+
+
+ref<Scriptable> ScriptMath::Atan2(ref<ParameterList> p) {
+	RequiredParameter<double> x(p, L"x", 0.0, 0);
+	RequiredParameter<double> y(p, L"y", 0.0, 1);
+	return GC::Hold(new ScriptDouble(atan2(y,x)));
+}
+
+
+ref<Scriptable> ScriptMath::Atan(ref<ParameterList> p) {
+	RequiredParameter<double> angle(p, L"angle", 0.0, 0);
+	return GC::Hold(new ScriptDouble(atan(angle)));
+}
+
+ref<Scriptable> ScriptMath::Random(ref<ParameterList> p) {
+	RequiredParameter<int> from(p,L"from", 0,0);
+	RequiredParameter<int> to(p, L"to", 0,1);
+
+	if(to.Get()-from.Get()<=0) {
+		throw ScriptException(L"Invalid argument values for from and to");
 	}
 
-	return 0;
+	int r = (rand()%(to-from+1))+from;
+	return GC::Hold(new ScriptInt(r));
+}
+
+ref<Scriptable> ScriptMath::Acos(ref<ParameterList> p) {
+	RequiredParameter<double> angle(p, L"angle", 0.0, 0);
+	return GC::Hold(new ScriptDouble(acos(angle)));
+}
+
+ref<Scriptable> ScriptMath::Asin(ref<ParameterList> p) {
+	RequiredParameter<double> angle(p, L"angle", 0.0, 0);
+	return GC::Hold(new ScriptDouble(asin(angle)));
+}
+
+ref<Scriptable> ScriptMath::Fmod(ref<ParameterList> p) {
+	RequiredParameter<double> a(p, L"a", 0.0, 0);
+	RequiredParameter<double> b(p, L"b", 0.0, 1);
+	return GC::Hold(new ScriptDouble(fmod(a,b)));
+}
+
+ref<Scriptable> ScriptMath::Pow(ref<ParameterList> p) {
+	RequiredParameter<double> a(p, L"a", 0.0, 0);
+	RequiredParameter<double> b(p, L"b", 0.0, 1);
+	return GC::Hold(new ScriptDouble(pow(a,b)));
+}
+
+ref<Scriptable> ScriptMath::Pi(ref<ParameterList> p) {
+	return GC::Hold(new ScriptDouble(PI));
 }

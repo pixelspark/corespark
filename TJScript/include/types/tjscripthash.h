@@ -10,14 +10,17 @@ namespace tj {
 				virtual ~ScriptHashType();
 		};
 
-		class SCRIPT_EXPORTED ScriptHash: public virtual tj::shared::Object, public Scriptable {
+		class SCRIPT_EXPORTED ScriptHash: public ScriptObject<ScriptHash> {
 			public:	
 				ScriptHash(std::wstring x);
 				ScriptHash(int h);
 				virtual ~ScriptHash();
-				virtual tj::shared::ref<Scriptable> Execute(Command c, tj::shared::ref<ParameterList> p);
 				int GetHash() const;
+
+				static void Initialize();
 			protected:
+				virtual ref<Scriptable> ToString(ref<ParameterList> p);
+				virtual ref<Scriptable> ToInt(ref<ParameterList> p);
 				int _hash;
 		};
 	}

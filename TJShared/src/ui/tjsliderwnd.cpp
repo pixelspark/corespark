@@ -118,7 +118,7 @@ void SliderWnd::Paint(Graphics& g) {
 
 	if(_displayValue>0.0f) {
 		float dvh = (1.0f-_displayValue) * rect.GetHeight();
-		g.FillRectangle(&br,RectF(float(x+2), float(float(rect.GetTop())+dvh), float(squareWidth-4), float(rect.GetHeight())-dvh));
+		g.FillRectangle(&br,RectF(float(x+2), float(float(rect.GetTop())+dvh), float(squareWidth-3), float(rect.GetHeight())-dvh));
 	}
 
 	// markers

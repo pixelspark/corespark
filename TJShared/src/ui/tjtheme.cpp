@@ -4,10 +4,6 @@ using namespace Gdiplus;
 using namespace tj::shared;
 
 const float Theme::KDefaultDPI = 96.0f;
-ThemeSubscription _theme_subscription(GC::Hold(new Theme(Theme::KDefaultDPI)));
-ThemeSubscription _theme_subscription_large(GC::Hold(new Theme(Theme::KDefaultDPI*2)));
-ThemeSubscription _theme_subscription_small(GC::Hold(new Theme(Theme::KDefaultDPI/1.414f)));
-
 
 Theme::Theme(float dpi) {
 	_dpi = dpi/KDefaultDPI;
@@ -183,11 +179,11 @@ Color Theme::GetTrackDescriptionTextColor() const {
 }
 
 Gdiplus::Color Theme::GetTimeSelectionColorEnd() const {
-	return Color(50,255,255,255);
+	return Color(100,100,50, 0); //Color(50,255,255,255);
 }
 
 Gdiplus::Color Theme::GetTimeSelectionColorStart() const {
-	return Color(0, 255, 255, 255);
+	return Color(100,200,100, 0); //Color(0, 255, 255, 255);
 }
 
 Color Theme::GetSliderColorStart(int i) const {

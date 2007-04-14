@@ -194,6 +194,12 @@ void Wnd::RegisterClasses() {
 		Throw(L"Could not register class",ExceptionTypeError);
 	}
 
+	wc.style |= CS_DROPSHADOW;
+	wc.lpszClassName = TJ_DROPSHADOW_CLASS_NAME;
+	if(!RegisterClassEx(&wc)) {
+		Throw(L"Could not register class",ExceptionTypeError);
+	}
+
 	wc.lpszClassName = TJ_GL_CLASS_NAME;
 	wc.style = CS_CLASSDC;
 	if(!RegisterClassEx(&wc)) {

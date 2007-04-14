@@ -12,5 +12,6 @@
 #define TJ_PROPERTY_LABEL_CLASS_NAME (L"TjPropertyLabelWndClass")
 #define TJ_TAB_PANEL_CLASS_NAME (L"TjTabPanelWndClass")
 #define TJ_GL_CLASS_NAME (L"TjGLWndClass")
+#define TJ_DROPSHADOW_CLASS_NAME (L"TjDropWndClass")
 
 #endif

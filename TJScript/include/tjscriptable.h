@@ -6,8 +6,12 @@ namespace tj {
 		class Scriptable; 
 
 		typedef std::map< std::wstring, tj::shared::ref<Scriptable> > ParameterList;
-		typedef const std::wstring& Command;
+		typedef std::wstring CommandType;
+		typedef const CommandType& Command;
 
+		/** This is the most basic scripting interface that any object used in the scripting engine should support.
+		More advanced objects can better be derived from ScriptObject if they want to provide advanced stuff
+		like reflection. **/
 		class Scriptable {
 			public:
 				/* Returns 0 if command is unknown or used incorrectly. When null value is needed in the script

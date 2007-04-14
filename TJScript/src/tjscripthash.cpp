@@ -26,13 +26,15 @@ ScriptHash::ScriptHash(int x) {
 	_hash = x;
 }
 
-ref<Scriptable> ScriptHash::Execute(Command c, ref<ParameterList> p) {
-	if(c==L"toString") {
-		return GC::Hold(new ScriptString(Stringify(_hash)));
-	}
-	else if(c==L"toInt") {
-		return GC::Hold(new ScriptInt(_hash));
-	}
+void ScriptHash::Initialize() {
+	Bind(L"toString", &ScriptHash::ToString);
+	Bind(L"toInt", &ScriptHash::ToInt);
+}
 
-	return 0;
+ref<Scriptable> ScriptHash::ToString(ref<ParameterList> p) {
+	return GC::Hold(new ScriptString(Stringify(_hash)));
+}
+
+ref<Scriptable> ScriptHash::ToInt(ref<ParameterList> p) {
+	return GC::Hold(new ScriptInt(_hash));
 }

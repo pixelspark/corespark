@@ -28,6 +28,7 @@
 #include "tjscriptthread.h"
 #include "tjscriptparameter.h"
 #include "tjscriptscope.h"
+#include "tjscriptobject.h"
 #include "types/tjstatictypes.h"
 #include "tjscriptiterator.h"
 

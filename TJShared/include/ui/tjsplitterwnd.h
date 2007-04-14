@@ -24,8 +24,8 @@ namespace tj {
 				void Expand();
 
 			protected:
-				enum {barHeight = 4 };
-				const static float snapMargin;
+				const static Pixels KBarHeight;
+				const static float KSnapMargin;
 
 				ref<Wnd> _a;
 				ref<Wnd> _b;

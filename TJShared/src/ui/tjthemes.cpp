@@ -335,10 +335,16 @@ Brush* BrightTheme::GetApplicationBackgroundBrush(HWND root, HWND child) const {
 namespace tj {
 	namespace shared {
 		namespace themes {
-			ThemeSubscription _subscription_vista_theme(ref<Theme>(GC::Hold(new VistaTheme(Theme::KDefaultDPI))));
-			ThemeSubscription _subscription_vista_theme_large(ref<Theme>(GC::Hold(new VistaTheme(Theme::KDefaultDPI*2))));
+			// Order is important (needed when saving theme choice to settings)!
+			ThemeSubscription _theme_subscription(GC::Hold(new Theme(Theme::KDefaultDPI)));
 			ThemeSubscription _subscription_bright_theme(ref<Theme>(GC::Hold(new BrightTheme(Theme::KDefaultDPI))));
+			ThemeSubscription _subscription_vista_theme(ref<Theme>(GC::Hold(new VistaTheme(Theme::KDefaultDPI))));
+
+			// All weird DPI themes
+			ThemeSubscription _theme_subscription_large(GC::Hold(new Theme(Theme::KDefaultDPI*2)));
 			ThemeSubscription _subscription_bright_theme_large(ref<Theme>(GC::Hold(new BrightTheme(Theme::KDefaultDPI*2))));
+			ThemeSubscription _theme_subscription_small(GC::Hold(new Theme(Theme::KDefaultDPI/1.414f)));
+			ThemeSubscription _subscription_vista_theme_large(ref<Theme>(GC::Hold(new VistaTheme(Theme::KDefaultDPI*2))));
 		}
 	}
 }

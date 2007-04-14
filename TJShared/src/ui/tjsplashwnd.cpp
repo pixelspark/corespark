@@ -2,7 +2,7 @@
 using namespace Gdiplus;
 using namespace tj::shared;
 
-SplashWnd::SplashWnd(std::wstring path, int w, int h): Wnd(L"TJShow", 0L) {
+SplashWnd::SplashWnd(std::wstring path, int w, int h): Wnd(L"TJShow", 0L, TJ_DROPSHADOW_CLASS_NAME) {
 	SetStyleEx(WS_EX_TOPMOST);
 	SetStyle(WS_POPUP);
 	UnsetStyle(WS_CAPTION);

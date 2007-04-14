@@ -4,7 +4,8 @@
 using namespace Gdiplus;
 using namespace tj::shared;
 
-const float SplitterWnd::snapMargin = 0.07f;
+const float SplitterWnd::KSnapMargin = 0.07f;
+const Pixels SplitterWnd::KBarHeight = 6;
 
 SplitterWnd::SplitterWnd(HWND parent, ref<Wnd> a, ref<Wnd> b, Orientation o): ChildWnd(L"Splitter", parent, true, false) {
 	SetStyle(WS_CLIPCHILDREN);
@@ -39,19 +40,19 @@ void SplitterWnd::Layout() {
 	rc.Narrow(1,1,1,1);
 
 	if(_orientation==OrientationHorizontal) {
-		int heightA = (int)floor(_ratio*(rc.GetHeight()))-barHeight;
+		int heightA = (int)floor(_ratio*(rc.GetHeight()))-KBarHeight;
 		int heightB = rc.GetHeight()-heightA;
 
 		if(_a) {
-			_a->Move(0, 0, rc.GetWidth(), heightA-barHeight);
+			_a->Move(0, 0, rc.GetWidth(), heightA-KBarHeight);
 		}
 
 		if(_b) {
-			_b->Move(0, heightA+barHeight-1, rc.GetWidth(), heightB-3);
+			_b->Move(0, heightA+KBarHeight-1, rc.GetWidth(), heightB-3);
 		}
 	}
 	else if(_orientation==OrientationVertical) {
-		int widthA = (int)floor(_ratio*(rc.GetWidth()))-barHeight;
+		int widthA = (int)floor(_ratio*(rc.GetWidth()))-KBarHeight;
 		int widthB = rc.GetWidth()-widthA;
 
 		if(_a) {
@@ -59,7 +60,7 @@ void SplitterWnd::Layout() {
 		}
 
 		if(_b) {
-			_b->Move(widthA+barHeight-1, 0, widthB-3,rc.GetHeight());
+			_b->Move(widthA+KBarHeight-1, 0, widthB-3,rc.GetHeight());
 		}
 	}
 }
@@ -85,12 +86,12 @@ void SplitterWnd::Paint(Graphics& g) {
 	Gdiplus::Brush* abr = theme->GetApplicationBackgroundBrush(root, GetWindow());
 	if(abr!=0) {
 		/*if(_orientation==OrientationHorizontal) {
-			int bH = int(_ratio * rc.GetHeight()); // -(barHeight/2)); // top of the bar
-			g.FillRectangle(abr, 0,bH-2,rc.GetWidth(), barHeight+4);
+			int bH = int(_ratio * rc.GetHeight()); // -(KBarHeight/2)); // top of the bar
+			g.FillRectangle(abr, 0,bH-2,rc.GetWidth(), KBarHeight+4);
 		}
 		else if(_orientation==OrientationVertical) {
-			int bH = int(_ratio * rc.GetWidth()); //-(barHeight/2)); // top of the bar
-			g.FillRectangle(abr, bH-2, 0, barHeight+4, rc.GetHeight());
+			int bH = int(_ratio * rc.GetWidth()); //-(KBarHeight/2)); // top of the bar
+			g.FillRectangle(abr, bH-2, 0, KBarHeight+4, rc.GetHeight());
 		}
 		g.FillRectangle(abr, 0, rc.GetBottom()-5, rc.GetWidth(), 5);
 		g.FillRectangle(abr, rc.GetRight()-5, 0, 5, rc.GetHeight());
@@ -120,10 +121,10 @@ LRESULT SplitterWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 
 			// Snap and protect from going out of view
 			float full = _orientation==OrientationHorizontal?float(rc.bottom-rc.top):float(rc.right-rc.left);
-			float relativeBarSize = (float(barHeight) / full)/2.0f;
+			float relativeBarSize = (float(KBarHeight) / full)/2.0f;
 
-			if(_ratio>(1.0f-snapMargin)) _ratio = 1.0f-relativeBarSize;
-			if(_ratio<snapMargin) _ratio = relativeBarSize;
+			if(_ratio>(1.0f-KSnapMargin)) _ratio = 1.0f-relativeBarSize;
+			if(_ratio<KSnapMargin) _ratio = relativeBarSize;
 			Layout();
 			Repaint();
 		}
@@ -131,8 +132,8 @@ LRESULT SplitterWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 			RECT rc;
 			GetClientRect(GetWindow(),&rc);
 			if(_orientation==OrientationHorizontal) {
-				int bH = int(_ratio * (rc.bottom-rc.top)-(barHeight/2));
-				if(y<bH+barHeight&&y>bH) {
+				int bH = int(_ratio * (rc.bottom-rc.top)-(KBarHeight/2));
+				if(y<bH+KBarHeight&&y>bH) {
 					SetCursor(LoadCursor(0,IDC_SIZENS));
 				}
 				else {
@@ -140,8 +141,8 @@ LRESULT SplitterWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 				}
 			}
 			else if(_orientation==OrientationVertical) {
-				int bH = int(_ratio * (rc.right-rc.left)-(barHeight/2));
-				if(x<bH+barHeight&&x>bH) {
+				int bH = int(_ratio * (rc.right-rc.left)-(KBarHeight/2));
+				if(x<bH+KBarHeight&&x>bH) {
 					SetCursor(LoadCursor(0,IDC_SIZEWE));
 				}
 				else {
@@ -175,7 +176,7 @@ void SplitterWnd::Collapse() {
 	GetClientRect(GetWindow(),&rc);
 
 	float full = _orientation==OrientationHorizontal?float(rc.bottom-rc.top):float(rc.right-rc.left);
-	float relativeBarSize = (float(barHeight) / full)/2.0f;
+	float relativeBarSize = (float(KBarHeight) / full)/2.0f;
 
 	_ratio = 1.0f-relativeBarSize;
 	Layout();

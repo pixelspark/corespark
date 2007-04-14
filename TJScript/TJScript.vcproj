@@ -446,6 +446,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\include\tjscriptobject.h"
+				>
+			</File>
+			<File
 				RelativePath=".\include\tjscriptparameter.h"
 				>
 			</File>
