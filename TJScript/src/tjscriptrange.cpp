@@ -26,20 +26,22 @@ ScriptRange::~ScriptRange() {
 ScriptRange::ScriptRange(int a, int b): _a(a), _b(b) {
 }
 
-ref<Scriptable> ScriptRange::Execute(Command c, ref<ParameterList> p) {
-	if(c==L"toString") {
-		return GC::Hold(new ScriptString(L"[ScriptRange]"));
+void ScriptRange::Initialize() {
+	Bind(L"next", &Next);
+	Bind(L"toString", &ToString);
+}
+
+ref<Scriptable> ScriptRange::ToString(ref<ParameterList> p) {
+	return GC::Hold(new ScriptString(L"[ScriptRange]"));
+}
+
+ref<Scriptable> ScriptRange::Next(ref<ParameterList> p) {
+	int ret = _a;
+
+	if(_a>_b) {
+		return ScriptConstants::Null;
 	}
-	else if(c==L"next") {
-		int ret = _a;
 
-		if(_a>_b) {
-			return ScriptConstants::Null;
-		}
-
-		_a++;
-		return GC::Hold(new ScriptInt(ret));
-	}
-
-	return 0;
+	_a++;
+	return GC::Hold(new ScriptInt(ret));
 }

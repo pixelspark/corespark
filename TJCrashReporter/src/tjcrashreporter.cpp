@@ -4,8 +4,8 @@
 #include <string>
 #include <sstream>
 #include <map>
-#include <airbag/src/client/windows/sender/crash_report_sender.h>
-using namespace google_airbag;
+#include <breakpad/src/client/windows/sender/crash_report_sender.h>
+using namespace google_breakpad;
 
 static std::wstring AirbagURL = L"http://tj.ahref.nl/airbag/report";
 

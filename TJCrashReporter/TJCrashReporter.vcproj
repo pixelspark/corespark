@@ -133,7 +133,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="$(SolutionDir)\Libraries\crash_report_sender.obj $(SolutionDir)\Libraries\http_upload.obj wininet.lib"
+				AdditionalDependencies="$(SolutionDir)\Libraries\crash_report_sender.lib wininet.lib"
 				OutputFile="$(OutDir)\..\Release\$(ProjectName).exe"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"

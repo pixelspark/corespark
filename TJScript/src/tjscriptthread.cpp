@@ -10,7 +10,6 @@ ScriptThread::~ScriptThread() {
 }
 
 void ScriptThread::Run() {
-	Log::Write(L"TJScript/ScriptThread", L"Run");
 	int start = GetTickCount();
 	ref<ScriptContext> ctx = _context;
 	if(!ctx) {

@@ -9,7 +9,7 @@ Pane::Pane(std::wstring title, ref<Wnd> window, bool detached, bool closable, st
 	_closable = closable;
 	if(icon.length()>0) {
 		std::wstring path = ResourceManager::Instance()->Get(icon,true);
-		_icon = Bitmap::FromFile(path.c_str(), TRUE);
+		_icon = Image::FromFile(path.c_str(), TRUE);
 	}
 	else {
 		_icon = 0;
@@ -24,9 +24,9 @@ void Pane::SetTitle(std::wstring c) {
 	_title = c;
 }
 
-Gdiplus::Bitmap* Pane::GetIcon() {
+Gdiplus::Image* Pane::GetIcon() {
 	// If the window specifies a tab icon, return that one instead
-	Gdiplus::Bitmap* ni = _wnd->GetTabIcon();
+	Gdiplus::Image* ni = _wnd->GetTabIcon();
 	return ni==0?_icon:ni;
 }
 

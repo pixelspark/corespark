@@ -13,7 +13,7 @@ namespace tj {
 				Pane(std::wstring, ref<Wnd>, bool detached, bool closable, std::wstring icon=L"");
 				virtual ~Pane();
 				ref<Wnd> GetWindow();
-				Gdiplus::Bitmap* GetIcon();
+				Gdiplus::Image* GetIcon();
 				std::wstring GetTitle() const;
 				bool IsClosable() const;
 				virtual void SetTitle(std::wstring c);
@@ -25,7 +25,7 @@ namespace tj {
 				bool _detached;
 				bool _fullscreen;
 				bool _closable;
-				Gdiplus::Bitmap* _icon;
+				Gdiplus::Image* _icon;
 		};
 
 		class FloatingPane: public Wnd {

@@ -582,7 +582,6 @@ LRESULT Wnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	return DefWindowProc(_wnd, msg, wp, lp);
 }
 
-
 // Default message handlers
 void Wnd::OnSize(const Area& newSize) {
 	//Repaint();
@@ -591,7 +590,7 @@ void Wnd::OnSize(const Area& newSize) {
 void Wnd::OnScroll(ScrollDirection dir) {
 }
 
-Gdiplus::Bitmap* Wnd::GetTabIcon() const {
+Gdiplus::Image* Wnd::GetTabIcon() const {
 	return 0;
 }
 

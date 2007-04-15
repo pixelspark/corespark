@@ -7,13 +7,13 @@ namespace tj {
 			public:
 				Icon(std::wstring rid);
 				virtual ~Icon();
-				Icon(Gdiplus::Bitmap* bmp); // Icon will own and delete bmp!
-				operator Gdiplus::Bitmap*();
-				Gdiplus::Bitmap* GetBitmap();
+				Icon(Gdiplus::Image* bmp); // Icon will own and delete bmp!
+				operator Gdiplus::Image*();
+				Gdiplus::Image* GetBitmap();
 				bool IsLoaded() const;
 
 			protected:
-				Gdiplus::Bitmap* _bitmap;
+				Gdiplus::Image* _bitmap;
 		};
 	}
 }
