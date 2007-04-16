@@ -8,24 +8,22 @@ namespace tj {
 		class ScriptScope;
 		class ScriptContext;
 
-		class StackFrame {
-			public:
+		struct StackFrame {
 				inline StackFrame(tj::shared::ref<Scriptlet> s, unsigned int pc) {
 					_scriptlet = s;
 					_pc = pc;
 					_stackSize = 0;
 				}
 
-				virtual ~StackFrame() {
+				inline StackFrame(const StackFrame& o) {
+					_pc = o._pc;
+					_scriptlet = o._scriptlet;
+					_stackSize = o._stackSize;
 				}
 				
 				unsigned int _pc;
 				tj::shared::ref<Scriptlet> _scriptlet;
 				unsigned int _stackSize;
-
-			/*private:
-				StackFrame(StackFrame& o) {
-				}*/
 		};
 
 		class VM: public virtual tj::shared::Object {
@@ -54,7 +52,7 @@ namespace tj {
 					return _context;
 				}
 
-				inline tj::shared::ref<StackFrame> GetStackFrame() {
+				inline StackFrame& GetStackFrame() {
 					return *(_call.rbegin());
 				}
 
@@ -67,7 +65,7 @@ namespace tj {
 				tj::shared::ref<ScriptScope> _scope;
 				tj::shared::ref<CompiledScript> _script;
 				tj::shared::weak<ScriptContext> _context;
-				std::deque<tj::shared::ref<StackFrame> > _call;
+				std::deque<StackFrame> _call;
 				bool _debug;
 		};
 	}

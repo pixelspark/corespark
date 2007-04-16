@@ -11,8 +11,7 @@ namespace tj {
 
 			protected:
 				typedef tj::shared::ref<Scriptable> (T::*Member)(tj::shared::ref<ParameterList>);
-				typedef tj::shared::ref<Scriptable> (ScriptObject::*BaseMember)(tj::shared::ref<ParameterList>);
-				typedef std::map<CommandType, BaseMember> MemberMap;
+				typedef std::map<CommandType, Member> MemberMap;
 
 				ScriptObject();
 				static void Bind(Command c, Member p);
@@ -66,14 +65,14 @@ namespace tj {
 		}
 
 		template<typename T> void ScriptObject<T>::Bind(Command c, Member p) {
-			ScriptObject<T>::_members[c] = (BaseMember)p;
+			ScriptObject<T>::_members[c] = p;
 		}
 
 		template<typename T> tj::shared::ref<Scriptable> ScriptObject<T>::Execute(Command c, tj::shared::ref<ParameterList> p) {
 			MemberMap::const_iterator it = _members.find(c);
 			if(it!=_members.end()) {
-				BaseMember m = it->second;
-				return (this->*m)(p);
+				Member m = it->second;
+				return (static_cast<T*>(this)->*m)(p);
 			}
 			else if(c==L"members") {
 				return tj::shared::GC::Hold(new ScriptObjectMemberIterator<T>());

@@ -23,7 +23,7 @@ void VM::Call(ref<Scriptlet> s, ref<ScriptParameterList> p) {
 		StackFrame& current = GetStackFrame();
 		current._stackSize = _stack.GetSize();
 	}
-	_call.push_back(GC::Hold(new StackFrame(s,0)));
+	_call.push_back(StackFrame(s,0));
 
 	ScriptScope* ss = new ScriptScope(p);
 	ss->SetPrevious(_scope);
@@ -40,7 +40,7 @@ function scriptlet is encountered, and Break does the same thing until a loop sc
 and quits that loop too. **/
 void VM::Return(bool returnValue) {
 	while(true) {
-		bool isFunction = GetStackFrame()->_scriptlet->IsFunction();
+		bool isFunction = GetStackFrame()._scriptlet->IsFunction();
 		_call.pop_back();
 		_scope = _scope->GetPrevious();
 		if(isFunction) {
@@ -88,23 +88,24 @@ void VM::Execute(ref<ScriptContext> c, ref<CompiledScript> script, ref<ScriptSco
 	ref<VM> vm = This<VM>();
 
 	ref<Scriptlet> main = script->GetMainScriptlet();
-	_call.push_back(GC::Hold(new StackFrame(main,0)));
+	_call.push_back(StackFrame(main, 0));
 
 	try {
 		while(!_call.empty()) {
-			ref<StackFrame> current = *(_call.rbegin());
-			ref<Scriptlet> scriptlet = current->_scriptlet;
+			StackFrame& current = GetStackFrame();
+			ref<Scriptlet> scriptlet = current._scriptlet;
 
-			if(current->_pc>=scriptlet->_code.size()) {
+			if(current._pc>=scriptlet->_code.size()) {
 				_call.pop_back();
 				if(!_call.empty()) {
 					// attempt stack repair if necessary
-					current = *(_call.rbegin());
-					if(_stack.GetSize()<current->_stackSize) {
+					current = GetStackFrame();
+
+					if(_stack.GetSize()<current._stackSize) {
 						throw ScriptException(L"Scriptlet damaged caller's stack");
 					}
 					else {
-						_stack.Pop(current->_stackSize);
+						_stack.Pop(current._stackSize);
 					}
 
 					if(scriptlet->IsFunction()) {
@@ -117,8 +118,8 @@ void VM::Execute(ref<ScriptContext> c, ref<CompiledScript> script, ref<ScriptSco
 				}
 			}
 			else {
-				ref<Op> op = scriptlet->_code.at(current->_pc);
-				current->_pc++;
+				ref<Op> op = scriptlet->_code.at(current._pc);
+				++current._pc;
 
 				try {
 					op->Execute(vm);
@@ -128,8 +129,7 @@ void VM::Execute(ref<ScriptContext> c, ref<CompiledScript> script, ref<ScriptSco
 				}
 
 				if(_debug) {
-					Log::Write(L"TJScript/VM/Execute",Stringify(_script->GetScriptletIndex(current->_scriptlet))+L": "+op->GetName());
-					//Log::Write(L"TJScript/VM/Execute", L"    "+_stack.Dump());
+					Log::Write(L"TJScript/VM/Execute",Stringify(_script->GetScriptletIndex(current._scriptlet))+L": "+op->GetName());
 				}
 			}
 		}

@@ -92,13 +92,28 @@ struct ScriptPushNull {
 	mutable ScriptGrammar const* _grammar;
 };
 
+inline void ReplaceAll(std::wstring& data, const std::wstring& find, const std::wstring& replace) {
+	std::wstring::size_type it = data.find(find);
+	while(it!=std::wstring::npos) {
+		data.replace(it, find.size(), replace);
+		it = data.find(find, it);
+	}
+}
+
 struct ScriptPushString {
 	ScriptPushString(ScriptGrammar const* gram) {
 		_grammar = gram;
 	}
 
 	template<typename T> void operator()(const T start, const T end) const {
-		ref<Op> op = GC::Hold(new OpPush(GC::Hold(new ScriptValue<std::wstring>(std::wstring(start,end)))));
+		std::wstring data(start,end);
+		ReplaceAll(data, L"\\n", L"\n");
+		ReplaceAll(data, L"\\t", L"\t");
+		ReplaceAll(data, L"\\r", L"\r");
+		ReplaceAll(data, L"\\\"", L"\"");
+
+
+		ref<Op> op = GC::Hold(new OpPush(GC::Hold(new ScriptValue<std::wstring>(data))));
 		_grammar->_stack->Top()->Add(op);
 	}
 

@@ -19,7 +19,7 @@ namespace tj {
 
 		template<typename T> class ScriptValue: public Scriptable {
 			public:
-				ScriptValue(T value): _value(value) {
+				ScriptValue(const T& value): _value(value) {
 				}
 
 				virtual ~ScriptValue() {
