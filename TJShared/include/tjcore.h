@@ -23,6 +23,7 @@ namespace tj {
 				Core();
 				virtual ~Core();
 				void AddAction(ref<Runnable> action, bool wait=false);
+				void Quit();
 
 			protected:
 				static ref<Core> _instance;

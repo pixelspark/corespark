@@ -1,21 +1,21 @@
-#ifndef _TJSCRIPTARRAY_H
-#define _TJSCRIPTARRAY_H
+#ifndef _TJScriptMap_H
+#define _TJScriptMap_H
 
 namespace tj {
 	namespace script {
 
-		class ScriptArrayType: public ScriptType {
+		class ScriptMapType: public ScriptType {
 			public:
 				virtual tj::shared::ref<Scriptable> Construct(tj::shared::ref<ParameterList> p);
-				virtual ~ScriptArrayType();
+				virtual ~ScriptMapType();
 		};
 
-		class SCRIPT_EXPORTED ScriptArray: public ScriptObject<ScriptArray> {
-			friend class ScriptArrayIterator;
+		class SCRIPT_EXPORTED ScriptMap: public ScriptObject<ScriptMap> {
+			friend class ScriptMapIterator;
 
 			public:	
-				ScriptArray();
-				virtual ~ScriptArray();
+				ScriptMap();
+				virtual ~ScriptMap();
 				static void Initialize();
 
 				std::map<std::wstring, tj::shared::ref<Scriptable> >::iterator GetBegin();

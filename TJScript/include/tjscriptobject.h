@@ -17,7 +17,7 @@ namespace tj {
 				static void Bind(Command c, Member p);
 
 				static typename MemberMap _members;
-				static volatile bool _initialized;
+				static volatile long _initialized;
 
 			public:
 				// Scriptable
@@ -55,8 +55,11 @@ namespace tj {
 
 		/* Implementation */
 		template<typename T> ScriptObject<T>::ScriptObject() {
-			if(!_initialized) {
-				_initialized = true;
+			/** InterlockedExchange is the thread-safe way to set the lock to 1
+			and return the previous value. If the previous value was 0, initialize
+			the object **/
+			long lockVal = InterlockedExchange(&_initialized, 1);
+			if(lockVal==0L) {
 				T::Initialize();
 			}
 		}
@@ -86,7 +89,7 @@ namespace tj {
 		}
 
 		template<typename T> typename ScriptObject<T>::MemberMap ScriptObject<T>::_members = typename ScriptObject<T>::MemberMap();
-		template<typename T> volatile bool ScriptObject<T>::_initialized = false;
+		template<typename T> volatile long ScriptObject<T>::_initialized = 0;
 	}
 }
 

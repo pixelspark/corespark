@@ -348,10 +348,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\tjscriptarray.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\src\tjscriptcontext.cpp"
 				>
 			</File>
@@ -369,6 +365,10 @@
 			</File>
 			<File
 				RelativePath=".\src\tjscripthash.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\tjscriptmap.cpp"
 				>
 			</File>
 			<File
@@ -509,11 +509,11 @@
 				Name="types"
 				>
 				<File
-					RelativePath=".\include\types\tjscriptarray.h"
+					RelativePath=".\include\types\tjscripthash.h"
 					>
 				</File>
 				<File
-					RelativePath=".\include\types\tjscripthash.h"
+					RelativePath=".\include\types\tjscriptmap.h"
 					>
 				</File>
 				<File

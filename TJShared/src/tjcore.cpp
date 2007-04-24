@@ -25,6 +25,10 @@ ref<Core> Core::Instance() {
 	return _instance;
 }
 
+void Core::Quit() {
+	PostQuitMessage(0);
+}
+
 void Core::AddAction(ref<Runnable> rm, bool wait) {
 	{
 		ThreadLock lck(&_actionLock);

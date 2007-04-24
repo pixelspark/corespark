@@ -100,6 +100,7 @@ namespace tj {
 				virtual std::wstring GetTabTitle() const;		// return an empty string if you don't want to override Pane's title
 				virtual Gdiplus::Image* GetTabIcon() const;		// should return 0 when you don't want to override the tab icon set in Pane
 				virtual void Focus();
+				virtual void BringToFront();
 
 			protected:
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);

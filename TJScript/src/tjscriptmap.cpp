@@ -4,21 +4,21 @@ using namespace tj::script;
 
 namespace tj {
 	namespace script {
-		class ScriptArrayIterator: public Scriptable {
+		class ScriptMapIterator: public Scriptable {
 			public:
-				ScriptArrayIterator(ref<ScriptArray> x, bool iterateKey) {
+				ScriptMapIterator(ref<ScriptMap> x, bool iterateKey) {
 					_array = x;
 					_it = _array->_array.begin();
 					_key = iterateKey;
 				}
 
-				virtual ~ScriptArrayIterator() {
+				virtual ~ScriptMapIterator() {
 				}
 
 				virtual ref<Scriptable> Execute(Command c, ref<ParameterList> p) {
 					ThreadLock lock(&(_array->_lock));
 					if(c==L"toString") {
-						return GC::Hold(new ScriptString(L"[ScriptArrayIterator]"));
+						return GC::Hold(new ScriptString(L"[ScriptMapIterator]"));
 					}
 					else if(c==L"next") {
 						if(_it!=_array->_array.end()) {
@@ -38,18 +38,18 @@ namespace tj {
 					return 0;
 				};
 
-				ref<ScriptArray> _array;
+				ref<ScriptMap> _array;
 				std::map< std::wstring, ref<Scriptable> >::iterator _it;
 				bool _key;
 		};
 	}
 }
 
-ScriptArrayType::~ScriptArrayType() {
+ScriptMapType::~ScriptMapType() {
 }
 
-ref<Scriptable> ScriptArrayType::Construct(ref<ParameterList> p) {
-	ref<ScriptArray> ar = GC::Hold(new ScriptArray());
+ref<Scriptable> ScriptMapType::Construct(ref<ParameterList> p) {
+	ref<ScriptMap> ar = GC::Hold(new ScriptMap());
 	if(p) {
 		ar->Set(p);
 	}
@@ -57,21 +57,21 @@ ref<Scriptable> ScriptArrayType::Construct(ref<ParameterList> p) {
 	return ar;
 }
 
-ScriptArray::ScriptArray() {
+ScriptMap::ScriptMap() {
 }
 
-ScriptArray::~ScriptArray() {
+ScriptMap::~ScriptMap() {
 }
 
-std::map<std::wstring, tj::shared::ref<Scriptable> >::iterator ScriptArray::GetBegin() {
+std::map<std::wstring, tj::shared::ref<Scriptable> >::iterator ScriptMap::GetBegin() {
 	return _array.begin();
 }
 
-std::map<std::wstring, tj::shared::ref<Scriptable> >::iterator ScriptArray::GetEnd() {
+std::map<std::wstring, tj::shared::ref<Scriptable> >::iterator ScriptMap::GetEnd() {
 	return _array.end();
 }
 
-void ScriptArray::Initialize() {
+void ScriptMap::Initialize() {
 	Bind(L"size", &Size);
 	Bind(L"set", &Set);
 	Bind(L"get", &Get);
@@ -80,12 +80,12 @@ void ScriptArray::Initialize() {
 	Bind(L"values", &Values);
 }
 
-ref<Scriptable> ScriptArray::Size(ref<ParameterList> p) {
+ref<Scriptable> ScriptMap::Size(ref<ParameterList> p) {
 	ThreadLock lock(&_lock);
 	return GC::Hold(new ScriptInt((int)_array.size()));
 }
 
-ref<Scriptable> ScriptArray::Set(ref<ParameterList> p) {
+ref<Scriptable> ScriptMap::Set(ref<ParameterList> p) {
 	ThreadLock lock(&_lock);
 
 	ParameterList::iterator it = p->begin();
@@ -97,7 +97,7 @@ ref<Scriptable> ScriptArray::Set(ref<ParameterList> p) {
 	return ScriptConstants::Null;
 }
 
-ref<Scriptable> ScriptArray::Get(ref<ParameterList> p) {
+ref<Scriptable> ScriptMap::Get(ref<ParameterList> p) {
 	ThreadLock lock(&_lock);
 
 	RequiredParameter<std::wstring> key(p, L"key", L"");
@@ -108,7 +108,7 @@ ref<Scriptable> ScriptArray::Get(ref<ParameterList> p) {
 	return ScriptConstants::Null;
 }
 
-ref<Scriptable> ScriptArray::ToString(ref<ParameterList> p) {
+ref<Scriptable> ScriptMap::ToString(ref<ParameterList> p) {
 	ThreadLock lock(&_lock);
 
 	std::wostringstream wos;
@@ -123,12 +123,12 @@ ref<Scriptable> ScriptArray::ToString(ref<ParameterList> p) {
 	return GC::Hold(new ScriptString(wos.str()));
 }
 
-ref<Scriptable> ScriptArray::Keys(ref<ParameterList> p) {
+ref<Scriptable> ScriptMap::Keys(ref<ParameterList> p) {
 	ThreadLock lock(&_lock);
-	return GC::Hold(new ScriptArrayIterator(This<ScriptArray>(), true));
+	return GC::Hold(new ScriptMapIterator(This<ScriptMap>(), true));
 }
 
-ref<Scriptable> ScriptArray::Values(ref<ParameterList> p) {
+ref<Scriptable> ScriptMap::Values(ref<ParameterList> p) {
 	ThreadLock lock(&_lock);
-	return GC::Hold(new ScriptArrayIterator(This<ScriptArray>(), false));
+	return GC::Hold(new ScriptMapIterator(This<ScriptMap>(), false));
 }

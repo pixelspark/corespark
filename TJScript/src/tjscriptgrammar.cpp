@@ -26,14 +26,6 @@ var xx = delegate {
 		alert("F");
 	}
 };
-
-a = a + 1;
-
-OpPush a
-OpPush a
-OpPush 1
-OpAdd
-OpSave
 */
 
 template<typename T> struct ScriptPush {
@@ -323,6 +315,14 @@ class ScriptGrammar : public grammar<ScriptGrammar> {
 					eps_p(lexeme_d[ ((alpha_p >> *(alnum_p|ch_p('_')))) ] >> keyword_p("-="))
 					>> identifier[ScriptPushString(&self)][ScriptInstruction<OpCallGlobal>(&self)] >> keyword_p("-=") >> expression[ScriptInstruction<OpSub>(&self)][ScriptInstruction<OpSave>(&self)];
 
+				incrementOneOperator = 
+					eps_p(lexeme_d[(alpha_p >> *(alnum_p|ch_p('_')))] >> keyword_p("++"))
+					>> identifier[ScriptPushString(&self)][ScriptInstruction<OpCallGlobal>(&self)] >> keyword_p("++")[ScriptPushValue<int>(&self, 1)][ScriptInstruction<OpAdd>(&self)][ScriptInstruction<OpSave>(&self)];
+
+				decrementOneOperator = 
+					eps_p(lexeme_d[(alpha_p >> *(alnum_p|ch_p('_')))] >> keyword_p("--"))
+					>> identifier[ScriptPushString(&self)][ScriptInstruction<OpCallGlobal>(&self)] >> keyword_p("--")[ScriptPushValue<int>(&self, 1)][ScriptInstruction<OpSub>(&self)][ScriptInstruction<OpSave>(&self)];
+
 				methodCall =
 					 (identifier >> !(ch_p('(')[ScriptInstruction<OpPushParameter>(&self)] >> !parameterList >> ')'));
 
@@ -405,7 +405,7 @@ class ScriptGrammar : public grammar<ScriptGrammar> {
 					because the null returned from log is still on the stack where it shouldn't be.
 				*/
 				statement = 
-					functionConstruct | returnConstruct | breakStatement | decrementByOperator | incrementByOperator | assignment | methodCallConstruct[ScriptInstruction<OpPop>(&self)];
+					functionConstruct | returnConstruct | breakStatement | incrementOneOperator | decrementOneOperator | decrementByOperator | incrementByOperator | assignment | methodCallConstruct[ScriptInstruction<OpPop>(&self)];
 
 				blockInFunction =
 					ch_p('{')[ScriptPushScriptlet(&self,ScriptletFunction)] >> *((blockConstruct >> *eol_p)|comment) >> ch_p('}');
@@ -445,7 +445,7 @@ class ScriptGrammar : public grammar<ScriptGrammar> {
 			rule<ScannerT> scriptBody, block, function, functionConstruct, ifConstruct, comment, assignment, assignmentWithVar, assignmentWithoutVar, value, identifier, declaredParameter, keyValuePair, parameterList, methodCall, expression, statement, blockConstruct, blockInFunction, blockInFor, script, returnConstruct, breakStatement, forConstruct, newConstruct, methodCallConstruct, followingMethodCall, delegateConstruct, qualifiedIdentifier;
 			
 			// operators
-			rule<ScannerT> term, factor, negatedFactor, indexOperator, equalsOperator, notEqualsOperator, plusOperator, minOperator, divOperator, mulOperator, orOperator, andOperator, xorOperator, gtOperator, ltOperator, incrementByOperator, decrementByOperator;		
+			rule<ScannerT> term, factor, negatedFactor, indexOperator, equalsOperator, notEqualsOperator, plusOperator, minOperator, divOperator, mulOperator, orOperator, andOperator, xorOperator, gtOperator, ltOperator, incrementByOperator, decrementByOperator, incrementOneOperator, decrementOneOperator;
 
 			rule<ScannerT> const& start() const { 
 				return script;

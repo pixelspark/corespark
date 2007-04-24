@@ -99,6 +99,10 @@ void Wnd::Focus() {
 	::SetFocus(_wnd);
 }
 
+void Wnd::BringToFront() {
+	::SetForegroundWindow(_wnd);
+}
+
 void Wnd::SetFullScreen(bool fs, int d) {
 	if(fs) {
 		if(!_fullScreen) {
