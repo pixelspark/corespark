@@ -20,6 +20,12 @@ int ListWnd::GetHeaderHeightInPixels() const {
 	return theme->GetMeasureInPixels(Theme::MeasureListHeaderHeight);
 }
 
+void ListWnd::DrawCellText(Gdiplus::Graphics& g, Gdiplus::StringFormat* sf, Gdiplus::SolidBrush* br, Gdiplus::Font* font, int col, Area row, const std::wstring& str) {
+	row.SetX((Pixels)(GetColumnX(col)*row.GetWidth()));
+	row.SetWidth((Pixels)(GetColumnWidth(col)*row.GetWidth()));
+	g.DrawString(str.c_str(), (int)str.length(), font, row, sf, br);
+}
+
 void ListWnd::Paint(Gdiplus::Graphics &g) {
 	Area area = GetClientArea();
 	ref<Theme> theme = ThemeManager::GetTheme();

@@ -10,8 +10,15 @@ ContextMenu::~ContextMenu() {
 	DestroyMenu(_menu);
 }
 
+/* If x=-1 and y=-1, we use the current cursor pos */
 int ContextMenu::DoContextMenu(HWND window, int x, int y, bool correct) {
-	if(correct) {
+	if(x==-1 && y==-1) {
+		POINT p;
+		GetCursorPos(&p);
+		x = p.x;
+		y = p.y;
+	}
+	else if(correct) {
 		ref<Theme> theme = ThemeManager::GetTheme();
 		x = int(ceil(x*theme->GetDPIScaleFactor()));
 		y = int(ceil(y*theme->GetDPIScaleFactor()));
@@ -20,6 +27,7 @@ int ContextMenu::DoContextMenu(HWND window, int x, int y, bool correct) {
 		x += wr.left;
 		y += wr.top;
 	}
+
 	return TrackPopupMenu(_menu, TPM_RETURNCMD|TPM_TOPALIGN|TPM_VERPOSANIMATION, x,y, 0, window, 0);
 }
 

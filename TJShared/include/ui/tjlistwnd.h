@@ -37,6 +37,7 @@ namespace tj {
 				virtual void OnColumnSizeChanged();
 
 				// other stuff
+				void DrawCellText(Gdiplus::Graphics& g, Gdiplus::StringFormat* sf, Gdiplus::SolidBrush* br, Gdiplus::Font* font, int col, Area row, const std::wstring& str);
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
 				int GetRowIDByHeight(int h);
 				virtual Area GetRowArea(int rid);
