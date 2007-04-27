@@ -159,7 +159,7 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
-				AdditionalManifestFiles="$(InputDir)\res\tjshared.manifest"
+				AdditionalManifestFiles="$(InputDir)\res\tjshared.manifest;$(SolutionDir)\Libraries\dpi.manifest"
 				EmbedManifest="true"
 			/>
 			<Tool

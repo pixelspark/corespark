@@ -93,7 +93,12 @@ Gdiplus::Font* Theme::GetGUIFontSmall() const {
 
 
 std::wstring Theme::GetName() const { 
-	return TL(theme_default) + std::wstring(L" (") + Stringify(_dpi*KDefaultDPI) + L") ";
+	if(_dpi!=1.0f) {
+		return TL(theme_default) + std::wstring(L" (") + Stringify(_dpi*KDefaultDPI) + L" dpi) ";
+	}
+	else {
+		return TL(theme_default);
+	}
 }
 
 Color Theme::GetBackgroundColor() const {

@@ -19,6 +19,7 @@
 #include <deque>
 #include <math.h>
 
+#include <winsock2.h>
 #include <windows.h>
 #include <Gdiplus.h>
 

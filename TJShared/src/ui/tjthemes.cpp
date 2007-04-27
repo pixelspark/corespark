@@ -63,7 +63,12 @@ namespace tj {
 					}
 
 					virtual std::wstring GetName() const {
-						return TL(theme_vista) + std::wstring(L"(")+Stringify(_dpi*Theme::KDefaultDPI)+L")";
+						if(_dpi==1.0f) {
+							return TL(theme_vista);
+						}
+						else {
+							return TL(theme_vista) + std::wstring(L"(")+Stringify(_dpi*Theme::KDefaultDPI)+L" dpi)";
+						}
 					}
 
 					virtual Gdiplus::Color GetBackgroundColor() const {
@@ -263,7 +268,14 @@ Color BrightTheme::GetDisabledOverlayColor() const {
 	return Color(200,255,255,255);
 }
 
-std::wstring BrightTheme::GetName() const { return TL(theme_bright) + std::wstring(L" (") + Stringify(_dpi*Theme::KDefaultDPI)+L")"; }
+std::wstring BrightTheme::GetName() const { 
+	if(_dpi==1.0f) {
+		return TL(theme_bright);
+	}
+	else {
+		return TL(theme_bright) + std::wstring(L" (") + Stringify(_dpi*Theme::KDefaultDPI)+L" dpi)"; 
+	}
+}
 
 Color BrightTheme::GetTabButtonColorStart() const {
 	return Color(100,145,145,145);
