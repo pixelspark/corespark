@@ -1,6 +1,7 @@
 #include "../include/internal/tjscript.h"
 using namespace tj::shared;
 using namespace tj::script;
+using namespace tj::script::ops;
 
 #pragma warning(push)
 #pragma warning(disable: 4800 4503) // small thingy in Spirit header file, decorated names too long
@@ -252,6 +253,9 @@ class ScriptGrammar : public grammar<ScriptGrammar> {
 			_stack->Push(s, _script->GetScriptletIndex(s));
 		}
 
+		virtual ~ScriptGrammar() {
+		}
+
 		template <typename ScannerT> struct definition {
 			definition(ScriptGrammar const& self) {
 				/** String/integer literals or result from nested stuff **/
@@ -405,7 +409,7 @@ class ScriptGrammar : public grammar<ScriptGrammar> {
 					because the null returned from log is still on the stack where it shouldn't be.
 				*/
 				statement = 
-					functionConstruct | returnConstruct | breakStatement | incrementOneOperator | decrementOneOperator | decrementByOperator | incrementByOperator | assignment | methodCallConstruct[ScriptInstruction<OpPop>(&self)];
+					returnConstruct | functionConstruct | breakStatement | incrementOneOperator | decrementOneOperator | decrementByOperator | incrementByOperator | assignment | methodCallConstruct[ScriptInstruction<OpPop>(&self)];
 
 				blockInFunction =
 					ch_p('{')[ScriptPushScriptlet(&self,ScriptletFunction)] >> *((blockConstruct >> *eol_p)|comment) >> ch_p('}');

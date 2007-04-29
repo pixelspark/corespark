@@ -1,6 +1,7 @@
 #include "../include/internal/tjscript.h"
 using namespace tj::script;
 using namespace tj::shared;
+using namespace tj::script::ops;
 
 /* OpPush */
 OpPush::OpPush(ref<Scriptable> s) {
@@ -56,7 +57,7 @@ void OpCall::Execute(ref<VM> vm) {
 	ref< ScriptValue<std::wstring> > funcName = stack.Pop();
 	ref<Scriptable> target = stack.Pop();
 
-	ref<Scriptable> result = target->Execute(funcName->GetValue(), list?list->_params:0);
+	ref<Scriptable> result = target->Execute(funcName->GetValue(), list);
 	if(!result) {
 		throw ScriptException(L"Variable does not exist on object or scope");
 	}
@@ -77,7 +78,7 @@ void OpIndex::Execute(ref<VM> vm) {
 	ref<Scriptable> object = stack.Pop();
 
 	ref<ParameterList> pl = GC::Hold(new ParameterList());
-	pl->insert(std::pair<std::wstring, ref<Scriptable> >(L"key", index));
+	pl->Set(L"key", index);
 	ref<Scriptable> result = object->Execute(L"get", pl);
 	if(result==0) {
 		throw ScriptException(L"Object does not support get(key=...) method, array index cannot be used");
@@ -100,9 +101,9 @@ void OpCallGlobal::Execute(ref<VM> vm) {
 	ref< ScriptValue<std::wstring> > funcName = stack.Pop();
 	ref<Scriptable> target = vm->GetCurrentScope();
 
-	ref<Scriptable> result = target->Execute(funcName->GetValue(), list?list->_params:0);
+	ref<Scriptable> result = target->Execute(funcName->GetValue(), list);
 	if(!result) {
-		throw ScriptException(L"Variable does not exist on object or scope");
+		throw ScriptException(L"Variable does not exist on object or scope: '"+funcName->GetValue()+L"'");
 	}
 
 	// only call functions when there is a parameter list given
@@ -119,7 +120,7 @@ void OpSave::Execute(ref<VM> vm) {
 	ScriptStack& stack = vm->GetStack();
 	ref<Scriptable> object = stack.Pop();
 	ref< ScriptValue<std::wstring> > varName = stack.Pop();
-	vm->GetCurrentScope()->Set(varName->GetValue(), object);
+	vm->GetCurrentScopeForWriting()->Set(varName->GetValue(), object);
 }
 
 void OpEquals::Execute(ref<VM> vm) {
@@ -438,7 +439,7 @@ void OpNew::Execute(ref<VM> vm) {
 
 	ref< ScriptString > funcName = stack.Pop();
 	
-	ref<Scriptable> instance = vm->GetContext()->GetType(funcName->GetValue())->Construct(list?list->_params:0);
+	ref<Scriptable> instance = vm->GetContext()->GetType(funcName->GetValue())->Construct(list);
 	stack.Push(instance);
 }
 
@@ -458,7 +459,7 @@ void OpIterate::Execute(ref<VM> vm) {
 		frame._pc--;
 
 		//set variable
-		vm->GetCurrentScope()->Set(ref<ScriptString>(varName)->GetValue(), value);
+		vm->GetCurrentScopeForWriting()->Set(ref<ScriptString>(varName)->GetValue(), value);
 
 		vm->Call(_scriptlet);
 	}

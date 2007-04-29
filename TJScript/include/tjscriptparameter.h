@@ -16,18 +16,21 @@ namespace tj {
 						throw ParameterException(name);
 					}
 					
-					tj::shared::ref<Scriptable> v;
-					if(p->find(name)!=p->end()) {
-						v = (*(p->find(name))).second;
-					}
-					else if(namelessIndex>=0 && p->find(Stringify(namelessIndex))!=p->end()) {
-						v = (*p->find(Stringify(namelessIndex))).second;
+					tj::shared::ref<Scriptable> v = p->Get(name);
+					if(!v) {
+						if(namelessIndex>=0) {
+							std::wstring namelessKey = Stringify(namelessIndex);
+							v = p->Get(namelessKey);
+
+							if(!v) {
+								throw ParameterException(name);
+							}
+						}
+						else {
+							throw ParameterException(name);
+						}
 					}
 					
-					if(v==0) {
-						throw ParameterException(name);
-					}
-
 					value = ScriptContext::GetValue<T>(v, defaultValue);
 				}
 
@@ -50,20 +53,19 @@ namespace tj {
 				inline OptionalParameter(tj::shared::ref<ParameterList> p, std::wstring name, T defaultValue, int namelessIndex=-1) {
 					if(p) {
 						tj::shared::ref<Scriptable> v;
-						if(p->find(name)!=p->end()) {
-							v = (*(p->find(name))).second;
+						v = p->Get(name);
+						
+						if(!v && namelessIndex>=0) {
+							std::wstring namelessKey = Stringify(namelessIndex);
+							v = p->Get(namelessKey);
 						}
-						else if(namelessIndex>=0 && p->find(Stringify(namelessIndex))!=p->end()) {
-							v = (*(p->find(Stringify(namelessIndex)))).second;
+						
+						if(!v) {
+							v = GC::Hold(new ScriptValue<T>(defaultValue));
 						}
 
-						if(v) {
-							value = ScriptContext::GetValue<T>(v, defaultValue);
-							return;
-						}
+						value = v?ScriptContext::GetValue<T>(v, defaultValue):defaultValue;
 					}
-
-					value = defaultValue;
 				}
 
 				inline ~OptionalParameter() {

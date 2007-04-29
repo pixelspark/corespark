@@ -1,6 +1,7 @@
 #ifndef _TJSCRIPT_H
 #define _TJSCRIPT_H
 
+#undef SCRIPT_EXPORTED
 #ifdef TJSCRIPT_EXPORTS 
 	#define SCRIPT_EXPORTED __declspec(dllexport)
 #else
@@ -21,13 +22,13 @@
 #include "tjscriptexception.h"
 #include "tjscriptable.h"
 #include "tjscriptvalue.h"
-#include "tjscriptparameterlist.h"
 #include "tjcompiledscript.h"
 #include "tjscripttype.h"
 #include "tjscriptcontext.h"
 #include "tjscriptthread.h"
 #include "tjscriptparameter.h"
 #include "tjscriptscope.h"
+#include "tjscriptparameterlist.h"
 #include "tjscriptobject.h"
 #include "types/tjstatictypes.h"
 #include "tjscriptiterator.h"

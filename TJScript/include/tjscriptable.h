@@ -4,8 +4,9 @@
 namespace tj {
 	namespace script {
 		class Scriptable; 
+		class ScriptScope;
 
-		typedef std::map< std::wstring, tj::shared::ref<Scriptable> > ParameterList;
+		typedef ScriptScope ParameterList;
 		typedef std::wstring CommandType;
 		typedef const CommandType& Command;
 

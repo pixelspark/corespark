@@ -9,6 +9,7 @@
 
 // define TJSHARED_MEMORY_TRACE if you want to get a log of allocations/deallocations
 #undef TJSHARED_MEMORY_TRACE
+//#define TJSHARED_MEMORY_TRACE
 
 #include "tjpch.h"
 #pragma warning(push)

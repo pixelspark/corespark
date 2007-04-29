@@ -88,8 +88,8 @@ ref<Scriptable> ScriptMap::Size(ref<ParameterList> p) {
 ref<Scriptable> ScriptMap::Set(ref<ParameterList> p) {
 	ThreadLock lock(&_lock);
 
-	ParameterList::iterator it = p->begin();
-	while(it!=p->end()) {
+	std::map<std::wstring, ref<Scriptable> >::iterator it = p->_vars.begin();
+	while(it!=p->_vars.end()) {
 		std::pair< const std::wstring, ref<Scriptable> > data = *it;
 		_array[data.first] = data.second;
 		++it;

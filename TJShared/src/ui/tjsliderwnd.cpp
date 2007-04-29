@@ -17,6 +17,7 @@ SliderWnd::SliderWnd(HWND parent, const wchar_t* title): ChildWnd(title, parent)
 	_mark = -1.0f;
 	_showValue = true;
 	_snapHalf = false;
+	_color = 0;
 }
 
 void SliderWnd::SetShowValue(bool t) {

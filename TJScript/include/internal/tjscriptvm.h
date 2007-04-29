@@ -9,21 +9,29 @@ namespace tj {
 		class ScriptContext;
 
 		struct StackFrame {
-				inline StackFrame(tj::shared::ref<Scriptlet> s, unsigned int pc) {
+				inline StackFrame(tj::shared::ref<Scriptlet> s, unsigned int pc, bool createdScope=false) {
 					_scriptlet = s;
 					_pc = pc;
 					_stackSize = 0;
+					_createdScope = createdScope;
 				}
 
 				inline StackFrame(const StackFrame& o) {
 					_pc = o._pc;
 					_scriptlet = o._scriptlet;
 					_stackSize = o._stackSize;
+					_createdScope = o._createdScope;
+				}
+
+				~StackFrame() {
 				}
 				
 				unsigned int _pc;
 				tj::shared::ref<Scriptlet> _scriptlet;
 				unsigned int _stackSize;
+				bool _createdScope; // True if a scope was created for this frame
+
+				static int Count;
 		};
 
 		class VM: public virtual tj::shared::Object {
@@ -43,6 +51,8 @@ namespace tj {
 				inline tj::shared::ref<ScriptScope> GetCurrentScope() {
 					return _scope;
 				}
+
+				tj::shared::ref<ScriptScope> GetCurrentScopeForWriting();
 				
 				inline tj::shared::ref<CompiledScript> GetScript() {
 					return _script;

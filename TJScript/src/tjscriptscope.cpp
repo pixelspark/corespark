@@ -2,15 +2,15 @@
 using namespace tj::shared;
 using namespace tj::script;
 
-ScriptScope::ScriptScope(ref<ScriptParameterList> p) {
-	if(p) {
+ScriptScope::ScriptScope() {
+	/*if(p) {
 		ParameterList::iterator it = p->_params->begin();
 		while(it!=p->_params->end()) {
 			std::pair< const std::wstring, tj::shared::ref<Scriptable> > data = *it;
 			_vars[data.first] = data.second;
 			++it;
 		}
-	}
+	}*/
 }
 
 ScriptScope::~ScriptScope() {
@@ -22,6 +22,15 @@ void ScriptScope::SetPrevious(ref<Scriptable> p) {
 
 ref<Scriptable> ScriptScope::GetPrevious() {
 	return _previous;
+}
+
+bool ScriptScope::Exists(const std::wstring& key) {
+	return _vars.find(key)!=_vars.end();
+}
+
+ref<Scriptable> ScriptScope::Get(const std::wstring& key) {
+	std::map<std::wstring, ref<Scriptable> >::iterator it = _vars.find(key);
+	return it==_vars.end()?0:it->second;
 }
 
 ref<Scriptable> ScriptScope::Execute(Command command, ref<ParameterList> params) {

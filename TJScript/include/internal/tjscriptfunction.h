@@ -5,10 +5,7 @@ namespace tj {
 	namespace script {
 		class ScriptFunction: public Scriptable {
 			public:
-				inline ScriptFunction(tj::shared::ref<Scriptlet> s) {
-					_scriptlet = s;
-				}
-
+				ScriptFunction(tj::shared::ref<Scriptlet> s);
 				virtual ~ScriptFunction();
 				virtual tj::shared::ref<Scriptable> Execute(Command c, tj::shared::ref<ParameterList> plist);
 
