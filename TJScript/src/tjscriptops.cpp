@@ -455,8 +455,8 @@ void OpIterate::Execute(ref<VM> vm) {
 	}
 	else if(!value.IsCastableTo<ScriptNull>()) {
 		// set pc of this stack frame one back, so this instruction will be called again
-		StackFrame& frame = vm->GetStackFrame();
-		frame._pc--;
+		StackFrame* frame = vm->GetStackFrame();
+		frame->_pc--;
 
 		//set variable
 		vm->GetCurrentScopeForWriting()->Set(ref<ScriptString>(varName)->GetValue(), value);

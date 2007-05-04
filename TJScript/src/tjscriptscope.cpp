@@ -3,14 +3,6 @@ using namespace tj::shared;
 using namespace tj::script;
 
 ScriptScope::ScriptScope() {
-	/*if(p) {
-		ParameterList::iterator it = p->_params->begin();
-		while(it!=p->_params->end()) {
-			std::pair< const std::wstring, tj::shared::ref<Scriptable> > data = *it;
-			_vars[data.first] = data.second;
-			++it;
-		}
-	}*/
 }
 
 ScriptScope::~ScriptScope() {

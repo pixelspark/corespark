@@ -8,6 +8,7 @@ ScriptThread::ScriptThread(ref<ScriptContext> ctx) {
 }
 
 ScriptThread::~ScriptThread() {
+	Log::Write(L"TJScript/ScriptThread", L"Destroy");
 }
 
 void ScriptThread::SetCleanupAfterRun(bool c) {

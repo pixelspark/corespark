@@ -22,7 +22,6 @@ std::wstring Dialog::AskForSaveFile(HWND owner, std::wstring title, const wchar_
 	return result?filename:L"";
 }
 
-
 std::wstring Dialog::AskForOpenFile(HWND owner, std::wstring title, const wchar_t* filter, std::wstring defExt) {
 	wchar_t* fname = new wchar_t[MAX_PATH];
 	memset(fname,0,sizeof(wchar_t)*MAX_PATH);

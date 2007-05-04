@@ -11,7 +11,7 @@ namespace tj {
 				virtual inline std::wstring GetName() = 0;
 		};
 
-		class Scriptlet: public virtual tj::shared::Object {
+		class Scriptlet {
 			friend class VM;
 
 			public:
@@ -41,7 +41,6 @@ namespace tj {
 			protected:
 				std::vector< tj::shared::ref<Op> > _code;
 				ScriptletType _type;
-
 		};
 	}
 }
