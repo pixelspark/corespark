@@ -73,6 +73,7 @@ void ToolbarWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 	}
 	else if(ev==MouseEventLeave) {
 		_in = false;
+		_idx = -1;
 		Repaint();
 	}
 	else if(ev==MouseEventLUp) {

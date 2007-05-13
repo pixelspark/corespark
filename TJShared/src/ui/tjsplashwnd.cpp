@@ -6,6 +6,7 @@ SplashWnd::SplashWnd(std::wstring path, int w, int h): Wnd(L"TJShow", 0L, TJ_DRO
 	SetStyleEx(WS_EX_TOPMOST);
 	SetStyle(WS_POPUP);
 	UnsetStyle(WS_CAPTION);
+
 	_image = Bitmap::FromFile(path.c_str(), TRUE);
 	_progress = GC::Hold(new ProgressWnd(GetWindow()));
 	_progress->SetIndeterminate(true);
@@ -23,6 +24,10 @@ SplashWnd::SplashWnd(std::wstring path, int w, int h): Wnd(L"TJShow", 0L, TJ_DRO
     nrc.top   = mi.rcWork.top  + (mi.rcWork.bottom - mi.rcWork.top  - h) / 2;
 	MoveWindow(GetWindow(), nrc.left, nrc.top, w, h, FALSE);
 	Layout();
+
+	// Make window transparent
+	SetWindowLong(GetWindow(), GWL_EXSTYLE, GetWindowLong(GetWindow(), GWL_EXSTYLE) | WS_EX_LAYERED);
+	SetLayeredWindowAttributes(GetWindow(), 0, (255 * 90) / 100, LWA_ALPHA);
 }
 
 SplashWnd::~SplashWnd() {

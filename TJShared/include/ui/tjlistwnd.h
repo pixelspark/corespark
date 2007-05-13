@@ -38,6 +38,8 @@ namespace tj {
 
 				// other stuff
 				void DrawCellText(Gdiplus::Graphics& g, Gdiplus::StringFormat* sf, Gdiplus::SolidBrush* br, Gdiplus::Font* font, int col, Area row, const std::wstring& str);
+				void DrawCellIcon(Gdiplus::Graphics& g, int col, Area row, Icon& icon);
+
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
 				int GetRowIDByHeight(int h);
 				virtual Area GetRowArea(int rid);

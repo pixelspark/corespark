@@ -26,6 +26,17 @@ void ListWnd::DrawCellText(Gdiplus::Graphics& g, Gdiplus::StringFormat* sf, Gdip
 	g.DrawString(str.c_str(), (int)str.length(), font, row, sf, br);
 }
 
+void ListWnd::DrawCellIcon(Gdiplus::Graphics& g, int col, Area row, Icon& icon) {
+	Gdiplus::Image* bitmap = icon.GetBitmap();
+	if(bitmap==0) return;
+
+	Area cell(Pixels(GetColumnX(col)*row.GetWidth()), row.GetTop(), Pixels(GetColumnWidth(col)*row.GetWidth()), row.GetHeight());
+	cell.SetX(cell.GetX() + cell.GetWidth()/2 - (bitmap->GetWidth()/2));
+	cell.SetWidth(bitmap->GetWidth());
+
+	g.DrawImage(bitmap, cell);
+}
+
 void ListWnd::Paint(Gdiplus::Graphics &g) {
 	Area area = GetClientArea();
 	ref<Theme> theme = ThemeManager::GetTheme();
