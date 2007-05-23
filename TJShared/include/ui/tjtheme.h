@@ -89,6 +89,7 @@ namespace tj {
 					SliderSubmix,
 					SliderMaster,
 					SliderMacro,
+					SliderAlpha,
 				};
 
 				const static float KDefaultDPI; // One logical pixel equals 1/KDefaultDPI inches

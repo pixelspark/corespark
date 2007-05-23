@@ -202,6 +202,9 @@ Color Theme::GetSliderColorStart(int i) const {
 		case SliderMacro:
 			return Color(255, 60, 60, 110);
 
+		case SliderAlpha:
+			return Color(200, 200, 60);
+
 		default:
 			return GetActiveStartColor();
 	}
@@ -217,6 +220,9 @@ Color Theme::GetSliderColorEnd(int i) const {
 
 		case SliderMacro:
 			return Color(150, 60, 60, 110);
+
+		case SliderAlpha:
+			return Color(150, 150, 60);
 
 		default:
 			return GetActiveEndColor();

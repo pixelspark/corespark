@@ -300,8 +300,11 @@ Area ListWnd::GetRowArea(int rid) {
 	return Area(0,0,0,0);
 }
 
-void ListWnd::AddColumn(std::wstring name, int id) {
+void ListWnd::AddColumn(std::wstring name, int id, float w) {
 	_cols[id] = Column(name);
+	if(w>0.0f) {
+		_cols[id]._width = w;
+	}
 }
 
 // Column

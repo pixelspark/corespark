@@ -720,6 +720,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\tjtimestamp.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\tjutil.cpp"
 					>
 				</File>
@@ -946,6 +950,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\include\tjmixed.h"
+					>
+				</File>
+				<File
 					RelativePath=".\include\tjobject.h"
 					>
 				</File>
@@ -987,6 +995,10 @@
 				</File>
 				<File
 					RelativePath=".\include\tjthread.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\tjtimestamp.h"
 					>
 				</File>
 				<File

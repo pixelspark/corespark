@@ -21,7 +21,7 @@ namespace tj {
 				virtual int GetSelectedRow() const;
 
 				// col stuff
-				virtual void AddColumn(std::wstring name, int id);
+				virtual void AddColumn(std::wstring name, int id, float w =-1.0f);
 				virtual void SetColumnWidth(int id, float w);
 				virtual float GetColumnX(int id);
 				virtual float GetColumnWidth(int id);
