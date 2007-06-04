@@ -146,6 +146,10 @@ Color Theme::GetHighlightColorStart() const {
 	return Color(255, 127, 75, 0);
 }
 
+Color Theme::GetVideoBackgroundColor() const {
+	return Color(0,0,0);
+}
+
 Color Theme::GetHighlightColorEnd() const {
 	
 	return Color(255, 255,150,0);

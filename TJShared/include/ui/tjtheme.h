@@ -18,6 +18,7 @@ namespace tj {
 
 				// Colors
 				virtual Gdiplus::Color GetBackgroundColor() const;
+				virtual Gdiplus::Color GetVideoBackgroundColor() const;
 				virtual Gdiplus::Color GetEditBackgroundColor() const;
 				virtual Gdiplus::Color GetTimeBackgroundColor() const;
 				virtual Gdiplus::Color GetPropertyBackgroundColor() const;
