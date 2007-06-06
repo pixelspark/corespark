@@ -113,7 +113,7 @@ void VM::Break() {
 	}
 }
 
-void VM::Execute(ref<ScriptContext> c, ref<CompiledScript> script, ref<ScriptScope> scope) {
+ref<Scriptable> VM::Execute(ref<ScriptContext> c, ref<CompiledScript> script, ref<ScriptScope> scope) {
 	_script = script;
 	_context = c; // weak reference
 	_scope = scope;
@@ -177,6 +177,7 @@ void VM::Execute(ref<ScriptContext> c, ref<CompiledScript> script, ref<ScriptSco
 		Log::Write(L"TJScript/VM", L"A breakpoint was triggered, script execution stopped!");
 		/* TODO: create something to resume the VM execution (should be possible as all state info is still intact
 		at this point */
+		throw;
 	}
 	catch(Exception& e) {
 		if(_frame!=0) {
@@ -203,6 +204,12 @@ void VM::Execute(ref<ScriptContext> c, ref<CompiledScript> script, ref<ScriptSco
 	_script = 0;
 	_context = ref<ScriptContext>(0);
 	_scope = 0;
+
+	ref<Scriptable> ret;
+	if(!_stack.IsEmpty()) {
+		ret = _stack.Top();
+	}
+
 	_stack.Clear();
 
 	// delete frames
@@ -211,4 +218,6 @@ void VM::Execute(ref<ScriptContext> c, ref<CompiledScript> script, ref<ScriptSco
 		delete _frame;
 		_frame = previous;
 	}
+
+	return ret;
 }

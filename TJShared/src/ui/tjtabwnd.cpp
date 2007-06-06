@@ -55,19 +55,21 @@ void TabWnd::Paint(Graphics& g) {
 		Area rect = GetClientArea();
 		ref<Theme> theme = ThemeManager::GetTheme();
 		
-		// draw application background
-		HWND root = GetAncestor(GetWindow(), GA_ROOT);
-		Gdiplus::Brush* abr = theme->GetApplicationBackgroundBrush(root, GetWindow());
-		if(abr!=0) {
-			g.FillRectangle(abr, Rect(rect.GetLeft(), rect.GetTop(), rect.GetRight(), _current?_headerHeight:(rect.GetHeight())));
-			Pen back(abr, 2.0f);
-			g.DrawRectangle(&back, RectF(0.0f, float(_headerHeight), float(rect.GetWidth()-1), float(rect.GetHeight()-_headerHeight+1)));
-		
-			delete abr;
+		// draw background
+		if(_childStyle) {
+			SolidBrush br(theme->GetBackgroundColor());
+			g.FillRectangle(&br, Rect(rect.GetLeft(), rect.GetTop(), rect.GetWidth(), _current?_headerHeight:(rect.GetHeight())));
 		}
 		else {
-			SolidBrush br(theme->GetTimeBackgroundColor());
-			g.FillRectangle(&br, Rect(rect.GetLeft(), rect.GetTop(), rect.GetWidth(), _current?_headerHeight:(rect.GetHeight())));
+			HWND root = GetAncestor(GetWindow(), GA_ROOT);
+			Gdiplus::Brush* abr = theme->GetApplicationBackgroundBrush(root, GetWindow());
+			if(abr!=0) {
+				g.FillRectangle(abr, Rect(rect.GetLeft(), rect.GetTop(), rect.GetRight(), _current?_headerHeight:(rect.GetHeight())));
+				Pen back(abr, 2.0f);
+				g.DrawRectangle(&back, RectF(0.0f, float(_headerHeight), float(rect.GetWidth()-1), float(rect.GetHeight()-_headerHeight+1)));
+			
+				delete abr;
+			}
 		}
 
 		if(_root) {
@@ -79,12 +81,7 @@ void TabWnd::Paint(Graphics& g) {
 		}
 		
 		Pen border(theme->GetActiveEndColor(), 1.0f);
-		if(!_childStyle) {
-			g.DrawRectangle(&border, RectF(0, float(_headerHeight)-1, float(rect.GetWidth())-1, float(rect.GetHeight()-_headerHeight)));
-		}
-		else {
-			g.DrawLine(&border, 0.0f, float(_headerHeight-1), float(rect.GetWidth()), float(_headerHeight-1));
-		}
+		g.DrawRectangle(&border, RectF(0, float(_headerHeight)-1, float(rect.GetWidth())-1, float(rect.GetHeight()-_headerHeight)));
 
 		std::vector< ref<Pane> >::iterator it = _panes.begin();
 		SolidBrush textBrush = theme->GetTextColor();
@@ -103,13 +100,19 @@ void TabWnd::Paint(Graphics& g) {
 			
 			// border
 			if(pane==_current) {
-				LinearGradientBrush lbr(PointF(0.0f, 0.0f), PointF(0.0f, float(_headerHeight)), theme->GetActiveEndColor(), theme->GetActiveEndColor());
-				
-				g.FillRectangle(&lbr, RectF(float(left), 2.0f, float(bound.Width+2+(pane->HasIcon()?KIconWidth:0)), float(_headerHeight)));
-
 				if(!_childStyle) {
+					LinearGradientBrush lbr(PointF(0.0f, 0.0f), PointF(0.0f, float(_headerHeight)), theme->GetActiveEndColor(), theme->GetActiveEndColor());
+					g.FillRectangle(&lbr, RectF(float(left), 2.0f, float(bound.Width+2+(pane->HasIcon()?KIconWidth:0)), float(_headerHeight)));
 					SolidBrush backBrush(theme->GetBackgroundColor());
 					g.FillRectangle(&backBrush, RectF(float(left+1.0f), 3.0f, float(bound.Width+(pane->HasIcon()?KIconWidth:0)), float(_headerHeight)));
+				}
+				else {
+					LinearGradientBrush lbr(PointF(0.0f, 0.0f), PointF(0.0f, float(_headerHeight)), theme->ChangeAlpha(theme->GetActiveEndColor(), 0), theme->GetActiveEndColor());
+					LinearGradientBrush bbr(PointF(0.0f, 0.0f), PointF(0.0f, float(_headerHeight)), theme->ChangeAlpha(theme->GetActiveEndColor(), 0), theme->ChangeAlpha(theme->GetActiveEndColor(), 127));
+					Pen pn(&lbr, 1.0f);
+					
+					g.DrawRectangle(&pn, RectF(float(left), -1.0f, float(bound.Width+2+(pane->HasIcon()?KIconWidth:0)), float(_headerHeight-2)));
+					g.FillRectangle(&bbr, RectF(float(left+1.0f), 0.0f, float(bound.Width+(pane->HasIcon()?KIconWidth:0)), float(_headerHeight-2)));
 				}
 			}
 			
@@ -118,11 +121,13 @@ void TabWnd::Paint(Graphics& g) {
 				Color start = theme->GetTabButtonColorStart();
 				Color end = theme->GetTabButtonColorEnd();
 
-				LinearGradientBrush lbr(PointF(0.0f, 0.0f), PointF(0.0f, float(_headerHeight)), start, end);
-				g.FillRectangle(&lbr, RectF(float(left), 2.0f, float(bound.Width+2+(pane->HasIcon()?KIconWidth:0)), float(_headerHeight-2)));
-			
-				LinearGradientBrush gbr(PointF(0.0f, 0.0f), PointF(0.0f, float(_headerHeight)/2.0f), theme->GetGlassColorStart(), theme->GetGlassColorEnd());
-				g.FillRectangle(&gbr, RectF(float(left), 2.0f, float(bound.Width+2+(pane->HasIcon()?KIconWidth:0)), float(_headerHeight/2.0f-2)));
+				if(!_childStyle) {
+					LinearGradientBrush lbr(PointF(0.0f, 0.0f), PointF(0.0f, float(_headerHeight)), start, end);
+					g.FillRectangle(&lbr, RectF(float(left), 2.0f, float(bound.Width+2+(pane->HasIcon()?KIconWidth:0)), float(_headerHeight-2)));
+				
+					LinearGradientBrush gbr(PointF(0.0f, 0.0f), PointF(0.0f, float(_headerHeight)/2.0f), theme->GetGlassColorStart(), theme->GetGlassColorEnd());
+					g.FillRectangle(&gbr, RectF(float(left), 2.0f, float(bound.Width+2+(pane->HasIcon()?KIconWidth:0)), float(_headerHeight/2.0f-2)));
+				}
 			}
 
 			if(pane->HasIcon()) {

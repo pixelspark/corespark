@@ -31,7 +31,7 @@ namespace tj {
 			public:
 				VM(int stackLimit=512);
 				virtual ~VM();
-				void Execute(tj::shared::ref<ScriptContext> c, tj::shared::ref<CompiledScript> script, tj::shared::ref<ScriptScope> global);
+				ref<Scriptable> Execute(tj::shared::ref<ScriptContext> c, tj::shared::ref<CompiledScript> script, tj::shared::ref<ScriptScope> global);
 				void SetDebug(bool d);				
 
 				// to be called by ops or vm during execution

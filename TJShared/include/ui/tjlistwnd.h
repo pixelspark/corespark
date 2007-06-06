@@ -26,6 +26,11 @@ namespace tj {
 				virtual float GetColumnX(int id);
 				virtual float GetColumnWidth(int id);
 
+				/* The 'empty text' is the text shown when the list is empty (could be a hint for the user
+				on how to fill the list */
+				virtual void SetEmptyText(const std::wstring& txt); 
+				std::wstring GetEmptyText() const;
+
 			protected:
 				// implemented by child
 				virtual int GetItemCount() = 0;
@@ -48,6 +53,7 @@ namespace tj {
 			
 			private:
 				std::map<int,Column> _cols;	
+				std::wstring _emptyText;
 				int _draggingCol;
 				int _dragStartX;
 				int _selected;

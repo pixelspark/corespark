@@ -16,7 +16,7 @@ namespace tj {
 				virtual ~ScriptContext();
 				virtual ref<CompiledScript> Compile(std::wstring source);
 				virtual ref<CompiledScript> CompileFile(std::wstring file);
-				virtual void Execute(ref<CompiledScript> scr, ref<ScriptScope> scope=0);
+				virtual ref<Scriptable> Execute(ref<CompiledScript> scr, ref<ScriptScope> scope=0);
 				virtual ref<ScriptThread> CreateExecutionThread(ref<CompiledScript> scr);
 				void SetDebug(bool d);
 				void SetOptimize(bool o);

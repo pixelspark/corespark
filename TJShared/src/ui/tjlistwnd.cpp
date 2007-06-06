@@ -37,6 +37,15 @@ void ListWnd::DrawCellIcon(Gdiplus::Graphics& g, int col, Area row, Icon& icon) 
 	g.DrawImage(bitmap, cell);
 }
 
+void ListWnd::SetEmptyText(const std::wstring& t) {
+	_emptyText = t;
+	Repaint();
+}
+
+std::wstring ListWnd::GetEmptyText() const {
+	return _emptyText;
+}
+
 void ListWnd::Paint(Gdiplus::Graphics &g) {
 	Area area = GetClientArea();
 	ref<Theme> theme = ThemeManager::GetTheme();
@@ -47,56 +56,66 @@ void ListWnd::Paint(Gdiplus::Graphics &g) {
 	Pen border(theme->GetActiveStartColor(), 1.0f);
 	Pen lineBorder(theme->GetActiveEndColor(), 1.0f);
 
-	// draw items, if they fit
-	int h = -int(GetVerticalPos());
 	int n = GetItemCount();
-	int itemHeight = GetItemHeightInPixels();
+	if(n>0) {
+		// draw items, if they fit
+		int h = -int(GetVerticalPos());
+		
+		int itemHeight = GetItemHeightInPixels();
 
-	SolidBrush colorEven(theme->GetTimeBackgroundColor());
-	LinearGradientBrush colorSelected(PointF(0.0f, float(h+headHeight)), PointF(0.0f, float(h+headHeight+itemHeight)), theme->GetTimeSelectionColorStart(), theme->GetTimeSelectionColorEnd());
+		SolidBrush colorEven(theme->GetTimeBackgroundColor());
+		LinearGradientBrush colorSelected(PointF(0.0f, float(h+headHeight)), PointF(0.0f, float(h+headHeight+itemHeight)), theme->GetTimeSelectionColorStart(), theme->GetTimeSelectionColorEnd());
 
-	for(int a=0;a<n;a++) {
-		if(h>area.GetHeight()) {
-			break;
-		}
-		else if(h>=-2*itemHeight) {
-			Area rowArea(area.GetLeft(), area.GetTop()+headHeight+h+1, area.GetWidth(), itemHeight);
-			// draw a background if odd
-			if(a==_selected) {
-				g.FillRectangle(&colorSelected, rowArea);
+		for(int a=0;a<n;a++) {
+			if(h>area.GetHeight()) {
+				break;
 			}
-			else if(a%2==1) {
-				g.FillRectangle(&colorEven, rowArea);
+			else if(h>=-2*itemHeight) {
+				Area rowArea(area.GetLeft(), area.GetTop()+headHeight+h+1, area.GetWidth(), itemHeight);
+				// draw a background if odd
+				if(a==_selected) {
+					g.FillRectangle(&colorSelected, rowArea);
+				}
+				else if(a%2==1) {
+					g.FillRectangle(&colorEven, rowArea);
+				}
+				
+				// draw item
+				PaintItem(a, g, rowArea);
+				g.DrawLine(&lineBorder, 0, h+itemHeight+headHeight, area.GetRight(), h+itemHeight+headHeight);
 			}
-			
-			// draw item
-			PaintItem(a, g, rowArea);
-			g.DrawLine(&lineBorder, 0, h+itemHeight+headHeight, area.GetRight(), h+itemHeight+headHeight);
+			h += itemHeight;
 		}
-		h += itemHeight;
+
+		// draw columns
+		theme->DrawToolbarBackground(g, (float)area.GetLeft(), (float)area.GetTop(), (float)area.GetWidth(), (float)headHeight);
+		g.DrawLine(&border, 0, headHeight, area.GetWidth(), headHeight);
+
+		StringFormat sf;
+		sf.SetAlignment(StringAlignmentNear);
+		sf.SetLineAlignment(StringAlignmentCenter);
+		sf.SetTrimming(StringTrimmingEllipsisCharacter);
+		//SolidBrush colBr(theme->GetTextColor());
+		LinearGradientBrush colBr(PointF(0.0f, 4.0f), PointF(0.0f, float(headHeight-8)), theme->GetActiveStartColor(), theme->GetActiveEndColor());
+		Pen separator(theme->GetActiveEndColor());
+
+		float x = float(area.GetLeft());
+		std::map<int,Column>::iterator it = _cols.begin();
+		while(it!=_cols.end()) {
+			Column& col = it->second;
+			float w = col._width*area.GetWidth();
+			g.DrawString(col._title.c_str(), (int)col._title.length(), theme->GetGUIFontBold(), RectF(x+3.0f, (float)area.GetTop()+4.0f, w, headHeight-8.0f), &sf, &colBr);
+			g.DrawLine(&separator, x+w, area.GetTop()+2.0f, x+w, area.GetTop()+headHeight-4.0f);
+			x += w;
+			++it;
+		}
 	}
-
-	// draw columns
-	theme->DrawToolbarBackground(g, (float)area.GetLeft(), (float)area.GetTop(), (float)area.GetWidth(), (float)headHeight);
-	g.DrawLine(&border, 0, headHeight, area.GetWidth(), headHeight);
-
-	StringFormat sf;
-	sf.SetAlignment(StringAlignmentNear);
-	sf.SetLineAlignment(StringAlignmentCenter);
-	sf.SetTrimming(StringTrimmingEllipsisCharacter);
-	//SolidBrush colBr(theme->GetTextColor());
-	LinearGradientBrush colBr(PointF(0.0f, 4.0f), PointF(0.0f, float(headHeight-8)), theme->GetActiveStartColor(), theme->GetActiveEndColor());
-	Pen separator(theme->GetActiveEndColor());
-
-	float x = float(area.GetLeft());
-	std::map<int,Column>::iterator it = _cols.begin();
-	while(it!=_cols.end()) {
-		Column& col = it->second;
-		float w = col._width*area.GetWidth();
-		g.DrawString(col._title.c_str(), (int)col._title.length(), theme->GetGUIFontBold(), RectF(x+3.0f, (float)area.GetTop()+4.0f, w, headHeight-8.0f), &sf, &colBr);
-		g.DrawLine(&separator, x+w, area.GetTop()+2.0f, x+w, area.GetTop()+headHeight-4.0f);
-		x += w;
-		++it;
+	else {
+		// draw the 'empty text'
+		StringFormat sf;
+		sf.SetAlignment(StringAlignmentCenter);
+		SolidBrush descBrush(theme->GetTrackDescriptionTextColor());
+		g.DrawString(_emptyText.c_str(), (int)_emptyText.length(), theme->GetGUIFont(), area, &sf, &descBrush);
 	}
 }
 

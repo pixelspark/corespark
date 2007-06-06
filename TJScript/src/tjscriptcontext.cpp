@@ -16,17 +16,18 @@ void ScriptContext::SetOptimize(bool o) {
 	_optimize = o;
 }
 
-void ScriptContext::Execute(ref<CompiledScript> scr, ref<ScriptScope> scope) {
+ref<Scriptable> ScriptContext::Execute(ref<CompiledScript> scr, ref<ScriptScope> scope) {
 	ThreadLock lock(&_running);
 	assert(scr);
 
 	if(scope) {
 		scope->SetPrevious(_global);
-		_vm->Execute(This<ScriptContext>(), scr, scope);
+		ref<Scriptable> val = _vm->Execute(This<ScriptContext>(), scr, scope);
 		scope->SetPrevious(0);
+		return val;
 	}
 	else {
-		_vm->Execute(This<ScriptContext>(), scr, _global);
+		return _vm->Execute(This<ScriptContext>(), scr, _global);
 	}
 }
 

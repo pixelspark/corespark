@@ -133,21 +133,21 @@ LRESULT SplitterWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 			GetClientRect(GetWindow(),&rc);
 			if(_orientation==OrientationHorizontal) {
 				int bH = int(_ratio * (rc.bottom-rc.top)-(KBarHeight/2));
-				if(y<bH+KBarHeight&&y>bH) {
+				//if(y<bH+KBarHeight&&y>bH) {
 					SetCursor(LoadCursor(0,IDC_SIZENS));
-				}
-				else {
-					SetCursor(LoadCursor(0,IDC_ARROW));
-				}
+				//}
+				//else {
+				//	SetCursor(LoadCursor(0,IDC_ARROW));
+				//}
 			}
 			else if(_orientation==OrientationVertical) {
 				int bH = int(_ratio * (rc.right-rc.left)-(KBarHeight/2));
-				if(x<bH+KBarHeight&&x>bH) {
+				//if(x<bH+KBarHeight&&x>bH) {
 					SetCursor(LoadCursor(0,IDC_SIZEWE));
-				}
-				else {
-					SetCursor(LoadCursor(0,IDC_ARROW));
-				}
+				//}
+				//else {
+				//	SetCursor(LoadCursor(0,IDC_ARROW));
+				//}
 			}
 
 		}
