@@ -21,7 +21,9 @@ namespace tj {
 				void AddTabWindow(ref<TabWnd> tw);
 				void RemoveTabWindow(ref<TabWnd> tw);
 				void RemoveTabWindow(TabWnd* tw);
-				void RevealWindow(ref<Wnd> wnd);
+
+				// If wnd is not visible and addTo!=0, the pane will be added to the specified TabWnd
+				void RevealWindow(ref<Wnd> wnd, ref<TabWnd> addTo=0);
 				ref<TabWnd> FindTabWindowAt(int x, int y);
 				void SetDragTarget(ref<TabWnd> tw);
 				ref<TabWnd> GetDragTarget();

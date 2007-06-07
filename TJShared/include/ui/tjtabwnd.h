@@ -29,14 +29,14 @@ namespace tj {
 				void Attach(ref<Pane> p);
 				bool RevealWindow(ref<Wnd> w);
 				void SetDetachAttachAllowed(bool allow);
+				void SelectPane(ref<Pane> pane);
 			
 			protected:
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
 				void SetDraggingPane(ref<Pane> pane);
 				void DoContextMenu(int x, int y);
 				void DoAddMenu(int x, int y);
-				void SelectPane(ref<Pane> pane);
-
+				
 				std::vector< ref<Pane> > _panes;
 				ref<Pane> _current;
 				ref<Pane> _dragging;

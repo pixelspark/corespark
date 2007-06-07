@@ -57,8 +57,11 @@ void TabWnd::Paint(Graphics& g) {
 		
 		// draw background
 		if(_childStyle) {
-			SolidBrush br(theme->GetBackgroundColor());
-			g.FillRectangle(&br, Rect(rect.GetLeft(), rect.GetTop(), rect.GetWidth(), _current?_headerHeight:(rect.GetHeight())));
+			Rect backrc(rect.GetLeft(), rect.GetTop(), rect.GetWidth(), _current?_headerHeight:(rect.GetHeight()));
+			SolidBrush white(theme->GetBackgroundColor());
+			LinearGradientBrush bbr(PointF(0.0f, 0.0f), PointF(0.0f, float(_headerHeight)), theme->ChangeAlpha(theme->GetActiveEndColor(), 50), theme->ChangeAlpha(theme->GetActiveEndColor(), 0));
+			g.FillRectangle(&white, backrc);
+			g.FillRectangle(&bbr, backrc);
 		}
 		else {
 			HWND root = GetAncestor(GetWindow(), GA_ROOT);
@@ -574,6 +577,7 @@ void TabWnd::DoAddMenu(int x, int y) {
 				_root->RemoveOrphanPane(selected);
 				Attach(selected);
 				_current = selected;
+				Layout();
 				_current->GetWindow()->Show(true);
 			}
 		}

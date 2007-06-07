@@ -141,7 +141,7 @@ void RootWnd::RemoveNotification(NotificationWnd* nw) {
 	}
 }
 
-void RootWnd::RevealWindow(ref<Wnd> wnd) {
+void RootWnd::RevealWindow(ref<Wnd> wnd, ref<TabWnd> addTo) {
 	assert(wnd);
 
 	// find the window in the floating panes
@@ -161,7 +161,22 @@ void RootWnd::RevealWindow(ref<Wnd> wnd) {
 	while(itt!=_tabWindows.end()) {
 		ref<TabWnd> tab = *itt;
 		if(tab->RevealWindow(wnd)) return;
-		itt++;
+		++itt;
+	}
+
+	// probably an orphan pane; if we can find it, attach it to addTo if addTo!=0
+	if(addTo) {
+		std::vector< ref<Pane> >::iterator oit = _orphans.begin();
+		while(oit!=_orphans.end()) {
+			ref<Pane> orphan = *oit;
+			if(orphan->GetWindow()==wnd) {
+				_orphans.erase(oit);
+				addTo->Attach(orphan);
+				addTo->SelectPane(orphan);
+				return;
+			}
+			++oit;
+		}
 	}
 }
 
