@@ -2,7 +2,7 @@
 using namespace tj::shared;
 using namespace Gdiplus;
 
-ColorChooserWnd::ColorChooserWnd(HWND parent, unsigned char* red, unsigned char* green, unsigned char* blue, unsigned char* tred, unsigned char* tgreen, unsigned char* tblue): ChildWnd(L"", parent) {
+ColorChooserWnd::ColorChooserWnd(HWND parent, unsigned char* red, unsigned char* green, unsigned char* blue, unsigned char* tred, unsigned char* tgreen, unsigned char* tblue): ChildWnd(L"", parent), _colorsIcon(L"icons/shared/colors.png") {
 	_red = red;
 	_green = green;
 	_blue = blue;
@@ -24,9 +24,8 @@ void ColorChooserWnd::Paint(Gdiplus::Graphics& g) {
 	SolidBrush cbr(Color(*_red, *_green, *_blue));
 	g.FillRectangle(&cbr, rc);
 
-	/*SolidBrush tbr(theme->GetTextColor());
-	std::wstring col = Stringify(*_red) + L"," + Stringify(*_green) + L"," + Stringify(*_blue);
-	g.DrawString(col.c_str(), (int)col.length(), theme->GetGUIFont(), PointF(0.0f, 0.0f), &tbr);*/
+	Area iconArea(rc.GetRight()-20, rc.GetTop(), 16, 16);
+	g.DrawImage(_colorsIcon, iconArea);
 }
 
 LRESULT ColorChooserWnd::Message(UINT msg, WPARAM wp,LPARAM lp) {
@@ -64,7 +63,7 @@ LRESULT ColorChooserWnd::Message(UINT msg, WPARAM wp,LPARAM lp) {
 	return ChildWnd::Message(msg,wp,lp);
 }
 
-ColorProperty::ColorProperty(std::wstring name,unsigned char* red, unsigned char* green, unsigned char* blue,unsigned char* tred, unsigned char* tgreen, unsigned char* tblue): Property(name), _red(red), _green(green), _blue(blue), _wnd(0), _tRed(tred), _tGreen(tgreen), _tBlue(tblue) {
+ColorProperty::ColorProperty(std::wstring name,unsigned char* red, unsigned char* green, unsigned char* blue,unsigned char* tred, unsigned char* tgreen, unsigned char* tblue): Property(name), _red(red), _green(green), _blue(blue), _wnd(0), _tRed(tred), _tGreen(tgreen), _tBlue(tblue)  {
 }
 
 ColorProperty::~ColorProperty() {

@@ -6,10 +6,11 @@ const int NotificationWnd::DefaultNotificationHeight = 30;
 const int NotificationWnd::DefaultNotificationMargin = 10;
 const int NotificationWnd::DefaultNotificationTimeout = 5000;
 
-NotificationWnd::NotificationWnd(std::wstring text, std::wstring icon, int time, int h, RootWnd* parent) : Wnd(text.c_str(), (parent!=0)?parent->GetWindow():0L) {
+NotificationWnd::NotificationWnd(const std::wstring& text, std::wstring icon, int time, int h, RootWnd* parent) : Wnd(text.c_str(), (parent!=0)?parent->GetWindow():0L, TJ_DROPSHADOW_CLASS_NAME) {
 	assert(parent!=0);
 	SetStyle(WS_POPUP);
 	UnsetStyle(WS_CAPTION|WS_BORDER);
+	SetStyleEx(WS_EX_LAYERED);
 	_text = text;
 	_index = h;
 	std::wstring fn = ResourceManager::Instance()->Get(icon);
@@ -46,6 +47,8 @@ int NotificationWnd::GetIndex() {
 void NotificationWnd::Paint(Gdiplus::Graphics& g) {
 	ref<Theme> theme = ThemeManager::GetTheme();
 	Area rect = GetClientArea();
+	//SolidBrush r(theme->ChangeAlpha(theme->GetBackgroundColor(),100));
+	//LinearGradientBrush r(PointF(0.0f, -1.0f), PointF(0.0f, float(rect.GetHeight())+1.0f), theme->GetActiveStartColor(), theme->GetActiveEndColor());
 	SolidBrush r(theme->GetBackgroundColor());
 	rect.Narrow(0,0,1,1);
 	g.FillRectangle(&r, rect);
@@ -55,7 +58,7 @@ void NotificationWnd::Paint(Gdiplus::Graphics& g) {
 	g.DrawRectangle(&lbp, rect);
 
 	Area stringRect = rect;
-	stringRect.Narrow(DefaultNotificationHeight, DefaultNotificationMargin, 0, 0);
+	stringRect.Narrow(DefaultNotificationHeight, DefaultNotificationMargin/2, 0, 0);
 	StringFormat sf;
 	sf.SetLineAlignment(StringAlignmentCenter);
 	
@@ -73,6 +76,9 @@ LRESULT NotificationWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		return 0;
 	}
 	else if(msg==WM_DESTROY) {
+	}
+	else if(msg==WM_ACTIVATE) {
+		Repaint();
 	}
 	return Wnd::Message(msg, wp, lp);
 }

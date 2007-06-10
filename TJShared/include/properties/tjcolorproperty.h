@@ -17,6 +17,7 @@ namespace tj {
 				unsigned char* _tred;
 				unsigned char* _tgreen;
 				unsigned char* _tblue;
+				Icon _colorsIcon;
 		};
 
 		class EXPORTED ColorProperty: public Property {

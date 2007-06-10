@@ -35,7 +35,7 @@ namespace tj {
 				void RenameWindow(ref<Wnd> w, std::wstring name);
 
 				/* Notification API */
-				void AddNotification(std::wstring message, std::wstring icon, int time=-1);
+				void AddNotification(const std::wstring& message, std::wstring icon, int time=-1);
 				void RemoveNotification(NotificationWnd* nw);
 			protected:
 				std::vector< ref<FloatingPane> > _floatingPanes;
@@ -47,7 +47,7 @@ namespace tj {
 
 		class EXPORTED AddNotificationRunnable: public Runnable {
 			public:
-				AddNotificationRunnable(RootWnd* root, std::wstring text, std::wstring icon, int time);
+				AddNotificationRunnable(RootWnd* root, const std::wstring& text, std::wstring icon, int time);
 				virtual ~AddNotificationRunnable();
 				virtual void Run();
 

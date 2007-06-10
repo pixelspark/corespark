@@ -115,7 +115,7 @@ void RootWnd::RemoveTabWindow(TabWnd* tw) {
 	}
 }
 
-void RootWnd::AddNotification(std::wstring text, std::wstring icon, int time) {
+void RootWnd::AddNotification(const std::wstring& text, std::wstring icon, int time) {
 	int highestIndex = 0;
 	std::vector< ref<NotificationWnd> >::iterator it = _notifications.begin();
 	while(it!=_notifications.end()) {
@@ -233,7 +233,7 @@ void RootWnd::RemoveOrphanPane(ref<Pane> pane) {
 }
 
 /** AddNotificationRunnable */
-AddNotificationRunnable::AddNotificationRunnable(RootWnd* root, std::wstring text, std::wstring icon, int time) {
+AddNotificationRunnable::AddNotificationRunnable(RootWnd* root, const std::wstring& text, std::wstring icon, int time) {
 	_root = root;
 	_text = text;
 	_icon = icon;
