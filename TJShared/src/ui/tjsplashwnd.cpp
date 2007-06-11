@@ -23,6 +23,7 @@ SplashWnd::SplashWnd(std::wstring path, int w, int h): Wnd(L"TJShow", 0L, TJ_DRO
 	nrc.left   = mi.rcWork.left + (mi.rcWork.right - mi.rcWork.left - w) / 2;
     nrc.top   = mi.rcWork.top  + (mi.rcWork.bottom - mi.rcWork.top  - h) / 2;
 	MoveWindow(GetWindow(), nrc.left, nrc.top, w, h, FALSE);
+	SetWindowPos(GetWindow(), HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE|SWP_NOSIZE);
 	Layout();
 
 	// Make window transparent
