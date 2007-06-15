@@ -10,7 +10,7 @@ namespace tj {
 			ExceptionTypeMessage,
 		};
 
-		#define Throw(msg,t) throw Exception((const wchar_t*)msg,t,(const char*)__FILE__, (int)__LINE__)
+		#define Throw(msg,t) throw tj::shared::Exception((const wchar_t*)msg,t,(const char*)__FILE__, (int)__LINE__)
 
 		class EXPORTED Exception {
 			public:

@@ -258,9 +258,10 @@ void PropertyGridWnd::Clear() {
 
 void PropertyGridWnd::Inspect(Inspectable* isp, ref<Path> p) {
 	_properties.clear();
-
+	
 	if(isp==0) {	
 		ClearThemeCache();
+		_path->SetPath(0);
 		Layout();
 		return;
 	}
@@ -269,6 +270,7 @@ void PropertyGridWnd::Inspect(Inspectable* isp, ref<Path> p) {
 	if(!props) {
 		ClearThemeCache();
 		Layout();
+		_path->SetPath(0);
 		return;
 	}
 

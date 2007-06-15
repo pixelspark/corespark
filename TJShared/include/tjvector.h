@@ -16,6 +16,10 @@ namespace tj {
 				virtual void Save(TiXmlElement* parent);
 				virtual void Load(TiXmlElement* you);
 
+				inline Vector operator+(const Vector& o) {
+					return Vector(x+o.x, y+o.y, z+o.z);
+				}
+
 			public:
 				float x,y,z;
 		};
