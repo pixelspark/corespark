@@ -7,97 +7,154 @@ using namespace tj::shared;
 const float SplitterWnd::KSnapMargin = 0.07f;
 const Pixels SplitterWnd::KBarHeight = 6;
 
-SplitterWnd::SplitterWnd(HWND parent, ref<Wnd> a, ref<Wnd> b, Orientation o): ChildWnd(L"Splitter", parent, true, false) {
+SplitterWnd::SplitterWnd(Orientation o): ChildWnd(L"Splitter", NULL, true, false) {
 	SetStyle(WS_CLIPCHILDREN);
 	SetStyle(WS_CLIPSIBLINGS);
-	if(a) {
-		SetParent(a->GetWindow(),GetWindow());
-	}
+	_collapse = CollapseNone;
 
-	if(b) {
-		SetParent(b->GetWindow(),GetWindow());
-	}
-
-	_a = a;
-	_b = b;
-	Layout();
 	_ratio = 0.618f; // Fibonacci :-)
 	_defaultRatio = 0.618f;
 	_dragging = false;
 	_orientation = o;
-	Show(true);
+	Layout();
 }
 
 SplitterWnd::~SplitterWnd() {
+}
+
+Orientation SplitterWnd::GetOrientation() const {
+	return _orientation;
+}
+
+void SplitterWnd::SetOrientation(Orientation o) {
+	_orientation = o;
+	Layout();
+}
+
+// Do not use, use SetFirst and SetSecond instead (Add will throw an exception)
+void SplitterWnd::Add(ref<Wnd> child) {
+	Throw(L"You cannot use Add() on a splitter; use SetFirst and SetSecond instead", ExceptionTypeSevere);
+}
+
+void SplitterWnd::SetFirst(ref<Wnd> child) {
+	_a = child;
+	SetParent(_a->GetWindow(), GetWindow());
+
+	_a->Show(true);
+	Layout();
+}
+
+void SplitterWnd::SetSecond(ref<Wnd> child) {
+	_b = child;
+	SetParent(_b->GetWindow(), GetWindow());
+	_b->Show(true);
+	Layout();
 }
 
 bool SplitterWnd::IsSplitter() {
 	return true;
 }
 
+ref<Wnd> SplitterWnd::GetFirst() {
+	return _a;
+}
+
+ref<Wnd> SplitterWnd::GetSecond() {
+	return _b;
+}
+
+const ref<Wnd> SplitterWnd::GetFirst() const {
+	return _a;
+}
+
+const ref<Wnd> SplitterWnd::GetSecond() const {
+	return _b;
+}
+
+void SplitterWnd::OnSettingsChanged() {
+	ref<Settings> st = GetSettings();
+
+	if(_a) _a->SetSettings(st->GetNamespace(L"first"));
+	if(_b) _b->SetSettings(st->GetNamespace(L"second"));
+
+	_ratio = StringTo<float>(st->GetValue(L"ratio", Stringify(_ratio)), _ratio);
+	_defaultRatio = _ratio;
+	Layout();
+	Repaint();
+}
+
 void SplitterWnd::Layout() {
 	Area rc = GetClientArea();
-	rc.Narrow(1,1,1,1);
-
-	if(_orientation==OrientationHorizontal) {
-		int heightA = (int)floor(_ratio*(rc.GetHeight()))-KBarHeight;
-		int heightB = rc.GetHeight()-heightA;
-
-		if(_a) {
-			_a->Move(0, 0, rc.GetWidth(), heightA-KBarHeight);
-		}
-
-		if(_b) {
-			_b->Move(0, heightA+KBarHeight-1, rc.GetWidth(), heightB-3);
-		}
+	
+	if(_collapse==CollapseFirst) {
+		if(_a) _a->Fill(LayoutFill, rc);
+		if(_b) _b->Show(false);
 	}
-	else if(_orientation==OrientationVertical) {
-		int widthA = (int)floor(_ratio*(rc.GetWidth()))-KBarHeight;
-		int widthB = rc.GetWidth()-widthA;
+	else if(_collapse==CollapseSecond) {
+		if(_b) _b->Fill(LayoutFill, rc);
+		if(_a) _a->Show(false);
+	}
+	else {
+		rc.Narrow(1,1,1,1);
+		if(_a) _a->Show(true);
+		if(_b) _b->Show(true);
+		if(_orientation==OrientationHorizontal) {
+			int heightA = (int)floor(_ratio*(rc.GetHeight()))-KBarHeight;
+			int heightB = rc.GetHeight()-heightA;
 
-		if(_a) {
-			_a->Move(0, 0, widthA, rc.GetHeight());
+			if(_a) {
+				_a->Move(0, 0, rc.GetWidth(), heightA-KBarHeight);
+			}
+
+			if(_b) {
+				_b->Move(0, heightA+KBarHeight-1, rc.GetWidth(), heightB-3);
+			}
 		}
+		else if(_orientation==OrientationVertical) {
+			int widthA = (int)floor(_ratio*(rc.GetWidth()))-KBarHeight;
+			int widthB = rc.GetWidth()-widthA;
 
-		if(_b) {
-			_b->Move(widthA+KBarHeight-1, 0, widthB-3,rc.GetHeight());
+			if(_a) {
+				_a->Move(0, 0, widthA, rc.GetHeight());
+			}
+
+			if(_b) {
+				_b->Move(widthA+KBarHeight-1, 0, widthB-3,rc.GetHeight());
+			}
 		}
 	}
 }
 
 void SplitterWnd::SetRatio(float f) {
+	_collapse = CollapseNone;
 	_ratio = f;
 	_defaultRatio = f;
+
+	ref<Settings> st = GetSettings();
+	if(st) {
+		st->SetValue(L"ratio", Stringify(_ratio));
+	}
+
 	Layout();
 	Repaint();
 }
 
 void SplitterWnd::Expand() {
-	_ratio = _defaultRatio;
+	_collapse = CollapseNone;
 	Layout();
 	Repaint();
 }
 
 void SplitterWnd::Paint(Graphics& g) {
-	ref<Theme> theme = ThemeManager::GetTheme();
-	Area rc = GetClientArea();
+	if(_collapse==CollapseNone) {
+		ref<Theme> theme = ThemeManager::GetTheme();
+		Area rc = GetClientArea();
 
-	HWND root = GetAncestor(GetWindow(), GA_ROOT);
-	Gdiplus::Brush* abr = theme->GetApplicationBackgroundBrush(root, GetWindow());
-	if(abr!=0) {
-		/*if(_orientation==OrientationHorizontal) {
-			int bH = int(_ratio * rc.GetHeight()); // -(KBarHeight/2)); // top of the bar
-			g.FillRectangle(abr, 0,bH-2,rc.GetWidth(), KBarHeight+4);
+		HWND root = GetAncestor(GetWindow(), GA_ROOT);
+		Gdiplus::Brush* abr = theme->GetApplicationBackgroundBrush(root, GetWindow());
+		if(abr!=0) {
+			g.FillRectangle(abr, rc);
 		}
-		else if(_orientation==OrientationVertical) {
-			int bH = int(_ratio * rc.GetWidth()); //-(KBarHeight/2)); // top of the bar
-			g.FillRectangle(abr, bH-2, 0, KBarHeight+4, rc.GetHeight());
-		}
-		g.FillRectangle(abr, 0, rc.GetBottom()-5, rc.GetWidth(), 5);
-		g.FillRectangle(abr, rc.GetRight()-5, 0, 5, rc.GetHeight());
-
-		delete abr;*/
-		g.FillRectangle(abr, rc);
 	}
 }
 
@@ -133,23 +190,13 @@ LRESULT SplitterWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 			GetClientRect(GetWindow(),&rc);
 			if(_orientation==OrientationHorizontal) {
 				int bH = int(_ratio * (rc.bottom-rc.top)-(KBarHeight/2));
-				//if(y<bH+KBarHeight&&y>bH) {
-					SetCursor(LoadCursor(0,IDC_SIZENS));
-				//}
-				//else {
-				//	SetCursor(LoadCursor(0,IDC_ARROW));
-				//}
+				SetCursor(LoadCursor(0,IDC_SIZENS));
+
 			}
 			else if(_orientation==OrientationVertical) {
 				int bH = int(_ratio * (rc.right-rc.left)-(KBarHeight/2));
-				//if(x<bH+KBarHeight&&x>bH) {
-					SetCursor(LoadCursor(0,IDC_SIZEWE));
-				//}
-				//else {
-				//	SetCursor(LoadCursor(0,IDC_ARROW));
-				//}
+				SetCursor(LoadCursor(0,IDC_SIZEWE));
 			}
-
 		}
 	}
 	else if(msg==WM_LBUTTONDOWN) {
@@ -163,6 +210,12 @@ LRESULT SplitterWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		ReleaseCapture();
 		SetCursor(LoadCursor(0,IDC_ARROW));
 		Repaint();
+
+		// save ratio as a setting
+		ref<Settings> st = GetSettings();
+		if(st) {
+			st->SetValue(L"ratio", Stringify(_ratio));
+		}
 	}
 	else if(msg==WM_LBUTTONDBLCLK) {
 		Collapse();
@@ -171,14 +224,8 @@ LRESULT SplitterWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	return ChildWnd::Message(msg,wp,lp);
 }
 
-void SplitterWnd::Collapse() {
-	RECT rc;
-	GetClientRect(GetWindow(),&rc);
-
-	float full = _orientation==OrientationHorizontal?float(rc.bottom-rc.top):float(rc.right-rc.left);
-	float relativeBarSize = (float(KBarHeight) / full)/2.0f;
-
-	_ratio = 1.0f-relativeBarSize;
+void SplitterWnd::Collapse(CollapseMode cm) {
+	_collapse = cm;
 	Layout();
 	Repaint();
 }

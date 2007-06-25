@@ -7,7 +7,7 @@ namespace tj {
 			friend class FloatingPane;
 
 			public:
-				TabWnd(HWND parent, RootWnd* root);
+				TabWnd(RootWnd* root);
 				virtual ~TabWnd();
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 				ref<Pane> AddPane(std::wstring name, ref<Wnd> wnd, bool closable=false, bool select=false, std::wstring icon=L"");
@@ -30,6 +30,7 @@ namespace tj {
 				bool RevealWindow(ref<Wnd> w);
 				void SetDetachAttachAllowed(bool allow);
 				void SelectPane(ref<Pane> pane);
+				virtual void Add(ref<Wnd> child); // do not use; use AddPane instead
 			
 			protected:
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);

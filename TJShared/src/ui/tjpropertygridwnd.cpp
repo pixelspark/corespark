@@ -230,7 +230,7 @@ void PropertyGridWnd::OnSize(const Area& ns) {
 
 	if(totalHeight>rect.GetHeight()) {
 		SetVerticallyScrollable(true);
-		SetVerticalScrollInfo(Range<unsigned int>(0, totalHeight+KPathHeight), rect.GetHeight());
+		SetVerticalScrollInfo(Range<int>(0, totalHeight+KPathHeight), rect.GetHeight());
 	}
 	else {
 		SetVerticallyScrollable(false);

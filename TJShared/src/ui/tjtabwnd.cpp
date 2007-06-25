@@ -4,7 +4,7 @@
 using namespace Gdiplus;
 using namespace tj::shared;
 
-TabWnd::TabWnd(HWND parent, RootWnd* root): ChildWnd(L"TabWnd", parent) {
+TabWnd::TabWnd(RootWnd* root): ChildWnd(L"TabWnd", NULL) {
 	SetStyle(WS_CLIPCHILDREN|WS_CLIPSIBLINGS);
 	_headerHeight = defaultHeaderHeight;
 	_root = root;
@@ -16,7 +16,6 @@ TabWnd::TabWnd(HWND parent, RootWnd* root): ChildWnd(L"TabWnd", parent) {
 	_addIcon = Bitmap::FromFile(fn.c_str(), TRUE);
 	_childStyle = false;
 	Layout();
-	Show(true);
 }
 
 TabWnd::~TabWnd() {
@@ -27,6 +26,10 @@ TabWnd::~TabWnd() {
 void TabWnd::SetDetachAttachAllowed(bool allow) {
 	_detachAttachAllowed = allow;
 	Repaint();
+}
+
+void TabWnd::Add(ref<Wnd> child) {
+	Throw(L"You cannot call Add on a TabWnd, use AddPane instead", ExceptionTypeSevere);
 }
 
 void TabWnd::Rename(ref<Wnd> wnd, std::wstring name) {
@@ -106,7 +109,7 @@ void TabWnd::Paint(Graphics& g) {
 				if(!_childStyle) {
 					LinearGradientBrush lbr(PointF(0.0f, 0.0f), PointF(0.0f, float(_headerHeight)), theme->GetActiveEndColor(), theme->GetActiveEndColor());
 					g.FillRectangle(&lbr, RectF(float(left), 2.0f, float(bound.Width+2+(pane->HasIcon()?KIconWidth:0)), float(_headerHeight)));
-					SolidBrush backBrush(theme->GetBackgroundColor());
+					SolidBrush backBrush(theme->GetTabButtonBackgroundColor());
 					g.FillRectangle(&backBrush, RectF(float(left+1.0f), 3.0f, float(bound.Width+(pane->HasIcon()?KIconWidth:0)), float(_headerHeight)));
 				}
 				else {

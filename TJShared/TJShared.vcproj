@@ -708,6 +708,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\tjsettings.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\tjshared.cpp"
 					>
 				</File>
@@ -738,6 +742,10 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath=".\include\tjshared.h"
+				>
+			</File>
 			<Filter
 				Name="ui"
 				>
@@ -986,7 +994,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\include\tjshared.h"
+					RelativePath=".\include\tjsettings.h"
 					>
 				</File>
 				<File

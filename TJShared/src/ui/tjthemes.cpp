@@ -75,9 +75,14 @@ namespace tj {
 						return Color(255,255,255);
 					}
 
+					virtual Gdiplus::Color GetTabButtonBackgroundColor() const {
+						return Color(130,255,255,255);
+					}
+
 					virtual Gdiplus::Color GetTimeBackgroundColor() const {
 						return Color(241,251,254);
 					}
+
 					virtual Gdiplus::Color GetPropertyBackgroundColor() const {
 						return GetTimeBackgroundColor();
 					}
@@ -100,7 +105,7 @@ namespace tj {
 
 					virtual Gdiplus::Color GetActiveStartColor() const {
 						//return Color(242,251,254);
-						return GetActiveEndColor();
+						return Color(200,145,175,194);
 					}
 
 					virtual Gdiplus::Color GetActiveEndColor() const {

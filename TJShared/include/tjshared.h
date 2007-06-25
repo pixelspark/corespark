@@ -45,9 +45,11 @@
 #include "tjvector.h"
 #include "tjcode.h"
 #include "tjfilewriter.h"
+#include "tjsettings.h"
 
 #include "ui/tjui.h"
 #include "properties/tjproperties.h"
+
 
 #pragma warning(pop)
 #endif

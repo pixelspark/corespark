@@ -105,6 +105,10 @@ Color Theme::GetBackgroundColor() const {
 	return Color(0,0,0);
 }
 
+Color Theme::GetTabButtonBackgroundColor() const {
+	return GetBackgroundColor();
+}
+
 Color Theme::GetEditBackgroundColor() const {
 	return GetBackgroundColor();
 }

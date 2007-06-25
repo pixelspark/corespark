@@ -63,21 +63,20 @@ namespace tj {
 				void SetStyleEx(DWORD style);
 				void UnsetStyle(DWORD style);
 				void UnsetStyleEx(DWORD style);
-				bool IsMouseOver();
+				
 				virtual void SetFullScreen(bool f);
 				virtual void SetFullScreen(bool f, int display);
 				bool IsFullScreen();
-				bool HasFocus();
 
 				// Scrolling
 				void SetHorizontallyScrollable(bool s);
 				void SetVerticallyScrollable(bool s);
-				unsigned int GetHorizontalPos();
-				unsigned int GetVerticalPos();
-				void SetVerticalPos(unsigned int p);
-				void SetHorizontalPos(unsigned int p);
-				void SetHorizontalScrollInfo(Range<unsigned int> rng, unsigned int pageSize);
-				void SetVerticalScrollInfo(Range<unsigned int> rng, unsigned int pageSize);
+				int GetHorizontalPos();
+				int GetVerticalPos();
+				void SetVerticalPos(int p);
+				void SetHorizontalPos(int p);
+				void SetHorizontalScrollInfo(Range<int> rng, int pageSize);
+				void SetVerticalScrollInfo(Range<int> rng, int pageSize);
 
 				virtual void Move(Pixels x, Pixels y, Pixels w, Pixels h);
 				virtual bool IsSplitter();
@@ -95,12 +94,19 @@ namespace tj {
 
 				void SetWantMouseLeave(bool t);
 				bool GetWantMouseLeave() const;
+				bool IsMouseOver();
 
 				HWND GetWindow();
 				virtual std::wstring GetTabTitle() const;		// return an empty string if you don't want to override Pane's title
 				virtual Gdiplus::Image* GetTabIcon() const;		// should return 0 when you don't want to override the tab icon set in Pane
 				virtual void Focus();
+				bool HasFocus() const;
 				virtual void BringToFront();
+
+				/* Settings API */
+				void SetSettings(ref<Settings> st);
+				ref<Settings> GetSettings();
+				virtual void Add(ref<Wnd> child);
 
 			protected:
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
@@ -111,6 +117,7 @@ namespace tj {
 				virtual void OnScroll(ScrollDirection dir);
 				virtual void OnActivate(bool activate);
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
+				virtual void OnSettingsChanged();
 			
 			private:
 				static void RegisterClasses();
@@ -118,15 +125,16 @@ namespace tj {
 				Gdiplus::Bitmap* _buffer;
 				bool _doubleBuffered;
 				bool _quitOnClose;
-				unsigned int _horizontalPos;
-				unsigned int _verticalPos;
-				unsigned int _horizontalPageSize;
-				unsigned int _verticalPageSize;
+				int _horizontalPos;
+				int _verticalPos;
+				int _horizontalPageSize;
+				int _verticalPageSize;
 				static bool _classesRegistered;
 				long _oldStyle, _oldStyleEx;
 				HWND _wnd;
 				bool _fullScreen;
 				bool _wantsMouseLeave;
+				ref<Settings> _settings;
 		};
 	}
 }

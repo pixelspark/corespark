@@ -3,7 +3,6 @@
 
 namespace tj {
 	namespace shared {
-
 		class NotificationWnd;
 
 		class EXPORTED RootWnd: public Wnd {
@@ -37,6 +36,7 @@ namespace tj {
 				/* Notification API */
 				void AddNotification(const std::wstring& message, std::wstring icon, int time=-1);
 				void RemoveNotification(NotificationWnd* nw);
+
 			protected:
 				std::vector< ref<FloatingPane> > _floatingPanes;
 				std::vector < ref<TabWnd> > _tabWindows;

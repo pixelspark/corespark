@@ -64,6 +64,27 @@ void Wnd::Update() {
 void Wnd::Layout() {
 }
 
+void Wnd::SetSettings(ref<Settings> st) {
+	_settings = st;
+	if(_settings) {
+		OnSettingsChanged();
+	}
+}
+
+ref<Settings> Wnd::GetSettings() {
+	return _settings;
+}
+
+void Wnd::OnSettingsChanged() {
+}
+
+void Wnd::Add(ref<Wnd> child) {
+	if(child) {
+		SetParent(child->GetWindow(), GetWindow());
+		child->Show(true);
+	}
+}
+
 void Wnd::SetFullScreen(bool fs) {
 	if(fs==_fullScreen) return; //already in the desired mode
 	RECT rect;
@@ -140,7 +161,7 @@ void Wnd::Show(bool t) {
 	}
 }
 
-bool Wnd::HasFocus() {
+bool Wnd::HasFocus() const {
 	return GetFocus()==_wnd;
 }
 
@@ -313,15 +334,15 @@ void Wnd::SetHorizontallyScrollable(bool s) {
 	s?SetStyle(WS_HSCROLL):UnsetStyle(WS_HSCROLL);
 }
 
-unsigned int Wnd::GetHorizontalPos() {
+int Wnd::GetHorizontalPos() {
 	return _horizontalPos;
 }
 
-unsigned int Wnd::GetVerticalPos() {
+int Wnd::GetVerticalPos() {
 	return _verticalPos;
 }
 
-void Wnd::SetVerticalPos(unsigned int p) {
+void Wnd::SetVerticalPos(int p) {
 	SCROLLINFO si;
 	memset(&si,0,sizeof(SCROLLINFO));
 	si.fMask = SIF_POS;
@@ -330,7 +351,7 @@ void Wnd::SetVerticalPos(unsigned int p) {
 	_verticalPos = p;
 }
 
-void Wnd::SetHorizontalPos(unsigned int p) {
+void Wnd::SetHorizontalPos(int p) {
 	SCROLLINFO si;
 	memset(&si,0,sizeof(SCROLLINFO));
 	si.fMask = SIF_POS;
@@ -339,7 +360,7 @@ void Wnd::SetHorizontalPos(unsigned int p) {
 	_horizontalPos = p;
 }
 
-void Wnd::SetHorizontalScrollInfo(Range<unsigned int> rng, unsigned int pageSize) {
+void Wnd::SetHorizontalScrollInfo(Range<int> rng, int pageSize) {
 	SCROLLINFO srl;
 	memset(&srl,0,sizeof(SCROLLINFO));
 	srl.cbSize = sizeof(SCROLLINFO);
@@ -352,7 +373,7 @@ void Wnd::SetHorizontalScrollInfo(Range<unsigned int> rng, unsigned int pageSize
 	SetScrollInfo(_wnd, SB_HORZ,&srl,TRUE);
 }
 
-void Wnd::SetVerticalScrollInfo(Range<unsigned int> rng, unsigned int pageSize) {
+void Wnd::SetVerticalScrollInfo(Range<int> rng, int pageSize) {
 	SCROLLINFO srl;
 	memset(&srl,0,sizeof(SCROLLINFO));
 	srl.cbSize = sizeof(SCROLLINFO);
@@ -519,32 +540,32 @@ LRESULT Wnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		return 0;
 	}
 	else if(msg==WM_HSCROLL) {
-		SCROLLINFO inf;
-		GetScrollInfo(_wnd, SB_HORZ, &inf);
-		if(LOWORD(wp)==SB_THUMBTRACK||LOWORD(wp)==SB_THUMBPOSITION) {
-			// _horizontalPos = HIWORD(wp); // fails because our values are >65536
-			SCROLLINFO si;
-			ZeroMemory(&si, sizeof(si));
-            si.cbSize = sizeof(si);
-            si.fMask = SIF_TRACKPOS;
- 
-            GetScrollInfo(_wnd, SB_HORZ, &si);
+		SCROLLINFO si;
+		ZeroMemory(&si, sizeof(si));
+        si.cbSize = sizeof(si);
+        si.fMask = SIF_ALL;
+		GetScrollInfo(_wnd, SB_HORZ, &si);
+		
+		if(LOWORD(wp)==SB_THUMBTRACK||LOWORD(wp)==SB_THUMBPOSITION) { 
 			_horizontalPos = si.nTrackPos;
 			SetScrollPos(_wnd,SB_HORZ, _horizontalPos,TRUE);
 		}
 		else {
 			if(LOWORD(wp)==SB_PAGERIGHT) {
-				_horizontalPos += _horizontalPageSize;			
+				_horizontalPos += _horizontalPageSize;
 			}
 			else if(LOWORD(wp)==SB_PAGELEFT) {
-				_horizontalPos -= _horizontalPageSize;			
+				_horizontalPos -= _horizontalPageSize;		
 			}
 			else if(LOWORD(wp)==SB_LINERIGHT) {
-				_horizontalPos += 1;			
+				++_horizontalPos;
 			}
 			else if(LOWORD(wp)==SB_LINELEFT) {
-				_horizontalPos -= 1;			
+				--_horizontalPos;
 			}
+
+			if(_horizontalPos<si.nMin) _horizontalPos = si.nMin;
+			if(_horizontalPos>(si.nMax-int(si.nPage))) _horizontalPos = si.nMax-int(si.nPage);
 			SetScrollPos(_wnd,SB_HORZ, _horizontalPos,TRUE);
 		}
 
@@ -553,25 +574,32 @@ LRESULT Wnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		return 0;
 	}
 	else if(msg==WM_VSCROLL) {
-		SCROLLINFO inf;
-		GetScrollInfo(_wnd, SB_VERT, &inf);
+		SCROLLINFO si;
+		ZeroMemory(&si, sizeof(si));
+        si.cbSize = sizeof(si);
+        si.fMask = SIF_ALL;
+		GetScrollInfo(_wnd, SB_VERT, &si);
+
 		if(LOWORD(wp)==SB_THUMBTRACK||LOWORD(wp)==SB_THUMBPOSITION) {
-			_verticalPos = HIWORD(wp);
+			_verticalPos = si.nTrackPos;
 			SetScrollPos(_wnd,SB_VERT, _verticalPos,TRUE);
 		}
 		else {
 			if(LOWORD(wp)==SB_PAGERIGHT) {
-				_verticalPos += _verticalPageSize;	
+				_verticalPos += _verticalPageSize;
 			}
 			else if(LOWORD(wp)==SB_PAGELEFT) {
-				_verticalPos -= _verticalPageSize;			
+				_verticalPos -= _verticalPageSize;		
 			}
 			else if(LOWORD(wp)==SB_LINERIGHT) {
-				_verticalPos += 1;			
+				++_verticalPos;		
 			}
 			else if(LOWORD(wp)==SB_LINELEFT) {
-				_verticalPos -= 1;			
+				--_verticalPos;
 			}
+
+			if(_verticalPos<si.nMin) _verticalPos = si.nMin;
+			if(_verticalPos>(si.nMax-int(si.nPage))) _verticalPos = si.nMax-int(si.nPage);
 			SetScrollPos(_wnd,SB_VERT, _verticalPos,TRUE);
 		}
 

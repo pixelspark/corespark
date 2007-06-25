@@ -25,6 +25,7 @@ namespace tj {
 				virtual Gdiplus::Color GetLineColor() const;
 				virtual Gdiplus::Color GetTextColor() const;
 				virtual Gdiplus::Color GetActiveTrackColor() const;
+				virtual Gdiplus::Color GetTabButtonBackgroundColor() const;
 
 				virtual Gdiplus::Color GetActiveStartColor() const;
 				virtual Gdiplus::Color GetActiveEndColor() const;

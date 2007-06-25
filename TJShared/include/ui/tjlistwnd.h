@@ -40,6 +40,7 @@ namespace tj {
 				virtual void OnRightClickItem(int id, int col);
 				virtual void OnDoubleClickItem(int id, int col);
 				virtual void OnColumnSizeChanged();
+				virtual void OnSettingsChanged();
 
 				// other stuff
 				void DrawCellText(Gdiplus::Graphics& g, Gdiplus::StringFormat* sf, Gdiplus::SolidBrush* br, Gdiplus::Font* font, int col, Area row, const std::wstring& str);

@@ -15,6 +15,27 @@ ListWnd::ListWnd(HWND parent): ChildWnd(L"", parent, true, true) {
 ListWnd::~ListWnd() {
 }
 
+void ListWnd::OnSettingsChanged() {
+	// Load settings!
+	ref<Settings> st = GetSettings();
+
+	bool changed = false;
+	std::map<int,Column>::iterator it = _cols.begin();
+	while(it!=_cols.end()) {
+		float newSize = StringTo<float>(st->GetValue(L"col-"+Stringify(it->first)+L".width", Stringify(it->second._width)), it->second._width);
+		if(it->second._width!=newSize) {
+			it->second._width = newSize;
+			changed = true;
+		}
+		++it;
+	}
+
+	if(changed) {
+		OnColumnSizeChanged();
+		Repaint();
+	}
+}
+
 int ListWnd::GetHeaderHeightInPixels() const {
 	ref<Theme> theme = ThemeManager::GetTheme();
 	return theme->GetMeasureInPixels(Theme::MeasureListHeaderHeight);
@@ -155,7 +176,7 @@ void ListWnd::OnSize(const Area& ns) {
 	int h = (GetItemCount()+1)*GetItemHeightInPixels();
 	if(h>ns.GetHeight()) {
 		SetVerticallyScrollable(true);
-		SetVerticalScrollInfo(Range<unsigned int>(0, h), ns.GetHeight());
+		SetVerticalScrollInfo(Range<int>(0, h), ns.GetHeight());
 	}	
 	else {
 		SetVerticallyScrollable(false);
@@ -174,6 +195,12 @@ void ListWnd::SetColumnWidth(int id, float w) {
 	std::map<int, Column>::iterator it = _cols.find(id);
 	if(it!=_cols.end()) {
 		it->second._width = w;
+
+		ref<Settings> st = GetSettings();
+		if(st) {
+			st->SetValue(L"col-"+Stringify(id)+L".width", Stringify(w));
+		}
+
 		OnColumnSizeChanged();
 		Repaint();
 	}
@@ -283,6 +310,13 @@ void ListWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 		}
 	}	
 	else if(ev==MouseEventLUp) {
+		// Update the width of the column in settings
+		ref<Settings> st = GetSettings();
+		if(st) {
+			st->SetValue(L"col-"+Stringify(_draggingCol)+L".width", Stringify(GetColumnWidth(_draggingCol)));
+		}
+
+		// Cancel the drag stuff
 		_draggingCol = -1;
 		ReleaseCapture();
 		SetCursor(LoadCursor(NULL, IDC_ARROW));		
