@@ -2,7 +2,7 @@
 using namespace Gdiplus;
 using namespace tj::shared;
 
-ButtonWnd::ButtonWnd(HWND parent, ref<Listener> listener, const wchar_t* image, const wchar_t* text): ChildWnd(L"", parent, false, true) {
+ButtonWnd::ButtonWnd(ref<Listener> listener, const wchar_t* image, const wchar_t* text): ChildWnd(L"", false, true) {
 	_listener = listener;
 	std::wstring fn = ResourceManager::Instance()->Get(image);
 	_image =  Bitmap::FromFile(fn.c_str(),TRUE);
@@ -89,8 +89,8 @@ LRESULT ButtonWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 }
 
 /* StateButtonWnd */
-StateButtonWnd::StateButtonWnd(HWND parent, ref<Listener> listener, const wchar_t* imageOn, const wchar_t* imageOff, const wchar_t* imageOther):
-ButtonWnd(parent, listener, imageOn) {
+StateButtonWnd::StateButtonWnd(ref<Listener> listener, const wchar_t* imageOn, const wchar_t* imageOff, const wchar_t* imageOther):
+ButtonWnd(listener, imageOn) {
 	std::wstring fn = ResourceManager::Instance()->Get(imageOff);
 	_offImage =  Bitmap::FromFile(fn.c_str(),TRUE);
 	fn = ResourceManager::Instance()->Get(imageOn);

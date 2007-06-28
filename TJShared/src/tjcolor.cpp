@@ -19,7 +19,7 @@ RGBColor::operator Gdiplus::Color() {
 	return Gdiplus::Color(r,g,b);
 }
 
-ColorWnd::ColorWnd(HWND parent, unsigned char r, unsigned char g, unsigned char b): ChildWnd(L"Color", parent) {
+ColorWnd::ColorWnd(unsigned char r, unsigned char g, unsigned char b): ChildWnd(L"Color") {
 	_r = r;
 	_g = g;
 	_b = b;

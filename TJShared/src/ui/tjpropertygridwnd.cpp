@@ -4,7 +4,7 @@ using namespace tj::shared;
 using namespace Gdiplus;
 
 /* PropertyGridWnd implementation */
-PropertyGridWnd::PropertyGridWnd(HWND parent): ChildWnd(TL(properties), parent) {
+PropertyGridWnd::PropertyGridWnd(): ChildWnd(TL(properties)) {
 	ClearThemeCache();
 	_nameWidth = 100;
 	SetStyle(WS_CLIPCHILDREN|WS_CLIPSIBLINGS);
@@ -12,10 +12,9 @@ PropertyGridWnd::PropertyGridWnd(HWND parent): ChildWnd(TL(properties), parent) 
 	_editBackground = 0;
 	_editFont = 0;
 	_isDraggingSplitter = false;
-	_path = GC::Hold(new PathWnd(GetWindow(), this));
-	_path->Show(true);
+	_path = GC::Hold(new PathWnd(this));
+	Add(_path);
 	Layout();
-	Show(true);
 }
 
 PropertyGridWnd::~PropertyGridWnd() {
@@ -29,6 +28,12 @@ PropertyGridWnd::~PropertyGridWnd() {
 void PropertyGridWnd::SetNameWidth(int w) {
 	_nameWidth = w;
 	Repaint();
+}
+
+void PropertyGridWnd::OnSettingsChanged() {
+	ref<Settings> st = GetSettings();
+	_nameWidth = StringTo<int>(st->GetValue(L"names.width", Stringify(_nameWidth)), _nameWidth);
+	if(_nameWidth<10) _nameWidth = 10; // TODO make KMinimumNameColumnWidth constant
 }
 
 void PropertyGridWnd::ClearThemeCache() {
@@ -151,6 +156,11 @@ LRESULT PropertyGridWnd::Message(UINT msg, WPARAM wParam, LPARAM lParam) {
 	}
 	else if(msg==WM_LBUTTONUP) {
 		_isDraggingSplitter = false;
+		ref<Settings> st = GetSettings();
+		if(st) {
+			st->SetValue(L"names.width", Stringify(_nameWidth));
+		}
+
 		Layout();
 		ReleaseCapture();
 		return 0;
@@ -276,11 +286,13 @@ void PropertyGridWnd::Inspect(Inspectable* isp, ref<Path> p) {
 
 	_properties.clear();
 	std::vector< ref<Property> >::iterator it = props->begin();
+	HWND myself = GetWindow();
 	HWND first = 0;
 	while(it!=props->end()) {
 		ref<Property> pr = *it;
 		if(pr!=0) {
-			HWND f = pr->Create(GetWindow());
+			HWND f = pr->Create(myself);
+
 			if(first==0) {
 				first = f;
 			}

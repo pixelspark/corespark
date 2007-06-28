@@ -5,7 +5,7 @@ namespace tj {
 	namespace shared {
 		class EXPORTED TooltipWnd: public virtual Object {
 			public:
-				TooltipWnd(HWND owner);
+				TooltipWnd(HWND parent);
 				virtual ~TooltipWnd();
 				virtual void SetTrackEnabled(bool t);
 				virtual void SetTrackPosition(int x, int y);

@@ -5,7 +5,7 @@ namespace tj {
 	namespace shared {
 		class EXPORTED ColorChooserWnd: public ChildWnd {
 			public:
-				ColorChooserWnd(HWND parent, unsigned char* red, unsigned char* green, unsigned char* blue, unsigned char* tred, unsigned char* tgreen, unsigned char* tblue);
+				ColorChooserWnd(unsigned char* red, unsigned char* green, unsigned char* blue, unsigned char* tred, unsigned char* tgreen, unsigned char* tblue);
 				virtual ~ColorChooserWnd();
 				virtual void Paint(Gdiplus::Graphics& g);
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);

@@ -66,20 +66,21 @@ namespace tj {
 	}
 }
 
-BrowserWnd::BrowserWnd(HWND w, std::wstring title): ChildWnd(title.c_str(), w, true, false) {
+BrowserWnd::BrowserWnd(std::wstring title): ChildWnd(title.c_str(), true, false) {
 	_Module.Init(ObjectMap, (HINSTANCE)GetModuleHandle(L"tjshared.dll"), &LIBID_ATLLib);
 	_Module.Init(ObjectMap, (HINSTANCE)GetModuleHandle(L"tjshared.dll"), &LIBID_MSHTML);
 	AtlAxWinInit();
 
 	_ax = new CAxWindow();
 	_sink = new BrowserSink(this);
-	HWND wnd = GetWindow();
-	_tools = GC::Hold(new BrowserToolbarWnd(this, wnd));
+	_tools = GC::Hold(new BrowserToolbarWnd(this));
+	Add(_tools);
 
 	SetStyle(WS_CLIPCHILDREN);
 	SetStyleEx(WS_EX_CONTROLPARENT);
 	RECT rc = {0,0,100,100};
 
+	HWND wnd = GetWindow();
 	if(((CAxWindow*)_ax)->Create(wnd, rc,_T("Mozilla.Browser.1"),WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN,0)) {
 		Log::Write(L"BrowserWnd/Constructor", L"Using Mozilla/Gecko");
 	}
@@ -145,7 +146,7 @@ void BrowserWnd::Stop() {
 void BrowserWnd::SetShowToolbar(bool t) {
 	if(t) {
 		if(!_tools) {
-			_tools = GC::Hold(new BrowserToolbarWnd(this,GetWindow()));
+			_tools = GC::Hold(new BrowserToolbarWnd(this));
 		}
 		_tools->Show(true);
 		Layout();
@@ -202,7 +203,7 @@ void BrowserWnd::Paint(Gdiplus::Graphics& g) {
 	//}
 }
 
-BrowserToolbarWnd::BrowserToolbarWnd(BrowserWnd *browser, HWND parent): ToolbarWnd(parent) {
+BrowserToolbarWnd::BrowserToolbarWnd(BrowserWnd *browser): ToolbarWnd() {
 	_browser = browser;
 	Gdiplus::Bitmap* bmp = Bitmap::FromFile(ResourceManager::Instance()->Get(L"icons/step_backward.png").c_str());
 	Add(GC::Hold(new ToolbarItem(CmdBack, bmp)));
@@ -220,7 +221,8 @@ BrowserToolbarWnd::BrowserToolbarWnd(BrowserWnd *browser, HWND parent): ToolbarW
 	Add(GC::Hold(new ToolbarItem(CmdGo, bmp)));
 	
 
-	_url = GC::Hold(new EditWnd(GetWindow()));
+	_url = GC::Hold(new EditWnd());
+	ChildWnd::Add(_url);
 	Layout();
 }
 

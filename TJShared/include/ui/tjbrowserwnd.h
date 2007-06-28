@@ -7,7 +7,7 @@ namespace tj {
 
 		class EXPORTED BrowserToolbarWnd: public ToolbarWnd {
 			public:
-				BrowserToolbarWnd(BrowserWnd* browser, HWND parent);
+				BrowserToolbarWnd(BrowserWnd* browser);
 				virtual ~BrowserToolbarWnd();
 				virtual void OnCommand(int c);
 				virtual void Paint(Gdiplus::Graphics& g);
@@ -35,7 +35,7 @@ namespace tj {
 			friend class BrowserSink;
 
 			public:
-				BrowserWnd(HWND parent, std::wstring title);
+				BrowserWnd(std::wstring title);
 				virtual ~BrowserWnd();
 				virtual void Paint(Gdiplus::Graphics& g);
 				void Hide(bool t);

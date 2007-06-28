@@ -7,7 +7,7 @@ using namespace tj::shared;
 const float SplitterWnd::KSnapMargin = 0.07f;
 const Pixels SplitterWnd::KBarHeight = 6;
 
-SplitterWnd::SplitterWnd(Orientation o): ChildWnd(L"Splitter", NULL, true, false) {
+SplitterWnd::SplitterWnd(Orientation o): ChildWnd(L"Splitter", true, false) {
 	SetStyle(WS_CLIPCHILDREN);
 	SetStyle(WS_CLIPSIBLINGS);
 	_collapse = CollapseNone;

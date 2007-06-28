@@ -5,7 +5,7 @@ namespace tj {
 	namespace shared {
 		class EXPORTED LoggerWnd: public Wnd {
 			public:
-				LoggerWnd(HWND parent);
+				LoggerWnd();
 				virtual ~LoggerWnd();
 				void Log(std::wstring ws);
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);

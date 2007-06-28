@@ -22,7 +22,6 @@ namespace tj {
 				virtual ~SettingsStorage();
 				virtual void Load(const std::wstring& path);
 				virtual void Save(const std::wstring& path) const;
-				static std::wstring GetSettingsPath(const std::wstring& vendor, const std::wstring& app);
 
 				// Settings implementation
 				virtual bool GetFlag(const std::wstring& key) const;
@@ -31,6 +30,9 @@ namespace tj {
 				virtual void SetFlag(const std::wstring& key, bool t);
 				virtual ref<Settings> GetNamespace(const std::wstring& ns);
 				virtual std::wstring GetValue(const std::wstring& key, const std::wstring& defaultValue) const;
+
+				// Utility functions
+				static std::wstring GetSettingsPath(const std::wstring& vendor, const std::wstring& app, const std::wstring& file);
 
 			protected:
 				std::map< std::wstring, std::wstring > _data;

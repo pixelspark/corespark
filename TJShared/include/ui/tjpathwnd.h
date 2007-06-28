@@ -51,7 +51,7 @@ namespace tj {
 
 		class PathWnd: public ChildWnd {
 			public:
-				PathWnd(HWND parent, PropertyGridWnd* grid);
+				PathWnd(PropertyGridWnd* grid);
 				virtual ~PathWnd();
 				virtual void Update();
 				virtual void Paint(Gdiplus::Graphics& g);

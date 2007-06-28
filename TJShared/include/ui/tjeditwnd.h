@@ -5,7 +5,7 @@ namespace tj {
 	namespace shared {
 		class EXPORTED EditWnd: public ChildWnd {
 			public:
-				EditWnd(HWND parent);
+				EditWnd();
 				virtual ~EditWnd();
 				virtual std::wstring GetText();
 				void SetCue(std::wstring cue);

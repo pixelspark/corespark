@@ -11,7 +11,7 @@ namespace tj {
 					float _width;
 				};
 
-				ListWnd(HWND parent);
+				ListWnd();
 				virtual ~ListWnd();
 				virtual void Paint(Gdiplus::Graphics& g);
 				virtual void OnSize(const Area& ns);

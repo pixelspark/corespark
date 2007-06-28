@@ -5,7 +5,7 @@ namespace tj {
 	namespace shared {
 		class EXPORTED PropertyGridWnd: public ChildWnd {
 			public:
-				PropertyGridWnd(HWND parent);
+				PropertyGridWnd();
 				virtual ~PropertyGridWnd();
 				void Update();
 
@@ -31,6 +31,8 @@ namespace tj {
 				HFONT _editFont;
 
 			protected:
+				virtual void OnSettingsChanged();
+
 				std::vector< ref<Property> > _properties;
 				int _nameWidth;
 				ref<Inspectable> _subject;

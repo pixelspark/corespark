@@ -5,7 +5,7 @@ namespace tj {
 	namespace shared {
 		class EXPORTED SliderWnd: public ChildWnd {
 			public:
-				SliderWnd(HWND parent, const wchar_t* title);
+				SliderWnd(const wchar_t* title);
 				virtual ~SliderWnd();
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 				void SetListener(Listener* listener);

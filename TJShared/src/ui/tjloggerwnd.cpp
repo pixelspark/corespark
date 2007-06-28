@@ -2,7 +2,7 @@
 #include <windowsx.h>
 using namespace tj::shared;
 
-LoggerWnd::LoggerWnd(HWND parent): Wnd(L"Log", parent,TJ_DEFAULT_CLASS_NAME, false) {
+LoggerWnd::LoggerWnd(): Wnd(L"Log", 0L, TJ_DEFAULT_CLASS_NAME, false) {
 	_list = CreateWindow(L"LISTBOX", L"LogListWnd", LBS_NOINTEGRALHEIGHT|WS_CHILD|WS_VISIBLE|LBS_DISABLENOSCROLL|(LBS_STANDARD&(~LBS_SORT)), 0, 0, 100, 100, GetWindow(), 0, GetModuleHandle(NULL), 0);
 
 	UnsetStyle(WS_CHILD);

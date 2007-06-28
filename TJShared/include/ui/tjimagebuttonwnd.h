@@ -5,7 +5,7 @@ namespace tj {
 	namespace shared {
 		class EXPORTED ButtonWnd: public ChildWnd {
 			public:
-				ButtonWnd(HWND parent, ref<Listener> listener, const wchar_t* image, const wchar_t* text=0);
+				ButtonWnd(ref<Listener> listener, const wchar_t* image, const wchar_t* text=0);
 				virtual ~ButtonWnd();
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 				virtual void Paint(Gdiplus::Graphics& g);
@@ -21,7 +21,7 @@ namespace tj {
 		class EXPORTED StateButtonWnd: public ButtonWnd {
 			public:
 				enum ButtonState {On, Off, Other};
-				StateButtonWnd(HWND parent, ref<Listener> listener, const wchar_t* imageOn, const wchar_t* imageOff, const wchar_t* imageOther);
+				StateButtonWnd(ref<Listener> listener, const wchar_t* imageOn, const wchar_t* imageOff, const wchar_t* imageOther);
 				virtual ~StateButtonWnd();
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 				void SetOn(ButtonState o);

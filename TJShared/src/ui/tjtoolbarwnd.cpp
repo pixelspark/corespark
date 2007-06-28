@@ -5,7 +5,7 @@ using namespace Gdiplus;
 using namespace tj::shared;
 
 // ToolbarWnd
-ToolbarWnd::ToolbarWnd(HWND parent): ChildWnd(L"", parent) {
+ToolbarWnd::ToolbarWnd(): ChildWnd(L"") {
 	SetWantMouseLeave(true);
 	_in = false;
 	_idx = -1;

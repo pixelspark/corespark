@@ -144,11 +144,14 @@ std::wstring SettingsStorage::GetValue(const std::wstring &key) const {
 	Throw(L"SettingsStorage value "+key+L" does not exist", ExceptionTypeWarning);
 }
 
-std::wstring SettingsStorage::GetSettingsPath(const std::wstring& vendor, const std::wstring& app) {
+/* Creates the path to a user-specific settings file.
+- On Windows: %USERPROFILE%\Application Data\TJ\TJShow\file.xml
+- On Unices, this would probably be something like /home/%USER%/.tj/tjshow/file.xml */
+std::wstring SettingsStorage::GetSettingsPath(const std::wstring& vendor, const std::wstring& app, const std::wstring& file) {
 	std::string suffix = "\\" + Mbs(vendor) + "\\" + Mbs(app) + "\\";
 	char buffer[MAX_PATH+2];
 	SHGetSpecialFolderPathA(NULL, buffer, CSIDL_APPDATA, TRUE);
 	SHCreateDirectoryExA(NULL, std::string(std::string(buffer)+suffix).c_str(),NULL);
 
-	return Wcs(std::string(buffer) + suffix + "settings.xml");
+	return Wcs(std::string(buffer) + suffix + Mbs(file) + ".xml");
 }

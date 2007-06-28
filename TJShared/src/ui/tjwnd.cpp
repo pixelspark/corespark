@@ -78,10 +78,10 @@ ref<Settings> Wnd::GetSettings() {
 void Wnd::OnSettingsChanged() {
 }
 
-void Wnd::Add(ref<Wnd> child) {
+void Wnd::Add(ref<Wnd> child, bool shown) {
 	if(child) {
 		SetParent(child->GetWindow(), GetWindow());
-		child->Show(true);
+		child->Show(shown);
 	}
 }
 

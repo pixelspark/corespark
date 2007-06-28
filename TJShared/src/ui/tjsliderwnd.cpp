@@ -7,7 +7,7 @@ using namespace tj::shared;
 
 const int SliderWnd::KDraggerWidth = 18;
 
-SliderWnd::SliderWnd(HWND parent, const wchar_t* title): ChildWnd(title, parent) {
+SliderWnd::SliderWnd(const wchar_t* title): ChildWnd(title) {
 	_value = 0.0f;
 	_hasFocus = false;
 	_listener = 0;

@@ -35,7 +35,7 @@ namespace tj {
 
 			protected:
 				virtual void Run() {
-					_logger = new LoggerWnd(0L);
+					_logger = new LoggerWnd();
 					SetEvent(_loggerCreatedEvent);
 
 					MSG msg;

@@ -4,7 +4,7 @@ using namespace Gdiplus;
 using namespace tj::shared;
 #include <math.h>
 
-ProgressWnd::ProgressWnd(HWND parent): ChildWnd( L"", parent) {
+ProgressWnd::ProgressWnd(): ChildWnd(L"") {
 	_indeterminate = false;
 	_value = 0.0f;
 }

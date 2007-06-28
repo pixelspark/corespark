@@ -106,7 +106,7 @@ namespace tj {
 				/* Settings API */
 				void SetSettings(ref<Settings> st);
 				ref<Settings> GetSettings();
-				virtual void Add(ref<Wnd> child);
+				virtual void Add(ref<Wnd> child, bool visible = true);
 
 			protected:
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);

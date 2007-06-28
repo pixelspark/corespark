@@ -6,7 +6,7 @@ using namespace Gdiplus;
 // declared and used in tjui.cpp, but shouldn't be public
 LRESULT CALLBACK WndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 
-EditWnd::EditWnd(HWND parent): ChildWnd(L"", parent, false, false) {
+EditWnd::EditWnd(): ChildWnd(L"", false, false) {
 	SetStyle(WS_CLIPCHILDREN);
 	SetStyleEx(WS_EX_CONTROLPARENT);
 	_ctrl = CreateWindowEx(0, L"EDIT", L"", WS_CHILD|WS_TABSTOP|ES_AUTOHSCROLL, 0, 0, 10, 10, GetWindow(), 0, GetModuleHandle(NULL), 0);

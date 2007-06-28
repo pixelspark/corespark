@@ -2,7 +2,7 @@
 using namespace tj::shared;
 using namespace Gdiplus;
 
-ColorChooserWnd::ColorChooserWnd(HWND parent, unsigned char* red, unsigned char* green, unsigned char* blue, unsigned char* tred, unsigned char* tgreen, unsigned char* tblue): ChildWnd(L"", parent), _colorsIcon(L"icons/shared/colors.png") {
+ColorChooserWnd::ColorChooserWnd(unsigned char* red, unsigned char* green, unsigned char* blue, unsigned char* tred, unsigned char* tgreen, unsigned char* tblue): ChildWnd(L""), _colorsIcon(L"icons/shared/colors.png") {
 	_red = red;
 	_green = green;
 	_blue = blue;
@@ -74,7 +74,9 @@ void ColorProperty::Changed() {
 
 HWND ColorProperty::Create(HWND parent) {
 	if(!_wnd) {
-		_wnd = GC::Hold(new ColorChooserWnd(parent, _red, _green, _blue, _tRed, _tGreen, _tBlue));
+		_wnd = GC::Hold(new ColorChooserWnd(_red, _green, _blue, _tRed, _tGreen, _tBlue));
+		SetParent(_wnd->GetWindow(), parent);
+		_wnd->SetStyle(WS_CHILD);
 	}
 	
 	return _wnd->GetWindow();

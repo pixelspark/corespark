@@ -5,7 +5,7 @@ namespace tj {
 	namespace shared {
 		class EXPORTED ProgressWnd: public ChildWnd {
 			public:
-				ProgressWnd(HWND parent);
+				ProgressWnd();
 				virtual ~ProgressWnd();
 				virtual void Paint(Gdiplus::Graphics& g);
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);

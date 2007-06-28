@@ -35,7 +35,7 @@ namespace tj {
 			
 				virtual HWND Create(HWND parent) {
 					if(_wnd!=0) return _wnd;
-					_wnd = ::CreateWindowEx(WS_EX_CLIENTEDGE, L"COMBOBOX", L"", WS_CHILD|(_editable?CBS_DROPDOWN:CBS_DROPDOWNLIST)|WS_VSCROLL, 0, 0, 100, 100, parent, (HMENU)0, GetModuleHandle(NULL), 0);
+					_wnd = ::CreateWindowEx(WS_EX_CLIENTEDGE, L"COMBOBOX", L"", (_editable?CBS_DROPDOWN:CBS_DROPDOWNLIST)|WS_VSCROLL|WS_CHILD, 0, 0, 100, 100, parent, (HMENU)0, GetModuleHandle(NULL), 0);
 
 					// Add strings
 					std::vector<Item>::iterator it = _options.begin();

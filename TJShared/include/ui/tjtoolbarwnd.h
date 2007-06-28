@@ -37,7 +37,7 @@ namespace tj {
 
 		class EXPORTED ToolbarWnd: public ChildWnd {
 			public:
-				ToolbarWnd(HWND parent);
+				ToolbarWnd();
 				virtual ~ToolbarWnd();
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 				virtual void Paint(Gdiplus::Graphics& g);
