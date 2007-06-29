@@ -20,6 +20,10 @@ ref<Scriptable> ScriptContext::Execute(ref<CompiledScript> scr, ref<ScriptScope>
 	ThreadLock lock(&_running);
 	assert(scr);
 
+	if(scr->_creatingContext!=0 && scr->_creatingContext!=this) {
+		throw ScriptException(L"Script cannot be executed, because it was not created by this context");
+	}
+
 	if(scope) {
 		scope->SetPrevious(_global);
 		ref<Scriptable> val = _vm->Execute(This<ScriptContext>(), scr, scope);
@@ -32,6 +36,9 @@ ref<Scriptable> ScriptContext::Execute(ref<CompiledScript> scr, ref<ScriptScope>
 }
 
 ref<ScriptThread> ScriptContext::CreateExecutionThread(ref<CompiledScript> scr) {
+	if(scr->_creatingContext!=this) {
+		throw ScriptException(L"Cannot create execution thread for this script, because it was not created by this context");
+	}
 	ref<ScriptThread> thread = GC::Hold(new ScriptThread(This<ScriptContext>()));
 	thread->SetScript(scr);
 	return thread;

@@ -32,3 +32,11 @@ void GC::Log(const char* tp, bool allocate) {
 	OutputDebugStringA(tp);
 	OutputDebugStringA("\r\n");
 }
+
+/* Endpoint */
+Endpoint::EndpointType Endpoint::GetType() const {
+	return EndpointTypeThreaded;
+}
+
+Endpoint::~Endpoint() {
+}

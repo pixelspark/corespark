@@ -2,7 +2,9 @@
 using namespace tj::script;
 using namespace tj::shared;
 
-CompiledScript::CompiledScript() {
+CompiledScript::CompiledScript(ScriptContext* cc) {
+	assert(cc!=0);
+	_creatingContext = cc;
 }
 
 CompiledScript::~CompiledScript() {

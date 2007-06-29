@@ -111,8 +111,10 @@ HWND VectorProperty::GetWindow() {
 }
 
 HWND VectorProperty::Create(HWND parent) {
-	if(GetWindow()==0) {
+	if(_wnd==0) {
 		_wnd = new VectorPropertyWnd(_vec);
+		SetParent(_wnd->GetWindow(), parent);
+		_wnd->SetStyle(WS_CHILD);
 	}
 	return _wnd->GetWindow();
 }

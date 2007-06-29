@@ -914,6 +914,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\include\tjendpoint.h"
+					>
+				</File>
+				<File
 					RelativePath=".\include\tjexception.h"
 					>
 				</File>

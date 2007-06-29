@@ -46,6 +46,7 @@
 #include "tjcode.h"
 #include "tjfilewriter.h"
 #include "tjsettings.h"
+#include "tjendpoint.h"
 
 #include "ui/tjui.h"
 #include "properties/tjproperties.h"

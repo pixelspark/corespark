@@ -246,11 +246,12 @@ distinct_parser<> keyword_p("a-zA-Z0-9_");
 
 class ScriptGrammar : public grammar<ScriptGrammar> {
 	public:
-		ScriptGrammar(ref<CompiledScript> script) {
+		ScriptGrammar(ref<CompiledScript> script, ref<ScriptContext> context) {
 			_script = script;
 			_stack = GC::Hold(new ScriptletStack());
 			ref<Scriptlet> s = _script->CreateScriptlet(ScriptletFunction);
 			_stack->Push(s, _script->GetScriptletIndex(s));
+			_context = context;
 		}
 
 		virtual ~ScriptGrammar() {
@@ -459,13 +460,14 @@ class ScriptGrammar : public grammar<ScriptGrammar> {
 		mutable ref<CompiledScript> _script;
 		mutable std::deque< ref<CompiledScript> > _delegateStack;
 		mutable ref<ScriptletStack> _stack;
+		mutable ref<ScriptContext> _context;
 };
 
 
 ref<CompiledScript> ScriptContext::Compile(std::wstring source) {
-	ref<CompiledScript> script = GC::Hold(new CompiledScript());
+	ref<CompiledScript> script = GC::Hold(new CompiledScript(this));
 
-	ScriptGrammar parser(script);
+	ScriptGrammar parser(script, This<ScriptContext>());
 	parse_info<> info = parse(Mbs(source).c_str(), parser, space_p);
 	if(!info.full) {
 		throw ParserException(std::wstring(L"Parsing stopped at")+Wcs(info.stop));
@@ -479,10 +481,10 @@ ref<CompiledScript> ScriptContext::Compile(std::wstring source) {
 }
 
 ref<CompiledScript> ScriptContext::CompileFile(std::wstring fn) {
-	ref<CompiledScript> script = GC::Hold(new CompiledScript());
+	ref<CompiledScript> script = GC::Hold(new CompiledScript(this));
 
 	std::string fns = Mbs(fn);
-	ScriptGrammar parser(script);
+	ScriptGrammar parser(script, This<ScriptContext>());
 	file_iterator<char> begin(fns.c_str());
 	file_iterator<char> end = begin.make_end();
 
@@ -499,7 +501,7 @@ ref<CompiledScript> ScriptContext::CompileFile(std::wstring fn) {
 }
 
 void ScriptBeginDelegate::operator()(char x) const {
-	ref<CompiledScript> dlg = GC::Hold(new CompiledScript());
+	ref<CompiledScript> dlg = GC::Hold(new CompiledScript(0));
 	_grammar->_delegateStack.push_back(_grammar->_script);
 	_grammar->_script = dlg;
 
@@ -515,7 +517,7 @@ void ScriptEndDelegate::operator()(char x) const {
 	_grammar->_stack->Pop();
 	
 	ref<Scriptlet> current = _grammar->_stack->Top();
-	ref<ScriptDelegate> scriptDelegate = GC::Hold(new ScriptDelegate(dlg));
+	ref<ScriptDelegate> scriptDelegate = GC::Hold(new ScriptDelegate(dlg, _grammar->_context));
 	current->Add(GC::Hold(new OpPush(scriptDelegate)));
 }
 

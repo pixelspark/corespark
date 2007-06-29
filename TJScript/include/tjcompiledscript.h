@@ -11,9 +11,15 @@ namespace tj {
 			ScriptletLoop,
 		};
 
+		class ScriptContext;
+
 		class SCRIPT_EXPORTED CompiledScript: public virtual tj::shared::Object {
+			friend class ScriptContext;
+
 			public:
-				CompiledScript();
+				// If creatingContext == 0, it cannot be executed by any context (only as delegate)
+				// if creatingContext != 0, it can only be executed by the creatingContext
+				CompiledScript(ScriptContext* creatingContext);
 				virtual ~CompiledScript();
 				void Optimize();
 				
@@ -26,26 +32,7 @@ namespace tj {
 				
 			protected:
 				std::vector< tj::shared::ref<Scriptlet> > _scriptlets;
-		};
-
-		class ScriptDelegate: public Scriptable {
-			public:
-				inline ScriptDelegate(tj::shared::ref<CompiledScript> sc) {
-					assert(sc);
-					_cs = sc;
-				}
-
-				virtual ~ScriptDelegate() {
-				}
-
-				inline tj::shared::ref<CompiledScript> GetScript() {
-					return _cs;
-				}
-
-				virtual tj::shared::ref<Scriptable> Execute(Command c, tj::shared::ref<ParameterList> plist);
-
-			protected:
-				tj::shared::ref<CompiledScript> _cs;
+				ScriptContext* _creatingContext;
 		};
 	}
 }
