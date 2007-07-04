@@ -520,6 +520,10 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath=".\src\properties\tjfileproperty.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\properties\tjpropertyseparator.cpp"
 					>
 					<FileConfiguration
@@ -802,6 +806,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\include\ui\tjproperty.h"
+					>
+				</File>
+				<File
 					RelativePath=".\include\ui\tjpropertygridwnd.h"
 					>
 				</File>
@@ -851,6 +859,10 @@
 				>
 				<File
 					RelativePath=".\include\properties\tjcolorproperty.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\properties\tjfileproperty.h"
 					>
 				</File>
 				<File

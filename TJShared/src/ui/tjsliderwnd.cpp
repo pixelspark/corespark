@@ -252,6 +252,9 @@ LRESULT SliderWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		_hasFocus = false;
 		Repaint();
 	}
+	else if(msg==WM_SIZE) {
+		Repaint();
+	}
 
 	return ChildWnd::Message(msg, wp, lp);
 }

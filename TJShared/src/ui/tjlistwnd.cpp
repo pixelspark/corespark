@@ -6,7 +6,7 @@ using namespace tj::shared;
 const float ListWnd::KMinimumColumnWidth = 0.075f;
 
 ListWnd::ListWnd(): ChildWnd(L"", true, true) {
-	SetStyle(WS_CLIPCHILDREN);
+	SetVerticallyScrollable(true);
 	_draggingCol = -1;
 	_dragStartX = 0;
 	_selected = -1;
@@ -174,14 +174,7 @@ float ListWnd::GetColumnWidth(int id) {
 
 void ListWnd::OnSize(const Area& ns) {
 	int h = (GetItemCount()+1)*GetItemHeightInPixels();
-	if(h>ns.GetHeight()) {
-		SetVerticallyScrollable(true);
-		SetVerticalScrollInfo(Range<int>(0, h), ns.GetHeight());
-	}	
-	else {
-		SetVerticallyScrollable(false);
-		SetVerticalPos(0);
-	}
+	SetVerticalScrollInfo(Range<int>(0, h), ns.GetHeight());
 
 	// update size/scrolls
 	Repaint();

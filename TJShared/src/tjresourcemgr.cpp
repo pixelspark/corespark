@@ -29,7 +29,28 @@ void ResourceManager::SetListener(ref<ResourceListener> l) {
 	_listener = l;
 }
 
+/* This method created a relative resource path ('rid') from a full, absolute path
+using the search paths */
+std::wstring ResourceManager::GetRelative(std::wstring path) {
+	std::vector< std::wstring >::const_iterator it = _paths.begin();
+	wchar_t relativePath[MAX_PATH+3];
+	while(it!=_paths.end()) {
+		const std::wstring& root = *it;
+		
+		if(PathRelativePathTo(relativePath, root.c_str(), FILE_ATTRIBUTE_DIRECTORY, path.c_str(), FILE_ATTRIBUTE_NORMAL)==TRUE) {
+			return relativePath;
+		}
+		++it;
+	}
+	return path;
+}
+
 std::wstring ResourceManager::Get(std::wstring ident, bool silent) {
+	// If the path starts with a protocol identifier such as http://, just return the URL
+	if(ident.substr(0,7)==L"http://") {
+		return ident;
+	}
+
 	std::vector<std::wstring>::iterator it = _paths.begin();
 	while(it!=_paths.end()) {
 		std::wstring path = *it + L"\\"+ident;

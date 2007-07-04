@@ -5,7 +5,8 @@ namespace tj {
 	namespace shared {
 		class EXPORTED File {
 			public:
-				static std::wstring GetDirectory(std::wstring pathToFile);
+				static std::wstring GetDirectory(const std::wstring& pathToFile);
+				static bool Exists(const std::wstring& path);
 		};
 	}
 }

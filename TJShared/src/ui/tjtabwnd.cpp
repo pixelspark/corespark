@@ -168,8 +168,8 @@ void TabWnd::Clear() {
 
 ref<Pane> TabWnd::AddPane(std::wstring name, ref<Wnd> wnd, bool closable, bool select, std::wstring icon) {
 	assert(wnd);
-	wnd->Show(false);
 	SetParent(wnd->GetWindow(), GetWindow());
+	wnd->Show(false);
 	ref<Pane> pane = GC::Hold(new Pane(name,wnd,false, closable, icon));
 	_panes.push_back(pane);
 
@@ -184,9 +184,8 @@ ref<Pane> TabWnd::AddPane(std::wstring name, ref<Wnd> wnd, bool closable, bool s
 
 ref<Pane> TabWnd::AddPane(ref<Pane> pane) {
 	assert(pane && pane->GetWindow());
-	pane->GetWindow()->Show(false);
 	SetParent(pane->GetWindow()->GetWindow(), GetWindow());
-
+	pane->GetWindow()->Show(false);
 	_panes.push_back(pane);
 	if(_panes.size()==1) {
 		SelectPane(0);

@@ -7,5 +7,6 @@
 #include "tjlistproperty.h"
 #include "tjreadonlyproperty.h"
 #include "tjcolorproperty.h"
+#include "tjfileproperty.h"
 
 #endif

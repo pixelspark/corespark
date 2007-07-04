@@ -81,6 +81,7 @@ void Wnd::OnSettingsChanged() {
 void Wnd::Add(ref<Wnd> child, bool shown) {
 	if(child) {
 		SetParent(child->GetWindow(), GetWindow());
+		child->SetStyle(WS_CHILD);
 		child->Show(shown);
 	}
 }
@@ -371,6 +372,11 @@ void Wnd::SetHorizontalScrollInfo(Range<int> rng, int pageSize) {
 	srl.nPage = pageSize;
 	
 	SetScrollInfo(_wnd, SB_HORZ,&srl,TRUE);
+
+	int pos = GetHorizontalPos();
+	if(pos > rng.End() || pos < rng.Start()) {
+		SetHorizontalPos(0);
+	}
 }
 
 void Wnd::SetVerticalScrollInfo(Range<int> rng, int pageSize) {
@@ -384,6 +390,11 @@ void Wnd::SetVerticalScrollInfo(Range<int> rng, int pageSize) {
 
 	_verticalPageSize = pageSize;
 	SetScrollInfo(_wnd, SB_VERT,&srl,TRUE);
+
+	int pos = GetVerticalPos();
+	if(pos > rng.End() || pos < rng.Start()) {
+		SetVerticalPos(0);
+	}
 }
 
 LRESULT ColorWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
@@ -523,6 +534,15 @@ LRESULT Wnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		float df = theme->GetDPIScaleFactor();
 		OnMouse(MouseEventLeave, int(ceil(GET_X_LPARAM(lp)/df)), int(ceil(GET_Y_LPARAM(lp)/df)));
 		return 0;
+	}
+	else if(msg==WM_MOUSEWHEEL) {
+		int d = GET_WHEEL_DELTA_WPARAM(wp);
+		if(d<0) {
+			SendMessage(_wnd, WM_VSCROLL, MAKELONG(SB_LINEDOWN, 0), 0L); 
+		}
+		else {
+			SendMessage(_wnd, WM_VSCROLL, MAKELONG(SB_LINEUP, 0), 0L); 
+		}
 	}
 	else if(msg==WM_ACTIVATE) {
 		OnActivate(LOWORD(wp)!=WA_INACTIVE);

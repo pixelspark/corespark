@@ -9,6 +9,7 @@ PropertyGridWnd::PropertyGridWnd(): ChildWnd(TL(properties)) {
 	_nameWidth = 100;
 	SetStyle(WS_CLIPCHILDREN|WS_CLIPSIBLINGS);
 	SetStyleEx(WS_EX_CONTROLPARENT);
+	SetVerticallyScrollable(true);
 	_editBackground = 0;
 	_editFont = 0;
 	_isDraggingSplitter = false;
@@ -226,7 +227,8 @@ void PropertyGridWnd::Layout() {
 }
 
 void PropertyGridWnd::OnSize(const Area& ns) {
-	Area rect = GetClientArea();
+	ReplyMessage(0);
+
 	// Get total property height
 	int totalHeight = 0;
 	std::vector< ref<Property> >::iterator it = _properties.begin();
@@ -238,14 +240,7 @@ void PropertyGridWnd::OnSize(const Area& ns) {
 		++it;
 	}
 
-	if(totalHeight>rect.GetHeight()) {
-		SetVerticallyScrollable(true);
-		SetVerticalScrollInfo(Range<int>(0, totalHeight+KPathHeight), rect.GetHeight());
-	}
-	else {
-		SetVerticallyScrollable(false);
-		SetVerticalPos(0);
-	}
+	SetVerticalScrollInfo(Range<int>(0, totalHeight+KPathHeight), ns.GetHeight());
 	Layout();
 	Repaint();
 }
@@ -272,19 +267,18 @@ void PropertyGridWnd::Inspect(Inspectable* isp, ref<Path> p) {
 	if(isp==0) {	
 		ClearThemeCache();
 		_path->SetPath(0);
-		Layout();
+		OnSize(GetClientArea());
 		return;
 	}
 
 	ref< std::vector< ref<Property> > > props = isp->GetProperties();
 	if(!props) {
 		ClearThemeCache();
-		Layout();
+		OnSize(GetClientArea());
 		_path->SetPath(0);
 		return;
 	}
 
-	_properties.clear();
 	std::vector< ref<Property> >::iterator it = props->begin();
 	HWND myself = GetWindow();
 	HWND first = 0;
@@ -305,8 +299,8 @@ void PropertyGridWnd::Inspect(Inspectable* isp, ref<Path> p) {
 	_path->SetPath(p);
 	SetFocus(first);
 	ClearThemeCache();
+	SetVerticalPos(0);
 	OnSize(GetClientArea());
-	Layout();
 }
 
 void PropertyGridWnd::Inspect(ref<Inspectable> isp, ref<Path> p) {
