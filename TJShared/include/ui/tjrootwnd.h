@@ -34,7 +34,7 @@ namespace tj {
 				void RenameWindow(ref<Wnd> w, std::wstring name);
 
 				/* Notification API */
-				void AddNotification(const std::wstring& message, std::wstring icon, int time=-1);
+				virtual void AddNotification(const std::wstring& message, std::wstring icon, int time=-1);
 				void RemoveNotification(NotificationWnd* nw);
 
 			protected:

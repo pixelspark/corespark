@@ -42,8 +42,10 @@ int ListWnd::GetHeaderHeightInPixels() const {
 }
 
 void ListWnd::DrawCellText(Gdiplus::Graphics& g, Gdiplus::StringFormat* sf, Gdiplus::SolidBrush* br, Gdiplus::Font* font, int col, Area row, const std::wstring& str) {
+	sf->SetFormatFlags(sf->GetFormatFlags()|StringFormatFlagsLineLimit);
 	row.SetX((Pixels)(GetColumnX(col)*row.GetWidth()));
 	row.SetWidth((Pixels)(GetColumnWidth(col)*row.GetWidth()));
+	row.Narrow(0,1,0,1);
 	g.DrawString(str.c_str(), (int)str.length(), font, row, sf, br);
 }
 
