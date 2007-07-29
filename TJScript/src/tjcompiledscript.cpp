@@ -55,3 +55,23 @@ void CompiledScript::Optimize() {
 ref<Scriptlet> CompiledScript::GetMainScriptlet() {
 	return _scriptlets.at(0);
 }
+
+template<> Scriptlet& Scriptlet::Add(const std::wstring& x) {
+	Add<unsigned int>((unsigned int)x.length());
+	std::wstring::const_iterator it = x.begin();
+	while(it!=x.end()) {
+		wchar_t c = *it;
+		Add<wchar_t>(c);
+		++it;
+	}
+	Add<wchar_t>((wchar_t)0);
+	return *this;
+}
+
+// TODO: overflow check
+template<> wchar_t* Scriptlet::Get(unsigned int& position) const {
+	unsigned int length = Get<unsigned int>(position);
+	wchar_t* str = reinterpret_cast<wchar_t*>(&(_code[position]));
+	position += (length+1)*sizeof(wchar_t);
+	return str;
+}

@@ -118,18 +118,15 @@ ref<Scriptable> VM::Execute(ref<ScriptContext> c, ref<CompiledScript> script, re
 	_context = c; // weak reference
 	_scope = scope;
 
-	// maybe work with pc?
-	ref<VM> vm = This<VM>();
-
+	ref<VM> vm = This<VM>(); // keep us alive
 	ref<Scriptlet> main = script->GetMainScriptlet();
 	_frame = new StackFrame(main,0);
-	ref<Op> op = 0;
 
 	try {
 		while(_frame!=0) {
 			ref<Scriptlet> scriptlet = _frame->_scriptlet;
 
-			if(_frame->_pc>=scriptlet->_code.size()) {
+			if(_frame->_pc>=scriptlet->GetCodeSize()) {
 				// Destroy the scope if this scriptlet created one
 				if(scriptlet!=main && _frame->_createdScope) {
 					_scope = _scope->GetPrevious();
@@ -163,12 +160,13 @@ ref<Scriptable> VM::Execute(ref<ScriptContext> c, ref<CompiledScript> script, re
 				}
 			}
 			else {
-				op = scriptlet->_code.at(_frame->_pc);
-				++(_frame->_pc);
-				op->Execute(vm);
+				int opCode = scriptlet->Get<int>(_frame->_pc);
+				if(opCode>=Ops::_OpLast) Throw(L"Invalid instruction detected", ExceptionTypeError);
+				Ops::OpHandler opHandler = Ops::Handlers[opCode];
+				opHandler(this);
 
 				if(_debug) {
-					Log::Write(L"TJScript/VM/Execute",/*Stringify(_script->GetScriptletIndex(current._scriptlet))+L": "+*/op->GetName());
+					Log::Write(L"TJScript/VM/Execute",Ops::Names[opCode]);
 				}
 			}
 		}
@@ -181,7 +179,8 @@ ref<Scriptable> VM::Execute(ref<ScriptContext> c, ref<CompiledScript> script, re
 	}
 	catch(Exception& e) {
 		if(_frame!=0) {
-			Log::Write(L"TJScript/VM",L"Error in scriptlet "+Stringify(_script->GetScriptletIndex(_frame->_scriptlet))+L": "+op->GetName());
+			// TODO: fix
+			///Log::Write(L"TJScript/VM",L"Error in scriptlet "+Stringify(_script->GetScriptletIndex(_frame->_scriptlet))+L": "+op->GetName());
 			Log::Write(L"TJScript/VM", std::wstring(L"Stack dump: ")+_stack.Dump());
 			Log::Write(L"TJScript/VM", Wcs(e.GetFile())+L"/"+Stringify(e.GetLine())+L": "+e.GetMsg());
 		}

@@ -1,49 +1,52 @@
 #include "../include/internal/tjscript.h"
 using namespace tj::script;
 using namespace tj::shared;
-using namespace tj::script::ops;
 
-/* OpPush */
-OpPush::OpPush(ref<Scriptable> s) {
-	_value = s;
+void OpNopHandler(VM* vm) {
 }
 
-std::wstring OpPush::GetName() {
-	return std::wstring(L"OpPush ") + ScriptContext::GetValue<std::wstring>(_value, L"[unknown]");
+void OpPushStringHandler(VM* vm) {
+	StackFrame* sf = vm->GetStackFrame();
+	//std::wstring value(sf->_scriptlet->Get<wchar_t*>(sf->_pc));
+	LiteralIdentifier id = sf->_scriptlet->Get<LiteralIdentifier>(sf->_pc);
+	vm->GetStack().Push(sf->_scriptlet->GetLiteral(id));
 }
 
-void OpPush::Execute(ref<VM> vm) {
-	vm->GetStack().Push(_value);
+void OpPushDoubleHandler(VM* vm) {
+	StackFrame* sf = vm->GetStackFrame();
+	LiteralIdentifier id = sf->_scriptlet->Get<LiteralIdentifier>(sf->_pc);
+	vm->GetStack().Push(sf->_scriptlet->GetLiteral(id));
 }
 
-void OpPop::Execute(ref<VM> vm) {
+void OpPushDelegateHandler(VM* vm) {
+	StackFrame* sf = vm->GetStackFrame();
+	LiteralIdentifier id = sf->_scriptlet->Get<LiteralIdentifier>(sf->_pc);
+	vm->GetStack().Push(sf->_scriptlet->GetLiteral(id));
+}
+
+void OpPushTrueHandler(VM* vm) {
+	vm->GetStack().Push(ScriptConstants::True);
+}
+
+void OpPushFalseHandler(VM* vm) {
+	vm->GetStack().Push(ScriptConstants::False);
+}
+
+void OpPushIntHandler(VM* vm) {
+	StackFrame* sf = vm->GetStackFrame();
+	int value = sf->_scriptlet->Get<int>(sf->_pc);
+	vm->GetStack().Push(GC::Hold(new ScriptInt(value)));
+}
+
+void OpPushNullHandler(VM* vm) {
+	vm->GetStack().Push(ScriptConstants::Null);
+}
+
+void OpPopHandler(VM* vm) {
 	vm->GetStack().Pop();
 }
 
-void OpParameter::Execute(ref<VM> vm) {
-	ScriptStack& stack = vm->GetStack();
-	ref<Scriptable> value = stack.Pop();
-	ref<Scriptable> key = stack.Pop();
-	ref<ScriptParameterList> parameter = stack.Pop();
-
-	ref< ScriptValue<std::wstring> > keyString = key;
-	parameter->Set(keyString->GetValue(), value);
-	stack.Push(parameter);
-}
-
-void OpNamelessParameter::Execute(ref<VM> vm) {
-	ScriptStack& stack = vm->GetStack();
-	ref<Scriptable> value = stack.Pop();
-	ref<ScriptParameterList> parameter = stack.Pop();
-	parameter->AddNamelessParameter(value);
-	stack.Push(parameter);
-}
-
-void OpPushParameter::Execute(ref<VM> vm) {
-	vm->GetStack().Push(GC::Hold(new ScriptParameterList()));
-}
-
-void OpCall::Execute(ref<VM> vm) {
+void OpCallHandler(VM* vm) {
 	ScriptStack& stack = vm->GetStack();
 	ref<Scriptable> parameterList = stack.Pop();
 	ref<ScriptParameterList> list;
@@ -72,22 +75,7 @@ void OpCall::Execute(ref<VM> vm) {
 	}
 }
 
-void OpIndex::Execute(ref<VM> vm) {
-	ScriptStack& stack = vm->GetStack();
-	ref<Scriptable> index = stack.Pop();
-	ref<Scriptable> object = stack.Pop();
-
-	ref<ParameterList> pl = GC::Hold(new ParameterList());
-	pl->Set(L"key", index);
-	ref<Scriptable> result = object->Execute(L"get", pl);
-	if(result==0) {
-		throw ScriptException(L"Object does not support get(key=...) method, array index cannot be used");
-	}
-	stack.Push(result);
-}
-
-
-void OpCallGlobal::Execute(ref<VM> vm) {
+void OpCallGlobalHandler(VM* vm) {
 	ScriptStack& stack = vm->GetStack();
 	ref<Scriptable> parameterList = stack.Pop();
 	ref<ScriptParameterList> list;
@@ -116,14 +104,31 @@ void OpCallGlobal::Execute(ref<VM> vm) {
 	}
 }
 
-void OpSave::Execute(ref<VM> vm) {
+void OpNewHandler(VM* vm) {
+	ScriptStack& stack = vm->GetStack();
+	ref<Scriptable> parameterList = stack.Pop();
+	ref<ScriptParameterList> list;
+	if(parameterList.IsCastableTo<ScriptParameterList>()) {
+		list = parameterList;
+	}
+	else {
+		stack.Push(parameterList);
+	}
+
+	ref< ScriptString > funcName = stack.Pop();
+	
+	ref<Scriptable> instance = vm->GetContext()->GetType(funcName->GetValue())->Construct(list);
+	stack.Push(instance);
+}
+
+void OpSaveHandler(VM* vm) {
 	ScriptStack& stack = vm->GetStack();
 	ref<Scriptable> object = stack.Pop();
 	ref< ScriptValue<std::wstring> > varName = stack.Pop();
 	vm->GetCurrentScopeForWriting()->Set(varName->GetValue(), object);
 }
 
-void OpEquals::Execute(ref<VM> vm) {
+void OpEqualsHandler(VM* vm) {
 	ScriptStack& stack = vm->GetStack();
 	ref<Scriptable> objectA = stack.Pop();
 	ref<Scriptable> objectB = stack.Pop();
@@ -164,7 +169,7 @@ void OpEquals::Execute(ref<VM> vm) {
 	stack.Push(result?ScriptConstants::True:ScriptConstants::False);
 }
 
-void OpNegate::Execute(ref<VM> vm) {
+void OpNegateHandler(VM* vm) {
 	ScriptStack& stack = vm->GetStack();
 	ref<Scriptable> top = stack.Pop();
 
@@ -188,7 +193,7 @@ void OpNegate::Execute(ref<VM> vm) {
 	}
 }
 
-void OpAdd::Execute(ref<VM> vm) {
+void OpAddHandler(VM* vm) {
 	ScriptStack& stack = vm->GetStack();
 	ref<Scriptable> a = stack.Pop();
 	ref<Scriptable> b = stack.Pop();
@@ -227,7 +232,7 @@ void OpAdd::Execute(ref<VM> vm) {
 	}
 }
 
-void OpSub::Execute(ref<VM> vm) {
+void OpSubHandler(VM* vm) {
 	ScriptStack& stack = vm->GetStack();
 	ref<Scriptable> a = stack.Pop();
 	ref<Scriptable> b = stack.Pop();
@@ -258,7 +263,38 @@ void OpSub::Execute(ref<VM> vm) {
 	stack.Push(GC::Hold(new ScriptDouble(vb-va)));
 }
 
-void OpDiv::Execute(ref<VM> vm) {
+void OpMulHandler(VM* vm) {
+	ScriptStack& stack = vm->GetStack();
+	ref<Scriptable> a = stack.Pop();
+	ref<Scriptable> b = stack.Pop();
+
+	double va = 0.0;
+	double vb = 0.0;
+
+	if(a.IsCastableTo<ScriptDouble>()) {
+		va = ref<ScriptDouble>(a)->GetValue();
+	}
+	else if(a.IsCastableTo<ScriptInt>()) {
+		va = (double)ref<ScriptInt>(a)->GetValue();
+	}
+	else {
+		va = ScriptContext::GetValue<double>(a,0.0);
+	}
+	
+	if(b.IsCastableTo<ScriptDouble>()) {
+		vb = ref<ScriptDouble>(b)->GetValue();
+	}
+	else if(b.IsCastableTo<ScriptInt>()) {
+		vb = (double)ref<ScriptInt>(b)->GetValue();
+	}
+	else {
+		vb = ScriptContext::GetValue<double>(b,0.0);
+	}
+
+	stack.Push(GC::Hold(new ScriptDouble(va*vb)));
+}
+
+void OpDivHandler(VM* vm) {
 	ScriptStack& stack = vm->GetStack();
 	ref<Scriptable> a = stack.Pop();
 	ref<Scriptable> b = stack.Pop();
@@ -293,71 +329,74 @@ void OpDiv::Execute(ref<VM> vm) {
 	stack.Push(GC::Hold(new ScriptDouble(vb/va)));
 }
 
-void OpMul::Execute(ref<VM> vm) {
-	ScriptStack& stack = vm->GetStack();
-	ref<Scriptable> a = stack.Pop();
-	ref<Scriptable> b = stack.Pop();
+void OpAndHandler(VM* vm) {
+	ref<Scriptable> a = vm->GetStack().Pop();
+	ref<Scriptable> b = vm->GetStack().Pop();
 
-	double va = 0.0;
-	double vb = 0.0;
+	bool ba = ScriptContext::GetValue<bool>(a, false);
+	bool bb = ScriptContext::GetValue<bool>(b, false);
 
-	if(a.IsCastableTo<ScriptDouble>()) {
-		va = ref<ScriptDouble>(a)->GetValue();
-	}
-	else if(a.IsCastableTo<ScriptInt>()) {
-		va = (double)ref<ScriptInt>(a)->GetValue();
-	}
-	else {
-		va = ScriptContext::GetValue<double>(a,0.0);
-	}
-	
-	if(b.IsCastableTo<ScriptDouble>()) {
-		vb = ref<ScriptDouble>(b)->GetValue();
-	}
-	else if(b.IsCastableTo<ScriptInt>()) {
-		vb = (double)ref<ScriptInt>(b)->GetValue();
-	}
-	else {
-		vb = ScriptContext::GetValue<double>(b,0.0);
-	}
-
-	stack.Push(GC::Hold(new ScriptDouble(va*vb)));
+	vm->GetStack().Push((ba&&bb)?ScriptConstants::True:ScriptConstants::False);
 }
 
-OpBranchIf::OpBranchIf(int scriptlet) {
-	_scriptlet = scriptlet;
+void OpOrHandler(VM* vm) {
+	ref<Scriptable> a = vm->GetStack().Pop();
+	ref<Scriptable> b = vm->GetStack().Pop();
+
+	bool ba = ScriptContext::GetValue<bool>(a, false);
+	bool bb = ScriptContext::GetValue<bool>(b, false);
+
+	vm->GetStack().Push(GC::Hold(new ScriptBool(ba||bb)));
 }
 
-void OpBranchIf::Execute(tj::shared::ref<VM> vm) {
+void OpBranchIfHandler(VM* vm) {
 	ScriptStack& stack = vm->GetStack();
+	StackFrame* frame = vm->GetStackFrame();
+	int  scriptlet = frame->_scriptlet->Get<int>(frame->_pc);
 	ref<Scriptable> top = stack.Top();
 	
 	bool r = ScriptContext::GetValue<bool>(top,false);
 	if(r) {
-		vm->Call(_scriptlet);
+		vm->Call(scriptlet);
 	}
 }
 
-// OpLoadScriptlet
-OpLoadScriptlet::OpLoadScriptlet(int scriptlet) {
-	_scriptlet = scriptlet;
+void OpParameterHandler(VM* vm) {
+	ScriptStack& stack = vm->GetStack();
+	ref<Scriptable> value = stack.Pop();
+	ref<Scriptable> key = stack.Pop();
+	ref<ScriptParameterList> parameter = stack.Pop();
+
+	ref< ScriptValue<std::wstring> > keyString = key;
+	parameter->Set(keyString->GetValue(), value);
+	stack.Push(parameter);
 }
 
-void OpLoadScriptlet::Execute(tj::shared::ref<VM> vm) {
-	ref<Scriptlet> sc = vm->GetScript()->GetScriptlet(_scriptlet);
+void OpNamelessParameterHandler(VM* vm) {
+	ScriptStack& stack = vm->GetStack();
+	ref<Scriptable> value = stack.Pop();
+	ref<ScriptParameterList> parameter = stack.Pop();
+	parameter->AddNamelessParameter(value);
+	stack.Push(parameter);
+}
+
+void OpLoadScriptletHandler(VM* vm) {
+	StackFrame* frame = vm->GetStackFrame();
+	int id = frame->_scriptlet->Get<int>(frame->_pc);
+
+	ref<Scriptlet> sc = vm->GetScript()->GetScriptlet(id);
 	vm->GetStack().Push(GC::Hold(new ScriptFunction(sc)));
 }
 
-void OpReturn::Execute(tj::shared::ref<VM> vm) {
+void OpReturnHandler(VM* vm) {
 	vm->Return(false);
 }
 
-void OpReturnValue::Execute(ref<VM> vm) {
+void OpReturnValueHandler(VM* vm) {
 	vm->Return(true);
 }
 
-// OpGreaterThan
-void OpGreaterThan::Execute(ref<VM> vm) {
+void OpGreaterThanHandler(VM* vm) {
 	ref<Scriptable> a = vm->GetStack().Pop();
 	ref<Scriptable> b = vm->GetStack().Pop();
 
@@ -372,8 +411,7 @@ void OpGreaterThan::Execute(ref<VM> vm) {
 	}
 }
 
-// OpLessThan
-void OpLessThan::Execute(ref<VM> vm) {
+void OpLessThanHandler(VM* vm) {
 	ref<Scriptable> a = vm->GetStack().Pop();
 	ref<Scriptable> b = vm->GetStack().Pop();
 
@@ -388,31 +426,7 @@ void OpLessThan::Execute(ref<VM> vm) {
 	}
 }
 
-// OpOr
-void OpOr::Execute(ref<VM> vm) {
-	ref<Scriptable> a = vm->GetStack().Pop();
-	ref<Scriptable> b = vm->GetStack().Pop();
-
-	bool ba = ScriptContext::GetValue<bool>(a, false);
-	bool bb = ScriptContext::GetValue<bool>(b, false);
-
-	vm->GetStack().Push(GC::Hold(new ScriptBool(ba||bb)));
-}
-
-// OpAnd
-void OpAnd::Execute(ref<VM> vm) {
-	ref<Scriptable> a = vm->GetStack().Pop();
-	ref<Scriptable> b = vm->GetStack().Pop();
-
-	bool ba = ScriptContext::GetValue<bool>(a, false);
-	bool bb = ScriptContext::GetValue<bool>(b, false);
-
-	vm->GetStack().Push((ba&&bb)?ScriptConstants::True:ScriptConstants::False);
-}
-
-// OpXor: TT=>F FF=>F TF=>T FT=>T
-// Xor: (a||b) && !(a==b)
-void OpXor::Execute(ref<VM> vm) {
+void OpXorHandler(VM* vm) {
 	ref<Scriptable> a = vm->GetStack().Pop();
 	ref<Scriptable> b = vm->GetStack().Pop();
 
@@ -422,32 +436,33 @@ void OpXor::Execute(ref<VM> vm) {
 	vm->GetStack().Push(result?ScriptConstants::True:ScriptConstants::False);
 }
 
-void OpBreak::Execute(ref<VM> vm) {
+void OpBreakHandler(VM* vm) {
 	vm->Break();
 }
 
-void OpNew::Execute(ref<VM> vm) {
+void OpIndexHandler(VM* vm) {
 	ScriptStack& stack = vm->GetStack();
-	ref<Scriptable> parameterList = stack.Pop();
-	ref<ScriptParameterList> list;
-	if(parameterList.IsCastableTo<ScriptParameterList>()) {
-		list = parameterList;
-	}
-	else {
-		stack.Push(parameterList);
-	}
+	ref<Scriptable> index = stack.Pop();
+	ref<Scriptable> object = stack.Pop();
 
-	ref< ScriptString > funcName = stack.Pop();
-	
-	ref<Scriptable> instance = vm->GetContext()->GetType(funcName->GetValue())->Construct(list);
-	stack.Push(instance);
+	ref<ParameterList> pl = GC::Hold(new ParameterList());
+	pl->Set(L"key", index);
+	ref<Scriptable> result = object->Execute(L"get", pl);
+	if(result==0) {
+		throw ScriptException(L"Object does not support get(key=...) method, array index cannot be used");
+	}
+	stack.Push(result);
 }
 
-void OpIterate::Execute(ref<VM> vm) {
+void OpIterateHandler(VM* vm) {
 	ref<Scriptable> iterable = vm->GetStack().Pop();
 	ref<Scriptable> varName = vm->GetStack().Pop();
 	vm->GetStack().Push(varName);
 	vm->GetStack().Push(iterable);
+
+	StackFrame* frame = vm->GetStackFrame();
+	int mypc = frame->_pc; // previous instruction
+	int scriptlet = frame->_scriptlet->Get<int>(frame->_pc);
 	
 	ref<Scriptable> value = iterable->Execute(L"next", 0);
 	if(value==0) {
@@ -456,15 +471,34 @@ void OpIterate::Execute(ref<VM> vm) {
 	else if(!value.IsCastableTo<ScriptNull>()) {
 		// set pc of this stack frame one back, so this instruction will be called again
 		StackFrame* frame = vm->GetStackFrame();
-		frame->_pc--;
+		frame->_pc = mypc-(sizeof(int)/sizeof(char)); // move back one instruction, so that this instruction will be called again when the scriptlet returns
 
 		//set variable
 		vm->GetCurrentScopeForWriting()->Set(ref<ScriptString>(varName)->GetValue(), value);
 
-		vm->Call(_scriptlet);
+		vm->Call(scriptlet);
 	}
 	else {
 		vm->GetStack().Pop();
 		vm->GetStack().Pop();
 	}
 }
+
+void OpPushParameterHandler(VM* vm) {
+	vm->GetStack().Push(GC::Hold(new ScriptParameterList()));
+}
+
+const wchar_t* Ops::Names[Ops::_OpLast] = {L"OpNop", L"OpPushString", L"OpPushDouble", L"OpPushTrue", L"OpPushFalse", L"OpPushInt", L"OpPushNull", L"OpPop", 
+L"OpCall", L"OpCallGlobal", L"OpNew", L"OpSave", L"OpEquals", L"OpNegate", L"OpAdd", L"OpSub", 
+L"OpMul", L"OpDiv", L"OpAnd",L"OpOr", L"OpBranchIf", L"OpParameter", L"OpNamelessParameter", L"OpPushParameter",
+L"OpLoadScriptlet", L"OpReturn", L"OpReturnValue", L"OpGreaterThan", L"OpLessThan", L"OpXor",
+L"OpBreak", L"OpIndex", L"OpIterate", L"OpPushDelegate" };
+
+Ops::OpHandler Ops::Handlers[Ops::_OpLast] = {OpNopHandler,OpPushStringHandler,OpPushDoubleHandler,
+OpPushTrueHandler, OpPushFalseHandler,OpPushIntHandler, OpPushNullHandler, OpPopHandler,OpCallHandler,OpCallGlobalHandler,OpNewHandler,
+OpSaveHandler,OpEqualsHandler,OpNegateHandler,OpAddHandler,OpSubHandler,
+OpMulHandler,OpDivHandler,OpAndHandler,OpOrHandler,OpBranchIfHandler,
+OpParameterHandler,OpNamelessParameterHandler,OpPushParameterHandler, OpLoadScriptletHandler, OpReturnHandler,
+OpReturnValueHandler,OpGreaterThanHandler,OpLessThanHandler,OpXorHandler,OpBreakHandler
+,OpIndexHandler,OpIterateHandler, OpPushDelegateHandler};
+

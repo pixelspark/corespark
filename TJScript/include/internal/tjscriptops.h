@@ -3,260 +3,57 @@
 
 namespace tj {
 	namespace script {
-		namespace ops {
-			// pushes a value on the stack
-			// ... => [Scriptable]
-			class  OpPush: public Op {
-				public:
-					OpPush(tj::shared::ref<Scriptable> s);
-					virtual ~OpPush() {};
-					virtual void Execute(tj::shared::ref<VM> stack);
-					virtual std::wstring GetName();
+		class VM;
 
-				protected:
-					tj::shared::ref<Scriptable> _value;
-			};
+		class Ops {
+			public:
+				typedef void (*OpHandler)(VM* vm);
 
-			// removes the most recently pushed object from the stack
-			// [any] => ...
-			class  OpPop: public Op {
-				public:
-					virtual ~OpPop() {};
-					virtual void Execute(tj::shared::ref<VM> stack);
-					virtual inline std::wstring GetName() {return L"OpPop";}
-			};
+				/* Below are all opcodes. The comments give an indication of what
+				the ops do. Everything between [brackets] are stack values,
+				between <angle brackets> are read from the scriptlet code */
+				enum Codes {
+					OpNop = 0,
+					OpPushString,			// [..] => [ScriptString]
+					OpPushDouble,			// [..] => [ScriptDouble]
+					OpPushTrue,				// [..] => [true]
+					OpPushFalse,			// [..] => [false]
+					OpPushInt,				// [..] => [ScriptInt]
+					OpPushNull,				// [..] => [null]
+					OpPop,					// [any] => [..]
+					OpCall,					// [parameters] [callee] [function name] => [result]
+					OpCallGlobal,			// [parameters] [function name] => [result]
+					OpNew,					// [typename] [parameters] => [instance]
+					OpSave,					// [name] [value] => [..]
+					OpEquals,				// [a] [b] => [a==b]
+					OpNegate,				// [a] => [-a]
+					OpAdd,					// [a] [b] => [a+b]
+					OpSub,					// [a] [b] => [a-b]
+					OpMul,					// [a] [b] => [a*b]
+					OpDiv,					// [a] [b] => [a/b]
+					OpAnd,					// [a] [b] => [a && b]
+					OpOr,					// [a] [b] => [a || b]
+					OpBranchIf,				// [bool] <int id> => [..]
+					OpParameter,			// [parameterlist] [key] [value] => [parameterlist]
+					OpNamelessParameter,	// [parameterlist] [value] => [parameterlist]
+					OpPushParameter,		// [..] => [parameterlist]
+					OpLoadScriptlet,		// <int id> => [scriptable]
+					OpReturn,				
+					OpReturnValue,			
+					OpGreaterThan,			// [a] [b] => [a>b]
+					OpLessThan,				// [a] [b] => [a<b]
+					OpXor,					// [a] [b] => [(a && !b) || (!a && b)]
+					OpBreak,				
+					OpIndex,				// [varname] [index] => [value]
+					OpIterate,				// [varname] [iterable] => [..]
+					OpPushDelegate,
 
-			// takes a key and value object and adds it to a parameter list
-			// [parameterlist] [key] [value] => [parameterlist]
-			class  OpParameter: public Op {
-				public:
-					virtual ~OpParameter() {};
-					virtual void Execute(tj::shared::ref<VM> stack);
-					virtual inline std::wstring GetName() {return L"OpParameter";}
-			};
+					_OpLast,				// Should always be the last op
+				};
 
-			// takes a value object and adds it to a parameter list (first parameter with key="1", second "2" etc
-			// [parameterlist] [value] => [parameterlist]
-			class OpNamelessParameter: public Op {
-				public:
-					virtual ~OpNamelessParameter() {}
-					virtual void Execute(tj::shared::ref<VM> stack);
-					virtual inline std::wstring GetName() { return L"OpNamelessParameter"; };
-			};
-
-			// creates a parameterlist on the stack
-			// ... => [parameterlist]
-			class  OpPushParameter: public Op {
-				public:
-					virtual ~OpPushParameter() {};
-					virtual void Execute(tj::shared::ref<VM> stack);
-					virtual inline std::wstring GetName() {return L"OpPushParameter";}
-			};
-
-			// calls a native function
-			// [callee] [function name] => [result]
-			class  OpCall: public Op {
-				public:
-					virtual ~OpCall() {};
-					virtual void Execute(tj::shared::ref<VM> vm);
-					virtual inline std::wstring GetName() {return L"OpCall";}
-			};
-
-			// calls a native function using the global scope as callee
-			// [function name] => [result]
-			class  OpCallGlobal: public Op {
-				public:
-					virtual ~OpCallGlobal() {};
-					virtual void Execute(tj::shared::ref<VM> vm);
-					virtual inline std::wstring GetName() {return L"OpCallGlobal";}
-			};
-
-			// creates a (probably native) type instance
-			// [typename] [parameterlist] => [instance of type]
-			class  OpNew: public Op {
-				public:
-					virtual ~OpNew() {};
-					virtual void Execute(tj::shared::ref<VM> vm);
-					virtual inline std::wstring GetName() {return L"OpNew";}
-			};
-
-			// saves a variable in the current scope
-			// [name] [value] => ...
-			class  OpSave: public Op {
-				public:
-					virtual ~OpSave() {};
-					virtual void Execute(tj::shared::ref<VM> vm);
-					virtual inline std::wstring GetName() {return L"OpSave";}
-			};
-
-			// tests if two objects are equal. Pushes the result as ScriptBool on the stack
-			// [object a] [object b] => [ScriptBool]
-			class  OpEquals: public Op {
-				public:
-					virtual ~OpEquals() {};
-					virtual void Execute(tj::shared::ref<VM> vm);
-					virtual inline std::wstring GetName() {return L"OpEquals";}
-			};
-
-			// negates or inverts ScriptBool, ScriptInt and ScriptDouble
-			// [value] => [-value]
-			class  OpNegate: public Op {
-				public:
-					virtual ~OpNegate() {};
-					virtual void Execute(tj::shared::ref<VM> vm);
-					virtual inline std::wstring GetName() {return L"OpNegate";}
-			};
-
-			// Adds two values
-			// [int/double] [int/double] => [result]
-			class  OpAdd: public Op {
-				public:
-					virtual ~OpAdd() {};
-					virtual void Execute(tj::shared::ref<VM> vm);
-					virtual inline std::wstring GetName() {return L"OpAdd";}
-			};
-
-			class  OpSub: public Op {
-				public:
-					virtual ~OpSub() {};
-					virtual void Execute(tj::shared::ref<VM> vm);
-					virtual inline std::wstring GetName() {return L"OpSub";}
-			};
-
-			class  OpMul: public Op {
-				public:
-					virtual ~OpMul() {};
-					virtual void Execute(tj::shared::ref<VM> vm);
-					virtual inline std::wstring GetName() {return L"OpMul";}
-			};
-
-			class  OpDiv: public Op {
-				public:
-					virtual ~OpDiv() {};
-					virtual void Execute(tj::shared::ref<VM> vm);
-					virtual inline std::wstring GetName() {return L"OpDiv";}
-			};
-
-			// conditional branch; if the top of the stack is a boolean and it is true,
-			// the specified scriptlet (by index) is called.
-			// [bool] => ...
-			class OpBranchIf: public Op {
-				public:
-					OpBranchIf(int scriptlet);
-					virtual ~OpBranchIf() {};
-					virtual void Execute(tj::shared::ref<VM> vm);
-					virtual inline std::wstring GetName() {return L"OpBranchIf";}
-
-				protected:
-					int _scriptlet;
-			};
-
-			// loads a scriptlet as scriptable on the stack
-			// ... => [scriptable]
-			class OpLoadScriptlet: public Op {
-				public:
-					OpLoadScriptlet(int scriptlet);
-					virtual ~OpLoadScriptlet() {};
-					virtual void Execute(tj::shared::ref<VM> vm);
-					virtual inline std::wstring GetName() {return L"OpLoadScriptlet";}
-
-				protected:
-					int _scriptlet;
-			};
-
-			// returns from a scriptlet, not leaving any return value (so, giving null back implicitly)
-			class OpReturn: public Op {
-				public:
-					virtual ~OpReturn() {};
-					virtual void Execute(tj::shared::ref<VM> vm);
-					virtual inline std::wstring GetName() {return L"OpReturn";}
-			};
-
-			// returns from a scriptlet, leaving a return value to the caller
-			class OpReturnValue: public Op {
-				public:
-					virtual ~OpReturnValue() {};
-					virtual void Execute(tj::shared::ref<VM> vm);
-					virtual inline std::wstring GetName() {return L"OpReturnValue";}
-			};
-
-			// [bool] [bool] => [bool]
-			class OpAnd: public Op {
-				public:
-					virtual ~OpAnd() {};
-					virtual void Execute(tj::shared::ref<VM> vm);
-					virtual inline std::wstring GetName() {return L"OpAnd";}
-			};
-
-			// [bool] [bool] => [bool]
-			class OpOr: public Op {
-				public:
-					virtual ~OpOr() {};
-					virtual void Execute(tj::shared::ref<VM> vm);
-					virtual inline std::wstring GetName() {return L"OpOr";}
-			};
-
-			// [number][number] => [bool]
-			class OpGreaterThan: public Op {
-				public:
-					virtual ~OpGreaterThan() {};
-					virtual void Execute(tj::shared::ref<VM> vm);
-					virtual inline std::wstring GetName() {return L"OpGreaterThan";}
-			};
-
-			
-			// [number][number] => [bool]
-			class OpLessThan: public Op {
-				public:
-					virtual ~OpLessThan() {};
-					virtual void Execute(tj::shared::ref<VM> vm);
-					virtual inline std::wstring GetName() {return L"OpLessThan";}
-			};
-
-
-			// [bool] [bool] => [bool]
-			class OpXor: public Op {
-				public:
-					virtual ~OpXor() {};
-					virtual void Execute(tj::shared::ref<VM> vm);
-					virtual inline std::wstring GetName() {return L"OpXor";}
-			};
-
-			// OpBreak: quit the current scriptlet and resume the calling scriptlet
-			class OpBreak: public Op {
-				public:
-					virtual ~OpBreak() {};
-					virtual void Execute(tj::shared::ref<VM> vm);
-					virtual inline std::wstring GetName() {return L"OpBreak";}
-			};
-
-
-			// OpIndex: used for array indices; array[index] 
-			// [varname] [index key] => [value or null]
-			// calls get(key=...) on object
-			class OpIndex: public Op {
-				public:
-					virtual ~OpIndex() {};
-					virtual void Execute(tj::shared::ref<VM> vm);
-					virtual inline std::wstring GetName() {return L"OpIndex";}
-			};
-
-			// OpIterate: executes a scriptlet for each value in a container saving that value
-			// to a specific variable
-			// [varname] [iterable] => ...
-			class OpIterate: public Op {
-				public:
-					inline OpIterate(int scriptlet) {
-						_scriptlet = scriptlet;
-					}
-
-					virtual ~OpIterate() {};
-					virtual void Execute(tj::shared::ref<VM> vm);
-					virtual inline std::wstring GetName() {return L"OpIterate";}
-
-					int _scriptlet;
-			};
-		}
+				static const wchar_t* Names[_OpLast];
+				static OpHandler Handlers[_OpLast];
+		};
 	}
 }
 

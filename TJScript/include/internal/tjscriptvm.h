@@ -4,7 +4,6 @@
 namespace tj {
 	namespace script {
 		class CompiledScript;
-		class Op;
 		class ScriptScope;
 		class ScriptContext;
 
