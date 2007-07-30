@@ -146,8 +146,17 @@ void TabWnd::Paint(Graphics& g) {
 			idx++;
 		}
  
-		if(!_childStyle && _detachAttachAllowed && left<(rect.GetWidth()-2*_headerHeight) && _addIcon!=0 && _closeIcon!=0) {
-			g.DrawImage(_addIcon, RectF(float(rect.GetWidth()-2*_headerHeight), 0.0f, float(_headerHeight-2), float(_headerHeight-2)));
+		if(!_childStyle && _detachAttachAllowed && _addIcon!=0 && _closeIcon!=0) {
+			Pixels buttonsLeft = rect.GetWidth()-2*_headerHeight;
+
+			if(!(left<(rect.GetWidth()-2*_headerHeight))) {
+				//LinearGradientBrush disabled(PointF(float(buttonsLeft), 0.0f), PointF(rect.GetWidth(), 0.0f), Color(0,255,255,255),theme->GetDisabledOverlayColor());
+				HWND root = GetAncestor(GetWindow(), GA_ROOT);
+				Gdiplus::Brush* abr = theme->GetApplicationBackgroundBrush(root, GetWindow());
+
+				g.FillRectangle(abr, RectF((float)buttonsLeft, 0.0f, float(rect.GetWidth()-buttonsLeft), (float)rect.GetHeight()-2.0f));
+			}
+			g.DrawImage(_addIcon, RectF(float(buttonsLeft), 0.0f, float(_headerHeight-2), float(_headerHeight-2)));
 			g.DrawImage(_closeIcon, RectF(float(rect.GetWidth()-_headerHeight), 0.0f, float(_headerHeight-2), float(_headerHeight-2)));
 		}
 	}
@@ -354,6 +363,41 @@ void TabWnd::DoContextMenu(int x, int y) {
 
 void TabWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 	if(ev==MouseEventLDown || ev==MouseEventLUp) {
+		Area rect = GetClientArea();
+		if(_detachAttachAllowed && ev==MouseEventLDown) {
+			if(x>rect.GetWidth()-_headerHeight && y<_headerHeight) {
+				// close button
+				if(_current && _root) {
+					std::vector< ref<Pane> >::iterator it = _panes.begin();
+					while(it!=_panes.end()) {
+						ref<Pane> pn = *it;
+						if(pn==_current) {
+							_panes.erase(it);
+							break;
+						}
+						++it;
+					}
+
+					ref<Wnd> wnd = _current->GetWindow();
+					if(wnd) wnd->Show(false);
+
+					if(!_current->IsClosable()) {
+						_root->AddOrphanPane(_current);
+					}
+					_current = 0;
+					SelectPane(0);
+					Update();
+				}
+				return;
+			}
+			else if(x>rect.GetWidth()-2*_headerHeight) {
+				// add button
+				DoAddMenu(x,y);
+				return;
+			}
+		}
+		
+		// Select tab
 		std::vector< ref<Pane> >::iterator it = _panes.begin();
 		unsigned int idx = 0; 
 		int left = 0;
@@ -386,38 +430,6 @@ void TabWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 			}
 			idx++;
 			++it;
-		}
-
-		Area rect = GetClientArea();
-		if(_detachAttachAllowed && left<(rect.GetWidth()-2*_headerHeight) && ev==MouseEventLDown) {
-			if(x>rect.GetWidth()-_headerHeight && y<_headerHeight) {
-				// close button
-				if(_current && _root) {
-					std::vector< ref<Pane> >::iterator it = _panes.begin();
-					while(it!=_panes.end()) {
-						ref<Pane> pn = *it;
-						if(pn==_current) {
-							_panes.erase(it);
-							break;
-						}
-						++it;
-					}
-
-					ref<Wnd> wnd = _current->GetWindow();
-					if(wnd) wnd->Show(false);
-
-					if(!_current->IsClosable()) {
-						_root->AddOrphanPane(_current);
-					}
-					_current = 0;
-					SelectPane(0);
-					Update();
-				}
-			}
-			else if(x>rect.GetWidth()-2*_headerHeight) {
-				// add button
-				DoAddMenu(x,y);
-			}
 		}
 
 		if(_dragging) {

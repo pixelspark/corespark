@@ -26,6 +26,7 @@ namespace tj {
 				ref<TabWnd> FindTabWindowAt(int x, int y);
 				void SetDragTarget(ref<TabWnd> tw);
 				ref<TabWnd> GetDragTarget();
+				bool IsOrphanPane(ref<Wnd> wnd);
 
 				void AddOrphanPane(ref<Pane> pane);
 				std::vector< ref<Pane> >* GetOrphanPanes();

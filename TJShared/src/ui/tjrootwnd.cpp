@@ -35,6 +35,19 @@ void RootWnd::RenameWindow(ref<Wnd> w, std::wstring n) {
 	}
 }
 
+bool RootWnd::IsOrphanPane(ref<Wnd> w) {
+	std::vector< ref<Pane> >::iterator it = _orphans.begin();
+	while(it!=_orphans.end()) {
+		ref<Pane> pane = *it;
+		if(pane->GetWindow()==w) {
+			return true;
+		}
+		++it;
+	}
+
+	return false;
+}
+
 void RootWnd::RemoveWindow(ref<Wnd> w) {
 	if(!w) return;
 
