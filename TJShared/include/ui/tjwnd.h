@@ -103,6 +103,9 @@ namespace tj {
 				bool HasFocus() const;
 				virtual void BringToFront();
 
+				/* Drag & Drop - Sleur & Pleur */
+				void SetDropTarget(bool d);
+
 				/* Settings API */
 				void SetSettings(ref<Settings> st);
 				ref<Settings> GetSettings();
@@ -118,6 +121,7 @@ namespace tj {
 				virtual void OnActivate(bool activate);
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
 				virtual void OnSettingsChanged();
+				virtual void OnDropFiles(const std::vector<std::wstring>& files);
 			
 			private:
 				static void RegisterClasses();

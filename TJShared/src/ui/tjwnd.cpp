@@ -78,6 +78,14 @@ ref<Settings> Wnd::GetSettings() {
 void Wnd::OnSettingsChanged() {
 }
 
+void Wnd::SetDropTarget(bool t) {
+	DragAcceptFiles(_wnd, (BOOL)t);
+}
+
+void Wnd::OnDropFiles(const std::vector< std::wstring >& files) {
+	// Do nothing
+}
+
 void Wnd::Add(ref<Wnd> child, bool shown) {
 	if(child) {
 		SetParent(child->GetWindow(), GetWindow());
@@ -547,6 +555,21 @@ LRESULT Wnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	else if(msg==WM_ACTIVATE) {
 		OnActivate(LOWORD(wp)!=WA_INACTIVE);
 		return 0;
+	}
+	else if(msg==WM_DROPFILES) {
+		std::vector<std::wstring> files;
+
+		HDROP drop = (HDROP)wp;
+		int n = DragQueryFile(drop, 0xFFFFFFFF, NULL, 0);
+		for(int a=0;a<n;a++) {
+			int size = DragQueryFile(drop, a, NULL, 0);
+			wchar_t* buffer = new wchar_t[size+2];
+			DragQueryFile(drop, a, buffer, size+1);
+			files.push_back(std::wstring(buffer));
+			delete[] buffer;
+		}
+		DragFinish(drop);
+		OnDropFiles(files);
 	}
 	else if(msg==WM_SIZE) {
 		Area size = GetClientArea();
