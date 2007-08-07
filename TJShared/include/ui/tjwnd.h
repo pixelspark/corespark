@@ -44,6 +44,11 @@ namespace tj {
 			MouseEventMUp,
 		};
 
+		struct Coord {
+			Pixels x;
+			Pixels y;
+		};
+
 		class EXPORTED Wnd: public virtual Object {
 			friend class FloatingPane;
 

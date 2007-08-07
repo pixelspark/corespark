@@ -29,5 +29,6 @@
 #include "tjsplashwnd.h"
 #include "tjpropertygridwnd.h"
 #include "tjlistwnd.h"
+#include "tjgraphwnd.h"
 
 #endif
