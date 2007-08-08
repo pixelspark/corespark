@@ -146,6 +146,20 @@ namespace tj {
 					return wos.str();
 				}
 
+				void Save(TiXmlElement* parent) const {
+					SaveAttributeSmall(parent,"x", _x);
+					SaveAttributeSmall(parent,"y", _y);
+					SaveAttributeSmall(parent,"w", _w);
+					SaveAttributeSmall(parent,"h", _h);
+				}
+
+				void Load(TiXmlElement* you) {
+					_x = LoadAttributeSmall(you, "x", _x);
+					_y = LoadAttributeSmall(you, "y", _y);
+					_w = LoadAttributeSmall(you, "w", _w);
+					_h = LoadAttributeSmall(you, "h", _h);
+				}
+
 			protected:
 				T _x, _y, _w, _h;
 		};

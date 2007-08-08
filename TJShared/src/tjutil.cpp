@@ -2,7 +2,7 @@
 
 namespace tj {
 	namespace shared {
-		template<> bool StringTo(std::wstring s, bool def) {
+		template<> bool StringTo(std::wstring s, const bool& def) {
 			std::wstring ln = s;
 			std::transform(ln.begin(), ln.end(), ln.begin(), tolower);
 			return def?(ln!=std::wstring(Language::Get(L"no"))):(ln==std::wstring(Language::Get(L"yes")));

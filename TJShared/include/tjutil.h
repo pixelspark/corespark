@@ -4,7 +4,7 @@
 namespace tj {
 	namespace shared {
 
-		inline std::string Mbs(std::wstring ws) {
+		inline std::string Mbs(const std::wstring& ws) {
 			char* buf  = new char[ws.length()+2];
 			wcstombs_s(0, buf, ws.length()+1, ws.c_str(), _TRUNCATE);
 
@@ -13,7 +13,7 @@ namespace tj {
 			return w;
 		}
 
-		inline std::wstring Wcs(std::string ws) {
+		inline std::wstring Wcs(const std::string& ws) {
 			wchar_t* buf  = new wchar_t[ws.length()+2];
 			mbstowcs_s(0, buf, ws.length()+1, ws.c_str(), _TRUNCATE);
 				
@@ -52,7 +52,7 @@ namespace tj {
 			return Mbs(x);
 		}
 
-		template<typename T> inline T StringTo(std::wstring s, const T def) {
+		template<typename T> inline T StringTo(std::wstring s, const T& def) {
 			std::wistringstream i(s);
 			T x;
 			if (!(i >> x)) {
@@ -63,7 +63,7 @@ namespace tj {
 		}
 
 
-		template<typename T> inline T StringTo(std::string s, const T def) {
+		template<typename T> inline T StringTo(std::string s, const T& def) {
 			std::istringstream i(s);
 			T x;
 			if (!(i >> x)) {
@@ -73,18 +73,18 @@ namespace tj {
 			return x;
 		}
 
-		template<typename T> inline T StringTo(const char* s, const T def) {
+		template<typename T> inline T StringTo(const char* s, const T& def) {
 			if(s==0) return def;
 			std::string inp(s);
 			return StringTo<T>((std::string&)inp, def);
 		}
 
-		template<> inline std::wstring StringTo(const char* s, std::wstring def) {
+		template<> inline std::wstring StringTo(const char* s, const std::wstring& def) {
 			if(s==0) return def;
 			return Wcs(std::string(s));
 		}
 
-		template<typename T> inline T StringTo(const wchar_t* s, const T def) {
+		template<typename T> inline T StringTo(const wchar_t* s, const T& def) {
 			if(s==0) return def;
 			return StringTo<T>(std::wstring(s), def);
 		}
@@ -111,7 +111,7 @@ namespace tj {
 			}
 		}
 
-		template<> EXPORTED bool StringTo(std::wstring s, bool def);
+		template<> EXPORTED bool StringTo(std::wstring s, const bool& def);
 		template<> EXPORTED std::wstring Stringify(const bool& x);
 		template<> EXPORTED std::wstring Stringify(const int& x);
 	}

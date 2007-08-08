@@ -26,6 +26,19 @@ namespace tj {
 			if(nd==0) return defaultValue;
 			return StringTo<T>(nd->Value(), defaultValue);
 		}
+
+		template<typename T> inline void SaveAttributeSmall(TiXmlElement* parent, const char* name, const T& val) {
+			std::string cs = StringifyMbs(val);
+			parent->SetAttribute(name, cs.c_str());
+		}
+
+		template<typename T> inline T LoadAttributeSmall(TiXmlElement* you, const char* name, const T& defaultValue) {
+			const char* value = you->Attribute(name);
+			if(value!=0) {
+				return StringTo<T>(value, defaultValue);
+			}
+			return defaultValue;
+		}
 	}
 }
 
