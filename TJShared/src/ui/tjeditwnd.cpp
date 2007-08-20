@@ -15,7 +15,6 @@ EditWnd::EditWnd(): ChildWnd(L"", false, false) {
 	ShowWindow(_ctrl, SW_SHOW);
 	Layout();
 	_backBrush = 0;
-	Show(true);
 }
 
 EditWnd::~EditWnd() {

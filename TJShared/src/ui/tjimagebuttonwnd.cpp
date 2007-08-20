@@ -7,7 +7,6 @@ ButtonWnd::ButtonWnd(ref<Listener> listener, const wchar_t* image, const wchar_t
 	std::wstring fn = ResourceManager::Instance()->Get(image);
 	_image =  Bitmap::FromFile(fn.c_str(),TRUE);
 	_down = false;
-	Show(true);
 
 	if(text!=0) {
 		_text = text;
