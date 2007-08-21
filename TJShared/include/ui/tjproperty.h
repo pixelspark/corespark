@@ -5,7 +5,7 @@ namespace tj {
 	namespace shared {
 		class EXPORTED Property: public virtual Object {
 			public:
-				Property(std::wstring name) {
+				Property(const std::wstring& name) {
 					_name = name;
 				}
 
