@@ -6,6 +6,7 @@ using namespace Gdiplus;
 FilePropertyWnd::FilePropertyWnd(std::wstring name, std::wstring* path, const wchar_t* filter): ChildWnd(L""), _name(name), _filter(filter), _path(path), _linkIcon(L"icons/shared/file.png") {
 	assert(path!=0);
 	SetWantMouseLeave(true);
+	SetDropTarget(true);
 }
 
 FilePropertyWnd::~FilePropertyWnd() {
@@ -31,20 +32,29 @@ void FilePropertyWnd::Paint(Graphics& g) {
 	g.DrawString(_path->c_str(), (int)_path->length(), theme->GetGUIFont(), text, &sf, &tbr);
 }
 
+void FilePropertyWnd::OnDropFiles(const std::vector< std::wstring >& files) {
+	if(files.size()>0) {
+		SetFile(files.at(0));
+	}
+}
+
 void FilePropertyWnd::OnMouse(MouseEvent me, Pixels x, Pixels y) {
 	if(me==MouseEventLDown) {
-		*_path = Dialog::AskForOpenFile(GetWindow(), _name, _filter, L"");
-
-		ref<ResourceManager> rm = ResourceManager::Instance();
-		if(rm) {
-			*_path = rm->GetRelative(*_path);
-		}
-
-		Repaint();
+		SetFile(Dialog::AskForOpenFile(GetWindow(), _name, _filter, L""));
 	}
 	else if(me==MouseEventMove||me==MouseEventLeave) {
 		Repaint();
 	}
+}
+
+void FilePropertyWnd::SetFile(const std::wstring& file) {
+	*_path = file;
+	ref<ResourceManager> rm = ResourceManager::Instance();
+
+	if(rm) {
+		*_path = rm->GetRelative(*_path);
+	}
+	Repaint();
 }
 
 /* FileProperty */

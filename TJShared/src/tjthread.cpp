@@ -54,7 +54,19 @@ void Thread::SetName(const char* t) {
 }
 
 void Thread::Start() {
-	ResumeThread(_thread);
+	DWORD code = -1;
+	GetExitCodeThread(_thread, &code);
+
+	if(code==STILL_ACTIVE) {
+		// we're running...
+		ResumeThread(_thread);
+	}
+	else {
+		// finished correctly, run again
+		CloseHandle(_thread);
+		_thread = CreateThread(NULL, 512, ThreadProc, (LPVOID)this, CREATE_SUSPENDED, (LPDWORD)&_id);
+		ResumeThread(_thread);
+	}
 }
 
 void Thread::WaitForCompletion() {

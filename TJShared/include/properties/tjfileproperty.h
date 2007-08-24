@@ -8,8 +8,10 @@ namespace tj {
 				FilePropertyWnd(std::wstring name, std::wstring* path, const wchar_t* filter);
 				virtual ~FilePropertyWnd();
 				virtual void Paint(Gdiplus::Graphics& g);
+				virtual void OnDropFiles(const std::vector< std::wstring >& files);
 
 			protected:
+				void SetFile(const std::wstring& file);
 				virtual void OnMouse(MouseEvent me, Pixels x, Pixels y);
 				std::wstring* _path;
 				std::wstring _name;
