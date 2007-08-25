@@ -37,7 +37,7 @@ namespace tj {
 			if(value!=0) {
 				return StringTo<T>(value, defaultValue);
 			}
-			return defaultValue;
+			return LoadAttribute<T>(you, name, defaultValue);
 		}
 	}
 }
