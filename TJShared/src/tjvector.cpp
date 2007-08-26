@@ -34,13 +34,13 @@ float Vector::GetLength() const {
 }
 
 void Vector::Save(TiXmlElement* parent) {
-	SaveAttribute(parent, "x", x);
-	SaveAttribute(parent, "y", y);
-	SaveAttribute(parent, "z", z);
+	SaveAttributeSmall(parent, "x", x);
+	SaveAttributeSmall(parent, "y", y);
+	SaveAttributeSmall(parent, "z", z);
 }
 
 void Vector::Load(TiXmlElement* you) {
-	x = LoadAttribute(you, "x", x);
-	y = LoadAttribute(you, "y", y);
-	z = LoadAttribute(you, "z", z);
+	x = LoadAttributeSmall(you, "x", x);
+	y = LoadAttributeSmall(you, "y", y);
+	z = LoadAttributeSmall(you, "z", z);
 }
