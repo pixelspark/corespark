@@ -3,16 +3,16 @@ using namespace tj::shared;
 
 void RGBColor::Save(TiXmlElement* parent) {
 	TiXmlElement color("color");
-	SaveAttribute(&color,"r", (int)r);
-	SaveAttribute(&color, "g", (int)g);
-	SaveAttribute(&color, "b", (int)b);
+	SaveAttributeSmall(&color,"r", (int)r);
+	SaveAttributeSmall(&color, "g", (int)g);
+	SaveAttributeSmall(&color, "b", (int)b);
 	parent->InsertEndChild(color);
 }
 
 void RGBColor::Load(TiXmlElement* you) {
-	r = LoadAttribute(you, "r", (int)r);
-	g = LoadAttribute(you, "g", (int)g);
-	b = LoadAttribute(you, "b", (int)b);
+	r = LoadAttributeSmall(you, "r", (int)r);
+	g = LoadAttributeSmall(you, "g", (int)g);
+	b = LoadAttributeSmall(you, "b", (int)b);
 }
 
 RGBColor::operator Gdiplus::Color() {
