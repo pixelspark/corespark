@@ -12,7 +12,7 @@ ref<GraphItem> GraphWnd::GetItemAt(Pixels x, Pixels y) {
 	std::vector< ref<GraphItem> >::iterator it = _items.begin();
 	while(it!=_items.end()) {
 		ref<GraphItem> gi = *it;
-		if(gi->GetArea().IsInside(x,y)) {
+		if(!gi->IsHidden() && gi->GetArea().IsInside(x,y)) {
 			return gi;
 		}
 		++it;
@@ -54,6 +54,35 @@ void GraphWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 	if(gi) {
 		gi->OnMouse(ev,x,y, This<GraphWnd>());
 	}
+	else if(ev==MouseEventRDown) {
+		ContextMenu cm;
+
+		std::vector< ref<GraphItem> > inMenu;
+		std::vector< ref<GraphItem> >::iterator it = _items.begin();
+		while(it!=_items.end()) {
+			ref<GraphItem> item = *it;
+			if(item->IsHidden()) {
+				// add to the list
+				inMenu.push_back(item);
+				cm.AddItem(item->GetText(), (int)inMenu.size(), false, false);
+			}
+			++it;
+		}
+
+		int r = cm.DoContextMenu(GetWindow());
+		if(r>0 && r<=int(inMenu.size())) {
+			ref<GraphItem> gi = inMenu.at(r-1);
+			if(gi) {
+				gi->SetPosition(x,y);
+				gi->Hide(false);
+				Update();
+			}
+		}
+	}
+}
+
+void GraphWnd::Update() {
+	Repaint();
 }
 
 void GraphWnd::AddItem(ref<GraphItem> gi) {
@@ -111,48 +140,50 @@ void GraphWnd::Paint(Graphics& g) {
 	std::vector< ref<GraphItem> >::iterator it = _items.begin();
 	while(it!=_items.end()) {
 		ref<GraphItem> item = *it;
-		item->Paint(g, theme);
+		if(!item->IsHidden()) {
+			item->Paint(g, theme);
 
-		// Draw arrows
-		Pen arrowOut(theme->GetLineColor(), 2.0f);
-		Pen arrowIn(theme->GetLineColor(), 2.0f);
-		Pen normal(theme->GetLineColor(), 1.0f);
-		Pen outLight(theme->GetLineColor(), 1.0f);
-		AdjustableArrowCap aac(5.0f, 5.0f);
-		arrowOut.SetCustomEndCap(&aac);
-		arrowIn.SetCustomStartCap(&aac);
-		outLight.SetCustomEndCap(&aac);
+			// Draw arrows
+			Pen arrowOut(theme->GetLineColor(), 2.0f);
+			Pen arrowIn(theme->GetLineColor(), 2.0f);
+			Pen normal(theme->GetLineColor(), 1.0f);
+			Pen outLight(theme->GetLineColor(), 1.0f);
+			AdjustableArrowCap aac(5.0f, 5.0f);
+			arrowOut.SetCustomEndCap(&aac);
+			arrowIn.SetCustomStartCap(&aac);
+			outLight.SetCustomEndCap(&aac);
 
-		std::vector<GraphArrow>::iterator ait = item->_arrows.begin();
-		while(ait!=item->_arrows.end()) {
-			GraphArrow& ga = *ait;
-			ref<GraphItem> other = ga._to;
+			std::vector<GraphArrow>::iterator ait = item->_arrows.begin();
+			while(ait!=item->_arrows.end()) {
+				GraphArrow& ga = *ait;
+				ref<GraphItem> other = ga._to;
 
-			if(other) {
-				// get areas
-				Area& otherArea = other->GetArea();
-				Area& myArea = item->GetArea();
+				if(other && !other->IsHidden()) {
+					// get areas
+					Area& otherArea = other->GetArea();
+					Area& myArea = item->GetArea();
 
-				// get edges
-				std::pair< Pixels, Pixels> fromEdge = GetEdge(myArea, otherArea);
-				std::pair<Pixels,Pixels> toEdge = GetEdge(otherArea, myArea);
+					// get edges
+					std::pair< Pixels, Pixels> fromEdge = GetEdge(myArea, otherArea);
+					std::pair<Pixels,Pixels> toEdge = GetEdge(otherArea, myArea);
 
-				Pen* pn = &normal;
-				if(ga._direction==GraphArrow::Out) {
-					pn = &arrowOut;
+					Pen* pn = &normal;
+					if(ga._direction==GraphArrow::Out) {
+						pn = &arrowOut;
+					}
+					else if(ga._direction==GraphArrow::In) {
+						pn = &arrowIn;
+					}
+
+					g.DrawLine(pn, fromEdge.first, fromEdge.second, toEdge.first, toEdge.second);
+
+					// draw text
+					Pixels tx = (fromEdge.first+toEdge.first)/2 + 4;
+					Pixels ty = (fromEdge.second+toEdge.second)/2 + 4;
+					g.DrawString(ga._text.c_str(), (int)ga._text.length(), theme->GetGUIFontSmall(), PointF(float(tx),float(ty)), &textBrush);
 				}
-				else if(ga._direction==GraphArrow::In) {
-					pn = &arrowIn;
-				}
-
-				g.DrawLine(pn, fromEdge.first, fromEdge.second, toEdge.first, toEdge.second);
-
-				// draw text
-				Pixels tx = (fromEdge.first+toEdge.first)/2 + 4;
-				Pixels ty = (fromEdge.second+toEdge.second)/2 + 4;
-				g.DrawString(ga._text.c_str(), (int)ga._text.length(), theme->GetGUIFontSmall(), PointF(float(tx),float(ty)), &textBrush);
+				++ait;
 			}
-			++ait;
 		}
 
 		++it;
@@ -160,6 +191,8 @@ void GraphWnd::Paint(Graphics& g) {
 }
 
 GraphItem::GraphItem() {
+	_selected = false;
+	_hidden = false;
 }
 
 GraphItem::~GraphItem() {
@@ -173,12 +206,32 @@ void GraphItem::SetSelected(bool t) {
 	_selected = t;
 }
 
+bool GraphItem::IsHidden() const {
+	return _hidden;
+}
+
+void GraphItem::Hide(bool h) {
+	_hidden = h;
+}
+
 Area& GraphItem::GetArea() {
 	return _area;
 }
 
 void GraphItem::OnMouse(MouseEvent me, Pixels x, Pixels y, ref<GraphWnd> gw) {
+	ref<ContextMenu> cm = GC::Hold(new ContextMenu());
+	enum {KCHide=1};
+
+	cm->AddItem(TL(graph_item_hide), KCHide, false, _hidden);
+
+	int r = cm->DoContextMenu(gw->GetWindow());
+	if(r==KCHide) {
+		Hide(true);
+	}
+
+	gw->Update();
 }
+
 
 void GraphItem::AddArrow(ref<GraphItem> to, GraphArrow::Direction dir, const std::wstring& text) {
 	GraphArrow ga;

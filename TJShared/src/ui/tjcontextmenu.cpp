@@ -32,7 +32,7 @@ int ContextMenu::DoContextMenu(HWND window, int x, int y, bool correct) {
 }
 
 /** if command == -1, then the item will be grayed out/disabled **/
-void ContextMenu::AddItem(std::wstring name, int command, bool hilite, bool radiocheck) {
+void ContextMenu::AddItem(const std::wstring& name, int command, bool hilite, bool radiocheck) {
 	MENUITEMINFO mif;
 	memset(&mif, 0, sizeof(MENUITEMINFO));
 

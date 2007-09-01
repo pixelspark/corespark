@@ -25,6 +25,9 @@ namespace tj {
 				virtual ~GraphItem();
 				bool IsSelected() const;
 				virtual void SetSelected(bool t);
+				virtual void Hide(bool h);
+				bool IsHidden() const;
+				virtual std::wstring GetText() = 0;
 
 				virtual Area& GetArea();
 				virtual void SetPosition(Pixels x, Pixels y);
@@ -38,6 +41,7 @@ namespace tj {
 
 			private:
 				bool _selected;
+				bool _hidden;
 				std::vector<GraphArrow> _arrows;
 
 		};
@@ -68,6 +72,7 @@ namespace tj {
 				virtual std::pair<Pixels, Pixels> GetEdge(const Area& a, const Area& b);
 				virtual void Clear();
 				virtual std::vector< ref<GraphItem> >& GetItems();
+				virtual void Update();
 
 			protected:
 				std::vector< ref<GraphItem> > _items;

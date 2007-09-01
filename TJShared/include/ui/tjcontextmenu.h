@@ -8,7 +8,7 @@ namespace tj {
 				ContextMenu();
 				virtual ~ContextMenu();
 				int DoContextMenu(HWND wnd, int x=-1, int y=-1, bool correct=false);
-				void AddItem(std::wstring name, int command, bool hilite=false, bool radiocheck=false);
+				void AddItem(const std::wstring& name, int command, bool hilite=false, bool radiocheck=false);
 				void AddSeparator();
 
 			protected:
