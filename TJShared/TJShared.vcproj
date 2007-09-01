@@ -1061,10 +1061,6 @@
 				>
 			</File>
 		</Filter>
-		<File
-			RelativePath="..\TJShow\TJShow.vcproj"
-			>
-		</File>
 	</Files>
 	<Globals>
 	</Globals>
