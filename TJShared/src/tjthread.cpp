@@ -45,7 +45,6 @@ Thread::Thread() {
 }
 
 Thread::~Thread() {
-	WaitForSingleObject(_thread, 0);
 	CloseHandle(_thread);
 }
 

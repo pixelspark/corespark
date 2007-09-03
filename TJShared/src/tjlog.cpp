@@ -90,8 +90,10 @@ void Log::Write(std::wstring source, std::wstring message) {
 		file->Write(source + std::wstring(L": ") + message + std::wstring(L"\r\n"));
 	}
 
+	std::wstring tid = Stringify(GetCurrentThreadId());
+
 	//if(_logger==0) _logger = new LogThread();
-	_logger.Log(source + L": " + message);
+	_logger.Log(source + L" " + tid + L": " + message);
 }
 
 void Log::SetWriteToFile(bool f) {
