@@ -28,6 +28,11 @@ std::wstring Timestamp::ToString() {
 	return Stringify(ToMicroSeconds());
 }
 
+Timestamp& Timestamp::operator =(const Timestamp& o) {
+	_time = o._time;
+	return *this;
+}
+
 Timestamp Timestamp::Difference(const Timestamp& other) const {
 	Timestamp t;
 	if(other._time>_time) {

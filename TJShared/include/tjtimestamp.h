@@ -17,6 +17,7 @@ namespace tj {
 				long double ToMilliSeconds() const;
 				bool operator>(const Timestamp& o) const;
 				bool operator<(const Timestamp& o) const;
+				Timestamp& operator =(const Timestamp& o);
 
 			protected:
 				long long _time;
