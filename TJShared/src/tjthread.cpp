@@ -69,6 +69,9 @@ void Thread::Start() {
 }
 
 void Thread::WaitForCompletion() {
+	if(GetCurrentThread()==_thread) {
+		return; // Cannot wait on yourself
+	}
 	WaitForSingleObject(_thread,INFINITE);
 }
 

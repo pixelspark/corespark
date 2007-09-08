@@ -29,7 +29,6 @@ void ThemeManager::RemoveTheme(ref<Theme> thm) {
 	}
 }
 
-
 int ThemeManager::GetThemeId() {
 	std::vector< ref<Theme> >::iterator it = _themes.begin();
 	int idx = 0;
@@ -45,11 +44,11 @@ int ThemeManager::GetThemeId() {
 	return -1;
 }
 
-void ThemeManager::ListThemes(HWND list) {
+void ThemeManager::ListThemes(std::vector< ref<Theme> >& lst) {
 	std::vector< ref<Theme> >::iterator it = _themes.begin();
 	while(it!=_themes.end()) {
 		ref<Theme> theme = *it;
-		ListBox_AddString(list, theme->GetName().c_str());
+		lst.push_back(theme);
 		++it;
 	}
 }

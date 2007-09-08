@@ -10,12 +10,13 @@ namespace tj {
 				static void RemoveTheme(ref<Theme> thm);
 				static void SelectTheme(ref<Theme> thm);
 				static void SelectTheme(int n);
-				static void ListThemes(HWND list);
+				static void ListThemes(std::vector< ref<Theme> >& lst);
 				static int GetThemeId();
 
 				// friendly time
 				static bool IsFriendlyTime();
 				static void SetFriendlyTime(bool t);
+
 			protected:
 				static std::vector< ref<Theme> > _themes;
 				static ref<Theme> _theme;
