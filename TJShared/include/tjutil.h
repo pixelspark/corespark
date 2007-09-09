@@ -27,7 +27,7 @@ namespace tj {
 			StringType::size_type start = 0;
 			StringType::size_type end = 0;
 
-			while((end = inString.find (separator, start)) != std::string::npos) {
+			while((end = inString.find (separator, start)) != StringType::npos) {
 				returnVector.push_back(inString.substr (start, end-start));
 				start = end + separator.size();
 			}

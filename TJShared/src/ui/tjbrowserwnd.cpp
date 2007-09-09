@@ -178,8 +178,8 @@ void BrowserWnd::OnSize(const Area& ns) {
 }
 
 void BrowserWnd::Hide(bool t) {
-	((CAxWindow*)_ax)->ShowWindow(t?SW_HIDE:SW_SHOW);
-	Repaint();
+	((CAxWindow*)_ax)->ShowWindowAsync(t?SW_HIDE:SW_SHOW);
+	//Repaint();
 }
 
 void BrowserWnd::Navigate(std::wstring url) {
