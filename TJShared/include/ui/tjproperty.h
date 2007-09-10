@@ -31,8 +31,18 @@ namespace tj {
 					return 17;
 				}
 
+				// Hints
+				virtual const std::wstring& GetHint() const {
+					return _hint;
+				}
+
+				virtual void SetHint(const std::wstring& h) {
+					_hint = h;
+				}
+
 			protected:
 				std::wstring _name;
+				std::wstring _hint;
 		};
 
 		class Inspectable {

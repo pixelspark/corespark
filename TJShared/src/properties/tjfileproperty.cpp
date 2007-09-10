@@ -24,7 +24,7 @@ void FilePropertyWnd::Paint(Graphics& g) {
 
 	g.DrawImage(_linkIcon, PointF(0.0f, 0.0f));
 
-	SolidBrush tbr(File::Exists(*_path)?theme->GetActiveStartColor():theme->GetCommandMarkerColor());
+	SolidBrush tbr(File::Exists(ResourceManager::Instance()->Get(*_path, true))?theme->GetActiveStartColor():theme->GetCommandMarkerColor());
 	Area text = rc;
 	text.Narrow(20,2,0,0);
 	StringFormat sf;

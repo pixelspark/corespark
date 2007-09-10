@@ -1,5 +1,6 @@
 #include "../../include/tjshared.h"
 #include <windowsx.h>
+#include <commctrl.h>
 using namespace tj::shared;
 using namespace Gdiplus;
 
@@ -12,6 +13,7 @@ PropertyGridWnd::PropertyGridWnd(): ChildWnd(TL(properties)) {
 	SetVerticallyScrollable(true);
 	_editBackground = 0;
 	_editFont = 0;
+	_showHints = true;
 	_isDraggingSplitter = false;
 	_path = GC::Hold(new PathWnd(this));
 	Add(_path);
@@ -31,9 +33,23 @@ void PropertyGridWnd::SetNameWidth(int w) {
 	Repaint();
 }
 
+void PropertyGridWnd::SetShowHints(bool t) {
+	_showHints = t;
+	ref<Settings> st = GetSettings();
+	if(st) {
+		st->SetValue(L"hints.show", _showHints?L"yes":L"no");
+	}
+}
+
+bool PropertyGridWnd::GetShowHints() const {
+	return _showHints;
+}
+
 void PropertyGridWnd::OnSettingsChanged() {
 	ref<Settings> st = GetSettings();
 	_nameWidth = StringTo<int>(st->GetValue(L"names.width", Stringify(_nameWidth)), _nameWidth);
+
+	_showHints = st->GetValue(L"hints.show", _showHints?L"yes":L"no")!=L"no";
 	if(_nameWidth<10) _nameWidth = 10; // TODO make KMinimumNameColumnWidth constant
 }
 
@@ -98,9 +114,6 @@ LRESULT PropertyGridWnd::Message(UINT msg, WPARAM wParam, LPARAM lParam) {
 		ShowWindow(GetWindow(),SW_HIDE);
 		return 1;
 	}
-	else if(msg==WM_CONTEXTMENU) {
-		return 0;
-	}
 	else if(msg==WM_COMMAND) {
 		if(HIWORD(wParam)==EN_UPDATE||HIWORD(wParam)==BN_CLICKED||HIWORD(wParam)==CBN_SELCHANGE) {
 			HWND he = (HWND)lParam;
@@ -118,6 +131,33 @@ LRESULT PropertyGridWnd::Message(UINT msg, WPARAM wParam, LPARAM lParam) {
 			}
 		}
 		else if(HIWORD(wParam)==EN_SETFOCUS) {
+			HWND he = (HWND)lParam;
+
+			if(_showHints) {
+				// Show hint for this property, if there is a hint
+				std::vector< ref<Property> >::iterator it = _properties.begin();
+				while(it!=_properties.end()) {
+					ref<Property> prw = (*it);
+					assert(prw!=0);
+
+					if(prw->GetWindow()==he) {
+						const std::wstring& hint = prw->GetHint();
+			
+						if(hint.length()>0) {
+							std::wstring name = prw->GetName();
+							EDITBALLOONTIP ebt;
+							ebt.cbStruct = sizeof(ebt);
+							ebt.pszTitle = name.c_str();
+							ebt.pszText = hint.c_str();
+							ebt.ttiIcon = TTI_INFO;
+							Edit_ShowBalloonTip(he, &ebt);
+						}
+						break;
+					}
+					++it;
+				}
+			}
+
 			Layout();
 		}
 		

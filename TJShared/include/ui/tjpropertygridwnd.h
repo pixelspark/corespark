@@ -26,6 +26,8 @@ namespace tj {
 				void SetNameWidth(int w);
 				virtual void OnScroll(ScrollDirection dir);
 				virtual void OnSize(const Area& ar);
+				void SetShowHints(bool h);
+				bool GetShowHints() const;
 
 				HBRUSH _editBackground;
 				HFONT _editFont;
@@ -38,6 +40,7 @@ namespace tj {
 				ref<Inspectable> _subject;
 				ref<PathWnd> _path;
 				bool _isDraggingSplitter;
+				bool _showHints;
 
 				const static int KPathHeight = 24;
 		};

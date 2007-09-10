@@ -32,9 +32,9 @@ void ResourceManager::SetListener(ref<ResourceListener> l) {
 /* This method created a relative resource path ('rid') from a full, absolute path
 using the search paths */
 std::wstring ResourceManager::GetRelative(std::wstring path) {
-	std::vector< std::wstring >::const_iterator it = _paths.begin();
+	std::vector< std::wstring >::const_reverse_iterator it = _paths.rbegin();
 	wchar_t relativePath[MAX_PATH+3];
-	while(it!=_paths.end()) {
+	while(it!=_paths.rend()) {
 		const std::wstring& root = *it;
 		
 		if(PathRelativePathTo(relativePath, root.c_str(), FILE_ATTRIBUTE_DIRECTORY, path.c_str(), FILE_ATTRIBUTE_NORMAL)==TRUE) {
