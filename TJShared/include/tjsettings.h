@@ -53,8 +53,12 @@ namespace tj {
 					_settings->SetValue(_key, Stringify(_value));
 				}
 
-				ref<Property> CreateProperty(const std::wstring& title) {
-					return GC::Hold(new GenericProperty<T>(title, &_value, 0, _value));
+				ref<Property> CreateProperty(const std::wstring& title, const std::wstring& hint=L"") {
+					ref<Property> p = GC::Hold(new GenericProperty<T>(title, &_value, 0, _value));
+					if(hint.length()>0) {
+						p->SetHint(hint);
+					}
+					return p;
 				}
 
 				T _value;

@@ -182,7 +182,7 @@ void BrowserWnd::Hide(bool t) {
 	//Repaint();
 }
 
-void BrowserWnd::Navigate(std::wstring url) {
+void BrowserWnd::Navigate(const std::wstring& url) {
 	CComPtr<IWebBrowser2> browser;
 	((CAxWindow*)_ax)->QueryControl(IID_IWebBrowser2, (void**)&browser);
 	if(browser) {

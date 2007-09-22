@@ -2,6 +2,35 @@
 using namespace tj::shared;
 using namespace Gdiplus;
 
+// TODO: move to some general class in TJShared
+int GetEncoderClsid(const WCHAR* format, CLSID* pClsid) {
+   UINT  num = 0;          // number of image encoders
+   UINT  size = 0;         // size of the image encoder array in bytes
+
+   ImageCodecInfo* pImageCodecInfo = NULL;
+
+   GetImageEncodersSize(&num, &size);
+   if(size == 0)
+      return -1;  // Failure
+
+   pImageCodecInfo = (ImageCodecInfo*)(malloc(size));
+   if(pImageCodecInfo == NULL)
+      return -1;  // Failure
+
+   GetImageEncoders(num, size, pImageCodecInfo);
+
+   for(UINT j = 0; j < num; ++j) {
+      if(wcscmp(pImageCodecInfo[j].MimeType, format) == 0) {
+         *pClsid = pImageCodecInfo[j].Clsid;
+         free(pImageCodecInfo);
+         return j;  // Success
+      }    
+   }
+
+   free(pImageCodecInfo);
+   return -1;  // Failure
+}
+
 GraphWnd::GraphWnd(): ChildWnd(L"", true, true) {
 }
 
@@ -20,12 +49,54 @@ ref<GraphItem> GraphWnd::GetItemAt(Pixels x, Pixels y) {
 	return 0;
 }
 
+void GraphWnd::SaveImage(const std::wstring& path) {
+	if(path.length()>4) {
+		std::wstring ext = path.substr(path.length()-3, 3);
+		std::transform(ext.begin(), ext.end(), ext.begin(), tolower);
+
+		if(ext==L"emf") {
+			HDC windowDC = GetDC(GetWindow());
+
+			{
+				Gdiplus::Metafile mf(path.c_str(), windowDC);
+				Gdiplus::Graphics g(&mf);
+				Paint(g);
+			}
+			ReleaseDC(GetWindow(), windowDC);					
+		}
+		else {
+			if(ext==L"jpg") ext = L"jpeg";
+			std::wstring mime = std::wstring(L"image/")+ext;
+			Area rc = GetClientArea();
+			Bitmap* bmp = new Bitmap(rc.GetWidth(), rc.GetHeight());
+			Gdiplus::Graphics g(bmp);
+			Paint(g);
+			CLSID pngClsid;
+			GetEncoderClsid(mime.c_str(), &pngClsid);
+			bmp->Save(path.c_str(),&pngClsid, NULL);
+			delete bmp;
+		}
+	}
+}
+
 void GraphWnd::OnSize(const Area& ns) {
 	Repaint();
 }
 
 void GraphWnd::Clear() {
 	_items.clear();
+	Repaint();
+}
+
+void GraphWnd::HideAll() {
+	std::vector< ref<GraphItem> >::iterator it = _items.begin();
+	while(it!=_items.end()) {
+		ref<GraphItem> gi = *it;
+		if(gi) {
+			gi->Hide(true);
+		}
+		++it;
+	}
 	Repaint();
 }
 

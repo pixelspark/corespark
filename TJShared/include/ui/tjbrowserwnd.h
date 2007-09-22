@@ -39,7 +39,7 @@ namespace tj {
 				virtual ~BrowserWnd();
 				virtual void Paint(Gdiplus::Graphics& g);
 				void Hide(bool t);
-				void Navigate(std::wstring url);
+				void Navigate(const std::wstring& url);
 				virtual void Layout();
 				virtual void SetShowToolbar(bool t);
 				virtual void Back();

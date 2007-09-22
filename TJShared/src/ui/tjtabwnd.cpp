@@ -154,7 +154,7 @@ void TabWnd::Paint(Graphics& g) {
 				HWND root = GetAncestor(GetWindow(), GA_ROOT);
 				Gdiplus::Brush* abr = theme->GetApplicationBackgroundBrush(root, GetWindow());
 
-				g.FillRectangle(abr, RectF((float)buttonsLeft, 0.0f, float(rect.GetWidth()-buttonsLeft), (float)rect.GetHeight()-2.0f));
+				g.FillRectangle(abr, RectF((float)buttonsLeft, 0.0f, float(rect.GetWidth()-buttonsLeft), float(_headerHeight)-1.0f));
 			}
 			g.DrawImage(_addIcon, RectF(float(buttonsLeft), 0.0f, float(_headerHeight-2), float(_headerHeight-2)));
 			g.DrawImage(_closeIcon, RectF(float(rect.GetWidth()-_headerHeight), 0.0f, float(_headerHeight-2), float(_headerHeight-2)));

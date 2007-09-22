@@ -71,6 +71,8 @@ namespace tj {
 				virtual ref<GraphItem> GetItemAt(Pixels x, Pixels y);
 				virtual std::pair<Pixels, Pixels> GetEdge(const Area& a, const Area& b);
 				virtual void Clear();
+				virtual void HideAll();
+				virtual void SaveImage(const std::wstring& path);
 				virtual std::vector< ref<GraphItem> >& GetItems();
 				virtual void Update();
 

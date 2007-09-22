@@ -67,6 +67,7 @@ SplashThread::SplashThread(std::wstring path, int w, int h) {
 
 SplashThread::~SplashThread() {
 	Hide();
+	WaitForCompletion();
 }
 
 void SplashThread::Hide() {
