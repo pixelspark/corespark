@@ -38,12 +38,65 @@ void FilePropertyWnd::OnDropFiles(const std::vector< std::wstring >& files) {
 	}
 }
 
+LRESULT FilePropertyWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
+	if(msg==WM_COMMAND) {
+		// if we have an edit box, update its value
+		if(_edit) {
+			*_path = _edit->GetText();
+		}
+		if(HIWORD(wp)==EN_KILLFOCUS) {
+			_edit->Show(false);
+			_edit = 0;
+			Layout();
+		}
+		return 0;
+	}
+
+	return ChildWnd::Message(msg,wp,lp);
+}
+
 void FilePropertyWnd::OnMouse(MouseEvent me, Pixels x, Pixels y) {
 	if(me==MouseEventLDown) {
 		SetFile(Dialog::AskForOpenFile(GetWindow(), _name, _filter, L""));
 	}
 	else if(me==MouseEventMove||me==MouseEventLeave) {
 		Repaint();
+	}
+	else if(me==MouseEventRDown) {
+		enum { KCManualEntry=1, };
+		ContextMenu cm;
+		cm.AddItem(TL(file_property_manual_entry), KCManualEntry, false, _edit!=0);
+
+		int r = cm.DoContextMenu(GetWindow());
+		if(r==KCManualEntry) {
+			if(!_edit) {
+				_edit = GC::Hold(new EditWnd());
+				Add(_edit,true);
+			}
+			else {
+				_edit->Show(false);
+				_edit = 0;
+			}
+			Update();
+			Layout();
+		}
+	}
+}
+
+void FilePropertyWnd::Update() {
+	if(_edit) {
+		_edit->SetText(*_path);
+	}
+}
+
+void FilePropertyWnd::OnSize(const Area& ns) {
+	Layout();	
+}
+
+void FilePropertyWnd::Layout() {
+	if(_edit) {
+		Area rc = GetClientArea();
+		_edit->Fill(LayoutFill, rc);
 	}
 }
 

@@ -4,6 +4,7 @@ using namespace tj::script;
 using namespace tj::shared;
 
 const static double PI = 3.14159265358979323846;
+const static double EULER = 2.7182818284590452354;
 
 ref<Scriptable> ScriptMathType::Construct(ref<ParameterList> p) {
 	return GC::Hold(new ScriptMath());
@@ -30,6 +31,7 @@ void ScriptMath::Initialize() {
 	Bind(L"pi", &Pi);
 	Bind(L"pow", &Pow);
 	Bind(L"fmod", &Fmod);
+	Bind(L"e", &E);
 }
 
 ref<Scriptable> ScriptMath::Sin(ref<ParameterList> p) {
@@ -37,25 +39,21 @@ ref<Scriptable> ScriptMath::Sin(ref<ParameterList> p) {
 	return GC::Hold(new ScriptDouble(sin(angle)));
 }
 
-
 ref<Scriptable> ScriptMath::Cos(ref<ParameterList> p) {
 	RequiredParameter<double> angle(p, L"angle", 0.0, 0);
 	return GC::Hold(new ScriptDouble(cos(angle)));
 }
-
 
 ref<Scriptable> ScriptMath::Tan(ref<ParameterList> p) {
 	RequiredParameter<double> angle(p, L"angle", 0.0, 0);
 	return GC::Hold(new ScriptDouble(tan(angle)));
 }
 
-
 ref<Scriptable> ScriptMath::Atan2(ref<ParameterList> p) {
 	RequiredParameter<double> x(p, L"x", 0.0, 0);
 	RequiredParameter<double> y(p, L"y", 0.0, 1);
 	return GC::Hold(new ScriptDouble(atan2(y,x)));
 }
-
 
 ref<Scriptable> ScriptMath::Atan(ref<ParameterList> p) {
 	RequiredParameter<double> angle(p, L"angle", 0.0, 0);
@@ -98,4 +96,8 @@ ref<Scriptable> ScriptMath::Pow(ref<ParameterList> p) {
 
 ref<Scriptable> ScriptMath::Pi(ref<ParameterList> p) {
 	return GC::Hold(new ScriptDouble(PI));
+}
+
+ref<Scriptable> ScriptMath::E(ref<ParameterList> p) {
+	return GC::Hold(new ScriptDouble(EULER));
 }

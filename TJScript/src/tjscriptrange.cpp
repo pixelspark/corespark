@@ -29,6 +29,27 @@ ScriptRange::ScriptRange(int a, int b): _a(a), _b(b) {
 void ScriptRange::Initialize() {
 	Bind(L"next", &Next);
 	Bind(L"toString", &ToString);
+	Bind(L"isInside", &IsInside);
+	Bind(L"size", &Size);
+	Bind(L"from", &From);
+	Bind(L"to", &To);
+}
+
+ref<Scriptable> ScriptRange::Size(ref<ParameterList> p) {
+	return GC::Hold(new ScriptInt(_b-_a+1));
+}
+
+ref<Scriptable> ScriptRange::From(ref<ParameterList> p) {
+	return GC::Hold(new ScriptInt(_a));
+}
+
+ref<Scriptable> ScriptRange::To(ref<ParameterList> p) {
+	return GC::Hold(new ScriptInt(_b));
+}
+
+ref<Scriptable> ScriptRange::IsInside(ref<ParameterList> p) {
+	RequiredParameter<int> value(p,L"value", 0, 0);
+	return GC::Hold(new ScriptBool(value.Get()>=_a && value.Get() <= _b));
 }
 
 ref<Scriptable> ScriptRange::ToString(ref<ParameterList> p) {

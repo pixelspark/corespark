@@ -26,23 +26,7 @@ ref<Scriptable> ScriptScope::Get(const std::wstring& key) {
 }
 
 ref<Scriptable> ScriptScope::Execute(Command command, ref<ParameterList> params) {
-	if(command==L"delete") {
-		RequiredParameter<std::wstring> name(params, L"var", L"", 0);
-		std::map<std::wstring, ref<Scriptable> >::iterator it = _vars.find(name);
-		if(it!=_vars.end()) {
-			_vars.erase(it);
-		}
-		else if(_previous) {
-			ref<Scriptable> sc = _previous->Execute(command, params);
-			if(!sc) {
-				return ScriptConstants::Null;
-			}
-		}
-		else {
-			return ScriptConstants::Null;
-		}
-	}
-	else if(command==L"exists") {
+	if(command==L"exists") {
 		RequiredParameter<std::wstring> name(params, L"var", L"", 0);
 		bool exists = _vars.find(name)!=_vars.end();
 		if(!exists) {

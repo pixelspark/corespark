@@ -26,6 +26,7 @@ namespace tj {
 				virtual tj::shared::ref<Scriptable> Fmod(tj::shared::ref<ParameterList> p);
 				virtual tj::shared::ref<Scriptable> Pow(tj::shared::ref<ParameterList> p);
 				virtual tj::shared::ref<Scriptable> Pi(tj::shared::ref<ParameterList> p);
+				virtual tj::shared::ref<Scriptable> E(tj::shared::ref<ParameterList> p);
 				virtual tj::shared::ref<Scriptable> Random(tj::shared::ref<ParameterList> p);
 		};
 	}

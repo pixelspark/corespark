@@ -9,6 +9,10 @@ namespace tj {
 				virtual ~FilePropertyWnd();
 				virtual void Paint(Gdiplus::Graphics& g);
 				virtual void OnDropFiles(const std::vector< std::wstring >& files);
+				virtual void Update();
+				virtual void OnSize(const Area& ns);
+				virtual void Layout();
+				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 
 			protected:
 				void SetFile(const std::wstring& file);
@@ -17,6 +21,7 @@ namespace tj {
 				std::wstring _name;
 				Icon _linkIcon;
 				const wchar_t* _filter;
+				ref<EditWnd> _edit;
 		};
 
 		class EXPORTED FileProperty: public Property {
