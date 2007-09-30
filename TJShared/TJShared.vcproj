@@ -830,6 +830,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\include\ui\tjsplashwnd.h"
+					>
+				</File>
+				<File
 					RelativePath=".\include\ui\tjsplitterwnd.h"
 					>
 				</File>

@@ -21,6 +21,7 @@
 #include "tjiterator.h"
 #include "tjmixed.h"
 #include "tjhash.h"
+#include "tjnetwork.h"
 #include "tjserializable.h"
 #include "tjrectangle.h"
 #include "tjcolor.h"

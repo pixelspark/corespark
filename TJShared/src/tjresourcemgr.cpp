@@ -45,7 +45,7 @@ std::wstring ResourceManager::GetRelative(std::wstring path) {
 	return path;
 }
 
-std::wstring ResourceManager::Get(std::wstring ident, bool silent) {
+std::wstring ResourceManager::Get(const std::wstring& ident, bool silent) {
 	// If the path starts with a protocol identifier such as http://, just return the URL
 	if(ident.substr(0,7)==L"http://") {
 		return ident;

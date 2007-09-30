@@ -18,7 +18,7 @@ namespace tj {
 				static ref<ResourceManager> Instance();
 
 				/** Returns a full path to the specified resource.**/
-				std::wstring Get(std::wstring identifier, bool silent=false);
+				std::wstring Get(const std::wstring& identifier, bool silent=false);
 				std::wstring GetRelative(std::wstring path);
 				void AddSearchPath(std::wstring path);
 				void RemoveSearchPath(std::wstring path);

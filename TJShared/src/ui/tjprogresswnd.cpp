@@ -63,8 +63,6 @@ void ProgressWnd::Paint(Gdiplus::Graphics& g) {
 	// draw glass look
 	LinearGradientBrush glass(PointF(0.0f, 0.0f), PointF(0.0f, 12), theme->GetProgressGlassStart(), theme->GetProgressGlassEnd());
 	g.FillRectangle(&glass, RectF(1.0f, 1.0f, float(rc.GetWidth()-2), 10.0f));
-
-
 }
 
 void ProgressWnd::SetValue(float x) {
