@@ -9,77 +9,76 @@ namespace tj {
 				virtual ~ParameterException();
 		};
 
-		template<typename T> class RequiredParameter {
+		template<typename T> class Parameter {
 			public:
-				inline RequiredParameter(tj::shared::ref<ParameterList> p, std::wstring name, T defaultValue, int namelessIndex=-1) {
-					if(!p) {
-						throw ParameterException(name);
+				inline Parameter(Field name, int namelessIndex = -1) {	
+					if(namelessIndex>=0) {
+						_hasNamelessIndex = true;
+						_namelessIndex = Stringify(namelessIndex);
 					}
 					
-					tj::shared::ref<Scriptable> v = p->Get(name);
+					_name = name;
+				}
+
+				T Require(tj::shared::ref<ParameterList> p, T defaultValue) const {
+					if(!p) {
+						throw ParameterException(_name);
+					}
+				
+					tj::shared::ref<Scriptable> v = p->Get(_name);
 					if(!v) {
-						if(namelessIndex>=0) {
-							std::wstring namelessKey = Stringify(namelessIndex);
-							v = p->Get(namelessKey);
+						if(_hasNamelessIndex) {
+							v = p->Get(_namelessIndex);
 
 							if(!v) {
-								throw ParameterException(name);
+								throw ParameterException(L"");
 							}
 						}
 						else {
-							throw ParameterException(name);
+							throw ParameterException(L"");
 						}
 					}
 					
-					value = ScriptContext::GetValue<T>(v, defaultValue);
+					return ScriptContext::GetValue<T>(v, defaultValue);
 				}
 
-				inline ~RequiredParameter() {
-				}
-
-				inline operator T&() {
-					return value;
-				}
-
-				inline T& Get() {
-					return value;
-				}
-
-				T value;
-		};
-
-		template<typename T> class OptionalParameter {
-			public:
-				inline OptionalParameter(tj::shared::ref<ParameterList> p, std::wstring name, T defaultValue, int namelessIndex=-1) {
+				T Get(tj::shared::ref<ParameterList> p, T defaultValue) const {
 					if(p) {
-						tj::shared::ref<Scriptable> v;
-						v = p->Get(name);
+						tj::shared::ref<Scriptable> v = p->Get(_name);
 						
-						if(!v && namelessIndex>=0) {
-							std::wstring namelessKey = Stringify(namelessIndex);
-							v = p->Get(namelessKey);
+						if(!v && _hasNamelessIndex) {
+							v = p->Get(_namelessIndex);
 						}
 						
 						if(!v) {
-							v = GC::Hold(new ScriptValue<T>(defaultValue));
+							return defaultValue;
 						}
 
-						value = v?ScriptContext::GetValue<T>(v, defaultValue):defaultValue;
+						return ScriptContext::GetValue<T>(v, defaultValue);
 					}
+					return defaultValue;
 				}
 
-				inline ~OptionalParameter() {
+				inline bool Exists(tj::shared::ref<ParameterList> p) const {
+					if(!p) return false;
+
+					return p->Exists(_name) || (_hasNamelessIndex && p->Exists(_namelessIndex));
 				}
 
-				inline operator T&() {
-					return value;
+				inline tj::shared::ref<Scriptable> Get(tj::shared::ref<ParameterList> p) const {
+					if(!p) return 0;
+
+					ref<Scriptable> val = p->Get(_name);
+					if(!val && _hasNamelessIndex) {
+						val = p->Get(_namelessIndex);
+					}
+					return val;
 				}
 
-				inline T& Get() {
-					return value;
-				}
-
-				T value;
+			protected:
+				bool _hasNamelessIndex;
+				std::wstring _namelessIndex;
+				std::wstring _name;
 		};
 	}
 }

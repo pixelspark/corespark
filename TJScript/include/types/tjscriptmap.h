@@ -17,13 +17,13 @@ namespace tj {
 				ScriptMap();
 				virtual ~ScriptMap();
 				static void Initialize();
+				virtual bool Set(Field field, tj::shared::ref<Scriptable> value);
 
 				std::map<std::wstring, tj::shared::ref<Scriptable> >::iterator GetBegin();
 				std::map<std::wstring, tj::shared::ref<Scriptable> >::iterator GetEnd();
 				
 				// Script functions
 				virtual tj::shared::ref<Scriptable> Size(tj::shared::ref<ParameterList> p);
-				virtual tj::shared::ref<Scriptable> Set(tj::shared::ref<ParameterList> p);
 				virtual tj::shared::ref<Scriptable> Get(tj::shared::ref<ParameterList> p);
 				virtual tj::shared::ref<Scriptable> Keys(tj::shared::ref<ParameterList> p);
 				virtual tj::shared::ref<Scriptable> Values(tj::shared::ref<ParameterList> p);

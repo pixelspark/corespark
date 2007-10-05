@@ -66,7 +66,7 @@ Hash::Hash() {
 Hash::~Hash() {
 }
 
-int Hash::Calculate(std::wstring s) {
+int Hash::Calculate(const std::wstring& s) {
 	wchar_t* buffer = _wcsdup(s.c_str());
 
 	int hash = FNVHash(buffer, sizeof(wchar_t)*s.length(), FNVInit);

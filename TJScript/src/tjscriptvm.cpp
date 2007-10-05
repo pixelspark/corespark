@@ -121,6 +121,7 @@ ref<Scriptable> VM::Execute(ref<ScriptContext> c, ref<CompiledScript> script, re
 	ref<VM> vm = This<VM>(); // keep us alive
 	ref<Scriptlet> main = script->GetMainScriptlet();
 	_frame = new StackFrame(main,0);
+	int opCode = 0;
 
 	try {
 		while(_frame!=0) {
@@ -160,7 +161,7 @@ ref<Scriptable> VM::Execute(ref<ScriptContext> c, ref<CompiledScript> script, re
 				}
 			}
 			else {
-				int opCode = scriptlet->Get<int>(_frame->_pc);
+				opCode = scriptlet->Get<int>(_frame->_pc);
 				if(opCode>=Ops::_OpLast) Throw(L"Invalid instruction detected", ExceptionTypeError);
 				Ops::OpHandler opHandler = Ops::Handlers[opCode];
 				opHandler(this);
@@ -180,7 +181,7 @@ ref<Scriptable> VM::Execute(ref<ScriptContext> c, ref<CompiledScript> script, re
 	catch(Exception& e) {
 		if(_frame!=0) {
 			// TODO: fix
-			///Log::Write(L"TJScript/VM",L"Error in scriptlet "+Stringify(_script->GetScriptletIndex(_frame->_scriptlet))+L": "+op->GetName());
+			Log::Write(L"TJScript/VM",L"Error in scriptlet "+Stringify(_script->GetScriptletIndex(_frame->_scriptlet))+L": "+Ops::Names[opCode]);
 			Log::Write(L"TJScript/VM", std::wstring(L"Stack dump: ")+_stack.Dump());
 			Log::Write(L"TJScript/VM", Wcs(e.GetFile())+L"/"+Stringify(e.GetLine())+L": "+e.GetMsg());
 		}

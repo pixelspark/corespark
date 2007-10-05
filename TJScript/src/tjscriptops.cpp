@@ -62,7 +62,7 @@ void OpCallHandler(VM* vm) {
 
 	ref<Scriptable> result = target->Execute(funcName->GetValue(), list);
 	if(!result) {
-		throw ScriptException(L"Variable does not exist on object or scope");
+		throw ScriptException(L"Variable does not exist on object or scope: '"+funcName->GetValue()+L"'");
 	}
 
 	// only call functions when there is a parameter list given
@@ -368,6 +368,7 @@ void OpParameterHandler(VM* vm) {
 	ref<ScriptParameterList> parameter = stack.Pop();
 
 	ref< ScriptValue<std::wstring> > keyString = key;
+
 	parameter->Set(keyString->GetValue(), value);
 	stack.Push(parameter);
 }
@@ -488,11 +489,29 @@ void OpPushParameterHandler(VM* vm) {
 	vm->GetStack().Push(GC::Hold(new ScriptParameterList()));
 }
 
+void OpSetFieldHandler(VM* vm) {
+	ScriptStack& st = vm->GetStack();
+	ref<Scriptable> value = st.Pop();
+	ref<Scriptable> ident = st.Pop();
+	ref<Scriptable> target = st.Pop();
+
+	ref<ScriptString> identString = ident;
+	if(!identString) {
+		throw ScriptException(L"Identifier is not a string; cannot set field!");
+	}
+
+	if(!target->Set(identString->GetValue(), value)) {
+		throw ScriptException(L"Object is not mutable; cannot set field "+identString->GetValue()+L"!");
+	}
+
+	st.Push(value);
+}
+
 const wchar_t* Ops::Names[Ops::_OpLast] = {L"OpNop", L"OpPushString", L"OpPushDouble", L"OpPushTrue", L"OpPushFalse", L"OpPushInt", L"OpPushNull", L"OpPop", 
 L"OpCall", L"OpCallGlobal", L"OpNew", L"OpSave", L"OpEquals", L"OpNegate", L"OpAdd", L"OpSub", 
 L"OpMul", L"OpDiv", L"OpAnd",L"OpOr", L"OpBranchIf", L"OpParameter", L"OpNamelessParameter", L"OpPushParameter",
 L"OpLoadScriptlet", L"OpReturn", L"OpReturnValue", L"OpGreaterThan", L"OpLessThan", L"OpXor",
-L"OpBreak", L"OpIndex", L"OpIterate", L"OpPushDelegate" };
+L"OpBreak", L"OpIndex", L"OpIterate", L"OpPushDelegate", L"OpSetField" };
 
 Ops::OpHandler Ops::Handlers[Ops::_OpLast] = {OpNopHandler,OpPushStringHandler,OpPushDoubleHandler,
 OpPushTrueHandler, OpPushFalseHandler,OpPushIntHandler, OpPushNullHandler, OpPopHandler,OpCallHandler,OpCallGlobalHandler,OpNewHandler,
@@ -500,5 +519,5 @@ OpSaveHandler,OpEqualsHandler,OpNegateHandler,OpAddHandler,OpSubHandler,
 OpMulHandler,OpDivHandler,OpAndHandler,OpOrHandler,OpBranchIfHandler,
 OpParameterHandler,OpNamelessParameterHandler,OpPushParameterHandler, OpLoadScriptletHandler, OpReturnHandler,
 OpReturnValueHandler,OpGreaterThanHandler,OpLessThanHandler,OpXorHandler,OpBreakHandler
-,OpIndexHandler,OpIterateHandler, OpPushDelegateHandler};
+,OpIndexHandler,OpIterateHandler, OpPushDelegateHandler, OpSetFieldHandler};
 

@@ -3,12 +3,8 @@ using namespace tj::shared;
 using namespace tj::script;
 
 ref<Scriptable> ScriptHashType::Construct(tj::shared::ref<ParameterList> p) {
-	if(!p) {
-		return 0;
-	}
-
-	RequiredParameter<std::wstring> data(p, L"data", L"",0);
-	return GC::Hold(new ScriptHash(data.Get()));
+	static const Parameter<std::wstring> PData(L"data", 0);
+	return GC::Hold(new ScriptHash(PData.Require(p,L"")));
 }
 
 ScriptHashType::~ScriptHashType() {

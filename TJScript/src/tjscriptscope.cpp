@@ -22,12 +22,18 @@ bool ScriptScope::Exists(const std::wstring& key) {
 
 ref<Scriptable> ScriptScope::Get(const std::wstring& key) {
 	std::map<std::wstring, ref<Scriptable> >::iterator it = _vars.find(key);
-	return it==_vars.end()?0:it->second;
+	if(it!=_vars.end()) {
+		return it->second;
+	}
+	return 0;
 }
 
 ref<Scriptable> ScriptScope::Execute(Command command, ref<ParameterList> params) {
+	static const Parameter<std::wstring> PVar(L"var");
+
 	if(command==L"exists") {
-		RequiredParameter<std::wstring> name(params, L"var", L"", 0);
+		std::wstring name = PVar.Require(params,L"");
+
 		bool exists = _vars.find(name)!=_vars.end();
 		if(!exists) {
 			if(_previous) {
@@ -45,16 +51,18 @@ ref<Scriptable> ScriptScope::Execute(Command command, ref<ParameterList> params)
 			return ScriptConstants::True;
 		}
 	}
-	else if(_vars.find(command)==_vars.end()) {
-		if(_previous) {
+	else {
+		ref<Scriptable> val = Get(command);
+		if(val) {
+			return val;
+		}
+		else if(_previous) {
 			return _previous->Execute(command, params);
 		}
 		else {
 			return ScriptConstants::Null;
 		}
-	}
-	else {
-		return _vars[command];
+
 	}
 }
 

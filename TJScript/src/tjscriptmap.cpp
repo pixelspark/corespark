@@ -50,10 +50,6 @@ ScriptMapType::~ScriptMapType() {
 
 ref<Scriptable> ScriptMapType::Construct(ref<ParameterList> p) {
 	ref<ScriptMap> ar = GC::Hold(new ScriptMap());
-	if(p) {
-		ar->Set(p);
-	}
-
 	return ar;
 }
 
@@ -73,7 +69,6 @@ std::map<std::wstring, tj::shared::ref<Scriptable> >::iterator ScriptMap::GetEnd
 
 void ScriptMap::Initialize() {
 	Bind(L"size", &Size);
-	Bind(L"set", &Set);
 	Bind(L"get", &Get);
 	Bind(L"toString", &ToString);
 	Bind(L"keys", &Keys);
@@ -85,24 +80,18 @@ ref<Scriptable> ScriptMap::Size(ref<ParameterList> p) {
 	return GC::Hold(new ScriptInt((int)_array.size()));
 }
 
-ref<Scriptable> ScriptMap::Set(ref<ParameterList> p) {
-	ThreadLock lock(&_lock);
-
-	std::map<std::wstring, ref<Scriptable> >::iterator it = p->_vars.begin();
-	while(it!=p->_vars.end()) {
-		std::pair< const std::wstring, ref<Scriptable> > data = *it;
-		_array[data.first] = data.second;
-		++it;
-	}
-	return ScriptConstants::Null;
+bool ScriptMap::Set(Field field, ref<Scriptable> value) {
+	_array[field] = value;
+	return true;
 }
 
 ref<Scriptable> ScriptMap::Get(ref<ParameterList> p) {
 	ThreadLock lock(&_lock);
+	static const Parameter<std::wstring> PKey(L"key", 0);
 
-	RequiredParameter<std::wstring> key(p, L"key", L"");
-	if(_array.find(key.Get())!=_array.end()) {
-		return _array[key.Get()];
+	std::wstring key = PKey.Require(p,L"");
+	if(_array.find(key)!=_array.end()) {
+		return _array[key];
 	}
 	
 	return ScriptConstants::Null;

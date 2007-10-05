@@ -35,36 +35,40 @@ void ScriptMath::Initialize() {
 }
 
 ref<Scriptable> ScriptMath::Sin(ref<ParameterList> p) {
-	RequiredParameter<double> angle(p, L"angle", 0.0, 0);
-	return GC::Hold(new ScriptDouble(sin(angle)));
+	static const Parameter<double> PAngle(L"angle", 0);
+	return GC::Hold(new ScriptDouble(sin(PAngle.Require(p,0.0))));
 }
 
 ref<Scriptable> ScriptMath::Cos(ref<ParameterList> p) {
-	RequiredParameter<double> angle(p, L"angle", 0.0, 0);
-	return GC::Hold(new ScriptDouble(cos(angle)));
+	static const Parameter<double> PAngle(L"angle", 0);
+	return GC::Hold(new ScriptDouble(cos(PAngle.Require(p,0.0))));
 }
 
 ref<Scriptable> ScriptMath::Tan(ref<ParameterList> p) {
-	RequiredParameter<double> angle(p, L"angle", 0.0, 0);
-	return GC::Hold(new ScriptDouble(tan(angle)));
+	static const Parameter<double> PAngle(L"angle", 0);
+	return GC::Hold(new ScriptDouble(tan(PAngle.Require(p,0.0))));
 }
 
 ref<Scriptable> ScriptMath::Atan2(ref<ParameterList> p) {
-	RequiredParameter<double> x(p, L"x", 0.0, 0);
-	RequiredParameter<double> y(p, L"y", 0.0, 1);
-	return GC::Hold(new ScriptDouble(atan2(y,x)));
+	static const Parameter<double> PX(L"x", 0);
+	static const Parameter<double> PY(L"y", 1);
+
+	return GC::Hold(new ScriptDouble(atan2(PY.Require(p,0.0),PX.Require(p,0.0))));
 }
 
 ref<Scriptable> ScriptMath::Atan(ref<ParameterList> p) {
-	RequiredParameter<double> angle(p, L"angle", 0.0, 0);
-	return GC::Hold(new ScriptDouble(atan(angle)));
+	static const Parameter<double> PAngle(L"angle", 0);
+	return GC::Hold(new ScriptDouble(atan(PAngle.Require(p, 0.0))));
 }
 
 ref<Scriptable> ScriptMath::Random(ref<ParameterList> p) {
-	RequiredParameter<int> from(p,L"from", 0,0);
-	RequiredParameter<int> to(p, L"to", 0,1);
+	static const Parameter<int> PFrom(L"from", 0);
+	static const Parameter<int> PTo(L"to", 1);
 
-	if(to.Get()-from.Get()<=0) {
+	int to = PTo.Require(p,0);
+	int from = PFrom.Require(p,0);
+
+	if(to-from<=0) {
 		throw ScriptException(L"Invalid argument values for from and to");
 	}
 
@@ -73,25 +77,27 @@ ref<Scriptable> ScriptMath::Random(ref<ParameterList> p) {
 }
 
 ref<Scriptable> ScriptMath::Acos(ref<ParameterList> p) {
-	RequiredParameter<double> angle(p, L"angle", 0.0, 0);
-	return GC::Hold(new ScriptDouble(acos(angle)));
+	static const Parameter<double> PAngle(L"angle", 0);
+	return GC::Hold(new ScriptDouble(acos(PAngle.Require(p,0.0))));
 }
 
 ref<Scriptable> ScriptMath::Asin(ref<ParameterList> p) {
-	RequiredParameter<double> angle(p, L"angle", 0.0, 0);
-	return GC::Hold(new ScriptDouble(asin(angle)));
+	static const Parameter<double> PAngle(L"angle", 0);
+	return GC::Hold(new ScriptDouble(asin(PAngle.Require(p,0.0))));
 }
 
 ref<Scriptable> ScriptMath::Fmod(ref<ParameterList> p) {
-	RequiredParameter<double> a(p, L"a", 0.0, 0);
-	RequiredParameter<double> b(p, L"b", 0.0, 1);
-	return GC::Hold(new ScriptDouble(fmod(a,b)));
+	static const Parameter<double> PA(L"a", 0);
+	static const Parameter<double> PB(L"b", 1);
+
+	return GC::Hold(new ScriptDouble(fmod(PA.Require(p,0.0),PB.Require(p,0.0))));
 }
 
 ref<Scriptable> ScriptMath::Pow(ref<ParameterList> p) {
-	RequiredParameter<double> a(p, L"a", 0.0, 0);
-	RequiredParameter<double> b(p, L"b", 0.0, 1);
-	return GC::Hold(new ScriptDouble(pow(a,b)));
+	static const Parameter<double> PA(L"a", 0);
+	static const Parameter<double> PB(L"b", 1);
+
+	return GC::Hold(new ScriptDouble(pow(PA.Require(p,0.0), PB.Require(p,0.0))));
 }
 
 ref<Scriptable> ScriptMath::Pi(ref<ParameterList> p) {

@@ -7,7 +7,7 @@ namespace tj {
 			public:
 				Hash();
 				virtual ~Hash();
-				int Calculate(std::wstring data);
+				int Calculate(const std::wstring& data);
 		};
 	}
 }

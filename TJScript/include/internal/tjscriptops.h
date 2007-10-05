@@ -47,7 +47,7 @@ namespace tj {
 					OpIndex,				// [varname] [index] => [value]
 					OpIterate,				// [varname] [iterable] => [..]
 					OpPushDelegate,
-
+					OpSetField,				// [scriptable] [identifier] [value] => [value]
 					_OpLast,				// Should always be the last op
 				};
 

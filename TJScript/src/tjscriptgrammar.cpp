@@ -83,9 +83,29 @@ struct ScriptWriteString {
 		ReplaceAll(value, L"\\r", L"\r");
 		ReplaceAll(value, L"\\n", L"\n");
 		ReplaceAll(value, L"\\t", L"\t");
-		
+
 		int li = _stack->Top()->StoreLiteral(GC::Hold(new ScriptString(value)));
 		_stack->Top()->Add<LiteralIdentifier>(li);
+	}
+
+	mutable ref<ScriptletStack> _stack;
+};
+
+struct ScriptWriteHash {
+	ScriptWriteHash(ScriptGrammar const* gram);
+
+	template<typename T> void operator()(const T start, const T end) const {
+		std::wstring value(start,end);
+		
+		Hash h;
+		_stack->Top()->Add<unsigned int>(h.Calculate(value));
+	}
+
+	template<typename T> void operator()(const T v) const {	
+		std::wstring value(v);
+
+		Hash h;
+		_stack->Top()->Add<unsigned int>(h.Calculate(value));
 	}
 
 	mutable ref<ScriptletStack> _stack;
@@ -241,19 +261,22 @@ class ScriptGrammar : public grammar<ScriptGrammar> {
 
 				/** Variable names etc **/
 				identifier = 
-					lexeme_d[(alpha_p >> *(alnum_p|ch_p('_')))[ScriptInstruction(&self, Ops::OpPushString)][ScriptWriteString(&self)]];
+					rawIdentifier[ScriptInstruction(&self, Ops::OpPushString)][ScriptWriteString(&self)];
+
+				rawIdentifier = 
+					lexeme_d[(alpha_p >> *(alnum_p|ch_p('_')))];
 
 				qualifiedIdentifier = 
 					lexeme_d[(alpha_p >> *(alnum_p|ch_p('_')|ch_p(':')>>ch_p(':')))[ScriptInstruction(&self, Ops::OpPushString)][ScriptWriteString(&self)]];
 
 				declaredParameter =
-					lexeme_d[(alpha_p >> *(alnum_p|ch_p('_')))];
+					rawIdentifier;
 
 				breakStatement = 
 					keyword_p("break")[ScriptInstruction(&self, Ops::OpBreak)];
 
 				keyValuePair = 
-					eps_p(lexeme_d[alpha_p >> *(alnum_p|ch_p('_'))] >> (ch_p('=')|ch_p(':')) >> (~ch_p('='))) 
+					eps_p(lexeme_d[(alpha_p >> *(alnum_p|ch_p('_')))] >> (ch_p('=')|ch_p(':')) >> (~ch_p('='))) 
 					>> identifier >> (ch_p('=')|ch_p(':')) >> expression;
 
 				parameterList = 
@@ -291,10 +314,13 @@ class ScriptGrammar : public grammar<ScriptGrammar> {
 					(identifier >> !(ch_p('(')[ScriptInstruction(&self, Ops::OpPushParameter)] >> !parameterList >> ')'));
 
 				methodCallConstruct = 
-					methodCall[ScriptInstruction(&self, Ops::OpCallGlobal)] >> followingMethodCall;
+					methodCall[ScriptInstruction(&self, Ops::OpCallGlobal)] >> followingMethodCall >> !followingAssignment;
 
 				followingMethodCall = 
-					*indexOperator >> !(ch_p(".") >> ((methodCall[ScriptInstruction(&self, Ops::OpCall)] >> *(indexOperator)) % ch_p('.')));
+					*indexOperator >> !(ch_p('.') >> ((followingAssignment |(methodCall[ScriptInstruction(&self, Ops::OpCall)] >> *(indexOperator))) % ch_p('.')));
+
+				followingAssignment =
+					eps_p(lexeme_d[ ((alpha_p >> *(alnum_p|ch_p('_'))))] >> ch_p('=')) >> identifier >> ch_p('=') >> expression[ScriptInstruction(&self, Ops::OpSetField)];
 
 				/* Operators */
 				equalsOperator = 
@@ -406,7 +432,7 @@ class ScriptGrammar : public grammar<ScriptGrammar> {
 			rule<ScannerT> stringValue, intValue, boolValue, doubleValue, nullValue;
 
 			// constructs
-			rule<ScannerT> scriptBody, block, function, functionConstruct, ifConstruct, comment, assignment, assignmentWithVar, assignmentWithoutVar, value, identifier, declaredParameter, keyValuePair, parameterList, methodCall, expression, statement, blockConstruct, blockInFunction, blockInFor, script, returnConstruct, breakStatement, forConstruct, newConstruct, methodCallConstruct, followingMethodCall, delegateConstruct, qualifiedIdentifier;
+			rule<ScannerT> scriptBody, block, function, functionConstruct, rawIdentifier, ifConstruct, comment, assignment, assignmentWithVar, assignmentWithoutVar, followingAssignment, value, identifier, declaredParameter, keyValuePair, parameterList, methodCall, expression, statement, blockConstruct, blockInFunction, blockInFor, script, returnConstruct, breakStatement, forConstruct, newConstruct, methodCallConstruct, followingMethodCall, delegateConstruct, qualifiedIdentifier;
 			
 			// operators
 			rule<ScannerT> term, factor, negatedFactor, indexOperator, equalsOperator, notEqualsOperator, plusOperator, minOperator, divOperator, mulOperator, orOperator, andOperator, xorOperator, gtOperator, ltOperator, incrementByOperator, decrementByOperator, incrementOneOperator, decrementOneOperator;

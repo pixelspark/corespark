@@ -3,18 +3,17 @@ using namespace tj::shared;
 using namespace tj::script;
 
 ref<Scriptable> ScriptRangeType::Construct(tj::shared::ref<ParameterList> p) {
-	if(!p) {
+	static const Parameter<int> PFrom(L"from",0);
+	static const Parameter<int> PTo(L"to",1);	
+
+	int from = PFrom.Require(p,0);
+	int to = PTo.Require(p,0);
+
+	if(to<from) {
 		return 0;
 	}
 
-	RequiredParameter<int> from(p, L"from", 0,0);
-	RequiredParameter<int> to(p, L"to", 0,1);
-
-	if(to.Get()<from.Get()) {
-		return 0;
-	}
-
-	return GC::Hold(new ScriptRange(from.Get(), to.Get()));
+	return GC::Hold(new ScriptRange(from,to));
 }
 
 ScriptRangeType::~ScriptRangeType() {
@@ -48,8 +47,10 @@ ref<Scriptable> ScriptRange::To(ref<ParameterList> p) {
 }
 
 ref<Scriptable> ScriptRange::IsInside(ref<ParameterList> p) {
-	RequiredParameter<int> value(p,L"value", 0, 0);
-	return GC::Hold(new ScriptBool(value.Get()>=_a && value.Get() <= _b));
+	static const Parameter<int> PValue(L"value", 0);
+
+	int value = PValue.Require(p,0);
+	return GC::Hold(new ScriptBool(value>=_a && value <= _b));
 }
 
 ref<Scriptable> ScriptRange::ToString(ref<ParameterList> p) {
