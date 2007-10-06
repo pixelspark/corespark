@@ -409,7 +409,7 @@ LRESULT ColorWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	return Wnd::Message(msg,wp,lp);
 }
 
-void ColorWnd::Paint(Gdiplus::Graphics& g) {
+void ColorWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
 	SolidBrush br(Color(_r, _g, _b));
 	g.FillRectangle(&br, GetClientArea());
 }
@@ -435,13 +435,13 @@ LRESULT Wnd::PreMessage(UINT msg, WPARAM wp, LPARAM lp) {
 		BeginPaint(_wnd, &ps);
 		Graphics org(ps.hdc);
 
-		ref<Theme> theme = ThemeManager::GetTheme(); // TODO: give theme reference to Paint
+		ref<Theme> theme = ThemeManager::GetTheme();
 		float dpiScale = theme->GetDPIScaleFactor();
 
 		if(!_doubleBuffered) {
 			GraphicsContainer container = org.BeginContainer();
 			org.ScaleTransform(dpiScale, dpiScale);
-			Paint(org);
+			Paint(org, theme);
 			org.EndContainer(container);
 		}
 		else {
@@ -457,7 +457,7 @@ LRESULT Wnd::PreMessage(UINT msg, WPARAM wp, LPARAM lp) {
 				Graphics buffered(_buffer);
 				GraphicsContainer container = buffered.BeginContainer();
 				buffered.ScaleTransform(dpiScale, dpiScale);
-				Paint(buffered);
+				Paint(buffered, theme);
 				buffered.EndContainer(container);
 			}
 			org.DrawImage(_buffer,0,0);

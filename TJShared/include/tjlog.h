@@ -7,7 +7,7 @@ namespace tj {
 
 		class EXPORTED Log: public virtual Object {
 			public:
-				static void Write(std::wstring source, std::wstring message);
+				static void Write(const std::wstring& source, const std::wstring& message);
 				static void Show(bool s);
 				static void SetWriteToFile(bool f);
 				static std::wstring GetContents();

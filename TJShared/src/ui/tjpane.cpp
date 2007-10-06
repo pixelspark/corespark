@@ -139,5 +139,5 @@ void FloatingPane::Layout() {
 }
 
 
-void FloatingPane::Paint(Gdiplus::Graphics& g) {
+void FloatingPane::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
 }

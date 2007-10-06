@@ -50,6 +50,8 @@ ref<GraphItem> GraphWnd::GetItemAt(Pixels x, Pixels y) {
 }
 
 void GraphWnd::SaveImage(const std::wstring& path) {
+	ref<Theme> theme = ThemeManager::GetTheme();
+
 	if(path.length()>4) {
 		std::wstring ext = path.substr(path.length()-3, 3);
 		std::transform(ext.begin(), ext.end(), ext.begin(), tolower);
@@ -60,7 +62,7 @@ void GraphWnd::SaveImage(const std::wstring& path) {
 			{
 				Gdiplus::Metafile mf(path.c_str(), windowDC);
 				Gdiplus::Graphics g(&mf);
-				Paint(g);
+				Paint(g, theme);
 			}
 			ReleaseDC(GetWindow(), windowDC);					
 		}
@@ -70,7 +72,7 @@ void GraphWnd::SaveImage(const std::wstring& path) {
 			Area rc = GetClientArea();
 			Bitmap* bmp = new Bitmap(rc.GetWidth(), rc.GetHeight());
 			Gdiplus::Graphics g(bmp);
-			Paint(g);
+			Paint(g, theme);
 			CLSID pngClsid;
 			GetEncoderClsid(mime.c_str(), &pngClsid);
 			bmp->Save(path.c_str(),&pngClsid, NULL);
@@ -199,8 +201,7 @@ std::pair<Pixels,Pixels> GraphWnd::GetEdge(const Area& from, const Area& to) {
 	}
 }
 
-void GraphWnd::Paint(Graphics& g) {
-	ref<Theme> theme = ThemeManager::GetTheme();
+void GraphWnd::Paint(Graphics& g, ref<Theme> theme) {
 	Area rc = GetClientArea();
 
 	SolidBrush backBrush(theme->GetBackgroundColor());

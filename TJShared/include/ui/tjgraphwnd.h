@@ -65,7 +65,7 @@ namespace tj {
 				GraphWnd();
 				virtual ~GraphWnd();
 				virtual void OnSize(const Area& ns);
-				virtual void Paint(Gdiplus::Graphics& g);
+				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme);
 				virtual void AddItem(ref<GraphItem> item);
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
 				virtual ref<GraphItem> GetItemAt(Pixels x, Pixels y);

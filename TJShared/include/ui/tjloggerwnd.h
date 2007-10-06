@@ -7,10 +7,10 @@ namespace tj {
 			public:
 				LoggerWnd();
 				virtual ~LoggerWnd();
-				void Log(std::wstring ws);
+				void Log(const std::wstring& ws);
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 				virtual void Layout();
-				virtual void Paint(Gdiplus::Graphics& g);
+				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme);
 				virtual std::wstring GetContents();
 
 			protected:

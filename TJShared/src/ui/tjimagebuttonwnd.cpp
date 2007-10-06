@@ -21,10 +21,9 @@ void ButtonWnd::SetListener(ref<Listener> lr) {
 	_listener = lr;
 }
 
-void ButtonWnd::Paint(Graphics& g) {
+void ButtonWnd::Paint(Graphics& g, ref<Theme> theme) {
 	RECT rc;
 	GetClientRect(GetWindow(),&rc);
-	ref<Theme> theme = ThemeManager::GetTheme();
 	
 	Color col = theme->GetTimeBackgroundColor();
 	if(_down) {
@@ -102,13 +101,11 @@ StateButtonWnd::~StateButtonWnd() {
 	delete _otherImage;
 }
 
-void StateButtonWnd::Paint(Graphics& g) {
+void StateButtonWnd::Paint(Graphics& g, ref<Theme> theme) {
 	RECT rc;
 	GetClientRect(GetWindow(),&rc);
 
-	ref<Theme> theme = ThemeManager::GetTheme();
 	SolidBrush backBr(IsMouseOver()?theme->GetActiveEndColor():theme->GetTimeBackgroundColor());
-	
 	g.FillRectangle(&backBr, RectF(0.0f, 0.0f, REAL(rc.right-rc.left), REAL(rc.bottom-rc.top)));
 	
 	Bitmap* img = 0;

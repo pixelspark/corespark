@@ -7,7 +7,7 @@ namespace tj {
 			public:
 				ColorChooserWnd(unsigned char* red, unsigned char* green, unsigned char* blue, unsigned char* tred, unsigned char* tgreen, unsigned char* tblue);
 				virtual ~ColorChooserWnd();
-				virtual void Paint(Gdiplus::Graphics& g);
+				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme);
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 
 			protected:

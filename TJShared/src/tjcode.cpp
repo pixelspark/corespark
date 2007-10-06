@@ -34,6 +34,19 @@ CodeWriter::~CodeWriter() {
 	delete[] _buffer;
 }
 
+void CodeWriter::Grow(unsigned int size) {
+	if(_pos+size>_size) {
+		unsigned int newSize = max(_size*2, _size+size);
+		char* newBuffer = new char[newSize];
+		for(unsigned int a=0;a<_pos;a++) {
+			newBuffer[a] = _buffer[a];
+		}
+		_size = newSize;
+		delete[] _buffer;
+		_buffer = newBuffer;
+	}
+}
+
 template<> tj::shared::Vector Code::Get(unsigned int& position) {
 	Vector v(0.0f, 0.0f, 0.0f);
 	v.x = Get<float>(position);
@@ -43,6 +56,8 @@ template<> tj::shared::Vector Code::Get(unsigned int& position) {
 }
 
 template<> CodeWriter& CodeWriter::Add(const std::wstring& x) {
+	Grow((unsigned int)((x.length()*sizeof(wchar_t))+sizeof(unsigned int)));
+
 	Add<unsigned int>((unsigned int)x.length());
 	std::wstring::const_iterator it = x.begin();
 	while(it!=x.end()) {

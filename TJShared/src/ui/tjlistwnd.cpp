@@ -69,9 +69,8 @@ std::wstring ListWnd::GetEmptyText() const {
 	return _emptyText;
 }
 
-void ListWnd::Paint(Gdiplus::Graphics &g) {
+void ListWnd::Paint(Gdiplus::Graphics &g, ref<Theme> theme) {
 	Area area = GetClientArea();
-	ref<Theme> theme = ThemeManager::GetTheme();
 	int headHeight = GetHeaderHeightInPixels();
 
 	SolidBrush back(theme->GetBackgroundColor());

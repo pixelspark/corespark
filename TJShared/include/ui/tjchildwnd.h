@@ -14,7 +14,7 @@ namespace tj {
 			ColorWnd(unsigned char r, unsigned char g, unsigned char b);
 			virtual ~ColorWnd();
 			virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
-			virtual void Paint(Gdiplus::Graphics& g);
+			virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme);
 
 			unsigned char _r,_g,_b;
 		};

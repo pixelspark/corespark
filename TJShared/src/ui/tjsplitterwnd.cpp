@@ -145,7 +145,7 @@ void SplitterWnd::Expand() {
 	Repaint();
 }
 
-void SplitterWnd::Paint(Graphics& g) {
+void SplitterWnd::Paint(Graphics& g, ref<Theme> theme) {
 	if(_collapse==CollapseNone) {
 		ref<Theme> theme = ThemeManager::GetTheme();
 		Area rc = GetClientArea();

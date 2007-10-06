@@ -28,10 +28,8 @@ void ProgressWnd::Update() {
 	}
 }
 
-void ProgressWnd::Paint(Gdiplus::Graphics& g) {
+void ProgressWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
 	float v = fabs(_value);
-	ref<Theme> theme = ThemeManager::GetTheme();
-
 	
 	Area rc = GetClientArea();	
 	LinearGradientBrush back(PointF(0.0f, 0.0f), PointF(0.0f, float(rc.GetHeight())), theme->GetProgressBackStart(), theme->GetProgressBackEnd());

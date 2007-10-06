@@ -8,7 +8,7 @@ namespace tj {
 				ButtonWnd(ref<Listener> listener, const wchar_t* image, const wchar_t* text=0);
 				virtual ~ButtonWnd();
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
-				virtual void Paint(Gdiplus::Graphics& g);
+				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme);
 				virtual void SetListener(ref<Listener> lf);
 				
 			protected:
@@ -25,7 +25,7 @@ namespace tj {
 				virtual ~StateButtonWnd();
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 				void SetOn(ButtonState o);
-				virtual void Paint(Gdiplus::Graphics& g);
+				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme);
 				
 			protected:
 				Gdiplus::Bitmap* _offImage;

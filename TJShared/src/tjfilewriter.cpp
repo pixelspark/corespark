@@ -36,7 +36,7 @@ FileReader::FileReader() {
 FileReader::~FileReader() {
 }
 
-void FileReader::Read(std::string filename, ref<Serializable> ser) {
+void FileReader::Read(const std::string& filename, ref<Serializable> ser) {
 	TiXmlDocument document(filename);
 	if(!document.LoadFile()) Throw(TL(file_load_failed), ExceptionTypeError);
 

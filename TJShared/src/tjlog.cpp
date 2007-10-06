@@ -18,7 +18,7 @@ namespace tj {
 					WaitForCompletion();
 				}
 
-				virtual void Log(std::wstring msg) {
+				virtual void Log(const std::wstring& msg) {
 					//Start();
 					WaitForSingleObject(_loggerCreatedEvent, INFINITE);
 					_logger->Log(msg);
@@ -71,7 +71,7 @@ namespace tj {
 				virtual ~FileLogger() {
 				}
 
-				void Write(std::wstring message) {
+				void Write(const std::wstring& message) {
 					_file << message;
 					_file.flush();
 				}
@@ -83,7 +83,7 @@ namespace tj {
 
 ref<FileLogger> FileLogger::_instance;
 
-void Log::Write(std::wstring source, std::wstring message) {
+void Log::Write(const std::wstring& source, const std::wstring& message) {
 	ThreadLock lock(&_lock);
 	if(_writeToFile) {
 		ref<FileLogger> file = FileLogger::Instance();

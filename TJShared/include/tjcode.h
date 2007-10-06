@@ -37,10 +37,7 @@ namespace tj {
 
 				template<typename T> CodeWriter& Add(const T& x) {
 					unsigned int size = sizeof(T)/sizeof(char);
-					if(_pos+size>_size) {
-						// TODO: Grow buffer here..
-						return *this;
-					}
+					Grow(size);
 
 					T* tp = (T*)&(_buffer[_pos]);
 					*tp = x;
@@ -53,6 +50,8 @@ namespace tj {
 				}
 				
 			protected:
+				void Grow(unsigned int size);
+
 				unsigned int _size;
 				unsigned int _pos;
 

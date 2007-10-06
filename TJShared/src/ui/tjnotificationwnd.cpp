@@ -44,11 +44,9 @@ int NotificationWnd::GetIndex() {
 	return _index;
 }
 
-void NotificationWnd::Paint(Gdiplus::Graphics& g) {
-	ref<Theme> theme = ThemeManager::GetTheme();
+void NotificationWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
 	Area rect = GetClientArea();
-	//SolidBrush r(theme->ChangeAlpha(theme->GetBackgroundColor(),100));
-	//LinearGradientBrush r(PointF(0.0f, -1.0f), PointF(0.0f, float(rect.GetHeight())+1.0f), theme->GetActiveStartColor(), theme->GetActiveEndColor());
+	
 	SolidBrush r(theme->GetBackgroundColor());
 	rect.Narrow(0,0,1,1);
 	g.FillRectangle(&r, rect);

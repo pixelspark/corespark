@@ -1,4 +1,5 @@
 #include "../include/internal/tjscript.h"
+#include <limits>
 using namespace tj::shared;
 using namespace tj::script;
 
@@ -81,7 +82,7 @@ template<> double ScriptContext::GetValue(ref<Scriptable> s, double defaultValue
 		return ref<ScriptBool>(s)->GetValue()?1.0:0.0;
 	}
 	else if(s.IsCastableTo<ScriptNull>()) {
-		return 0.0; // TODO: make NaN
+		return std::numeric_limits<double>::quiet_NaN();
 	}
 	else {
 		return GetValueByString<double>(s,defaultValue);	

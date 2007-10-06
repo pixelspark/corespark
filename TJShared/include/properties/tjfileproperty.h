@@ -7,7 +7,7 @@ namespace tj {
 			public:
 				FilePropertyWnd(std::wstring name, std::wstring* path, const wchar_t* filter);
 				virtual ~FilePropertyWnd();
-				virtual void Paint(Gdiplus::Graphics& g);
+				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme);
 				virtual void OnDropFiles(const std::vector< std::wstring >& files);
 				virtual void Update();
 				virtual void OnSize(const Area& ns);

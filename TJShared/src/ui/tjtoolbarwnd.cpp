@@ -90,9 +90,8 @@ int ToolbarWnd::GetTotalButtonWidth() {
 	return int(_items.size())*theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
 }
 
-void ToolbarWnd::Paint(Gdiplus::Graphics& g) {
+void ToolbarWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
 	Area rc = GetClientArea();
-	ref<Theme> theme = ThemeManager::GetTheme();
 	int buttonSize = theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
 	
 	if(_bk) {

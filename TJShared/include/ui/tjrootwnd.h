@@ -16,7 +16,6 @@ namespace tj {
 				void RemoveFloatingPane(ref<Pane> pn);
 				virtual void Update();
 
-				// TODO: use weak<TabWnd> ?
 				void AddTabWindow(ref<TabWnd> tw);
 				void RemoveTabWindow(ref<TabWnd> tw);
 				void RemoveTabWindow(TabWnd* tw);

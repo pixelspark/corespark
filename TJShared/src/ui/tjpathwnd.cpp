@@ -127,9 +127,8 @@ ref<Crumb> PathWnd::GetCrumbAt(int x, int* left) {
 	return 0;
 }
 
-void PathWnd::Paint(Gdiplus::Graphics& g) {
+void PathWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
 	Area rc = GetClientArea();
-	ref<Theme> theme = ThemeManager::GetTheme();
 	
 	SolidBrush zwart(theme->GetBackgroundColor());
 	g.FillRectangle(&zwart, rc);

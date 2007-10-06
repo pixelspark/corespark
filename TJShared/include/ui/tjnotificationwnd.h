@@ -9,7 +9,7 @@ namespace tj {
 				virtual ~NotificationWnd();
 				virtual void Show(bool t);
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
-				virtual void Paint(Gdiplus::Graphics& g);
+				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme);
 				int GetIndex();
 
 				enum {

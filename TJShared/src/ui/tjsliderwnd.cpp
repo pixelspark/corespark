@@ -93,12 +93,11 @@ void SliderWnd::SetValue(float f, bool notify) {
 SliderWnd::~SliderWnd() {
 }
 
-void SliderWnd::Paint(Graphics& g) {
+void SliderWnd::Paint(Graphics& g, ref<Theme> theme) {
 	if(_listener!=0) {
 		_listener->Notify(this, NotificationUpdate);
 	}
-	
-	ref<Theme> theme = ThemeManager::GetTheme();
+
 	Area rect = GetClientArea();
 
 	Gdiplus::Color colorStart = theme->GetSliderColorStart(_color);
@@ -145,16 +144,15 @@ void SliderWnd::Paint(Graphics& g) {
 	g.DrawLine(&pn, (REAL)mx, mty, (REAL)mx+4,mty);
 
 	// dragger
-	const static int draggerWidth = KDraggerWidth; // TODO make class constant
 	x = (rect.GetWidth())/2 - KDraggerWidth/2;
 	int y = rect.GetBottom() - int(_value*int(rect.GetHeight()));
 	SolidBrush border(colorEnd);
-	g.FillRectangle(&border, RectF(float(x), float(y), float(draggerWidth), 6.0f));
-	g.FillRectangle(&backBrush, RectF(float(x+1), float(y+1), float(draggerWidth-2), 4.0f));
+	g.FillRectangle(&border, RectF(float(x), float(y), float(KDraggerWidth), 6.0f));
+	g.FillRectangle(&backBrush, RectF(float(x+1), float(y+1), float(KDraggerWidth-2), 4.0f));
 	
 	if(_hasFocus||_flash) {
 		LinearGradientBrush lbr(PointF(float(x+1), float(y)), PointF(float(x+1), float(y+6)), colorStart, colorEnd );
-		g.FillRectangle(&lbr, RectF(float(x+1), float(y+1), float(draggerWidth-2), 4.0f));
+		g.FillRectangle(&lbr, RectF(float(x+1), float(y+1), float(KDraggerWidth-2), 4.0f));
 	}
 
 	if(_showValue) {

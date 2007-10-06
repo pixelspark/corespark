@@ -17,12 +17,11 @@ LoggerWnd::~LoggerWnd() {
 	DeleteObject(_font);
 }
 
-void LoggerWnd::Paint(Gdiplus::Graphics& g) {
+void LoggerWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
 }
 
-void LoggerWnd::Log(std::wstring ws) {
+void LoggerWnd::Log(const std::wstring& ws) {
 	ListBox_AddString(_list, ws.c_str());
-	//PostMessage(_list, LB_ADDSTRING, 0, ws.c_str());
 }
 
 void LoggerWnd::Layout() {

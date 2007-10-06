@@ -34,7 +34,7 @@ void EditWnd::UpdateColor() {
 	
 }
 
-void EditWnd::Paint(Gdiplus::Graphics& g) {
+void EditWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
 }
 
 void EditWnd::Layout() {

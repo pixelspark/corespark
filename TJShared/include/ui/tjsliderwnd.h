@@ -14,7 +14,7 @@ namespace tj {
 				virtual void Update();
 				void SetDisplayValue(float f, bool notify);
 				void SetMarkValue(float f);
-				virtual void Paint(Gdiplus::Graphics& g);
+				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme);
 				virtual void SetColor(int idx);
 				void SetShowValue(bool show);
 				void SetSnapToHalf(bool snap);

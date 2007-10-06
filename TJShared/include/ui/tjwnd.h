@@ -120,7 +120,7 @@ namespace tj {
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 
 				// Messages
-				virtual void Paint(Gdiplus::Graphics& g) = 0;
+				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme) = 0;
 				virtual void OnSize(const Area& newSize);
 				virtual void OnScroll(ScrollDirection dir);
 				virtual void OnActivate(bool activate);

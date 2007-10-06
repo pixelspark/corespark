@@ -71,6 +71,10 @@ template<> Scriptlet& Scriptlet::Add(const std::wstring& x) {
 // TODO: overflow check
 template<> wchar_t* Scriptlet::Get(unsigned int& position) const {
 	unsigned int length = Get<unsigned int>(position);
+	if(position+length >= _size) {
+		Throw("Scriptlet::Get overflow (tried to get a string with length longer than the script)", ExceptionTypeError);
+	}
+
 	wchar_t* str = reinterpret_cast<wchar_t*>(&(_code[position]));
 	position += (length+1)*sizeof(wchar_t);
 	return str;

@@ -24,7 +24,7 @@ namespace tj {
 			public:
 				FileReader();
 				virtual ~FileReader();
-				void Read(std::string filename, ref<Serializable> model);
+				void Read(const std::string& filename, ref<Serializable> model);
 		};
 	}
 }

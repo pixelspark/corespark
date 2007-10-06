@@ -13,7 +13,7 @@ namespace tj {
 
 				ListWnd();
 				virtual ~ListWnd();
-				virtual void Paint(Gdiplus::Graphics& g);
+				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme);
 				virtual void OnSize(const Area& ns);
 				virtual void OnScroll(ScrollDirection dir);
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);

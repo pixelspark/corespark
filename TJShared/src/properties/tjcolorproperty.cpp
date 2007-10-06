@@ -14,9 +14,8 @@ ColorChooserWnd::ColorChooserWnd(unsigned char* red, unsigned char* green, unsig
 ColorChooserWnd::~ColorChooserWnd() {
 }
 
-void ColorChooserWnd::Paint(Gdiplus::Graphics& g) {
+void ColorChooserWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
 	Area rc = GetClientArea();
-	ref<Theme> theme = ThemeManager::GetTheme();
 	SolidBrush bbr(theme->GetBackgroundColor());
 	g.FillRectangle(&bbr, rc);
 

@@ -195,7 +195,7 @@ void BrowserWnd::Navigate(const std::wstring& url) {
 	}
 }
 
-void BrowserWnd::Paint(Gdiplus::Graphics& g) {
+void BrowserWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
 	//if(_hidden) {
 		Area rc = GetClientArea();
 		SolidBrush br(Color(0,0,0));
@@ -252,8 +252,8 @@ void BrowserToolbarWnd::OnCommand(int c) {
 	}
 }
 
-void BrowserToolbarWnd::Paint(Gdiplus::Graphics& g) {
-	ToolbarWnd::Paint(g);
+void BrowserToolbarWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
+	ToolbarWnd::Paint(g, theme);
 }
 
 BrowserToolbarWnd::~BrowserToolbarWnd() {

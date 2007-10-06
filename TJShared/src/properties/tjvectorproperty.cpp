@@ -32,7 +32,7 @@ namespace tj {
 					DeleteObject((HGDIOBJ)_font);
 				}
 
-				virtual void Paint(Gdiplus::Graphics& g) {
+				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
 				}
 
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp) {

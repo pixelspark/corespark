@@ -21,7 +21,7 @@ namespace tj {
 				LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 				void Layout();
 				void ClearThemeCache();
-				virtual void Paint(Gdiplus::Graphics& g);
+				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme);
 				void Clear();
 				void SetNameWidth(int w);
 				virtual void OnScroll(ScrollDirection dir);
@@ -36,13 +36,14 @@ namespace tj {
 				virtual void OnSettingsChanged();
 
 				std::vector< ref<Property> > _properties;
-				int _nameWidth;
+				Pixels _nameWidth;
 				ref<Inspectable> _subject;
 				ref<PathWnd> _path;
 				bool _isDraggingSplitter;
 				bool _showHints;
 
 				const static int KPathHeight = 24;
+				const static Pixels KMinimumNameColumnWidth = 10;
 		};
 	}
 }

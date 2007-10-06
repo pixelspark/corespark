@@ -50,7 +50,7 @@ void TabWnd::SetDraggingPane(ref<Pane> pane) {
 	Update();
 }
 
-void TabWnd::Paint(Graphics& g) {
+void TabWnd::Paint(Graphics& g, ref<Theme> theme) {
 	g.SetSmoothingMode(SmoothingModeDefault);
 	g.SetCompositingQuality(CompositingQualityDefault);
 

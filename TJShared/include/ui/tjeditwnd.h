@@ -9,7 +9,7 @@ namespace tj {
 				virtual ~EditWnd();
 				virtual std::wstring GetText();
 				void SetCue(std::wstring cue);
-				virtual void Paint(Gdiplus::Graphics& g);
+				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme);
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 				virtual void Layout();
 				virtual void SetText(std::wstring ws);

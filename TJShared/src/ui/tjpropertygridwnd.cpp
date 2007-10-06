@@ -50,7 +50,7 @@ void PropertyGridWnd::OnSettingsChanged() {
 	_nameWidth = StringTo<int>(st->GetValue(L"names.width", Stringify(_nameWidth)), _nameWidth);
 
 	_showHints = st->GetValue(L"hints.show", _showHints?L"yes":L"no")!=L"no";
-	if(_nameWidth<10) _nameWidth = 10; // TODO make KMinimumNameColumnWidth constant
+	if(_nameWidth<KMinimumNameColumnWidth) _nameWidth = KMinimumNameColumnWidth;
 }
 
 void PropertyGridWnd::ClearThemeCache() {
@@ -62,9 +62,8 @@ void PropertyGridWnd::ClearThemeCache() {
 	_editFont = CreateFont(-10, 0, 0, 0, 400, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, DEFAULT_PITCH, TL(ui_font));
 }
 
-void PropertyGridWnd::Paint(Graphics& g) {
+void PropertyGridWnd::Paint(Graphics& g, ref<Theme> theme) {
 	Area r = GetClientArea();
-	ref<Theme> theme = ThemeManager::GetTheme();
 
 	SolidBrush br(theme->GetPropertyBackgroundColor());
 	g.FillRectangle(&br,-1,-1,r.GetWidth()+1,r.GetHeight()+1);

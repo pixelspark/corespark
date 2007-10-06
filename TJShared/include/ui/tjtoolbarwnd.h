@@ -40,7 +40,7 @@ namespace tj {
 				ToolbarWnd();
 				virtual ~ToolbarWnd();
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
-				virtual void Paint(Gdiplus::Graphics& g);
+				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme);
 				virtual void Layout();
 				virtual void Add(ref<ToolbarItem> item);
 				virtual void OnCommand(int c);

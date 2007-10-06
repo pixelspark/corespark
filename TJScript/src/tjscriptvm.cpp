@@ -180,7 +180,6 @@ ref<Scriptable> VM::Execute(ref<ScriptContext> c, ref<CompiledScript> script, re
 	}
 	catch(Exception& e) {
 		if(_frame!=0) {
-			// TODO: fix
 			Log::Write(L"TJScript/VM",L"Error in scriptlet "+Stringify(_script->GetScriptletIndex(_frame->_scriptlet))+L": "+Ops::Names[opCode]);
 			Log::Write(L"TJScript/VM", std::wstring(L"Stack dump: ")+_stack.Dump());
 			Log::Write(L"TJScript/VM", Wcs(e.GetFile())+L"/"+Stringify(e.GetLine())+L": "+e.GetMsg());
