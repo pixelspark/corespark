@@ -1,4 +1,5 @@
 #include "../include/internal/tjscript.h"
+#include <limits>
 using namespace tj::script;
 using namespace tj::shared;
 
@@ -323,10 +324,11 @@ void OpDivHandler(VM* vm) {
 	}
 
 	if(va==0.0) {
-		throw ScriptException(L"Division by zero");
+		stack.Push(GC::Hold(new ScriptDouble(std::numeric_limits<double>::quiet_NaN())));
 	}
-
-	stack.Push(GC::Hold(new ScriptDouble(vb/va)));
+	else {
+		stack.Push(GC::Hold(new ScriptDouble(vb/va)));
+	}
 }
 
 void OpAndHandler(VM* vm) {

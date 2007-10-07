@@ -44,6 +44,18 @@ struct ScriptWriteDouble {
 	mutable ref<ScriptletStack> _stack;
 };
 
+struct ScriptWriteDoubleValue {
+	ScriptWriteDoubleValue(ScriptGrammar const* gram, double val);
+
+	template<typename T> void operator()(T,T) const {	
+		LiteralIdentifier li = _stack->Top()->StoreLiteral(GC::Hold(new ScriptDouble(_value)));
+		_stack->Top()->Add<LiteralIdentifier>(li);
+	}
+
+	mutable ref<ScriptletStack> _stack;
+	double _value;
+};
+
 // Ints can only be written by the parser itself, not from the file
 struct ScriptWriteInt {
 	int _value;
@@ -251,7 +263,9 @@ class ScriptGrammar : public grammar<ScriptGrammar> {
 					lexeme_d[str_p("true")[ScriptInstruction(&self, Ops::OpPushTrue)] | str_p("false")[ScriptInstruction(&self, Ops::OpPushFalse)]];
 
 				doubleValue = 
-					real_p[ScriptInstruction(&self, Ops::OpPushDouble)][ScriptWriteDouble(&self)];
+					  lexeme_d[str_p("NaN")[ScriptInstruction(&self, Ops::OpPushDouble)][ScriptWriteDoubleValue(&self, std::numeric_limits<double>::quiet_NaN())]]
+					| lexeme_d[str_p("Inf")[ScriptInstruction(&self, Ops::OpPushDouble)][ScriptWriteDoubleValue(&self, std::numeric_limits<double>::infinity())]]
+					| real_p[ScriptInstruction(&self, Ops::OpPushDouble)][ScriptWriteDouble(&self)];
 
 				nullValue =
 					lexeme_d[str_p("null")[ScriptInstruction(&self, Ops::OpPushNull)]];
@@ -561,6 +575,11 @@ struct ScriptStringLiteral {
 
 ScriptWriteDouble::ScriptWriteDouble(const ScriptGrammar *gram) {
 	_stack = gram->_stack;
+}
+
+ScriptWriteDoubleValue::ScriptWriteDoubleValue(ScriptGrammar const* gram, double val) {
+	_stack = gram->_stack;
+	_value = val;
 }
 
 ScriptWriteInt::ScriptWriteInt(const ScriptGrammar* gram, int i) {
