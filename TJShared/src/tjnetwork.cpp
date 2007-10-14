@@ -1,15 +1,15 @@
 #include "../include/tjshared.h"
 using namespace tj::shared;
 
-std::string Network::GetHostName() {
+std::string Networking::GetHostName() {
 	char buffer[256];
 	if(gethostname(buffer, 255)!=SOCKET_ERROR) {
 		return std::string(buffer);
 	}
-	return L"";
+	return "";
 }
 
-std::string Network::GetHostAddress() {
+std::string Networking::GetHostAddress() {
 	std::string hostName = GetHostName();
 	struct hostent *phe = gethostbyname(hostName.c_str());
     if(phe == 0) {

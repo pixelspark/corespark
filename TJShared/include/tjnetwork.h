@@ -3,7 +3,7 @@
 
 namespace tj {
 	namespace shared {
-		class EXPORTED Network {
+		class EXPORTED Networking {
 			public:
 				static std::string GetHostName();
 				static std::string GetHostAddress();
