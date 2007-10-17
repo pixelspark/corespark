@@ -125,6 +125,10 @@ Color Theme::GetLineColor() const {
 	return Color(50,50,50);
 }
 
+Color Theme::GetHintColor() const {
+	return GetActiveStartColor();
+}
+
 Color Theme::GetTextColor() const {
 	return Color(255,255,255);
 }

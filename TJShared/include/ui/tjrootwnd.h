@@ -37,6 +37,8 @@ namespace tj {
 				virtual void AddNotification(const std::wstring& message, std::wstring icon, int time=-1);
 				void RemoveNotification(NotificationWnd* nw);
 
+				void FullRepaint(); // use after switching theme
+
 			protected:
 				std::vector< ref<FloatingPane> > _floatingPanes;
 				std::vector < ref<TabWnd> > _tabWindows;

@@ -96,7 +96,7 @@ HRESULT DXTools::SaveGraphFile(CComPtr<IGraphBuilder> pGraph, std::wstring wszPa
 
 */
 
-int DXTools::GetDuration(std::wstring file) {
+int DXTools::GetDuration(const std::wstring& file) {
 	if(GetFileAttributes(file.c_str())==INVALID_FILE_ATTRIBUTES) {
 		return -1;
 	}

@@ -23,6 +23,7 @@ namespace tj {
 				void AddSearchPath(std::wstring path);
 				void RemoveSearchPath(std::wstring path);
 				void SetListener(ref<ResourceListener> listener);
+				std::wstring GetSearchPath() const;
 
 			protected:
 				ResourceManager();

@@ -18,7 +18,7 @@ namespace tj {
 			public:
 				/*static HRESULT SaveGraphFile(CComPtr<IGraphBuilder> graph, std::wstring path);
 				static HRESULT LoadGraphFile(CComPtr<IGraphBuilder> graph, std::wstring name);*/
-				static int GetDuration(std::wstring file);
+				static int GetDuration(const std::wstring& file);
 		};
 	}
 }

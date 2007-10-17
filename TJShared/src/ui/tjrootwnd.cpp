@@ -35,6 +35,12 @@ void RootWnd::RenameWindow(ref<Wnd> w, std::wstring n) {
 	}
 }
 
+void RootWnd::FullRepaint() {
+	RECT rc;
+	GetClientRect(GetWindow(), &rc);
+	RedrawWindow(GetWindow(), &rc, 0, RDW_ALLCHILDREN|RDW_INTERNALPAINT|RDW_INVALIDATE|RDW_ERASE);
+}
+
 bool RootWnd::IsOrphanPane(ref<Wnd> w) {
 	std::vector< ref<Pane> >::iterator it = _orphans.begin();
 	while(it!=_orphans.end()) {

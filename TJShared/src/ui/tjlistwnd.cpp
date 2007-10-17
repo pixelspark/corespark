@@ -113,7 +113,7 @@ void ListWnd::Paint(Gdiplus::Graphics &g, ref<Theme> theme) {
 		// draw the 'empty text'
 		StringFormat sf;
 		sf.SetAlignment(StringAlignmentCenter);
-		SolidBrush descBrush(theme->GetTrackDescriptionTextColor());
+		SolidBrush descBrush(theme->GetHintColor());
 		Area emptyTextArea = area;
 		emptyTextArea.Narrow(0,int(headHeight*1.5f),0,0);
 		g.DrawString(_emptyText.c_str(), (int)_emptyText.length(), theme->GetGUIFont(), emptyTextArea, &sf, &descBrush);

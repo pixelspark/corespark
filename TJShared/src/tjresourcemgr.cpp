@@ -17,6 +17,17 @@ ResourceManager::ResourceManager() {
 ResourceManager::~ResourceManager() {
 }
 
+std::wstring ResourceManager::GetSearchPath() const {
+	std::wostringstream os;
+	std::vector< std::wstring >::const_iterator it = _paths.begin();
+	while(it!=_paths.end()) {
+		const std::wstring& root = *it;
+		os << root << L";";
+		++it;
+	}
+	return os.str();
+}
+
 void ResourceManager::AddSearchPath(std::wstring path) {
 	_paths.push_back(path);
 }

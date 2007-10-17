@@ -71,6 +71,7 @@ namespace tj {
 				virtual void Run();
 				HANDLE _thread;
 				int _id;
+				bool _started;
 		};
 
 		class EXPORTED CriticalSection {

@@ -42,6 +42,7 @@ namespace tj {
 /* Thread */
 Thread::Thread() {
 	_thread = CreateThread(NULL, 512, ThreadProc, (LPVOID)this, CREATE_SUSPENDED, (LPDWORD)&_id);
+	_started = false;
 }
 
 Thread::~Thread() {
@@ -58,20 +59,28 @@ void Thread::Start() {
 
 	if(code==STILL_ACTIVE) {
 		// we're running...
+		_started = true;
 		ResumeThread(_thread);
 	}
 	else {
 		// finished correctly, run again
 		CloseHandle(_thread);
 		_thread = CreateThread(NULL, 512, ThreadProc, (LPVOID)this, CREATE_SUSPENDED, (LPDWORD)&_id);
+		_started = true;
 		ResumeThread(_thread);
 	}
 }
 
 void Thread::WaitForCompletion() {
+	if(!_started) {
+		// don't wait if the thread was never started
+		return;
+	}
+	
 	if(GetCurrentThread()==_thread) {
 		return; // Cannot wait on yourself
 	}
+
 	WaitForSingleObject(_thread,INFINITE);
 }
 
