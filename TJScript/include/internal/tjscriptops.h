@@ -48,6 +48,8 @@ namespace tj {
 					OpIterate,				// [varname] [iterable] => [..]
 					OpPushDelegate,
 					OpSetField,				// [scriptable] [identifier] [value] => [value]
+					OpAddToArray,			// [array] [scriptable] => [array]
+					OpPushArray,			// [..] => [array]
 					_OpLast,				// Should always be the last op
 				};
 

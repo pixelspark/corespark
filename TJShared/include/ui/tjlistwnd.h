@@ -9,6 +9,7 @@ namespace tj {
 					Column(std::wstring title=L"");
 					std::wstring _title;
 					float _width;
+					bool _visible;
 				};
 
 				ListWnd();
@@ -25,6 +26,8 @@ namespace tj {
 				virtual void SetColumnWidth(int id, float w);
 				virtual float GetColumnX(int id);
 				virtual float GetColumnWidth(int id);
+				virtual void SetColumnVisible(int id, bool v);
+				virtual bool IsColumnVisible(int id) const;
 
 				/* The 'empty text' is the text shown when the list is empty (could be a hint for the user
 				on how to fill the list */
@@ -41,6 +44,7 @@ namespace tj {
 				virtual void OnDoubleClickItem(int id, int col);
 				virtual void OnColumnSizeChanged();
 				virtual void OnSettingsChanged();
+				virtual void DoContextMenu(Pixels x, Pixels y);
 
 				// other stuff
 				void DrawCellText(Gdiplus::Graphics& g, Gdiplus::StringFormat* sf, Gdiplus::SolidBrush* br, Gdiplus::Font* font, int col, Area row, const std::wstring& str);

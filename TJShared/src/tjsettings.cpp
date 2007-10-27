@@ -16,6 +16,10 @@ class SettingsNamespace: public Settings {
 			return _settings->GetFlag(_ns+key);
 		}
 
+		virtual bool GetFlag(const std::wstring& key, bool def) const {
+			return _settings->GetFlag(_ns+key, def);
+		}
+
 		virtual std::wstring GetValue(const std::wstring& key) const {
 			return _settings->GetValue(_ns+key);
 		}
@@ -124,6 +128,15 @@ bool SettingsStorage::GetFlag(const std::wstring& key) const {
 	}
 	
 	Throw(L"SettingsStorage flag "+key+L" does not exist", ExceptionTypeWarning);
+}
+
+bool SettingsStorage::GetFlag(const std::wstring& key, bool def) const {
+	std::map< std::wstring, std::wstring >::const_iterator it = _data.find(key);
+	if(it!=_data.end()) {
+		return it->second == std::wstring(L"yes");
+	}
+
+	return def;
 }
 
 std::wstring SettingsStorage::GetValue(const std::wstring& key, const std::wstring& defaultValue) const {

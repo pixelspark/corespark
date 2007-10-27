@@ -5,5 +5,6 @@
 #include "tjscriptrange.h"
 #include "tjscripthash.h"
 #include "tjscriptmath.h"
+#include "tjscriptarray.h"
 
 #endif

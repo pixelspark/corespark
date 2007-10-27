@@ -42,6 +42,12 @@ namespace tj {
 			return os.str();
 		}
 
+		template<typename T> inline std::wstring StringifyHex(const T& x) {
+			std::wostringstream os;
+			os << std::hex << std::uppercase << x;
+			return os.str();
+		}
+
 		template<typename T> inline std::string StringifyMbs(const T& x) {
 			std::ostringstream os;
 			os << x;

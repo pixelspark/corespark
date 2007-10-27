@@ -13,3 +13,4 @@ ScriptTypeRegistration<ScriptMapType> mapRegistration(L"Map");
 ScriptTypeRegistration<ScriptRangeType> rangeRegistration(L"Range");
 ScriptTypeRegistration<ScriptHashType> hashRegistration(L"Hash");
 ScriptTypeRegistration<ScriptMathType> mathRegistration(L"Math");
+ScriptTypeRegistration<ScriptArrayType> arrayRegistration(L"Array");

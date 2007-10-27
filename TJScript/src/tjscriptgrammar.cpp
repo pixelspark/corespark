@@ -398,7 +398,7 @@ class ScriptGrammar : public grammar<ScriptGrammar> {
 					ch_p('[') >> expression >> ch_p(']')[ScriptInstruction(&self, Ops::OpIndex)];
 
 				factor =
-					(delegateConstruct | newConstruct | negatedFactor | (ch_p('(') >> expression >> ch_p(')')) | value | methodCallConstruct);
+					(arrayConstruct | delegateConstruct | newConstruct | negatedFactor | (ch_p('(') >> expression >> ch_p(')')) | value | methodCallConstruct);
 
 				negatedFactor = 
 					((ch_p('!')|ch_p('-')) >> factor)[ScriptInstruction(&self, Ops::OpNegate)];
@@ -423,6 +423,9 @@ class ScriptGrammar : public grammar<ScriptGrammar> {
 				blockConstruct =
 					ifConstruct | forConstruct | (statement >> !ch_p(';'));
 
+				arrayConstruct = 
+					eps_p('[') >> (ch_p('[')[ScriptInstruction(&self, Ops::OpPushArray)] >> !(expression[ScriptInstruction(&self, Ops::OpAddToArray)] % ch_p(',')) >> ch_p(']'));
+
 				returnConstruct =
 					(keyword_p("return") >> ((expression[ScriptInstruction(&self, Ops::OpReturnValue)]) | eps_p[ScriptInstruction(&self, Ops::OpReturn)]));
 
@@ -446,7 +449,7 @@ class ScriptGrammar : public grammar<ScriptGrammar> {
 			rule<ScannerT> stringValue, intValue, boolValue, doubleValue, nullValue;
 
 			// constructs
-			rule<ScannerT> scriptBody, block, function, functionConstruct, rawIdentifier, ifConstruct, comment, assignment, assignmentWithVar, assignmentWithoutVar, followingAssignment, value, identifier, declaredParameter, keyValuePair, parameterList, methodCall, expression, statement, blockConstruct, blockInFunction, blockInFor, script, returnConstruct, breakStatement, forConstruct, newConstruct, methodCallConstruct, followingMethodCall, delegateConstruct, qualifiedIdentifier;
+			rule<ScannerT> scriptBody, block, arrayConstruct, function, functionConstruct, rawIdentifier, ifConstruct, comment, assignment, assignmentWithVar, assignmentWithoutVar, followingAssignment, value, identifier, declaredParameter, keyValuePair, parameterList, methodCall, expression, statement, blockConstruct, blockInFunction, blockInFor, script, returnConstruct, breakStatement, forConstruct, newConstruct, methodCallConstruct, followingMethodCall, delegateConstruct, qualifiedIdentifier;
 			
 			// operators
 			rule<ScannerT> term, factor, negatedFactor, indexOperator, equalsOperator, notEqualsOperator, plusOperator, minOperator, divOperator, mulOperator, orOperator, andOperator, xorOperator, gtOperator, ltOperator, incrementByOperator, decrementByOperator, incrementOneOperator, decrementOneOperator;

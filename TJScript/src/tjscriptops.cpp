@@ -509,11 +509,25 @@ void OpSetFieldHandler(VM* vm) {
 	st.Push(value);
 }
 
+void OpPushArrayHandler(VM* vm) {
+	ScriptStack& st = vm->GetStack();
+	st.Push(GC::Hold(new ScriptArray()));
+}
+
+void OpAddToArrayHandler(VM* vm) {
+	ScriptStack& st = vm->GetStack();
+	ref<Scriptable> data = st.Pop();
+	ref<ScriptArray> lst = st.Top();
+	if(lst) {
+		lst->Push(data);
+	}
+}
+
 const wchar_t* Ops::Names[Ops::_OpLast] = {L"OpNop", L"OpPushString", L"OpPushDouble", L"OpPushTrue", L"OpPushFalse", L"OpPushInt", L"OpPushNull", L"OpPop", 
 L"OpCall", L"OpCallGlobal", L"OpNew", L"OpSave", L"OpEquals", L"OpNegate", L"OpAdd", L"OpSub", 
 L"OpMul", L"OpDiv", L"OpAnd",L"OpOr", L"OpBranchIf", L"OpParameter", L"OpNamelessParameter", L"OpPushParameter",
 L"OpLoadScriptlet", L"OpReturn", L"OpReturnValue", L"OpGreaterThan", L"OpLessThan", L"OpXor",
-L"OpBreak", L"OpIndex", L"OpIterate", L"OpPushDelegate", L"OpSetField" };
+L"OpBreak", L"OpIndex", L"OpIterate", L"OpPushDelegate", L"OpSetField", L"OpAddToArray", L"OpPushArray" };
 
 Ops::OpHandler Ops::Handlers[Ops::_OpLast] = {OpNopHandler,OpPushStringHandler,OpPushDoubleHandler,
 OpPushTrueHandler, OpPushFalseHandler,OpPushIntHandler, OpPushNullHandler, OpPopHandler,OpCallHandler,OpCallGlobalHandler,OpNewHandler,
@@ -521,5 +535,5 @@ OpSaveHandler,OpEqualsHandler,OpNegateHandler,OpAddHandler,OpSubHandler,
 OpMulHandler,OpDivHandler,OpAndHandler,OpOrHandler,OpBranchIfHandler,
 OpParameterHandler,OpNamelessParameterHandler,OpPushParameterHandler, OpLoadScriptletHandler, OpReturnHandler,
 OpReturnValueHandler,OpGreaterThanHandler,OpLessThanHandler,OpXorHandler,OpBreakHandler
-,OpIndexHandler,OpIterateHandler, OpPushDelegateHandler, OpSetFieldHandler};
+,OpIndexHandler,OpIterateHandler, OpPushDelegateHandler, OpSetFieldHandler, OpAddToArrayHandler, OpPushArrayHandler };
 

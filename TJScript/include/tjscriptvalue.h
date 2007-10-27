@@ -48,23 +48,7 @@ namespace tj {
 		};
 
 		/** Type specific script functions **/
-		template<> tj::shared::ref<Scriptable> ScriptValue<std::wstring>::TypeSpecificExecute(tj::script::Command command, tj::shared::ref<ParameterList> params) {
-			if(command==L"length") {
-				return tj::shared::GC::Hold(new ScriptValue<int>((int)_value.length()));
-			}
-			else if(command==L"toUpper") {
-				std::wstring temp = _value;
-				std::transform(temp.begin(), temp.end(), temp.begin(), toupper);
-				return tj::shared::GC::Hold(new ScriptValue<std::wstring>(temp));
-			}
-			else if(command==L"toLower") {
-				std::wstring temp = _value;
-				std::transform(temp.begin(), temp.end(), temp.begin(), tolower);
-				return tj::shared::GC::Hold(new ScriptValue<std::wstring>(temp));
-			}
-			return 0;
-		}
-
+		template<> tj::shared::ref<Scriptable> ScriptValue<std::wstring>::TypeSpecificExecute(tj::script::Command command, tj::shared::ref<ParameterList> params);
 
 		/** Standard typedefs */
 		typedef ScriptValue<std::wstring> ScriptString;

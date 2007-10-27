@@ -9,6 +9,7 @@ namespace tj {
 			public:
 				virtual ~Settings();
 				virtual bool GetFlag(const std::wstring& key) const = 0;
+				virtual bool GetFlag(const std::wstring& key, bool defaultValue) const = 0;
 				virtual std::wstring GetValue(const std::wstring& key) const = 0;
 				virtual std::wstring GetValue(const std::wstring& key, const std::wstring& defaultValue) const = 0;
 				virtual void SetValue(const std::wstring& key, const std::wstring& value) = 0;
@@ -25,6 +26,7 @@ namespace tj {
 
 				// Settings implementation
 				virtual bool GetFlag(const std::wstring& key) const;
+				virtual bool GetFlag(const std::wstring& key, bool defaultValue) const;
 				virtual std::wstring GetValue(const std::wstring& key) const;
 				virtual void SetValue(const std::wstring& key, const std::wstring& value);
 				virtual void SetFlag(const std::wstring& key, bool t);
