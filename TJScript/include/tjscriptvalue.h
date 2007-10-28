@@ -48,30 +48,22 @@ namespace tj {
 		};
 
 		/** Type specific script functions **/
-		template<> tj::shared::ref<Scriptable> ScriptValue<std::wstring>::TypeSpecificExecute(tj::script::Command command, tj::shared::ref<ParameterList> params);
+		template<> tj::shared::ref<Scriptable> SCRIPT_EXPORTED ScriptValue<std::wstring>::TypeSpecificExecute(tj::script::Command command, tj::shared::ref<ParameterList> params);
 
 		/** Standard typedefs */
 		typedef ScriptValue<std::wstring> ScriptString;
 		typedef ScriptValue<int> ScriptInt;
 		typedef ScriptValue<bool> ScriptBool;
 		typedef ScriptValue<double> ScriptDouble;
-
-		struct _Null {
-			_Null() {
-			}
-		};
-
-		class SCRIPT_EXPORTED ScriptNull: public ScriptValue<_Null> {				
+		
+		/** Null type/value **/
+		class SCRIPT_EXPORTED ScriptNull: public Scriptable {				
 			public:
-				ScriptNull(): ScriptValue<_Null>(_Null()) {
-				}
-				
-				virtual ~ScriptNull() {
-				}
+				ScriptNull();
+				virtual ~ScriptNull();
+				virtual tj::shared::ref<Scriptable> Execute(Command c, tj::shared::ref<ParameterList> p);
 		};
 	}
 }
-
-SCRIPT_EXPORTED std::wostringstream& operator <<(std::wostringstream& i, const tj::script::_Null& n);
 
 #endif

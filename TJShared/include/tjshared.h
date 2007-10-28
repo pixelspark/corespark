@@ -48,7 +48,7 @@
 #include "tjfilewriter.h"
 #include "tjsettings.h"
 #include "tjendpoint.h"
-
+#include "tjtime.h"
 #include "ui/tjui.h"
 #include "properties/tjproperties.h"
 

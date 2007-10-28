@@ -12,12 +12,8 @@ ProgressWnd::ProgressWnd(): ChildWnd(L"") {
 ProgressWnd::~ProgressWnd() {
 }
 
-LRESULT ProgressWnd::Message(UINT msg, WPARAM wp,LPARAM lp) {
-	if(msg==WM_TIMER) {
-		Update();
-	}
-
-	return ChildWnd::Message(msg, wp, lp);
+void ProgressWnd::OnTimer(unsigned int id) {
+	Update();
 }
 
 void ProgressWnd::Update() {
@@ -71,10 +67,10 @@ void ProgressWnd::SetValue(float x) {
 void ProgressWnd::SetIndeterminate(bool t) {
 	_indeterminate = t;
 	if(_indeterminate) {
-		SetTimer(GetWindow(), 10, 10, 0L);
+		StartTimer(Time(10), 0);
 	}
 	else {
-		KillTimer(GetWindow(), 10);
+		StopTimer(0);
 	}
 	Update();
 }

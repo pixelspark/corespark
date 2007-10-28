@@ -1042,6 +1042,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\include\tjtime.h"
+					>
+				</File>
+				<File
 					RelativePath=".\include\tjtimestamp.h"
 					>
 				</File>

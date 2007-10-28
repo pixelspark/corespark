@@ -5,6 +5,13 @@ namespace tj {
 	namespace shared {
 		typedef int Pixels; // Logical pixels are 1/Theme::KDefaultDPI inches
 
+		template<typename T> struct BasicCoord {
+			T x;
+			T y;
+		};
+
+		typedef BasicCoord<Pixels> Coord;
+
 		template<typename T> class BasicRectangle {
 			public:
 				BasicRectangle(T x=0, T y=0, T w=0, T h=0) {
@@ -79,6 +86,10 @@ namespace tj {
 					return (x > _x && y > _y && x < (_x+_w) && y < (_y+_h));
 				}
 				
+				bool IsInside(BasicCoord<T> pt) const {
+					return IsInside(pt.x, pt.y);
+				}
+
 				inline operator Gdiplus::RectF() const {
 					return Gdiplus::RectF(float(_x), float(_y), float(_w), float(_h));
 				}

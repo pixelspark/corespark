@@ -2,6 +2,19 @@
 using namespace tj::script;
 using namespace tj::shared;
 
+ScriptNull::ScriptNull() {
+}
+
+ScriptNull::~ScriptNull() {
+}
+
+ref<Scriptable> ScriptNull::Execute(Command c, ref<ParameterList> p) {
+	if(c==L"toString") {
+		return GC::Hold(new ScriptString(L"null"));
+	}
+	return 0;
+}
+
 template<> ref<Scriptable> ScriptValue<std::wstring>::TypeSpecificExecute(Command command, ref<ParameterList> params) {
 	if(command==L"length") {
 		return GC::Hold(new ScriptValue<int>((int)_value.length()));

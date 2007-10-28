@@ -4,7 +4,6 @@
 
 namespace tj {
 	namespace shared {
-
 		/** Class for initializing GDI+ **/
 		class EXPORTED GraphicsInit {
 			public:
@@ -21,8 +20,6 @@ namespace tj {
 			protected:
 				std::vector<HMONITOR> _displays;
 		};
-
-		typedef int Pixels;
 
 		enum ScrollDirection {
 			ScrollDirectionNone = 0,
@@ -42,11 +39,6 @@ namespace tj {
 			MouseEventLeave,
 			MouseEventMDown,
 			MouseEventMUp,
-		};
-
-		struct Coord {
-			Pixels x;
-			Pixels y;
 		};
 
 		class EXPORTED Wnd: public virtual Object {
@@ -127,10 +119,14 @@ namespace tj {
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
 				virtual void OnSettingsChanged();
 				virtual void OnDropFiles(const std::vector<std::wstring>& files);
+				virtual void OnTimer(unsigned int id);
+
+				// Timer
+				virtual void StartTimer(Time interval, unsigned int id);
+				virtual void StopTimer(unsigned int id);
 			
 			private:
 				static void RegisterClasses();
-
 				Gdiplus::Bitmap* _buffer;
 				bool _doubleBuffered;
 				bool _quitOnClose;

@@ -25,7 +25,6 @@ GraphicsInit::GraphicsInit() {
 }
 
 GraphicsInit::~GraphicsInit() {
-	
 }
 
 Wnd::Wnd(const wchar_t* title, HWND parent, const wchar_t* className, bool usedb, int exStyle) {
@@ -56,6 +55,14 @@ void Wnd::SetText(const wchar_t* t) {
 
 bool Wnd::IsFullScreen() {
 	return _fullScreen;
+}
+
+void Wnd::StartTimer(Time t, unsigned int id) {
+	::SetTimer(_wnd, id, t.ToInt(), NULL);
+}
+
+void Wnd::StopTimer(unsigned int id) {
+	::KillTimer(_wnd, id);
 }
 
 void Wnd::Update() {
@@ -480,6 +487,10 @@ LRESULT Wnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		}
 		return 0;
 	}
+	else if(msg==WM_TIMER) {
+		OnTimer((unsigned int)wp);
+		return 0;
+	}
 	// OnMouse handlers
 	else if(msg==WM_LBUTTONDOWN) {
 		ref<Theme> theme = ThemeManager::GetTheme();
@@ -660,6 +671,9 @@ LRESULT Wnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 // Default message handlers
 void Wnd::OnSize(const Area& newSize) {
 	//Repaint();
+}
+
+void Wnd::OnTimer(unsigned int id) {
 }
 
 void Wnd::OnScroll(ScrollDirection dir) {

@@ -8,12 +8,13 @@ namespace tj {
 				ProgressWnd();
 				virtual ~ProgressWnd();
 				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme);
-				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 				void SetIndeterminate(bool t);
 				void SetValue(float x);
 				void Update();
 
 			protected:
+				virtual void OnTimer(unsigned int id);
+
 				bool _indeterminate;
 				float _value;
 		};
