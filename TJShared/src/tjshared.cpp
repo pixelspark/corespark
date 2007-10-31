@@ -40,3 +40,7 @@ Endpoint::EndpointType Endpoint::GetType() const {
 
 Endpoint::~Endpoint() {
 }
+
+std::wstring Endpoint::GetName() const {
+	return TL(endpoint_unknown);
+}
