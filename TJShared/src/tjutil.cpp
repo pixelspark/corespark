@@ -19,5 +19,71 @@ namespace tj {
 			_itow_s(x, buffer, (size_t)16, 10);
 			return std::wstring(buffer);
 		}
+
+		Time::Time(const std::wstring& txt) {
+			std::wistringstream is(txt);
+			Time time;
+			is >> time;
+			_time = time._time;
+		}
+
+		std::wstring Time::Format() const {
+			float ft = float(_time);
+			float seconds = ft/1000.0f;
+			unsigned int ms = (_time%1000);
+
+			float mseconds = floor(fmod(seconds,60.0f));
+			float minutes = floor(fmod(seconds/60.0f, 60.0f));
+			float hours = floor(seconds/3600.0f);
+
+			// TJShow's format is hour:minute:second/ms
+			std::wostringstream os;
+			os.fill('0');
+			os  << hours << L':' << std::setw(2) << minutes << L':' << std::setw(2) << mseconds  << L'/' << std::setw(2)  << float(ms);
+
+			return os.str();
+		} 
+
+		std::wistream& operator>>(std::wistream& strm, Time& time) {
+			// {hour,minute,seconds,ms}
+			int data[4] = {0,0,0,0};
+
+			// The idea is that we put every new value we find in data[3], while shifting the existing value
+			// in data[3] to the left.
+			for(int a=0;a<5;a++) {
+				if(strm.eof()) break;
+				int val = 0;
+				strm >> val;
+
+				for(int b=0;b<4;b++) {
+					data[b] = data[b+1];
+				}
+				data[3] = val;
+
+				wchar_t delim;
+				if(strm.eof()) break;
+				strm >> delim;
+			}
+
+			time = Time(data[0]*3600*1000 + data[1]*60*1000 + data[2]*1000 + data[3]);
+			return strm;
+		}
+
+		std::istream& operator>>(std::istream& strm, Time& time) {
+			int x;
+			strm >> x;
+			time = Time(x);
+			return strm;
+		}
+
+		std::wostream& operator<<( std::wostream& strm, const Time& time ) {
+			strm << time.ToInt();
+			return strm;
+		}
+
+		std::ostream& operator<<( std::ostream& strm, const Time& time ) {
+			strm << time.ToInt();
+			return strm;
+		}
 	}
 }

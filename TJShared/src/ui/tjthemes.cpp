@@ -358,10 +358,10 @@ namespace tj {
 			ThemeSubscription _subscription_vista_theme(ref<Theme>(GC::Hold(new VistaTheme(Theme::KDefaultDPI))));
 
 			// All weird DPI themes
-			ThemeSubscription _theme_subscription_large(GC::Hold(new Theme(Theme::KDefaultDPI*2)));
-			ThemeSubscription _subscription_bright_theme_large(ref<Theme>(GC::Hold(new BrightTheme(Theme::KDefaultDPI*2))));
-			ThemeSubscription _theme_subscription_small(GC::Hold(new Theme(Theme::KDefaultDPI/1.414f)));
-			ThemeSubscription _subscription_vista_theme_large(ref<Theme>(GC::Hold(new VistaTheme(Theme::KDefaultDPI*2))));
+			ThemeSubscription _theme_subscription_large(GC::Hold(new Theme(Theme::KDefaultDPI*1.5f)));
+			ThemeSubscription _subscription_bright_theme_large(ref<Theme>(GC::Hold(new BrightTheme(Theme::KDefaultDPI*1.5f))));
+			ThemeSubscription _theme_subscription_small(GC::Hold(new Theme(Theme::KDefaultDPI/1.5f)));
+			ThemeSubscription _subscription_vista_theme_large(ref<Theme>(GC::Hold(new VistaTheme(Theme::KDefaultDPI*1.5f))));
 		}
 	}
 }

@@ -51,6 +51,12 @@ namespace tj {
 					_key = key;
 				}
 
+				SettingsMarshal(ref<Settings> st, const std::wstring& key, const T& defaultValue) {
+					_value = StringTo<T>(st->GetValue(key, Stringify(defaultValue)), T());
+					_settings = st;
+					_key = key;
+				}
+
 				~SettingsMarshal() {
 					_settings->SetValue(_key, Stringify(_value));
 				}
@@ -73,6 +79,12 @@ namespace tj {
 		/* Boolean flags are handled by Settings in a separate way */
 		template<> SettingsMarshal<bool>::SettingsMarshal(ref<Settings> st, const std::wstring& key) {
 			_value = st->GetFlag(key);
+			_settings = st;
+			_key = key;
+		}
+
+		template<> SettingsMarshal<bool>::SettingsMarshal(ref<Settings> st, const std::wstring& key, const bool& defaultVal) {
+			_value = st->GetFlag(key, defaultVal);
 			_settings = st;
 			_key = key;
 		}

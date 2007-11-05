@@ -272,7 +272,7 @@ LRESULT ListWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 
 void ListWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 	if(ev==MouseEventRDown) {
-		if(x<=GetHeaderHeightInPixels()) {
+		if(y<=GetHeaderHeightInPixels()) {
 			DoContextMenu(x,y);
 		}
 	}

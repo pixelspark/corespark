@@ -5,6 +5,7 @@ using namespace tj::shared;
 std::vector< ref<Theme> > ThemeManager::_themes;
 ref<Theme> ThemeManager::_theme;
 bool ThemeManager::_friendlyTime = false;
+ref<SettingsStorage> ThemeManager::_layoutSettings;
 
 ref<Theme> ThemeManager::GetTheme() {
 	return _theme;
@@ -15,6 +16,13 @@ void ThemeManager::AddTheme(ref<Theme> th) {
 	if(!_theme) {
 		_theme = th; // select this theme if no theme is selected yet
 	}
+}
+
+ref<SettingsStorage> ThemeManager::GetLayoutSettings() {
+	if(!_layoutSettings) {
+		_layoutSettings = GC::Hold(new SettingsStorage());
+	}
+	return _layoutSettings;
 }
 
 void ThemeManager::RemoveTheme(ref<Theme> thm) {

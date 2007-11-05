@@ -6,6 +6,7 @@ namespace tj {
 		class EXPORTED ThemeManager: public virtual Object {
 			public:
 				static ref<Theme> GetTheme();
+				static ref<SettingsStorage> GetLayoutSettings();
 				static void AddTheme(ref<Theme> thm);
 				static void RemoveTheme(ref<Theme> thm);
 				static void SelectTheme(ref<Theme> thm);
@@ -20,6 +21,7 @@ namespace tj {
 			protected:
 				static std::vector< ref<Theme> > _themes;
 				static ref<Theme> _theme;
+				static ref<SettingsStorage> _layoutSettings;
 				static bool _friendlyTime;
 		};
 

@@ -9,16 +9,13 @@ namespace tj {
 			TimeFormatSequential,
 		};
 
-		struct Time {
+		struct EXPORTED Time {
 			public:
 				inline Time(int time=0) {
 					_time = time;
 				}
 
-				inline Time(std::wstring t) {
-					std::wistringstream is(t);
-					is >> _time;
-				}
+				Time(const std::wstring& t);
 
 				inline Time& operator=(const Time& that) {
 					_time = that._time;
@@ -144,83 +141,17 @@ namespace tj {
 					return _time!=t._time;
 				}
 
-				std::wstring Format() const {
-					float ft = float(_time);
-					float seconds = ft/1000.0f;
-					unsigned int ms = (_time%1000) / 10;
-
-					float mseconds = floor(fmod(seconds,60.0f));
-					float minutes = floor(seconds/60.0f);
-					float hours = floor(seconds/3600.0f);
-
-					std::wostringstream os;
-					os.fill('0');
-					os  << hours << L':' << std::setw(2) << minutes << L':' << std::setw(2) << mseconds  << L'.' << std::setw(2)  << float(ms);
-
-					return os.str();
-				}
+				std::wstring Format() const;
 
 			protected:
 				int _time;
 		};
 
 
-		std::wostream& operator<<(std::wostream& strm, const Time& time);
-		std::wistream& operator>>(std::wistream& strm, Time& time);
-		std::ostream& operator<<(std::ostream& strm, const Time& time);
-		std::istream& operator>>(std::istream& strm, Time& time);
-
-		inline std::wostream& operator<<( std::wostream& strm, const Time& time ) {
-			///if(ThemeManager::IsFriendlyTime()) {
-			///	strm << time.Format();
-			///}
-			///else {
-			strm << time.ToInt();
-			///}
-			return strm;
-		}
-
-		inline std::ostream& operator<<( std::ostream& strm, const Time& time ) {
-			strm << time.ToInt();
-			return strm;
-		}
-
-		inline std::wistream& operator>>(std::wistream& strm, Time& time) {
-			int x;
-			strm >> x;
-
-			wchar_t y = L'\0';
-			strm >> y;
-
-			if(y==L':') {
-				int z = 0;
-				strm >> z;
-
-				y = L'\0';
-				strm >> y;
-				if(y==L':') {
-					int a = 0; // ms
-					strm >> a;
-					time = Time((x*60+z)*1000 + a);
-				}
-				else {
-					// x = minutes,
-					// z = seconds
-					time = Time((x*60+z)*1000);
-				}
-			}
-			else {
-				time = Time(x);
-			}
-			return strm;
-		}
-
-		inline std::istream& operator>>(std::istream& strm, Time& time) {
-			int x;
-			strm >> x;
-			time = Time(x);
-			return strm;
-		}
+		EXPORTED std::wostream& operator<<(std::wostream& strm, const Time& time);
+		EXPORTED std::ostream& operator<<(std::ostream& strm, const Time& time);
+		EXPORTED std::wistream& operator>>(std::wistream& strm, Time& time);
+		EXPORTED std::istream& operator>>(std::istream& strm, Time& time);
 	}
 }
 

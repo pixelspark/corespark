@@ -528,6 +528,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\properties\tjproperty.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\properties\tjpropertyseparator.cpp"
 					>
 					<FileConfiguration
