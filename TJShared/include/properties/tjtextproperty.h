@@ -5,7 +5,7 @@ namespace tj {
 	namespace shared {
 		class EXPORTED TextProperty: public virtual Object, public Property {
 			public:
-				TextProperty(std::wstring name, std::wstring* value, int height=100);
+				TextProperty(std::wstring name, std::wstring* value, Pixels height = 100);
 				virtual ~TextProperty();
 				virtual std::wstring GetValue();
 				virtual HWND GetWindow();
@@ -16,12 +16,12 @@ namespace tj {
 				
 				// Called when a repaint is about to begin and the value in the window needs to be updated
 				virtual void Update();
-				virtual int GetHeight();
+				virtual Pixels GetHeight();
 
 			protected:
 				std::wstring* _value;
 				HWND _wnd;
-				int _height;
+				Pixels _height;
 		};
 	}
 }

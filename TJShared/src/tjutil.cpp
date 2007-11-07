@@ -39,7 +39,7 @@ namespace tj {
 			// TJShow's format is hour:minute:second/ms
 			std::wostringstream os;
 			os.fill('0');
-			os  << hours << L':' << std::setw(2) << minutes << L':' << std::setw(2) << mseconds  << L'/' << std::setw(2)  << float(ms);
+			os  << hours << L':' << std::setw(2) << minutes << L':' << std::setw(2) << mseconds  << L'/' << std::setw(3)  << float(ms);
 
 			return os.str();
 		} 

@@ -4,8 +4,12 @@
 using namespace tj::shared;
 using namespace Gdiplus;
 
+/// TODO: Alles netjes Pixels maken ipv int (ook scrollbar), een GetPropertyAt(y=?) maken en de expand/collapse
+/// code fixen (en misschien sommige properties die nog niet met Pixels werken even fixen).
+
 /* PropertyGridWnd implementation */
-PropertyGridWnd::PropertyGridWnd(): ChildWnd(TL(properties)) {
+PropertyGridWnd::PropertyGridWnd(): ChildWnd(TL(properties)),
+_expandIcon(L"icons/shared/expand.png"), _collapseIcon(L"icons/shared/collapse.png") {
 	ClearThemeCache();
 	_nameWidth = 100;
 	SetStyle(WS_CLIPCHILDREN|WS_CLIPSIBLINGS);
@@ -96,6 +100,17 @@ void PropertyGridWnd::Paint(Graphics& g, ref<Theme> theme) {
 		
 		g.DrawString(ws.c_str(), (int)ws.length(),bold?theme->GetGUIFontBold():theme->GetGUIFont(), PointF(stringLeft, float(cH+5)), &tb);
 		
+		if(p->IsExpandable()) {
+			Area expander(_nameWidth-21, cH+3, 16, 16);
+			if(p->IsExpanded()) {
+				g.DrawImage(_collapseIcon, expander);
+			}
+			else {
+				g.DrawImage(_expandIcon, expander);
+			}
+		}
+		
+
 		cH += p->GetHeight() + 6;
 
 		++it;
@@ -106,6 +121,67 @@ void PropertyGridWnd::Paint(Graphics& g, ref<Theme> theme) {
 void PropertyGridWnd::OnScroll(ScrollDirection dir) {
 	Layout();
 	Repaint();
+}
+
+void PropertyGridWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
+	if(ev==MouseEventLUp) {
+		if(_isDraggingSplitter) {
+			_isDraggingSplitter = false;
+			ref<Settings> st = GetSettings();
+			if(st) {
+				st->SetValue(L"names.width", Stringify(_nameWidth));
+			}
+
+			Layout();
+			ReleaseCapture();
+		}
+	}
+	else if(ev==MouseEventLDown) {
+		if(x>(_nameWidth-5) && x<(_nameWidth+5)) {
+			_isDraggingSplitter = true;
+			SetCapture(GetWindow());
+		}
+		else if(x>(_nameWidth-21) && x<(_nameWidth-5)) {
+			// Expander/collapse icon
+			// Find the property at that location and collapse/expand it
+			// TODO: move to separate function
+			y -= KPathHeight;
+			int cH = -GetVerticalPos();
+			std::vector<ref<Property> >::iterator it = _properties.begin();
+
+			while(it!=_properties.end()) {
+				ref<Property> pr = *it;
+				if(pr) {
+					Pixels h = pr->GetHeight();
+					if(y>cH && y<cH+h) {
+						// found
+						if(pr->IsExpandable()) {
+							pr->SetExpanded(!pr->IsExpanded());
+						}
+						OnSize(GetClientArea()); // So our scrollbar is updated
+						Layout();
+						Repaint();
+						return;
+					}
+					cH += h + 6; // TODO: make the 6 a constant (see the Paint code for more info)
+				}
+				++it;
+			}
+		}
+	}
+	else if(ev==MouseEventMove) {
+		if(_isDraggingSplitter) {
+			_nameWidth = x;
+			Layout();
+		}
+
+		if(x>(_nameWidth-5) && x<(_nameWidth+5)) {
+			SetCursor(LoadCursor(0, IDC_SIZEWE));
+		}
+		else {
+			SetCursor(LoadCursor(0, IDC_ARROW));
+		}
+	}
 }
 
 LRESULT PropertyGridWnd::Message(UINT msg, WPARAM wParam, LPARAM lParam) {
@@ -194,39 +270,6 @@ LRESULT PropertyGridWnd::Message(UINT msg, WPARAM wParam, LPARAM lParam) {
 		Layout();
 		return 0;
 	}
-	else if(msg==WM_LBUTTONUP) {
-		_isDraggingSplitter = false;
-		ref<Settings> st = GetSettings();
-		if(st) {
-			st->SetValue(L"names.width", Stringify(_nameWidth));
-		}
-
-		Layout();
-		ReleaseCapture();
-		return 0;
-	}
-	else if(msg==WM_LBUTTONDOWN) {
-		int x = GET_X_LPARAM(lParam);
-		if(x>(_nameWidth-5) && x<(_nameWidth+5)) {
-			_isDraggingSplitter = true;
-			SetCapture(GetWindow());
-		}
-	}
-	else if(msg==WM_MOUSEMOVE) {
-		int x = GET_X_LPARAM(lParam);
-
-		if(_isDraggingSplitter) {
-			_nameWidth = x;
-			Layout();
-		}
-
-		if(x>(_nameWidth-5) && x<(_nameWidth+5)) {
-			SetCursor(LoadCursor(0, IDC_SIZEWE));
-		}
-		else {
-			SetCursor(LoadCursor(0, IDC_ARROW));
-		}
-	}
 
 	return ChildWnd::Message(msg,wParam, lParam);
 }
@@ -240,14 +283,14 @@ void PropertyGridWnd::Layout() {
 
 	float df = ThemeManager::GetTheme()->GetDPIScaleFactor();
 
-	int cH = KPathHeight - GetVerticalPos();
+	Pixels cH = KPathHeight - GetVerticalPos();
 	std::vector<ref<Property> >::iterator it = _properties.begin();
 
 	while(it!=_properties.end()) {
 		ref<Property> pr = *it;
 		if(pr) {
 			HWND vw = pr->GetWindow();
-			int h = pr->GetHeight();
+			Pixels h = pr->GetHeight();
 
 			SendMessage(vw, WM_SETFONT, (WPARAM)(HFONT)_editFont, FALSE);
 			LONG style = GetWindowLong(vw, GWL_STYLE);
@@ -258,7 +301,7 @@ void PropertyGridWnd::Layout() {
 			SetWindowPos(vw, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE|SWP_NOSIZE|SWP_NOACTIVATE);
 			SetWindowPos(vw, 0,  int(ceil(_nameWidth*df)), int(ceil((cH+3)*df)),  int(ceil((rect.GetWidth()-_nameWidth-3)*df)), int(ceil(h*df)), SWP_NOZORDER);
 			ShowWindow(vw, SW_SHOW);
-			cH += h + 6;
+			cH += h + 6; // TODO: make the 6 a constant
 		}
 		++it;
 	}

@@ -2,7 +2,7 @@
 using namespace tj::shared;
 using namespace Gdiplus;
 
-TextProperty::TextProperty(std::wstring name, std::wstring* value, int height): Property(name) {
+TextProperty::TextProperty(std::wstring name, std::wstring* value, Pixels height): Property(name, true) {
 	assert(value!=0);
 	_value = value;
 	_wnd = 0;
@@ -49,6 +49,6 @@ void TextProperty::Update() {
 	}
 }
 
-int TextProperty::GetHeight() {
-	return _height;
+Pixels TextProperty::GetHeight() {
+	return IsExpanded()?_height:(Property::GetHeight()*2);
 }

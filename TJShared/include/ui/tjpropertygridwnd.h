@@ -33,6 +33,7 @@ namespace tj {
 				HFONT _editFont;
 
 			protected:
+				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
 				virtual void OnSettingsChanged();
 
 				std::vector< ref<Property> > _properties;
@@ -41,6 +42,7 @@ namespace tj {
 				ref<PathWnd> _path;
 				bool _isDraggingSplitter;
 				bool _showHints;
+				Icon _expandIcon, _collapseIcon;
 
 				const static int KPathHeight = 24;
 				const static Pixels KMinimumNameColumnWidth = 10;

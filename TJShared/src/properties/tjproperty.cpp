@@ -1,7 +1,9 @@
 #include "../../include/tjshared.h"
 using namespace tj::shared;
 
-Property::Property(const std::wstring& name): _name(name) {
+Property::Property(const std::wstring& name, bool expandable): _name(name) {
+	_expandable = expandable;
+	_expanded = false;
 }
 
 Property::~Property() {
@@ -21,6 +23,18 @@ const std::wstring& Property::GetHint() const {
 
 void Property::SetHint(const std::wstring& h) {
 	_hint = h;
+}
+
+bool Property::IsExpandable() const {
+	return _expandable;
+}
+
+void Property::SetExpanded(bool t) {
+	_expanded = t;
+}
+
+bool Property::IsExpanded() {
+	return _expanded;
 }
 
 Inspectable::~Inspectable() {
