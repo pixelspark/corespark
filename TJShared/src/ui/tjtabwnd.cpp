@@ -4,7 +4,7 @@
 using namespace Gdiplus;
 using namespace tj::shared;
 
-TabWnd::TabWnd(RootWnd* root): ChildWnd(L"TabWnd", NULL) {
+TabWnd::TabWnd(RootWnd* root, const std::wstring& id): ChildWnd(L"TabWnd", NULL) {
 	SetStyle(WS_CLIPCHILDREN|WS_CLIPSIBLINGS);
 	_headerHeight = defaultHeaderHeight;
 	_root = root;
@@ -15,6 +15,7 @@ TabWnd::TabWnd(RootWnd* root): ChildWnd(L"TabWnd", NULL) {
 	fn = ResourceManager::Instance()->Get(L"icons/shared/tab_add.png");
 	_addIcon = Bitmap::FromFile(fn.c_str(), TRUE);
 	_childStyle = false;
+	_id = id;
 	Layout();
 }
 
@@ -175,31 +176,29 @@ void TabWnd::Clear() {
 	_panes.clear();
 }
 
-ref<Pane> TabWnd::AddPane(std::wstring name, ref<Wnd> wnd, bool closable, bool select, std::wstring icon) {
-	assert(wnd);
-	SetParent(wnd->GetWindow(), GetWindow());
-	wnd->Show(false);
-	ref<Pane> pane = GC::Hold(new Pane(name,wnd,false, closable, icon));
-	_panes.push_back(pane);
-
-	if(select) {
-		SelectPane(int(_panes.size())-1);
-	}
-	else if(!_current) {
-		SelectPane(0);
-	}
-	return pane;
+const std::wstring& TabWnd::GetID() const {
+	return _id;
 }
 
-ref<Pane> TabWnd::AddPane(ref<Pane> pane) {
+ref<Pane> TabWnd::AddPane(ref<Pane> pane, bool select) {
 	assert(pane && pane->GetWindow());
 	SetParent(pane->GetWindow()->GetWindow(), GetWindow());
 	pane->GetWindow()->Show(false);
 	_panes.push_back(pane);
+
+	Placement np;
+	np._type = Placement::Tab;
+	np._container = GetID();
+	pane->OnPlacementChange(np);
+
 	if(_panes.size()==1) {
 		SelectPane(0);
 	}
+	else if(select) {
+		SelectPane(pane);
+	}
 
+	Repaint();
 	return pane;
 }
 
@@ -502,7 +501,7 @@ void TabWnd::Detach(ref<Pane> p) {
 	if(p==_current) {
 		_current = 0;
 	}
-	ref<FloatingPane> fp = _root->AddFloatingPane(p, this);
+	ref<FloatingPane> fp = _root->AddFloatingPane(p);
 	ReleaseCapture();
 	SendMessage(fp->GetWindow(), WM_NCLBUTTONDOWN, HTCAPTION, 0);
 	Update();
@@ -514,6 +513,14 @@ void TabWnd::Attach(ref<Pane> p) {
 	AddPane(p);
 	SetParent(p->GetWindow()->GetWindow(), GetWindow());
 	Update();
+}
+
+Placement TabWnd::GetPlacement() const {
+	Placement p;
+	p._type = Placement::Tab;
+	p._container = _id;
+
+	return p;
 }
 
 ref<Pane> TabWnd::GetPaneAt(int x) {

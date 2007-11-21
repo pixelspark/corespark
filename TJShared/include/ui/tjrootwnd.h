@@ -12,7 +12,7 @@ namespace tj {
 				RootWnd(std::wstring title, const wchar_t* className=TJ_DEFAULT_CLASS_NAME, bool useDoubleBuffering=true);
 				virtual ~RootWnd();
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
-				ref<FloatingPane> AddFloatingPane(ref<Pane> pane, TabWnd* source);
+				ref<FloatingPane> AddFloatingPane(ref<Pane> pane);
 				void RemoveFloatingPane(ref<Pane> pn);
 				virtual void Update();
 
@@ -23,6 +23,7 @@ namespace tj {
 				// If wnd is not visible and addTo!=0, the pane will be added to the specified TabWnd
 				void RevealWindow(ref<Wnd> wnd, ref<TabWnd> addTo=0);
 				ref<TabWnd> FindTabWindowAt(int x, int y);
+				ref<TabWnd> GetTabWindowById(const std::wstring& id);
 				void SetDragTarget(ref<TabWnd> tw);
 				ref<TabWnd> GetDragTarget();
 				bool IsOrphanPane(ref<Wnd> wnd);
@@ -32,6 +33,8 @@ namespace tj {
 				void RemoveOrphanPane(ref<Pane> pane);
 				void RemoveWindow(ref<Wnd> w);
 				void RenameWindow(ref<Wnd> w, std::wstring name);
+
+				void AddPane(ref<Pane> p, bool select = false); // add by preferred placement
 
 				/* Notification API */
 				virtual void AddNotification(const std::wstring& message, std::wstring icon, int time=-1);

@@ -7,11 +7,10 @@ namespace tj {
 			friend class FloatingPane;
 
 			public:
-				TabWnd(RootWnd* root);
+				TabWnd(RootWnd* root, const std::wstring& id = L"");
 				virtual ~TabWnd();
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
-				ref<Pane> AddPane(std::wstring name, ref<Wnd> wnd, bool closable=false, bool select=false, std::wstring icon=L"");
-				ref<Pane> AddPane(ref<Pane> pane);
+				ref<Pane> AddPane(ref<Pane> pane, bool select = false);
 				ref<Pane> GetPane(int index);
 				void RemovePane(ref<Wnd> wnd);
 				void SelectPane(unsigned int index);
@@ -31,6 +30,8 @@ namespace tj {
 				void SetDetachAttachAllowed(bool allow);
 				void SelectPane(ref<Pane> pane);
 				virtual void Add(ref<Wnd> child); // do not use; use AddPane instead
+				const std::wstring& GetID() const;
+				Placement GetPlacement() const;
 			
 			protected:
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
@@ -48,6 +49,7 @@ namespace tj {
 				Gdiplus::Bitmap* _addIcon;
 				bool _detachAttachAllowed;
 				bool _childStyle;
+				std::wstring _id;
 
 				const static int TearOffLimit = 15;
 				enum {defaultHeaderHeight = 23};

@@ -95,8 +95,12 @@ LRESULT RootWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	return Wnd::Message(msg,wp,lp);
 }
 
-ref<FloatingPane> RootWnd::AddFloatingPane(ref<Pane> p, TabWnd* source) {
-	ref<FloatingPane> fp = GC::Hold(new FloatingPane(this, p, source));
+ref<FloatingPane> RootWnd::AddFloatingPane(ref<Pane> p) {
+	ref<FloatingPane> fp = GC::Hold(new FloatingPane(this, p));
+	
+	Placement np;
+	np._type = Placement::Floating;
+	p->OnPlacementChange(np);
 	_floatingPanes.push_back(fp);
 	return fp;
 }
@@ -131,6 +135,46 @@ void RootWnd::RemoveTabWindow(TabWnd* tw) {
 			return;
 		}
 		++it;
+	}
+}
+
+ref<TabWnd> RootWnd::GetTabWindowById(const std::wstring& id) {
+	std::vector< ref<TabWnd> >::iterator it = _tabWindows.begin();
+	while(it!=_tabWindows.end()) {
+		ref<TabWnd> tw = *it;
+		if(tw && tw->GetID()==id) {
+			return tw;
+		}
+		++it;
+	}
+	return 0;
+}
+
+void RootWnd::AddPane(ref<Pane> p, bool select) {
+	Placement np = p->GetPreferredPlacement();
+	if(np._type==Placement::Orphan) {
+		AddOrphanPane(p);
+	}
+	else if(np._type==Placement::Tab) {
+		ref<TabWnd> tab = GetTabWindowById(np._container);
+		if(tab) {
+			tab->AddPane(p, select);
+		}
+		else {
+			// Add as orphan
+			Log::Write(L"TJShared/RootWnd", L"Couldn't find container tab with id="+np._container);
+			AddOrphanPane(p);
+		}
+	}
+	else if(np._type==Placement::Floating) {
+		RECT pos = p->GetPreferredPosition(); // Important: this has to go *before* the creation of the FloatingPane!
+		ref<FloatingPane> fp = AddFloatingPane(p);
+
+		// Update position from prefs, but only if the window fits on the visible part of the screen
+		HMONITOR mon = MonitorFromRect(&pos, MONITOR_DEFAULTTONULL);
+		if(mon!=NULL) {
+			SetWindowPos(fp->GetWindow(), 0L, pos.left, pos.top, pos.right-pos.left, pos.bottom-pos.top, SWP_NOZORDER);
+		}
 	}
 }
 
@@ -232,6 +276,10 @@ void RootWnd::AddOrphanPane(ref<Pane> pane) {
 		window->Show(false);
 		SetParent(window->GetWindow(), GetWindow());
 		_orphans.push_back(pane);
+
+		Placement np;
+		np._type = Placement::Orphan;
+		pane->OnPlacementChange(np);
 	}
 }
 

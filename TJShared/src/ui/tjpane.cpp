@@ -2,11 +2,21 @@
 using namespace tj::shared;
 using namespace Gdiplus;
 
-Pane::Pane(std::wstring title, ref<Wnd> window, bool detached, bool closable, std::wstring icon) {
+Placement::Placement(Type t, const std::wstring& container) {
+	_type = t;
+	_container = container;
+}
+
+Placement::~Placement() {
+}
+
+Pane::Pane(const std::wstring& title, ref<Wnd> window, bool detached, bool closable, ref<Settings> st, const Placement& p, std::wstring icon): _defaultPlacement(p) {
 	_title = title;
 	_wnd = window;
 	_detached = detached;
 	_closable = closable;
+	_settings = st;
+
 	if(icon.length()>0) {
 		std::wstring path = ResourceManager::Instance()->Get(icon,true);
 		_icon = Image::FromFile(path.c_str(), TRUE);
@@ -20,8 +30,80 @@ Pane::~Pane() {
 	delete _icon;
 }
 
+std::wstring Placement::TypeToString(Placement::Type t) {
+	switch(t) {
+		case Placement::Floating:
+			return L"float";
+
+		case Placement::Tab:
+			return L"tab";
+
+		case Placement::Orphan:
+		default:
+			return L"none";
+	}
+}
+
+Placement::Type Placement::TypeFromString(const std::wstring& s) {
+	if(s==L"float") {
+		return Placement::Floating;
+	}
+	else if(s==L"tab") {
+		return Placement::Tab;
+	}
+	else {
+		return Placement::Orphan;
+	}
+}
+
 void Pane::SetTitle(std::wstring c) {
 	_title = c;
+}
+
+void Pane::OnMove(Pixels x, Pixels y, Pixels w, Pixels h) {
+	if(_settings) {
+		_settings->SetValue(L"x", Stringify(x));
+		_settings->SetValue(L"y", Stringify(y));
+		_settings->SetValue(L"w", Stringify(w));
+		_settings->SetValue(L"h", Stringify(h));
+	}
+}
+
+RECT Pane::GetPreferredPosition() {
+	RECT wrc;
+	GetWindowRect(GetWindow()->GetWindow(), &wrc);
+
+	if(_settings) {
+		RECT rc;
+		rc.left = StringTo<int>(_settings->GetValue(L"x", L"?"), wrc.left);
+		rc.top = StringTo<int>(_settings->GetValue(L"y", L"?"), wrc.top);
+		rc.right = rc.left + StringTo<int>(_settings->GetValue(L"w", L"?"), wrc.right-wrc.left);
+		rc.bottom = rc.top + StringTo<int>(_settings->GetValue(L"h", L"?"), wrc.bottom-wrc.top);
+
+		Log::Write(L"TJShared/Pane", L"x="+Stringify(rc.left)+L" y="+Stringify(rc.top)+L" / "+_settings->GetValue(L"x", L"?")+L" / "+_settings->GetValue(L"y", L"?"));
+		return rc;
+	}
+
+	return wrc;
+}
+
+void Pane::OnPlacementChange(Placement& p) {
+	if(_settings) {
+		// Write new placement to settings
+		_settings->SetValue(L"placement", Placement::TypeToString(p._type));
+		_settings->SetValue(L"container", p._container);
+	}
+}
+Placement Pane::GetPreferredPlacement() {
+	if(_settings) {
+		Placement p;
+		p._type = Placement::TypeFromString(_settings->GetValue(L"placement", Placement::TypeToString(_defaultPlacement._type)));
+		p._container = _settings->GetValue(L"container", _defaultPlacement._container);
+		return p;
+	}
+	else {
+		return _defaultPlacement;
+	}
 }
 
 Gdiplus::Image* Pane::GetIcon() {
@@ -55,11 +137,10 @@ bool Pane::HasIcon() const {
 	return _icon!=0 || _wnd->GetTabIcon()!=0;
 }
 
-FloatingPane::FloatingPane(RootWnd* rw, ref<Pane> p, TabWnd* source): Wnd(L"FloatingPane", 0, TJ_DEFAULT_CLASS_NAME, false) {
+FloatingPane::FloatingPane(RootWnd* rw, ref<Pane> p): Wnd(L"FloatingPane", 0, TJ_DEFAULT_CLASS_NAME, false) {
 	assert(p);
 	_pane = p;
 	_root = rw;
-	_source = source;
 	SetStyleEx(WS_EX_PALETTEWINDOW);
 	SetStyle(WS_OVERLAPPEDWINDOW|WS_MINIMIZEBOX|WS_MAXIMIZEBOX|WS_SYSMENU|WS_CAPTION);
 
@@ -82,8 +163,13 @@ FloatingPane::~FloatingPane() {
 }
 
 LRESULT FloatingPane::Message(UINT msg, WPARAM wp, LPARAM lp) {
-	if(msg==WM_SIZE) {
-		Layout();
+	if(msg==WM_SIZE || msg==WM_MOVE) {
+		if(msg==WM_SIZE) {
+			Layout();
+		}
+		RECT rc;
+		GetWindowRect(GetWindow(),&rc);
+		_pane->OnMove(rc.left, rc.top, rc.right-rc.left, rc.bottom-rc.top);
 	}
 	else if(msg==WM_CLOSE) {
 		ShowWindow(GetWindow(), SW_HIDE);
