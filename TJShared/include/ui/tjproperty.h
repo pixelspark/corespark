@@ -36,10 +36,23 @@ namespace tj {
 				std::wstring _hint;
 		};
 
+		class EXPORTED PropertySet: public virtual Object {
+			friend class PropertyGridWnd;
+
+			public:
+				PropertySet();
+				virtual ~PropertySet();
+				virtual void Add(ref<Property> p);
+				virtual void MergeAdd(ref<PropertySet> other);
+
+			protected:
+				std::vector< ref<Property> > _properties;
+		};
+
 		class EXPORTED Inspectable {
 			public:
 				virtual ~Inspectable();
-				virtual ref< std::vector< ref<Property> > > GetProperties()=0;
+				virtual ref<PropertySet> GetProperties()=0;
 		};
 
 		template<typename T> class GenericInspectable: public Inspectable {
@@ -50,7 +63,7 @@ namespace tj {
 				virtual ~GenericInspectable() {
 				}
 
-				virtual ref< std::vector< ref<Property> > > GetProperties() {
+				virtual ref<PropertySet> GetProperties() {
 					return _object->GetProperties();
 				}
 			

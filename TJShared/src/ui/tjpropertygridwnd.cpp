@@ -345,43 +345,45 @@ void PropertyGridWnd::Clear() {
 
 void PropertyGridWnd::Inspect(Inspectable* isp, ref<Path> p) {
 	_properties.clear();
-	
-	if(isp==0) {	
-		ClearThemeCache();
-		_path->SetPath(0);
-		OnSize(GetClientArea());
-		return;
-	}
 
-	ref< std::vector< ref<Property> > > props = isp->GetProperties();
-	if(!props) {
-		ClearThemeCache();
-		OnSize(GetClientArea());
-		_path->SetPath(0);
-		return;
-	}
+	if(isp!=0) {
+		ref<PropertySet> propset = isp->GetProperties();
+		if(propset) {
+			HWND myself = GetWindow();
+			HWND first = 0;
 
-	std::vector< ref<Property> >::iterator it = props->begin();
-	HWND myself = GetWindow();
-	HWND first = 0;
-	while(it!=props->end()) {
-		ref<Property> pr = *it;
-		if(pr!=0) {
-			HWND f = pr->Create(myself);
+			// Iterate over properties, create their windows and store the properties on our own list
+			std::vector< ref<Property> >::iterator it = propset->_properties.begin();
+			std::vector< ref<Property> >::iterator end = propset->_properties.end();
 
-			if(first==0) {
-				first = f;
+			while(it!=end) {
+				ref<Property> pr = *it;
+
+				if(pr) {
+					HWND f = pr->Create(myself);
+
+					if(first==0) {
+						first = f;
+					}
+
+					_properties.push_back(pr);
+				}
+				++it;
 			}
 
-			_properties.push_back(pr);
+			// Update geometry
+			_path->SetPath(p);
+			SetFocus(first);
+			ClearThemeCache();
+			SetVerticalPos(0);
+			OnSize(GetClientArea());
+			return;
 		}
-		++it;
 	}
-
-	_path->SetPath(p);
-	SetFocus(first);
+	
+	// Otherwise, make it empty
 	ClearThemeCache();
-	SetVerticalPos(0);
+	_path->SetPath(0);
 	OnSize(GetClientArea());
 }
 

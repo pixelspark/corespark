@@ -24,7 +24,7 @@ Pane::Pane(const std::wstring& title, ref<Wnd> window, bool detached, bool closa
 	else {
 		_icon = 0;
 	}
-}
+};
 
 Pane::~Pane() {
 	delete _icon;
@@ -80,7 +80,6 @@ RECT Pane::GetPreferredPosition() {
 		rc.right = rc.left + StringTo<int>(_settings->GetValue(L"w", L"?"), wrc.right-wrc.left);
 		rc.bottom = rc.top + StringTo<int>(_settings->GetValue(L"h", L"?"), wrc.bottom-wrc.top);
 
-		Log::Write(L"TJShared/Pane", L"x="+Stringify(rc.left)+L" y="+Stringify(rc.top)+L" / "+_settings->GetValue(L"x", L"?")+L" / "+_settings->GetValue(L"y", L"?"));
 		return rc;
 	}
 

@@ -1,6 +1,27 @@
 #include "../../include/tjshared.h"
 using namespace tj::shared;
 
+PropertySet::PropertySet() {
+}
+
+PropertySet::~PropertySet() {
+}
+
+void PropertySet::Add(ref<Property> p) {
+	_properties.push_back(p);
+}
+
+void PropertySet::MergeAdd(ref<PropertySet> p) {
+	if(!p) return;
+
+	std::vector< ref<Property> >::iterator it = p->_properties.begin();
+	std::vector< ref<Property> >::iterator end = p->_properties.end();
+	while(it!=end) {
+		_properties.push_back(*it);
+		++it;
+	}
+}
+
 Property::Property(const std::wstring& name, bool expandable): _name(name) {
 	_expandable = expandable;
 	_expanded = false;
