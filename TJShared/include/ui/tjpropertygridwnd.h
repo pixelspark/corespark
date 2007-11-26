@@ -5,7 +5,7 @@ namespace tj {
 	namespace shared {
 		class EXPORTED PropertyGridWnd: public ChildWnd {
 			public:
-				PropertyGridWnd();
+				PropertyGridWnd(bool withPath=true);
 				virtual ~PropertyGridWnd();
 				void Update();
 
@@ -35,6 +35,7 @@ namespace tj {
 			protected:
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
 				virtual void OnSettingsChanged();
+				Pixels GetPathHeight() const;
 
 				std::vector< ref<Property> > _properties;
 				Pixels _nameWidth;
@@ -44,7 +45,7 @@ namespace tj {
 				bool _showHints;
 				Icon _expandIcon, _collapseIcon;
 
-				const static int KPathHeight = 24;
+				const static Pixels KPathHeight = 24;
 				const static Pixels KMinimumNameColumnWidth = 10;
 		};
 	}

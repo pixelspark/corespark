@@ -5,7 +5,7 @@ namespace tj {
 	namespace shared {
 		class NotificationWnd;
 
-		class EXPORTED RootWnd: public Wnd {
+		class EXPORTED RootWnd: public TopWnd {
 			friend class NotificationWnd; 
 
 			public:

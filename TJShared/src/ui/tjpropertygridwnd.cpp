@@ -8,7 +8,7 @@ using namespace Gdiplus;
 /// code fixen (en misschien sommige properties die nog niet met Pixels werken even fixen).
 
 /* PropertyGridWnd implementation */
-PropertyGridWnd::PropertyGridWnd(): ChildWnd(TL(properties)),
+PropertyGridWnd::PropertyGridWnd(bool withPath): ChildWnd(TL(properties)),
 _expandIcon(L"icons/shared/expand.png"), _collapseIcon(L"icons/shared/collapse.png") {
 	ClearThemeCache();
 	_nameWidth = 100;
@@ -19,8 +19,11 @@ _expandIcon(L"icons/shared/expand.png"), _collapseIcon(L"icons/shared/collapse.p
 	_editFont = 0;
 	_showHints = true;
 	_isDraggingSplitter = false;
-	_path = GC::Hold(new PathWnd(this));
-	Add(_path);
+
+	if(withPath) {
+		_path = GC::Hold(new PathWnd(this));
+		Add(_path);
+	}
 	Layout();
 }
 
@@ -55,6 +58,10 @@ void PropertyGridWnd::OnSettingsChanged() {
 
 	_showHints = st->GetValue(L"hints.show", _showHints?L"yes":L"no")!=L"no";
 	if(_nameWidth<KMinimumNameColumnWidth) _nameWidth = KMinimumNameColumnWidth;
+
+	if(_path) {
+		_path->SetSettings(st->GetNamespace(L"path"));
+	}
 }
 
 void PropertyGridWnd::ClearThemeCache() {
@@ -72,7 +79,7 @@ void PropertyGridWnd::Paint(Graphics& g, ref<Theme> theme) {
 	SolidBrush br(theme->GetPropertyBackgroundColor());
 	g.FillRectangle(&br,-1,-1,r.GetWidth()+1,r.GetHeight()+1);
 
-	Pixels cH = KPathHeight-GetVerticalPos();
+	Pixels cH = GetPathHeight()-GetVerticalPos();
 	int hI = 0;
 	std::vector< ref<Property> >::iterator it = _properties.begin();
 
@@ -145,7 +152,7 @@ void PropertyGridWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 			// Expander/collapse icon
 			// Find the property at that location and collapse/expand it
 			// TODO: move to separate function
-			y -= KPathHeight;
+			y -= GetPathHeight();
 			int cH = -GetVerticalPos();
 			std::vector<ref<Property> >::iterator it = _properties.begin();
 
@@ -274,6 +281,10 @@ LRESULT PropertyGridWnd::Message(UINT msg, WPARAM wParam, LPARAM lParam) {
 	return ChildWnd::Message(msg,wParam, lParam);
 }
 
+Pixels PropertyGridWnd::GetPathHeight() const {
+	return _path ? KPathHeight : 0;
+}
+
 void PropertyGridWnd::Layout() {
 	Area rect = GetClientArea();
 
@@ -283,7 +294,7 @@ void PropertyGridWnd::Layout() {
 
 	float df = ThemeManager::GetTheme()->GetDPIScaleFactor();
 
-	Pixels cH = KPathHeight - GetVerticalPos();
+	Pixels cH = GetPathHeight() - GetVerticalPos();
 	std::vector<ref<Property> >::iterator it = _properties.begin();
 
 	while(it!=_properties.end()) {
@@ -322,7 +333,7 @@ void PropertyGridWnd::OnSize(const Area& ns) {
 		++it;
 	}
 
-	SetVerticalScrollInfo(Range<int>(0, totalHeight+KPathHeight), ns.GetHeight());
+	SetVerticalScrollInfo(Range<int>(0, totalHeight+GetPathHeight()), ns.GetHeight());
 	Layout();
 	Repaint();
 }
@@ -334,7 +345,10 @@ void PropertyGridWnd::Update() {
 		pr->Update();
 		++it;
 	}
-	_path->Update();
+
+	if(_path) {
+		_path->Update();
+	}
 	Repaint();
 }
 
@@ -372,7 +386,9 @@ void PropertyGridWnd::Inspect(Inspectable* isp, ref<Path> p) {
 			}
 
 			// Update geometry
-			_path->SetPath(p);
+			if(_path) {
+				_path->SetPath(p);
+			}
 			SetFocus(first);
 			ClearThemeCache();
 			SetVerticalPos(0);
@@ -383,7 +399,9 @@ void PropertyGridWnd::Inspect(Inspectable* isp, ref<Path> p) {
 	
 	// Otherwise, make it empty
 	ClearThemeCache();
-	_path->SetPath(0);
+	if(_path) {
+		_path->SetPath(0);
+	}
 	OnSize(GetClientArea());
 }
 

@@ -1,7 +1,7 @@
 #include "../../include/tjshared.h"
 using namespace tj::shared;
 
-RootWnd::RootWnd(std::wstring title, const wchar_t* className, bool usedb): Wnd(title.c_str(),0, className, usedb) {
+RootWnd::RootWnd(std::wstring title, const wchar_t* className, bool usedb): TopWnd(title.c_str(),0, className, usedb) {
 	SetStyleEx(WS_EX_CONTROLPARENT);
 }
 
@@ -92,7 +92,7 @@ LRESULT RootWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	if(msg==WM_ENTERMENULOOP) {
 		return 0;
 	}
-	return Wnd::Message(msg,wp,lp);
+	return TopWnd::Message(msg,wp,lp);
 }
 
 ref<FloatingPane> RootWnd::AddFloatingPane(ref<Pane> p) {

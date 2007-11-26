@@ -51,7 +51,6 @@ namespace tj {
 				virtual void Show(bool s);
 				bool IsShown() const;
 				void Repaint();
-				void SetQuitOnClose(bool q);
 				virtual void Layout();
 				virtual void Update();
 				virtual LRESULT PreMessage(UINT msg, WPARAM wp, LPARAM lp);
@@ -76,7 +75,6 @@ namespace tj {
 				void SetVerticalScrollInfo(Range<int> rng, int pageSize);
 
 				virtual void Move(Pixels x, Pixels y, Pixels w, Pixels h);
-				virtual bool IsSplitter();
 
 				virtual std::wstring GetText();
 				virtual void SetText(std::wstring text);
@@ -129,7 +127,6 @@ namespace tj {
 				static void RegisterClasses();
 				Gdiplus::Bitmap* _buffer;
 				bool _doubleBuffered;
-				bool _quitOnClose;
 				int _horizontalPos;
 				int _verticalPos;
 				int _horizontalPageSize;
@@ -140,6 +137,22 @@ namespace tj {
 				bool _fullScreen;
 				bool _wantsMouseLeave;
 				ref<Settings> _settings;
+		};
+
+		class EXPORTED TopWnd: public Wnd {
+			public:
+				TopWnd(const wchar_t* title, HWND parent=0, const wchar_t* className=TJ_DEFAULT_CLASS_NAME,  bool useDoubleBuffering=true, int exStyle=0L);
+				virtual ~TopWnd();
+				virtual void SetQuitOnClose(bool t);
+				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
+				virtual void GetMinimumSize(Pixels& w, Pixels& h);
+
+			protected:
+				virtual void OnSize(const Area& ns);
+				virtual void OnSettingsChanged();
+
+			private:
+				bool _quitOnClose;
 		};
 	}
 }

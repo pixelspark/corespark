@@ -29,7 +29,6 @@ GraphicsInit::~GraphicsInit() {
 
 Wnd::Wnd(const wchar_t* title, HWND parent, const wchar_t* className, bool usedb, int exStyle) {
 	RegisterClasses();
-	_quitOnClose = false;
 	_horizontalPos = 0;
 	_verticalPos = 0;
 	_horizontalPageSize = 1;
@@ -163,10 +162,6 @@ void Wnd::SetFullScreen(bool fs, int d) {
 		Repaint();
 	}
 	_fullScreen = fs;
-}
-
-bool Wnd::IsSplitter() {
-	return false;
 }
 
 void Wnd::Show(bool t) {
@@ -312,10 +307,6 @@ bool Wnd::IsMouseOver() {
 	GetWindowRect(_wnd, &rc);
 	
 	return (cursorPosition.x > rc.left && cursorPosition.y > rc.top && cursorPosition.x < rc.right && cursorPosition.y < rc.bottom);
-}
-
-void Wnd::SetQuitOnClose(bool q) {
-	_quitOnClose = q;
 }
 
 void Wnd::SetStyle(DWORD s) {
@@ -481,10 +472,6 @@ LRESULT Wnd::PreMessage(UINT msg, WPARAM wp, LPARAM lp) {
 LRESULT Wnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	if(msg==WM_CLOSE) {
 		Show(false);
-		if(_quitOnClose) {
-			DestroyWindow(_wnd);
-			PostQuitMessage(0);
-		}
 		return 0;
 	}
 	else if(msg==WM_TIMER) {
@@ -923,4 +910,81 @@ RECT Displays::GetDisplayRectangle(int idx) {
 	}
 	RECT r = {0,0,0,0};
 	return r;
+}
+
+/** TopWnd **/
+TopWnd::TopWnd(const wchar_t* title, HWND parent, const wchar_t* className,  bool usedb, int ex): Wnd(title, parent, className, usedb, ex), _quitOnClose(false) {
+}
+
+TopWnd::~TopWnd() {
+}
+
+void TopWnd::OnSize(const Area& ns) {
+	ref<Settings> st = GetSettings();
+	Area rc = GetClientArea();
+	if(st) {
+		st->SetValue(L"width", Stringify(rc.GetWidth()));
+		st->SetValue(L"height", Stringify(rc.GetHeight()));
+	}
+
+	Wnd::OnSize(ns);
+} 
+
+void TopWnd::OnSettingsChanged() {
+	ref<Settings> st = GetSettings();
+
+	Pixels w = StringTo<Pixels>(st->GetValue(L"width", L"0"),0);
+	Pixels h = StringTo<Pixels>(st->GetValue(L"height", L"0"),0);
+	int x = StringTo<int>(st->GetValue(L"x", L"0"), 0);
+	int y = StringTo<int>(st->GetValue(L"y", L"0"), 0);
+
+	// Set window position (but only if x>0 and y>0)
+	if(x>0 && y>0) {
+		SetWindowPos(GetWindow(), 0L, x, y, 0, 0, SWP_NOZORDER|SWP_NOSIZE);
+	}
+
+	// Set window size (but only if w>0 and h>0)
+	if(w>0 && h>0) {
+		ref<Theme> theme = ThemeManager::GetTheme();
+		SetWindowPos(GetWindow(), 0L, 0, 0l, long(w*theme->GetDPIScaleFactor()), long(h*theme->GetDPIScaleFactor()), SWP_NOZORDER|SWP_NOMOVE);
+	}
+}
+
+void TopWnd::SetQuitOnClose(bool t) {
+	_quitOnClose = t;
+}
+
+LRESULT TopWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
+	if(msg==WM_CLOSE && _quitOnClose) {
+		DestroyWindow(GetWindow());
+		PostQuitMessage(0);
+	}
+	else if(msg==WM_MOVE) {
+		ref<Settings> st = GetSettings();
+		if(st) {
+			RECT rc;
+			GetWindowRect(GetWindow(), &rc);
+
+			st->SetValue(L"x", Stringify(rc.left));
+			st->SetValue(L"y", Stringify(rc.top));
+		}
+	}
+	else if(msg==WM_GETMINMAXINFO) {
+		MINMAXINFO* mm = (MINMAXINFO*)lp;
+		Pixels w = 0;
+		Pixels h = 0;
+		GetMinimumSize(w,h);
+
+		if(w!=0 && h!=0) {
+			ref<Theme> theme = ThemeManager::GetTheme();
+			mm->ptMinTrackSize.x = (long)(w * theme->GetDPIScaleFactor());
+			mm->ptMinTrackSize.y = (long)(h * theme->GetDPIScaleFactor());
+			return 0;
+		}
+	}
+
+	return Wnd::Message(msg,wp,lp);
+}
+
+void TopWnd::GetMinimumSize(Pixels& w, Pixels& h) {
 }

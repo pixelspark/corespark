@@ -28,7 +28,7 @@ void ListWnd::OnSettingsChanged() {
 			changed = true;
 		}
 
-		it->second._visible = st->GetFlag(L"col-"+Stringify(it->first)+L".visible", true);
+		it->second._visible = st->GetFlag(L"col-"+Stringify(it->first)+L".visible", it->second._visible);
 
 		++it;
 	}
