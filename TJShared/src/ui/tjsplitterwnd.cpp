@@ -7,12 +7,14 @@ using namespace tj::shared;
 const float SplitterWnd::KSnapMargin = 0.07f;
 const Pixels SplitterWnd::KBarHeight = 6;
 
-SplitterWnd::SplitterWnd(Orientation o): ChildWnd(L"Splitter", true, false) {
-	SetStyle(WS_CLIPCHILDREN);
-	SetStyle(WS_CLIPSIBLINGS);
+SplitterWnd::SplitterWnd(Orientation o): ChildWnd(L"Splitter", true, true) {
+	SetStyle(WS_CLIPCHILDREN|WS_CLIPSIBLINGS);
+	SetStyleEx(WS_EX_CONTROLPARENT);
+	SetWantMouseLeave(true);
 	_collapse = CollapseNone;
 
 	_ratio = 0.618f; // Fibonacci :-)
+	_ratioBeforeDragging = 0.5f; // Gets changed when dragging
 	_defaultRatio = 0.618f;
 	_dragging = false;
 	_orientation = o;
@@ -79,6 +81,19 @@ void SplitterWnd::OnSettingsChanged() {
 
 	_ratio = StringTo<float>(st->GetValue(L"ratio", Stringify(_ratio)), _ratio);
 	_defaultRatio = _ratio;
+
+	// Load collapse mode
+	std::wstring cm = st->GetValue(L"collapse", L"");
+	if(cm==L"first") {
+		_collapse = CollapseFirst;
+	}
+	else if(cm==L"second") {
+		_collapse = CollapseSecond;
+	}
+	else {
+		_collapse = CollapseNone;
+	}
+
 	Layout();
 	Repaint();
 }
@@ -87,15 +102,31 @@ void SplitterWnd::Layout() {
 	Area rc = GetClientArea();
 	
 	if(_collapse==CollapseFirst) {
+		ref<Theme> theme = ThemeManager::GetTheme();
+		if(_orientation==OrientationVertical) {
+			rc.Narrow(0,0,theme->GetMeasureInPixels(Theme::MeasureToolbarHeight),0);
+		}
+		else {
+			rc.Narrow(0,0,0,theme->GetMeasureInPixels(Theme::MeasureToolbarHeight));
+		}
+
 		if(_a) _a->Fill(LayoutFill, rc);
 		if(_b) _b->Show(false);
 	}
 	else if(_collapse==CollapseSecond) {
+		ref<Theme> theme = ThemeManager::GetTheme();
+		if(_orientation==OrientationVertical) {
+			rc.Narrow(theme->GetMeasureInPixels(Theme::MeasureToolbarHeight),0,0,0);
+		}
+		else {
+			rc.Narrow(0,theme->GetMeasureInPixels(Theme::MeasureToolbarHeight),0,0);
+		}
+
 		if(_b) _b->Fill(LayoutFill, rc);
 		if(_a) _a->Show(false);
 	}
 	else {
-		rc.Narrow(1,1,1,1);
+		//rc.Narrow(1,1,1,1);
 		if(_a) _a->Show(true);
 		if(_b) _b->Show(true);
 		if(_orientation==OrientationHorizontal) {
@@ -145,22 +176,121 @@ void SplitterWnd::Expand() {
 	Repaint();
 }
 
-void SplitterWnd::Paint(Graphics& g, ref<Theme> theme) {
-	if(_collapse==CollapseNone) {
-		ref<Theme> theme = ThemeManager::GetTheme();
-		Area rc = GetClientArea();
+Area SplitterWnd::GetBarArea() {
+	Area bar;
+	Area rc = GetClientArea();
+	ref<Theme> theme = ThemeManager::GetTheme();
+	Pixels barWidth = theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
+	if(_collapse==CollapseFirst) { // First one is visible, so bar on the right
+		if(_orientation==OrientationVertical) {
+			bar = Area(rc.GetWidth()-barWidth+1, 0, barWidth, rc.GetHeight());
+		}
+		else {
+			bar = Area(0, rc.GetHeight()-barWidth, rc.GetWidth(), barWidth);
+		}
+	}
+	else { // second one visible, bar on the left
+		if(_orientation==OrientationVertical) {
+			bar = Area(0, 0, barWidth, rc.GetHeight());
+		}
+		else {
+			bar = Area(0, 0, rc.GetWidth(), barWidth);
+		}
+	}
 
+	return bar;
+}
+
+void SplitterWnd::Paint(Graphics& g, ref<Theme> theme) {
+	Area rc = GetClientArea();
+	
+	if(_collapse==CollapseNone) {
 		HWND root = GetAncestor(GetWindow(), GA_ROOT);
 		Gdiplus::Brush* abr = theme->GetApplicationBackgroundBrush(root, GetWindow());
 		if(abr!=0) {
 			g.FillRectangle(abr, rc);
 		}
 	}
+	else {
+		Area bar = GetBarArea();
+		bar.Narrow(-1,-1,-1,-1);
+		PointF start, end;
+		if(_orientation==OrientationVertical) {
+			end = PointF(float(bar.GetLeft()),0.0f);
+			start = PointF(float(bar.GetRight()), 0.0f);
+		}
+		else {
+			end = PointF(0.0f, float(bar.GetTop()));
+			start = PointF(0.0f, float(bar.GetBottom()));
+		}
+
+		LinearGradientBrush lbr(start, end, theme->GetProgressBackStart(), theme->GetProgressBackEnd());
+		SolidBrush back(theme->GetBackgroundColor());
+		SolidBrush disabled(theme->GetDisabledOverlayColor());
+		g.FillRectangle(&back, bar);
+		g.FillRectangle(&lbr,bar);
+		//g.FillRectangle(&disabled,bar);
+
+		// Draw a border
+		Pen borderPen(theme->GetActiveEndColor(), 1.0f);
+		if(_orientation==OrientationVertical) {
+			// to the left of the bar
+			g.DrawLine(&borderPen, float(bar.GetLeft()), float(bar.GetTop()), float(bar.GetLeft()), float(bar.GetBottom()));
+		}
+		else {
+			// to the bottom of the bar
+			g.DrawLine(&borderPen, float(bar.GetLeft()), float(bar.GetBottom()), float(bar.GetRight()), float(bar.GetBottom()));
+		}
+
+		// Draw text
+		std::wstring title;
+		if(_collapse==CollapseFirst && _b) {
+			title = _b->GetTabTitle();
+		}
+		else if(_collapse==CollapseSecond && _a) {
+			title = _a->GetTabTitle();
+		}
+		SolidBrush tbr(theme->GetActiveStartColor());
+		StringFormat sf;
+		sf.SetAlignment(StringAlignmentNear);
+
+		GraphicsContainer gc = g.BeginContainer();
+
+		if(_orientation==OrientationVertical) {
+			g.TranslateTransform(float(bar.GetLeft())+20.0f, float(bar.GetTop())+3.0f);
+			g.RotateTransform(90.0f);
+		}
+		else {
+			g.TranslateTransform(float(bar.GetLeft())+3.0f, float(bar.GetTop())+3.0f);
+		}
+		
+		g.DrawString(title.c_str(), (int)title.length(), theme->GetGUIFontBold(), PointF(0.0f, 0.0f), &sf, &tbr);
+		g.EndContainer(gc);
+	}
+}
+
+std::wstring SplitterWnd::GetTabTitle() const {
+	std::wstring title;
+	bool more = false;
+	if(_a) {
+		title += _a->GetTabTitle();
+		more = true;
+	}
+
+	if(_b) {
+		if(more) {
+			title += L" & ";
+		}
+		title += _b->GetTabTitle();
+	}
+
+	return title;
 }
 
 LRESULT SplitterWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	if(msg==WM_SIZE) {
 		Layout();
+		Repaint();
 	}
 	else if(msg==WM_MOUSEMOVE) {
 		int x = GET_X_LPARAM(lp);
@@ -176,49 +306,70 @@ LRESULT SplitterWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 				_ratio = float(x)/float(rc.right-rc.left);
 			}
 
-			// Snap and protect from going out of view
-			float full = _orientation==OrientationHorizontal?float(rc.bottom-rc.top):float(rc.right-rc.left);
-			float relativeBarSize = (float(KBarHeight) / full)/2.0f;
-
-			if(_ratio>(1.0f-KSnapMargin)) _ratio = 1.0f-relativeBarSize;
-			if(_ratio<KSnapMargin) _ratio = relativeBarSize;
 			Layout();
 			Repaint();
 		}
 		else {
-			RECT rc;
-			GetClientRect(GetWindow(),&rc);
-			if(_orientation==OrientationHorizontal) {
-				int bH = int(_ratio * (rc.bottom-rc.top)-(KBarHeight/2));
-				SetCursor(LoadCursor(0,IDC_SIZENS));
+			if(_collapse==CollapseNone) {
+				if(_orientation==OrientationHorizontal) {
+					SetCursor(LoadCursor(0,IDC_SIZENS));
 
+				}
+				else if(_orientation==OrientationVertical) {
+					SetCursor(LoadCursor(0,IDC_SIZEWE));
+				}
 			}
-			else if(_orientation==OrientationVertical) {
-				int bH = int(_ratio * (rc.right-rc.left)-(KBarHeight/2));
-				SetCursor(LoadCursor(0,IDC_SIZEWE));
+			else {
+				SetCursor(LoadCursor(0, IDC_ARROW));
 			}
 		}
+		Repaint();
 	}
 	else if(msg==WM_LBUTTONDOWN) {
-		SetCursor(LoadCursor(0,_orientation==OrientationHorizontal?IDC_SIZENS:IDC_SIZEWE));
-		SetCapture(GetWindow());
-		_dragging = true;
-		Repaint();
-	}
-	else if(msg==WM_LBUTTONUP) {
-		_dragging = false;
-		ReleaseCapture();
-		SetCursor(LoadCursor(0,IDC_ARROW));
-		Repaint();
-
-		// save ratio as a setting
-		ref<Settings> st = GetSettings();
-		if(st) {
-			st->SetValue(L"ratio", Stringify(_ratio));
+		if(_collapse==CollapseNone) {
+			SetCursor(LoadCursor(0,_orientation==OrientationHorizontal?IDC_SIZENS:IDC_SIZEWE));
+			SetCapture(GetWindow());
+			_ratioBeforeDragging = _ratio;
+			_dragging = true;
+			Repaint();
 		}
 	}
-	else if(msg==WM_LBUTTONDBLCLK) {
-		Collapse();
+	else if(msg==WM_LBUTTONUP) {
+		if(_collapse==CollapseNone) {
+			_dragging = false;
+			ReleaseCapture();
+			SetCursor(LoadCursor(0,IDC_ARROW));
+
+			// If we're close to the borders, collapse
+			if(_ratio>(1.0f-KSnapMargin)) {
+				_ratio = _ratioBeforeDragging;
+				Collapse(CollapseFirst);
+				_dragging = false;
+				ReleaseCapture();
+			}
+			else if(_ratio<KSnapMargin) {
+				_ratio = _ratioBeforeDragging;
+				Collapse(CollapseSecond);
+				_dragging = false;
+				ReleaseCapture();
+			}
+			else {
+				// save ratio as a setting
+				ref<Settings> st = GetSettings();
+				if(st) {
+					st->SetValue(L"ratio", Stringify(_ratio));
+				}
+			}
+		}
+		else {
+			Collapse(CollapseNone);
+		}
+	}
+	else if(msg==WM_LBUTTONDBLCLK && _collapse==CollapseNone) {
+		Collapse(CollapseFirst);
+	}
+	else if(msg==WM_RBUTTONDBLCLK && _collapse==CollapseNone) {
+		Collapse(CollapseSecond);
 	}
 
 	return ChildWnd::Message(msg,wp,lp);
@@ -226,6 +377,22 @@ LRESULT SplitterWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 
 void SplitterWnd::Collapse(CollapseMode cm) {
 	_collapse = cm;
+
+	// Stringify collapse mode
+	std::wstring cms = L"none";
+	if(cm==CollapseFirst) {
+		cms = L"first";
+	}
+	else if(cm==CollapseSecond) {
+		cms = L"second";
+	}
+
+	// Save it to settings
+	ref<Settings> st = GetSettings();
+	if(st) {
+		st->SetValue(L"collapse", cms);
+	}
+
 	Layout();
 	Repaint();
 }

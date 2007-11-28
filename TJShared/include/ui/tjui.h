@@ -8,7 +8,6 @@
 #include "tjwnd.h"
 #include "tjchildwnd.h"
 #include "tjcontextmenu.h"
-#include "tjdialogs.h"
 #include "tjpane.h"
 #include "tjproperty.h"
 
@@ -28,6 +27,7 @@
 #include "tjpathwnd.h"
 #include "tjsplashwnd.h"
 #include "tjpropertygridwnd.h"
+#include "tjdialogs.h"
 #include "tjlistwnd.h"
 #include "tjgraphwnd.h"
 

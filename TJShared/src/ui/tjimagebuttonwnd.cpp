@@ -3,6 +3,7 @@ using namespace Gdiplus;
 using namespace tj::shared;
 
 ButtonWnd::ButtonWnd(ref<Listener> listener, const wchar_t* image, const wchar_t* text): ChildWnd(L"", false, true) {
+	SetWantMouseLeave(true);
 	_listener = listener;
 	std::wstring fn = ResourceManager::Instance()->Get(image);
 	_image =  Bitmap::FromFile(fn.c_str(),TRUE);
@@ -22,67 +23,74 @@ void ButtonWnd::SetListener(ref<Listener> lr) {
 }
 
 void ButtonWnd::Paint(Graphics& g, ref<Theme> theme) {
-	RECT rc;
-	GetClientRect(GetWindow(),&rc);
-	
-	Color col = theme->GetTimeBackgroundColor();
+	Area rc = GetClientArea();
+
+	// TODO: make changeable at runtime
+	static const Pixels KImgHeight = 16;
+	static const Pixels KImgWidth = 16;
+
+	// Fill background
+	LinearGradientBrush backGradient(PointF(0.0f, 0.0f), PointF(0.0f, (float)rc.GetHeight()), theme->GetActiveStartColor(), theme->GetActiveEndColor());
+	LinearGradientBrush backGradientReverse(PointF(0.0f, (float)rc.GetHeight()), PointF(0.0f, 0.0f), theme->GetActiveStartColor(), theme->GetActiveEndColor());
+	SolidBrush disabledBrush(theme->GetDisabledOverlayColor());
+
 	if(_down) {
-		col = theme->GetActiveStartColor();
+		g.FillRectangle(&backGradient, rc);
 	}
-	else if(IsMouseOver()) {
-		col = theme->GetActiveEndColor();
+	else {
+		g.FillRectangle(&backGradientReverse, rc);
+		if(!IsMouseOver()) {
+			g.FillRectangle(&disabledBrush, rc);
+		}
 	}
+	
+	// Draw icon
+	if(_image!=0) {
+		Pixels margin = (rc.GetHeight()-KImgHeight)/2;
+		g.DrawImage(_image, Area(rc.GetLeft()+margin, rc.GetTop()+margin, KImgWidth, KImgHeight));
+	}
+	
+	// Draw border
+	SolidBrush border(theme->GetActiveStartColor());
+	rc.Narrow(0,0,1,1);
+	Pen borderPen(&border,1.0f);
+	g.DrawRectangle(&borderPen, rc);
 
-	SolidBrush backBr(col);
-	g.FillRectangle(&backBr, RectF(0.0f, 0.0f, REAL(rc.right-rc.left), REAL(rc.bottom-rc.top)));
-	g.DrawImage(_image, RectF(0.0f, 0.0f, REAL(rc.bottom-rc.top), REAL(rc.bottom-rc.top)));
-
+	// Draw text
 	Font* fnt = theme->GetGUIFontBold();
 	SolidBrush textBrush(theme->GetTextColor());
-	RectF lr(REAL(rc.bottom-rc.top), 0.0f, REAL(rc.right-rc.left-(rc.bottom-rc.top)), REAL(rc.bottom-rc.top));
 	StringFormat sf;
-	sf.SetLineAlignment(StringAlignmentCenter);
-	
-	g.DrawString(_text.c_str(), (unsigned int)_text.length(), fnt,lr, &sf, &textBrush);
+	sf.SetLineAlignment(StringAlignmentNear);
+	g.DrawString(_text.c_str(), (unsigned int)_text.length(), fnt,PointF(KImgWidth+5, 2.0f), &sf, &textBrush);
 }
 
-LRESULT ButtonWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
-	if(msg==WM_CREATE) {
-		TRACKMOUSEEVENT evt;
-		evt.cbSize = sizeof(evt);
-		evt.dwFlags = TME_LEAVE;
-		evt.dwHoverTime = 0;
-		evt.hwndTrack = GetWindow();
-		TrackMouseEvent(&evt);
-	}
-	else if(msg==WM_LBUTTONDOWN) {
+void ButtonWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
+	if(ev==MouseEventLDown) {
 		_down = true;
 		Repaint();
-
+	}
+	else if(ev==MouseEventLUp) {
 		if(_listener) {
 			_listener->Notify(this, NotificationClick);
 		}
 
 		_down = false;
 		Repaint();
-		return 0;
 	}
-	else if(msg==WM_LBUTTONUP) {
+	else if(ev==MouseEventMove) {
+		if(ISVKKEYDOWN(VK_LBUTTON)) {
+			_down = true;
+		}
 		Repaint();
 	}
-	else if(msg==WM_MOUSEMOVE) {
-		TRACKMOUSEEVENT evt;
-		evt.cbSize = sizeof(evt);
-		evt.dwFlags = TME_LEAVE;
-		evt.dwHoverTime = 0;
-		evt.hwndTrack = GetWindow();
-		TrackMouseEvent(&evt);
+	else if(ev==MouseEventLeave) {
+		_down = false;
 		Repaint();
 	}
-	else if(msg==WM_MOUSELEAVE) {
-		Repaint();
-	}
+	ChildWnd::OnMouse(ev,x,y);
+}
 
+LRESULT ButtonWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	return ChildWnd::Message(msg,wp,lp);
 }
 
@@ -102,12 +110,12 @@ StateButtonWnd::~StateButtonWnd() {
 }
 
 void StateButtonWnd::Paint(Graphics& g, ref<Theme> theme) {
-	RECT rc;
-	GetClientRect(GetWindow(),&rc);
+	Area rc = GetClientArea();
 
 	SolidBrush backBr(IsMouseOver()?theme->GetActiveEndColor():theme->GetTimeBackgroundColor());
-	g.FillRectangle(&backBr, RectF(0.0f, 0.0f, REAL(rc.right-rc.left), REAL(rc.bottom-rc.top)));
+	g.FillRectangle(&backBr, rc);
 	
+	// Choose and draw icon
 	Bitmap* img = 0;
 	switch(_on) {
 		case On:
@@ -122,7 +130,12 @@ void StateButtonWnd::Paint(Graphics& g, ref<Theme> theme) {
 	}
 	
 	if(img!=0) {
-		g.DrawImage(img, RectF(0.0f, 0.0f, REAL(rc.right-rc.left), REAL(rc.bottom-rc.top)));
+		// TODO make changeable at runtime
+		static const Pixels KImgHeight = 16;
+		static const Pixels KImgWidth = 16;
+
+		Pixels margin = (rc.GetHeight()-KImgHeight)/2;
+		g.DrawImage(img, Area(margin,margin,KImgHeight, KImgWidth));
 	}
 }
 

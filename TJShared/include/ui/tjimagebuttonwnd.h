@@ -10,6 +10,7 @@ namespace tj {
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme);
 				virtual void SetListener(ref<Listener> lf);
+				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
 				
 			protected:
 				std::wstring _text;

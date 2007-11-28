@@ -6,6 +6,7 @@ using namespace tj::shared;
 
 TabWnd::TabWnd(RootWnd* root, const std::wstring& id): ChildWnd(L"TabWnd", NULL) {
 	SetStyle(WS_CLIPCHILDREN|WS_CLIPSIBLINGS);
+	SetStyleEx(WS_EX_CONTROLPARENT);
 	_headerHeight = defaultHeaderHeight;
 	_root = root;
 	_detachAttachAllowed = true;
@@ -31,6 +32,14 @@ void TabWnd::SetDetachAttachAllowed(bool allow) {
 
 void TabWnd::Add(ref<Wnd> child) {
 	Throw(L"You cannot call Add on a TabWnd, use AddPane instead", ExceptionTypeSevere);
+}
+
+std::wstring TabWnd::GetTabTitle() const {
+	if(_current) {
+		return _current->GetTitle();
+	}
+
+	return L"";
 }
 
 void TabWnd::Rename(ref<Wnd> wnd, std::wstring name) {

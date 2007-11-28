@@ -717,8 +717,10 @@ void Wnd::SetText(std::wstring text) {
 	SetWindowText(_wnd, text.c_str());
 }
 
-void Wnd::SetSize(int w, int h) {
-	SetWindowPos(_wnd, 0L, 0, 0, w, h, SWP_NOZORDER|SWP_NOMOVE|SWP_NOACTIVATE);
+// TODO: what to do on a DPI change? Resize all windows?
+void Wnd::SetSize(Pixels w, Pixels h) {
+	ref<Theme> theme = ThemeManager::GetTheme();
+	SetWindowPos(_wnd, 0L, 0, 0, int(w*theme->GetDPIScaleFactor()), int(h*theme->GetDPIScaleFactor()), SWP_NOZORDER|SWP_NOMOVE|SWP_NOACTIVATE);
 }
 
 Area Wnd::GetClientArea() {

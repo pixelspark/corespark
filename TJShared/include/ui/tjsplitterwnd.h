@@ -39,9 +39,11 @@ namespace tj {
 				ref<Wnd> GetSecond();
 				const ref<Wnd> GetFirst() const;
 				const ref<Wnd> GetSecond() const;
+				virtual std::wstring GetTabTitle() const;
 
 			protected:
 				virtual void OnSettingsChanged();
+				virtual Area GetBarArea();
 
 				const static Pixels KBarHeight;
 				const static float KSnapMargin;
@@ -50,6 +52,7 @@ namespace tj {
 				ref<Wnd> _a;
 				ref<Wnd> _b;
 				float _ratio;
+				float _ratioBeforeDragging;
 				float _defaultRatio;
 				bool _dragging;
 				CollapseMode _collapse;

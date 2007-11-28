@@ -32,6 +32,7 @@ namespace tj {
 				virtual void Add(ref<Wnd> child); // do not use; use AddPane instead
 				const std::wstring& GetID() const;
 				Placement GetPlacement() const;
+				virtual std::wstring GetTabTitle() const;
 			
 			protected:
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);

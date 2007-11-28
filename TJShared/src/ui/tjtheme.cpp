@@ -28,18 +28,22 @@ float Theme::GetDPIScaleFactor() const {
 }
 
 void Theme::DrawToolbarBackground(Gdiplus::Graphics& g, float x, float y, float w, float h) {
-	Area rc(RectF(x,y,w,h));
+	DrawToolbarBackground(g,Area(Pixels(x),Pixels(y),Pixels(w),Pixels(h)));
+}
 
+void Theme::DrawToolbarBackground(Gdiplus::Graphics& g, const Area& rc) {
 	SolidBrush zwart(GetBackgroundColor());
 	g.FillRectangle(&zwart, rc);
 
-	LinearGradientBrush br(PointF(x, y), PointF(x, y+float(rc.GetHeight())), GetToolbarColorStart(), GetToolbarColorEnd());
+	PointF origin(float(rc.GetLeft()), float(rc.GetTop()));
+	PointF bottom(float(rc.GetLeft()), float(rc.GetBottom()));
+	LinearGradientBrush br(origin, bottom, GetToolbarColorStart(), GetToolbarColorEnd());
 	SolidBrush dbr(GetDisabledOverlayColor());
 	g.FillRectangle(&br, rc);
 	g.FillRectangle(&dbr, rc);
 
-	LinearGradientBrush glas(PointF(x,y), PointF(x,y+float(rc.GetHeight())/2.0f), GetGlassColorStart(), GetGlassColorEnd());
-	g.FillRectangle(&glas, RectF(x,y, float(rc.GetWidth()), float(rc.GetHeight())/2.0f));
+	LinearGradientBrush glas(origin, PointF(float(rc.GetLeft()),rc.GetTop()+float(rc.GetHeight())/2.0f), GetGlassColorStart(), GetGlassColorEnd());
+	g.FillRectangle(&glas, RectF(float(rc.GetLeft()), float(rc.GetTop()), float(rc.GetWidth()), float(rc.GetHeight())/2.0f));
 }
 
 int Theme::GetMeasureInPixels(Measure m) const {

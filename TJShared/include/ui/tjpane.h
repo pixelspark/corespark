@@ -31,6 +31,7 @@ namespace tj {
 				Pane(const std::wstring& title, ref<Wnd> wnd, bool detached, bool closable, ref<Settings> st, const Placement& defaultPlacement = Placement(Placement::Orphan), std::wstring icon=L"");
 				virtual ~Pane();
 				ref<Wnd> GetWindow();
+				const ref<Wnd> GetWindow() const;
 				Gdiplus::Image* GetIcon();
 				std::wstring GetTitle() const;
 				bool IsClosable() const;
