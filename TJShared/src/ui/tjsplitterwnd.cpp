@@ -126,7 +126,6 @@ void SplitterWnd::Layout() {
 		if(_a) _a->Show(false);
 	}
 	else {
-		//rc.Narrow(1,1,1,1);
 		if(_a) _a->Show(true);
 		if(_b) _b->Show(true);
 		if(_orientation==OrientationHorizontal) {
@@ -244,18 +243,23 @@ void SplitterWnd::Paint(Graphics& g, ref<Theme> theme) {
 
 		// Draw text
 		std::wstring title;
+		Gdiplus::Image* icon = 0;
 		if(_collapse==CollapseFirst && _b) {
 			title = _b->GetTabTitle();
+			icon = _b->GetTabIcon();
 		}
 		else if(_collapse==CollapseSecond && _a) {
 			title = _a->GetTabTitle();
+			icon = _a->GetTabIcon();
 		}
+
 		SolidBrush tbr(theme->GetActiveStartColor());
 		StringFormat sf;
 		sf.SetAlignment(StringAlignmentNear);
 
 		GraphicsContainer gc = g.BeginContainer();
 
+		float offset = 0.0f;
 		if(_orientation==OrientationVertical) {
 			g.TranslateTransform(float(bar.GetLeft())+20.0f, float(bar.GetTop())+3.0f);
 			g.RotateTransform(90.0f);
@@ -264,7 +268,12 @@ void SplitterWnd::Paint(Graphics& g, ref<Theme> theme) {
 			g.TranslateTransform(float(bar.GetLeft())+3.0f, float(bar.GetTop())+3.0f);
 		}
 		
-		g.DrawString(title.c_str(), (int)title.length(), theme->GetGUIFontBold(), PointF(0.0f, 0.0f), &sf, &tbr);
+		if(icon!=0) {
+			g.DrawImage(icon, RectF(0.0f, 0.0f,14.0f,14.0f));
+			offset += 20.0f;
+		}
+
+		g.DrawString(title.c_str(), (int)title.length(), theme->GetGUIFontBold(), PointF(offset, 0.0f), &sf, &tbr);
 		g.EndContainer(gc);
 	}
 }

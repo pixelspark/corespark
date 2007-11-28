@@ -32,7 +32,7 @@ namespace tj {
 				virtual ~Pane();
 				ref<Wnd> GetWindow();
 				const ref<Wnd> GetWindow() const;
-				Gdiplus::Image* GetIcon();
+				Gdiplus::Image* GetIcon() const;
 				std::wstring GetTitle() const;
 				bool IsClosable() const;
 				virtual void SetTitle(std::wstring c);

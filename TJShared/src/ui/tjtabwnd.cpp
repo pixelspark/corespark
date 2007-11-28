@@ -42,6 +42,13 @@ std::wstring TabWnd::GetTabTitle() const {
 	return L"";
 }
 
+Gdiplus::Image* TabWnd::GetTabIcon() const {
+	if(_current) {
+		return _current->GetIcon();
+	}
+	return 0;
+}
+
 void TabWnd::Rename(ref<Wnd> wnd, std::wstring name) {
 	std::vector< ref<Pane> >::iterator it = _panes.begin();
 	while(it!=_panes.end()) {

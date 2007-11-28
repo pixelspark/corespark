@@ -33,6 +33,7 @@ namespace tj {
 				const std::wstring& GetID() const;
 				Placement GetPlacement() const;
 				virtual std::wstring GetTabTitle() const;
+				virtual Gdiplus::Image* GetTabIcon() const;
 			
 			protected:
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);

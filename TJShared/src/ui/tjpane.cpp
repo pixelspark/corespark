@@ -105,7 +105,7 @@ Placement Pane::GetPreferredPlacement() {
 	}
 }
 
-Gdiplus::Image* Pane::GetIcon() {
+Gdiplus::Image* Pane::GetIcon() const {
 	// If the window specifies a tab icon, return that one instead
 	Gdiplus::Image* ni = _wnd->GetTabIcon();
 	return ni==0?_icon:ni;
