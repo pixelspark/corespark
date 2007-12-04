@@ -13,6 +13,7 @@ namespace tj {
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 				virtual void Layout();
 				virtual void SetText(std::wstring ws);
+				virtual void SetListener(ref<Listener> lw);
 
 			protected:
 				void UpdateColor();
@@ -20,6 +21,7 @@ namespace tj {
 				HWND _ctrl;
 				Gdiplus::Color _back;
 				HBRUSH _backBrush;
+				ref<Listener> _listener;
 		};
 	}
 }

@@ -57,12 +57,21 @@ LRESULT EditWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		
 	}
 	else if(msg==WM_COMMAND) {
-		HWND parent = ::GetParent(GetWindow());
-		if(parent!=0) {
-			return SendMessage(parent, msg, wp, lp);
+		if(_listener && HIWORD(wp)==EN_CHANGE) {
+			_listener->Notify(this, NotificationChanged);
+		}
+		else {
+			HWND parent = ::GetParent(GetWindow());
+			if(parent!=0) {
+				return SendMessage(parent, msg, wp, lp);
+			}
 		}
 	}
 	return ChildWnd::Message(msg,wp,lp);
+}
+
+void EditWnd::SetListener(ref<Listener> ls) {
+	_listener = ls;
 }
 
 void EditWnd::SetCue(std::wstring cue) {

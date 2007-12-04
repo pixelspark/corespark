@@ -79,7 +79,7 @@ namespace tj {
 				virtual std::wstring GetText();
 				virtual void SetText(std::wstring text);
 				void SetSize(int w, int h);
-				Area GetClientArea();
+				Area GetClientArea() const;
 				Area GetWindowArea();
 				virtual void Fill(LayoutFlags flags, Area& rect);
 				void Fill();

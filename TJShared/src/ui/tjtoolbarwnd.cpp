@@ -35,6 +35,10 @@ void ToolbarWnd::SetBackgroundColor(Gdiplus::Color c) {
 	Repaint();
 }
 
+void ToolbarWnd::OnSize(const Area& ns) {
+	Layout();
+}
+
 void ToolbarWnd::Fill(LayoutFlags f, Area& r) {
 	ref<Theme> theme = ThemeManager::GetTheme();
 	Pixels h = theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
@@ -214,4 +218,67 @@ bool StateToolbarItem::IsOn() const {
 
 Icon& StateToolbarItem::GetIcon() {
 	return _on?_onIcon:(ToolbarItem::GetIcon());
+}
+
+/* SearchToolbarWnd */
+SearchToolbarWnd::SearchToolbarWnd(): _searchIcon(L"icons/search.png") {
+	_rightMargin = 0;
+	_searchWidth = KDefaultBoxWidth;
+	_searchHeight = KDefaultBoxHeight;
+
+	ref<Listener> lw = GC::Hold(new ListenerWrapper(this));
+	_edit = GC::Hold(new EditWnd());
+	_edit->SetListener(lw);
+	_edit->SetCue(TL(search_banner));
+	ChildWnd::Add(_edit,true);
+	Layout();
+}
+
+SearchToolbarWnd::~SearchToolbarWnd() {
+}
+
+void SearchToolbarWnd::OnSearchChange(const std::wstring& q) {
+}
+
+void SearchToolbarWnd::Layout() { // also called by ToolbarWnd::OnSize
+	Area search = GetSearchBoxArea();
+	_edit->Fill(LayoutFill, search);
+
+	ToolbarWnd::Layout();
+}
+
+Area SearchToolbarWnd::GetSearchBoxArea() const {
+	Area rc = GetClientArea();
+	Pixels margin = (rc.GetHeight()-_searchHeight)/2;
+	Area search(rc.GetRight()-_searchWidth-margin-_rightMargin, rc.GetTop()+margin-1, _searchWidth, _searchHeight);
+	return search;
+}
+
+void SearchToolbarWnd::SetSearchBoxRightMargin(Pixels r) {
+	_rightMargin = r;
+	Layout();
+}
+
+void SearchToolbarWnd::SetSearchBoxSize(Pixels w, Pixels h) {
+	_searchWidth = w;
+	_searchHeight = h;
+	Layout();
+}
+
+void SearchToolbarWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
+	ToolbarWnd::Paint(g,theme);
+	Area search = GetSearchBoxArea();
+	search.Widen(1,1,1,1);
+
+	SolidBrush border(theme->GetActiveStartColor());
+	Pen borderPen(&border,1.0f);
+	g.DrawRectangle(&borderPen, search);
+
+	g.DrawImage(_searchIcon.GetBitmap(), Area(search.GetLeft()-20, search.GetTop(), _searchHeight, _searchHeight));
+}
+
+void SearchToolbarWnd::Notify(Wnd* src, Notification n) {
+	if(src==_edit.GetPointer() && n==NotificationChanged) {
+		OnSearchChange(_edit->GetText());
+	}
 }

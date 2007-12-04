@@ -723,7 +723,7 @@ void Wnd::SetSize(Pixels w, Pixels h) {
 	SetWindowPos(_wnd, 0L, 0, 0, int(w*theme->GetDPIScaleFactor()), int(h*theme->GetDPIScaleFactor()), SWP_NOZORDER|SWP_NOMOVE|SWP_NOACTIVATE);
 }
 
-Area Wnd::GetClientArea() {
+Area Wnd::GetClientArea() const {
 	RECT r;
 	GetClientRect(_wnd, &r);
 	ref<Theme> theme = ThemeManager::GetTheme();

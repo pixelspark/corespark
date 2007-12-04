@@ -63,7 +63,14 @@ bool DialogWnd::DoModal(HWND parent) {
 
 	while(GetMessage(&msg,0,0,0) && _running) {
 		TranslateMessage(&msg);
-		DispatchMessage(&msg);
+
+		if(msg.message==WM_KEYDOWN && LOWORD(msg.wParam)==VK_ESCAPE) {
+			// End modal loop
+			EndModal(false);
+		}
+		else {
+			DispatchMessage(&msg);
+		}
 	}
 
 	EnableWindow(root, TRUE);

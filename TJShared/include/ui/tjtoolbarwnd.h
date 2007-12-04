@@ -51,6 +51,8 @@ namespace tj {
 
 			protected:
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
+				virtual void OnSize(const Area& ns);
+
 				std::vector< ref<ToolbarItem> > _items;
 				static const int KIconWidth = 16;
 				static const int KIconHeight = 16;
@@ -58,6 +60,29 @@ namespace tj {
 				int _idx;
 				bool _bk;
 				Gdiplus::Color _bkColor;
+		};
+
+		class EXPORTED SearchToolbarWnd: public ToolbarWnd, public Listener {
+			public:
+				SearchToolbarWnd();
+				virtual ~SearchToolbarWnd();
+				virtual void Layout();
+				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme);
+				virtual void Notify(Wnd* src, Notification n);
+
+			protected:
+				virtual void SetSearchBoxRightMargin(Pixels r);
+				virtual void OnSearchChange(const std::wstring& q);
+				Area GetSearchBoxArea() const;
+				virtual void SetSearchBoxSize(Pixels w, Pixels h);
+
+			private:
+				const static Pixels KDefaultBoxWidth = 100;
+				const static Pixels KDefaultBoxHeight = 16;
+
+				ref<EditWnd> _edit;
+				Icon _searchIcon;
+				Pixels _rightMargin, _searchWidth, _searchHeight;
 		};
 	}
 }
