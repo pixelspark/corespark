@@ -275,7 +275,10 @@ class ScriptGrammar : public grammar<ScriptGrammar> {
 
 				/** Variable names etc **/
 				identifier = 
-					rawIdentifier[ScriptInstruction(&self, Ops::OpPushString)][ScriptWriteString(&self)];
+					typeIdentifier | rawIdentifier[ScriptInstruction(&self, Ops::OpPushString)][ScriptWriteString(&self)];
+
+				typeIdentifier = 
+					ch_p('<') >> rawIdentifier[ScriptInstruction(&self, Ops::OpPushString)][ScriptWriteString(&self)][ScriptInstruction(&self,Ops::OpType)] >> ch_p('>');
 
 				rawIdentifier = 
 					lexeme_d[(alpha_p >> *(alnum_p|ch_p('_')))];
@@ -328,7 +331,8 @@ class ScriptGrammar : public grammar<ScriptGrammar> {
 					(identifier >> !(ch_p('(')[ScriptInstruction(&self, Ops::OpPushParameter)] >> !parameterList >> ')'));
 
 				methodCallConstruct = 
-					methodCall[ScriptInstruction(&self, Ops::OpCallGlobal)] >> followingMethodCall >> !followingAssignment;
+					(typeIdentifier | methodCall[ScriptInstruction(&self, Ops::OpCallGlobal)]) >> followingMethodCall >> !followingAssignment;
+
 
 				followingMethodCall = 
 					*indexOperator >> !(ch_p('.') >> ((followingAssignment |(methodCall[ScriptInstruction(&self, Ops::OpCall)] >> *(indexOperator))) % ch_p('.')));
@@ -449,7 +453,7 @@ class ScriptGrammar : public grammar<ScriptGrammar> {
 			rule<ScannerT> stringValue, intValue, boolValue, doubleValue, nullValue;
 
 			// constructs
-			rule<ScannerT> scriptBody, block, arrayConstruct, function, functionConstruct, rawIdentifier, ifConstruct, comment, assignment, assignmentWithVar, assignmentWithoutVar, followingAssignment, value, identifier, declaredParameter, keyValuePair, parameterList, methodCall, expression, statement, blockConstruct, blockInFunction, blockInFor, script, returnConstruct, breakStatement, forConstruct, newConstruct, methodCallConstruct, followingMethodCall, delegateConstruct, qualifiedIdentifier;
+			rule<ScannerT> scriptBody, block, arrayConstruct, function, functionConstruct, rawIdentifier, ifConstruct, comment, assignment, assignmentWithVar, assignmentWithoutVar, followingAssignment, value, identifier, declaredParameter, keyValuePair, parameterList, methodCall, expression, statement, blockConstruct, blockInFunction, blockInFor, script, returnConstruct, breakStatement, forConstruct, newConstruct, methodCallConstruct, followingMethodCall, typeIdentifier, delegateConstruct, qualifiedIdentifier;
 			
 			// operators
 			rule<ScannerT> term, factor, negatedFactor, indexOperator, equalsOperator, notEqualsOperator, plusOperator, minOperator, divOperator, mulOperator, orOperator, andOperator, xorOperator, gtOperator, ltOperator, incrementByOperator, decrementByOperator, incrementOneOperator, decrementOneOperator;

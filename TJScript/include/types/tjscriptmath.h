@@ -3,12 +3,6 @@
 
 namespace tj {
 	namespace script {
-		class ScriptMathType: public ScriptType {
-			public:
-				virtual tj::shared::ref<Scriptable> Construct(tj::shared::ref<ParameterList> p);
-				virtual ~ScriptMathType();
-		};
-
 		class SCRIPT_EXPORTED ScriptMath: public ScriptObject<ScriptMath> {
 			public:	
 				ScriptMath();
@@ -28,6 +22,16 @@ namespace tj {
 				virtual tj::shared::ref<Scriptable> Pi(tj::shared::ref<ParameterList> p);
 				virtual tj::shared::ref<Scriptable> E(tj::shared::ref<ParameterList> p);
 				virtual tj::shared::ref<Scriptable> Random(tj::shared::ref<ParameterList> p);
+		};
+
+		class ScriptMathType: public ScriptType {
+			public:
+				virtual tj::shared::ref<Scriptable> Construct(tj::shared::ref<ParameterList> p);
+				virtual tj::shared::ref<Scriptable> Execute(Command c, tj::shared::ref<ParameterList> p);
+				virtual ~ScriptMathType();
+
+			protected:
+				tj::shared::ref<ScriptMath> _instance;
 		};
 	}
 }

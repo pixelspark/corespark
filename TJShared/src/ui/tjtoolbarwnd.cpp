@@ -89,7 +89,7 @@ void ToolbarWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 	}
 }
 
-int ToolbarWnd::GetTotalButtonWidth() {
+Pixels ToolbarWnd::GetTotalButtonWidth() {
 	ref<Theme> theme = ThemeManager::GetTheme();
 	return int(_items.size())*theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
 }
@@ -242,7 +242,15 @@ void SearchToolbarWnd::OnSearchChange(const std::wstring& q) {
 
 void SearchToolbarWnd::Layout() { // also called by ToolbarWnd::OnSize
 	Area search = GetSearchBoxArea();
-	_edit->Fill(LayoutFill, search);
+
+	if(search.GetLeft()<=GetTotalButtonWidth()) {
+		// Hide search things, because we overlap with toolbar buttons
+		_edit->Show(false);
+	}
+	else {
+		_edit->Fill(LayoutFill, search);
+		_edit->Show(true);
+	}
 
 	ToolbarWnd::Layout();
 }
@@ -268,13 +276,17 @@ void SearchToolbarWnd::SetSearchBoxSize(Pixels w, Pixels h) {
 void SearchToolbarWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
 	ToolbarWnd::Paint(g,theme);
 	Area search = GetSearchBoxArea();
-	search.Widen(1,1,1,1);
 
-	SolidBrush border(theme->GetActiveStartColor());
-	Pen borderPen(&border,1.0f);
-	g.DrawRectangle(&borderPen, search);
+	// Only paint search box if we do not overlap with the toolbar buttons
+	if(search.GetLeft()>GetTotalButtonWidth()) {
+		search.Widen(1,1,1,1);
 
-	g.DrawImage(_searchIcon.GetBitmap(), Area(search.GetLeft()-20, search.GetTop(), _searchHeight, _searchHeight));
+		SolidBrush border(theme->GetActiveStartColor());
+		Pen borderPen(&border,1.0f);
+		g.DrawRectangle(&borderPen, search);
+
+		g.DrawImage(_searchIcon.GetBitmap(), Area(search.GetLeft()-20, search.GetTop(), _searchHeight, _searchHeight));
+	}
 }
 
 void SearchToolbarWnd::Notify(Wnd* src, Notification n) {

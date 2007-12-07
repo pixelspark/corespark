@@ -51,15 +51,15 @@ void ScriptContext::SetDebug(bool d) {
 
 std::map<std::wstring, ref<ScriptType> > ScriptContext::_staticTypes;
 
-void ScriptContext::AddStaticType(std::wstring type, ref<ScriptType> stype) {
+void ScriptContext::AddStaticType(const std::wstring& type, ref<ScriptType> stype) {
 	_staticTypes[type] = stype;
 }
 
-void ScriptContext::AddType(std::wstring type, ref<ScriptType> stype) {
+void ScriptContext::AddType(const std::wstring& type, ref<ScriptType> stype) {
 	_types[type] = stype;
 }
 
-ref<ScriptType> ScriptContext::GetType(std::wstring type) {
+ref<ScriptType> ScriptContext::GetType(const std::wstring& type) {
 	if(_types.find(type)!=_types.end()) {
 		return _types[type];
 	}

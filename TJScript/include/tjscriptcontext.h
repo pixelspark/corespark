@@ -25,9 +25,9 @@ namespace tj {
 				template<typename T> static inline T GetValueByString(ref<Scriptable> s, T defaultValue);
 
 				// Types
-				static void AddStaticType(std::wstring type, ref<ScriptType> stype);
-				void AddType(std::wstring type, ref<ScriptType> stype);
-				ref<ScriptType> GetType(std::wstring type);
+				static void AddStaticType(const std::wstring& type, ref<ScriptType> stype);
+				void AddType(const std::wstring& type, ref<ScriptType> stype);
+				ref<ScriptType> GetType(const std::wstring& type);
 
 			protected:
 				ref<VM> _vm;

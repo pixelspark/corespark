@@ -315,8 +315,16 @@ LRESULT SplitterWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 				_ratio = float(x)/float(rc.right-rc.left);
 			}
 
+			/** UpdateWindow calls the window procedure of _a and _b directly, so the repainting looks
+			more smooth than using the (asynchronous) Repaint, which just does InvalidateRect() which sends
+			a message to the window.
+			
+			See http://msdn2.microsoft.com/en-us/library/ms534874.aspx.
+			**/
 			Layout();
-			Repaint();
+			UpdateWindow(_a->GetWindow());
+			UpdateWindow(_b->GetWindow());
+			UpdateWindow(GetWindow());
 		}
 		else {
 			if(_collapse==CollapseNone) {
@@ -332,7 +340,6 @@ LRESULT SplitterWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 				SetCursor(LoadCursor(0, IDC_ARROW));
 			}
 		}
-		Repaint();
 	}
 	else if(msg==WM_LBUTTONDOWN) {
 		if(_collapse==CollapseNone) {

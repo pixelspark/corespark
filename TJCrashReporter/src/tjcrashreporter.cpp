@@ -29,7 +29,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrev, LPSTR cmd, int nShow) {
 	if(send) {
 		bool error = false;
 		std::wstring code;
-		ReportResult rs = CrashReportSender::SendCrashReport(AirbagURL,params,dumpFile,&code);
+		CrashReportSender* cr = new CrashReportSender(L"");
+		ReportResult rs = cr->SendCrashReport(AirbagURL,params,dumpFile,&code);
 		switch(rs) {
 			case RESULT_SUCCEEDED:
 				message << L"Het foutenrapport is succesvol verzonden naar de makers. Bedankt voor uw medewerking!\r\nRapportnummer: " << code;

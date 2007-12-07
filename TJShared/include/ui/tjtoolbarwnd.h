@@ -45,7 +45,7 @@ namespace tj {
 				virtual void Add(ref<ToolbarItem> item);
 				virtual void OnCommand(int c);
 				virtual void Fill(LayoutFlags f, Area& r);
-				virtual int GetTotalButtonWidth();
+				virtual Pixels GetTotalButtonWidth();
 				virtual void SetBackground(bool t);
 				virtual void SetBackgroundColor(Gdiplus::Color c);
 

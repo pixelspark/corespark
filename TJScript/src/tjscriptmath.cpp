@@ -7,10 +7,18 @@ const static double PI = 3.14159265358979323846;
 const static double EULER = 2.7182818284590452354;
 
 ref<Scriptable> ScriptMathType::Construct(ref<ParameterList> p) {
-	return GC::Hold(new ScriptMath());
+	return 0;
 }
 
 ScriptMathType::~ScriptMathType() {
+}
+
+ref<Scriptable> ScriptMathType::Execute(Command c, ref<ParameterList> p) {
+	if(!_instance) {
+		_instance = GC::Hold(new ScriptMath());
+	}
+
+	return _instance->Execute(c,p);
 }
 
 ScriptMath::~ScriptMath() {

@@ -50,6 +50,7 @@ namespace tj {
 					OpSetField,				// [scriptable] [identifier] [value] => [value]
 					OpAddToArray,			// [array] [scriptable] => [array]
 					OpPushArray,			// [..] => [array]
+					OpType,					// [string] => [type scriptable]
 					_OpLast,				// Should always be the last op
 				};
 

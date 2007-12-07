@@ -127,7 +127,7 @@ void PropertyGridWnd::Paint(Graphics& g, ref<Theme> theme) {
 
 void PropertyGridWnd::OnScroll(ScrollDirection dir) {
 	Layout();
-	Repaint();
+	UpdateWindow(GetWindow());
 }
 
 void PropertyGridWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {

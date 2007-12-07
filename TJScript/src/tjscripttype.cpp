@@ -4,3 +4,7 @@ using namespace tj::script;
 
 ScriptType::~ScriptType() {
 }
+
+ref<Scriptable> ScriptType::Execute(Command c, ref<ParameterList> p) {
+	return 0;
+}
