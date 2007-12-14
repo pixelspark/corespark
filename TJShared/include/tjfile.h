@@ -3,7 +3,7 @@
 
 namespace tj {
 	namespace shared {
-		typedef unsigned int Bytes;
+		typedef long long Bytes; // This is equivalent to __int64 on MSVC++
 
 		class EXPORTED File {
 			public:

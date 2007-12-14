@@ -115,14 +115,14 @@ template<> int ScriptContext::GetValue(ref<Scriptable> s, int defaultValue) {
 
 // booleans
 template<> bool ScriptContext::GetValue(ref<Scriptable> s, bool defaultValue) {
-	if(s.IsCastableTo<ScriptInt>()) {
+	if(s.IsCastableTo<ScriptBool>()) {
+		return ref<ScriptBool>(s)->GetValue();
+	}
+	else if(s.IsCastableTo<ScriptInt>()) {
 		return ref<ScriptInt>(s)->GetValue()!=0;
 	}
 	else if(s.IsCastableTo<ScriptDouble>()) {
 		return ref<ScriptDouble>(s)->GetValue()!=0.0;
-	}
-	else if(s.IsCastableTo<ScriptBool>()) {
-		return ref<ScriptBool>(s)->GetValue();
 	}
 	else if(s.IsCastableTo<ScriptNull>()) {
 		return false;

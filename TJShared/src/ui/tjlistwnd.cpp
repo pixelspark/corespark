@@ -274,7 +274,7 @@ void ListWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 	if(ev==MouseEventRDown && y<=GetHeaderHeightInPixels()) {
 		DoContextMenu(x,y);
 	}
-	else if(ev==MouseEventLDown||ev==MouseEventLDouble) {
+	else if(ev==MouseEventLDown||ev==MouseEventLDouble||ev==MouseEventRDown) {
 		Pixels ch = GetHeaderHeightInPixels();
 
 		if(y<ch && ev!=MouseEventLDouble) {

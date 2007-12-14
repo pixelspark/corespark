@@ -28,9 +28,11 @@ namespace tj {
 
 				public:
 					virtual ~Resource() {
+						#ifdef _DEBUG
 						if(_rc!=0 || _weakrc!=0) {
 								throw Exception(L"Resource deleted while still referenced!",ExceptionTypeWarning);
 						}
+						#endif
 
 						this->Release();
 						GC::DecrementLive(sizeof(T));
@@ -42,16 +44,20 @@ namespace tj {
 
 					inline void DeleteReference() {
 						InterlockedDecrement(&_rc);
-						if(_rc==0 && _weakrc ==0) {
+						
+						if(_rc==0) {
+							// If there are no outstanding weak references, we can delete ourselves
+							if(_weakrc==0) {
+								#ifdef TJSHARED_MEMORY_TRACE
+								GC::Log(typeid(this).name(), false);
+								#endif
 
-							#ifdef TJSHARED_MEMORY_TRACE
-							GC::Log(typeid(this).name(), false);
-							#endif
-
-							delete this;
-						}
-						else if(_rc==0) {
-							Release();
+								delete this;
+							}
+							else {
+								// There are outstanding weak references, but at least we can delete the object
+								Release();
+							}
 						}
 					}
 
@@ -61,6 +67,7 @@ namespace tj {
 
 					inline void DeleteWeakReference() {
 						InterlockedDecrement(&_weakrc);
+
 						if(_rc==0 && _weakrc==0) {
 							delete this;
 						}
@@ -134,7 +141,7 @@ namespace tj {
 				inline ~ref() {
 					if(_res==0) return;
 					_res->DeleteReference();
-					_res = 0;
+					///_res = 0;
 				}
 
 				inline ref<T>& operator=(const ref<T>& o) {
@@ -171,12 +178,14 @@ namespace tj {
 
 				inline T* operator->() {
 					if(_res->_data==0) throw NullPointerException();
-					return dynamic_cast<T*>(_res->_data);
+					///return dynamic_cast<T*>(_res->_data);
+					return _res->_data;
 				}
 
 				inline const T* operator->() const {
 					if(_res->_data==0) throw NullPointerException();
-					return dynamic_cast<const T*>(_res->_data);
+					///return dynamic_cast<const T*>(_res->_data);
+					return _res->_data;
 				}
 
 				inline operator bool() const {

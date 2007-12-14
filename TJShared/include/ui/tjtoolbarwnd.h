@@ -52,6 +52,7 @@ namespace tj {
 			protected:
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
 				virtual void OnSize(const Area& ns);
+				virtual bool CanShowHints();
 
 				std::vector< ref<ToolbarItem> > _items;
 				static const int KIconWidth = 16;
@@ -75,6 +76,7 @@ namespace tj {
 				virtual void OnSearchChange(const std::wstring& q);
 				Area GetSearchBoxArea() const;
 				virtual void SetSearchBoxSize(Pixels w, Pixels h);
+				virtual bool CanShowHints();
 
 			private:
 				const static Pixels KDefaultBoxWidth = 100;

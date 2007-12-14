@@ -304,7 +304,8 @@ class ScriptGrammar : public grammar<ScriptGrammar> {
 
 				assignmentWithVar = 
 					lexeme_d[keyword_p("var")] >> identifier >> 
-					((ch_p('=') >> expression)[ScriptInstruction(&self, Ops::OpSave)]|eps_p[ScriptInstruction(&self, Ops::OpPushNull)][ScriptInstruction(&self, Ops::OpSave)]);
+					  ((ch_p('=') >> expression)[ScriptInstruction(&self, Ops::OpSave)] |
+					  eps_p[ScriptInstruction(&self, Ops::OpPushNull)][ScriptInstruction(&self, Ops::OpSave)]);
 
 				assignmentWithoutVar =
 					eps_p(lexeme_d[(alpha_p >> *(alnum_p|ch_p('_')))] >> ch_p('=')) 
@@ -402,7 +403,7 @@ class ScriptGrammar : public grammar<ScriptGrammar> {
 					ch_p('[') >> expression >> ch_p(']')[ScriptInstruction(&self, Ops::OpIndex)];
 
 				factor =
-					(arrayConstruct | delegateConstruct | newConstruct | negatedFactor | (ch_p('(') >> expression >> ch_p(')')) | value | methodCallConstruct);
+					value | (arrayConstruct | delegateConstruct | newConstruct | negatedFactor | (ch_p('(') >> expression >> ch_p(')')) | methodCallConstruct);
 
 				negatedFactor = 
 					((ch_p('!')|ch_p('-')) >> factor)[ScriptInstruction(&self, Ops::OpNegate)];

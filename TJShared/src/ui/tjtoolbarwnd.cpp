@@ -151,8 +151,8 @@ void ToolbarWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
 	}
 
 	// draw description text if in & selected
-	if(_in && _idx >=0 && _idx < int(_items.size())) {
-		int lx = int(_items.size())*buttonSize;
+	if(CanShowHints() && (_in && _idx >=0 && _idx < int(_items.size()))) {
+		Pixels lx = int(_items.size())*buttonSize;
 		ref<ToolbarItem> item = _items.at(_idx);
 		std::wstring text = item->GetText();
 		SolidBrush br(theme->GetActiveEndColor());
@@ -161,6 +161,11 @@ void ToolbarWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
 		sf.SetLineAlignment(StringAlignmentCenter);
 		g.DrawString(text.c_str(), (int)text.length(), theme->GetGUIFont(), RectF(float(lx), 0.0f, float(rc.GetWidth()), 24.0f), &sf, &br);
 	}
+}
+
+bool ToolbarWnd::CanShowHints() {
+	Area rc = GetClientArea();
+	return (rc.GetWidth()-GetTotalButtonWidth()) > 100;
 }
 
 // ToolbarItem
@@ -293,4 +298,9 @@ void SearchToolbarWnd::Notify(Wnd* src, Notification n) {
 	if(src==_edit.GetPointer() && n==NotificationChanged) {
 		OnSearchChange(_edit->GetText());
 	}
+}
+
+bool SearchToolbarWnd::CanShowHints() {
+	Area rc = GetClientArea();
+	return (rc.GetWidth()-GetTotalButtonWidth()-(GetSearchBoxArea().GetWidth())) > 100;
 }
