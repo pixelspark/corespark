@@ -28,9 +28,15 @@ namespace tj {
 		}
 
 		std::wstring Time::Format() const {
-			float ft = float(_time);
+			// Value 0 seems to cause some trouble (displays weird values) so we handle that separately then...
+			if(_time==0) {
+				return L"00:00:00/000";
+			}
+
+			int time = abs(_time);
+			float ft = float(time);
 			float seconds = ft/1000.0f;
-			unsigned int ms = (_time%1000);
+			unsigned int ms = (time%1000);
 
 			float mseconds = floor(fmod(seconds,60.0f));
 			float minutes = floor(fmod(seconds/60.0f, 60.0f));
@@ -39,6 +45,9 @@ namespace tj {
 			// TJShow's format is hour:minute:second/ms
 			std::wostringstream os;
 			os.fill('0');
+			if(_time<0) {
+				os << L'-';
+			}
 			os  << hours << L':' << std::setw(2) << minutes << L':' << std::setw(2) << mseconds  << L'/' << std::setw(3)  << float(ms);
 
 			return os.str();

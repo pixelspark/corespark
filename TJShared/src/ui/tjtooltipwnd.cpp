@@ -37,7 +37,7 @@ void TooltipWnd::SetTrackPosition(int x, int y) {
 void TooltipWnd::SetTooltip(std::wstring text) {
 	TOOLINFO ti;
 	ti.cbSize = sizeof(ti);
-	ti.uFlags = TTF_TRANSPARENT | TTF_PARSELINKS |  TTF_TRACK | TTF_SUBCLASS | TTF_ABSOLUTE;
+	ti.uFlags = TTF_TRANSPARENT | TTF_PARSELINKS |  TTF_TRACK | TTF_SUBCLASS | TTF_ABSOLUTE | TTF_PARSELINKS;
 	ti.hwnd = _owner;
 	ti.uId = 0;
 	ti.hinst = NULL;

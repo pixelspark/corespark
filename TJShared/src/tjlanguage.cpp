@@ -45,7 +45,11 @@ void Language::LoadDirectory(std::wstring dir) {
 			continue;
 		}
 
-		Log::Write(L"TJShared/Language/DirLoad" , std::wstring(L"Loading language file ")+naam);
+		#ifdef _DEBUG
+			// Only be verbose if we are a debug build
+			Log::Write(L"TJShared/Language/DirLoad" , std::wstring(L"Loading language file ")+naam);
+		#endif
+		
 		Load(naam);
 	} 
 	while(FindNextFile(hsr, &d));
