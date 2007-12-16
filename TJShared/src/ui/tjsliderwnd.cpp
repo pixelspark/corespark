@@ -72,7 +72,6 @@ void SliderWnd::SetDisplayValue(float v, bool notify) {
 
 void SliderWnd::SetMarkValue(float v) {
 	_mark = v;
-	//Repaint();
 }
 
 void SliderWnd::SetValue(float f, bool notify) {
