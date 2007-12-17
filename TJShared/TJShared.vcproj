@@ -384,6 +384,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ui\tjchoicewnd.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ui\tjcontextmenu.cpp"
 					>
 				</File>
@@ -771,6 +775,10 @@
 				</File>
 				<File
 					RelativePath=".\include\ui\tjchildwnd.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\ui\tjchoicewnd.h"
 					>
 				</File>
 				<File

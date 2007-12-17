@@ -1,0 +1,163 @@
+#include "../../include/tjshared.h"
+using namespace tj::shared;
+using namespace Gdiplus;
+
+Choice::Choice(const std::wstring& title, const std::wstring& text, const std::wstring& image): _title(title), _text(text), _image(image) {
+	_w = 72;
+	_h = 50;
+}
+
+Choice::~Choice() {
+}
+
+const std::wstring& Choice::GetTitle() const {
+	return _title;
+}
+
+const std::wstring& Choice::GetText() const {
+	return _text;
+}
+
+Pixels Choice::GetWidth() const {
+	return _w;
+}
+
+Pixels Choice::GetHeight() const {
+	return _h;
+}
+
+void Choice::SetSize(Pixels w, Pixels h) {
+	_w = w;
+	_h = h;
+}
+
+Icon& Choice::GetImage() {
+	return _image;
+}
+
+/** ChoiceListWnd **/
+ChoiceListWnd::ChoiceListWnd() {
+	SetShowHeader(false);
+	AddColumn(L"", KColTricks, 1.0f, true);
+	_itemHeight = 54;
+}
+
+ChoiceListWnd::~ChoiceListWnd() {
+}
+
+int ChoiceListWnd::GetItemHeight() {
+	return _itemHeight;
+}
+
+void ChoiceListWnd::OnClickItem(int id, int col) {
+	SetSelectedRow(id);
+}
+
+void ChoiceListWnd::SetItemHeight(Pixels h) {
+	_itemHeight = h;
+	Update();
+}
+
+int ChoiceListWnd::GetItemCount() {
+	return (int)_choices.size();
+}
+
+void ChoiceListWnd::PaintItem(int id, Gdiplus::Graphics &g, tj::shared::Area &row) {
+	ref<Theme> theme = ThemeManager::GetTheme();
+	ref<Choice> choice = _choices.at(id);
+	if(choice) {
+		Pixels iw = choice->GetWidth();
+		Pixels ih = choice->GetHeight();
+		g.DrawImage(choice->GetImage().GetBitmap(), RectF(row.GetLeft()+2.0f, row.GetTop()+2.0f, float(iw), float(ih)));
+
+		SolidBrush tbr(theme->GetTextColor());
+		const std::wstring& title = choice->GetTitle();
+		StringFormat sf;
+		sf.SetAlignment(StringAlignmentNear);
+		Area titleRC = row;
+		titleRC.Narrow(iw+2,2,0,2);
+		g.DrawString(title.c_str(), (int)title.length(), theme->GetGUIFontBold(), titleRC, &sf, &tbr);
+		
+		const std::wstring& text = choice->GetText();
+		titleRC.Narrow(0,15,0,0);
+		g.DrawString(text.c_str(), (int)text.length(), theme->GetGUIFontSmall(), titleRC, &sf, &tbr);
+	}
+}
+
+void ChoiceListWnd::AddChoice(ref<Choice> tr) {
+	if(tr) {
+		_choices.push_back(tr);
+	}
+}
+
+/** ChoiceWnd **/
+ChoiceWnd::ChoiceWnd(): Wnd(L"", 0L, TJ_DROPSHADOW_CLASS_NAME, true, WS_EX_TOPMOST|WS_EX_TOOLWINDOW) {
+	SetStyle(WS_BORDER);
+	UnsetStyle(WS_CAPTION);
+	SetSize(200,100);
+
+	_choices = GC::Hold(new ChoiceListWnd());
+	Add(_choices);
+}
+
+ChoiceWnd::~ChoiceWnd() {
+}
+
+void ChoiceWnd::SetTitle(const std::wstring& title) {
+	_title = title;
+}
+
+bool ChoiceWnd::HasHeader() const {
+	return _title.length()>0;
+}
+
+void ChoiceWnd::Paint(Graphics& g, ref<Theme> theme) {
+	Area rc = GetClientArea();
+
+	// Draw header
+	if(HasHeader()) {
+		Area header = rc;
+		header.SetHeight(theme->GetMeasureInPixels(Theme::MeasureToolbarHeight));
+
+		LinearGradientBrush back(PointF(0.0f, 0.0f), PointF(0.0f, (float)header.GetHeight()), theme->GetActiveStartColor(), theme->GetActiveEndColor());
+		g.FillRectangle(&back, header);
+
+		SolidBrush disabled(theme->GetDisabledOverlayColor());
+		g.FillRectangle(&disabled, header);
+
+		StringFormat sf;
+		sf.SetAlignment(StringAlignmentNear);
+		SolidBrush tbr(theme->GetTextColor());
+		g.DrawString(_title.c_str(), (int)_title.length(), theme->GetGUIFontBold(), PointF(float(header.GetLeft()+2.0f), header.GetTop()+5.0f), &sf, &tbr);
+	}
+
+	rc.Narrow(0,0,1,1);
+	SolidBrush border(theme->GetActiveStartColor());
+	Pen pn(&border, 1.0f);
+	g.DrawRectangle(&pn, rc);
+}
+
+void ChoiceWnd::Layout() {
+	if(_choices) {
+		Area rc = GetClientArea();
+		ref<Theme> theme = ThemeManager::GetTheme();
+		rc.Narrow(1,HasHeader()?theme->GetMeasureInPixels(Theme::MeasureToolbarHeight):0,1,1);
+		_choices->Fill(LayoutFill,rc);
+	}
+}
+
+void ChoiceWnd::OnSize(const Area& ns) {
+	Layout();
+}
+
+void ChoiceWnd::AddChoice(ref<Choice> tr) {
+	_choices->AddChoice(tr);
+	SetSize(200, (_choices->GetItemCount()+1)*_choices->GetItemHeight());
+}
+
+LRESULT ChoiceWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
+	if(msg==WM_ACTIVATE && LOWORD(wp)==WA_INACTIVE) {
+		Show(false);
+	}
+	return Wnd::Message(msg,wp,lp);
+}

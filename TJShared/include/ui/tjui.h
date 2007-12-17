@@ -30,5 +30,6 @@
 #include "tjdialogs.h"
 #include "tjlistwnd.h"
 #include "tjgraphwnd.h"
+#include "tjchoicewnd.h"
 
 #endif

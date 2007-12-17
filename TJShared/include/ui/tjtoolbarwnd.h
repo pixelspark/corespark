@@ -45,14 +45,18 @@ namespace tj {
 				virtual void Add(ref<ToolbarItem> item);
 				virtual void OnCommand(int c);
 				virtual void Fill(LayoutFlags f, Area& r);
-				virtual Pixels GetTotalButtonWidth();
+				virtual Pixels GetTotalButtonWidth() const;
 				virtual void SetBackground(bool t);
 				virtual void SetBackgroundColor(Gdiplus::Color c);
+				virtual bool HasTip() const;
+				virtual void SetTip(ref<Wnd> tipWindow);
 
 			protected:
+				virtual Area GetFreeArea() const; // returns the area which child classes can freely use to paint on
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
 				virtual void OnSize(const Area& ns);
 				virtual bool CanShowHints();
+				virtual void DrawToolbarButton(Gdiplus::Graphics& g, Pixels x, Icon& icon, const Area& rc, ref<Theme> theme, bool over, bool down, bool separator=false);
 
 				std::vector< ref<ToolbarItem> > _items;
 				static const int KIconWidth = 16;
@@ -61,6 +65,8 @@ namespace tj {
 				int _idx;
 				bool _bk;
 				Gdiplus::Color _bkColor;
+				Icon _tipIcon;
+				ref<Wnd> _tip;
 		};
 
 		class EXPORTED SearchToolbarWnd: public ToolbarWnd, public Listener {

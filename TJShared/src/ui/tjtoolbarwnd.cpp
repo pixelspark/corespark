@@ -5,7 +5,7 @@ using namespace Gdiplus;
 using namespace tj::shared;
 
 // ToolbarWnd
-ToolbarWnd::ToolbarWnd(): ChildWnd(L"") {
+ToolbarWnd::ToolbarWnd(): ChildWnd(L""), _tipIcon(L"icons/tip.png") {
 	SetWantMouseLeave(true);
 	_in = false;
 	_idx = -1;
@@ -39,6 +39,15 @@ void ToolbarWnd::OnSize(const Area& ns) {
 	Layout();
 }
 
+bool ToolbarWnd::HasTip() const {
+	return _tip!=0;
+}
+
+void ToolbarWnd::SetTip(ref<Wnd> tipWindow) {
+	_tip = tipWindow;
+	Update();
+}
+
 void ToolbarWnd::Fill(LayoutFlags f, Area& r) {
 	ref<Theme> theme = ThemeManager::GetTheme();
 	Pixels h = theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
@@ -63,13 +72,13 @@ LRESULT ToolbarWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 }
 
 void ToolbarWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
-	///if(msg==WM_MOUSEMOVE||msg==WM_MOUSEHOVER||msg==WM_LBUTTONDOWN) {
+	ref<Theme> theme = ThemeManager::GetTheme();
+	Pixels bs = theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
+
 	if(ev==MouseEventMove||ev==MouseEventLDown) {
 		_in = true;
 
 		if(!ISVKKEYDOWN(VK_LBUTTON)||ev==MouseEventLDown) {
-			ref<Theme> theme = ThemeManager::GetTheme();
-			Pixels bs = theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
 			_idx = x/bs;
 		}
 		// track leave event
@@ -81,17 +90,41 @@ void ToolbarWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 		Repaint();
 	}
 	else if(ev==MouseEventLUp) {
+		Area rc = GetClientArea();
+
 		if(_idx>=0 && _idx < (int)_items.size()) {
 			ref<ToolbarItem> item = _items.at(_idx);
 			OnCommand(item->GetCommand());
+		}
+		else if(x>rc.GetRight()-bs) {
+			// Tip thing
+			if(HasTip()) {
+				HWND twnd = _tip->GetWindow();
+				POINT pt;
+				pt.x = int((rc.GetRight()-bs)*theme->GetDPIScaleFactor());
+				pt.y = int(rc.GetHeight()*theme->GetDPIScaleFactor());
+				ClientToScreen(GetWindow(), &pt);
+				SetWindowPos(twnd, 0, pt.x, pt.y, 0, 0, SWP_NOZORDER|SWP_NOSIZE);
+				_tip->Show(true);
+				UpdateWindow(GetWindow());
+			}
 		}
 		Repaint();
 	}
 }
 
-Pixels ToolbarWnd::GetTotalButtonWidth() {
+Pixels ToolbarWnd::GetTotalButtonWidth() const {
 	ref<Theme> theme = ThemeManager::GetTheme();
 	return int(_items.size())*theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
+}
+
+Area ToolbarWnd::GetFreeArea() const {
+	Area rc = GetClientArea();
+	ref<Theme> theme = ThemeManager::GetTheme();
+	Pixels buttonSize = theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
+	rc.Narrow(GetTotalButtonWidth(),0,HasTip()?buttonSize:0,0);
+
+	return rc;
 }
 
 void ToolbarWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
@@ -121,33 +154,22 @@ void ToolbarWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
 	Pen pn(theme->GetActiveEndColor(), 1.0f);
 	g.DrawLine(&pn, PointF(0.0f, float(rc.GetHeight()-1.0f)), PointF(float(rc.GetWidth()), float(rc.GetHeight()-1.0f)));
 
+	// Draw toolbar buttons
 	std::vector< ref<ToolbarItem> >::iterator it = _items.begin();
-	int x = 0;
+	Pixels x = 0;
 	int idx = 0;
 	while(it!=_items.end()) {
 		ref<ToolbarItem> item = *it;
-		if(idx==_idx && _in) {
-			if(ISVKKEYDOWN(VK_LBUTTON)) {
-				LinearGradientBrush active(PointF(0.0f, 0.0f), PointF(0.0f, float(rc.GetHeight())), theme->GetHighlightColorStart(), theme->GetHighlightColorEnd());
-				g.FillRectangle(&active, RectF(float(x)+1.0f, 1.0f, 22.0f, 21.0f));
-			}
-			else {
-				LinearGradientBrush active(PointF(0.0f, 0.0f), PointF(0.0f, float(rc.GetHeight())), theme->GetActiveStartColor(), theme->GetActiveEndColor());
-				g.FillRectangle(&active, RectF(float(x)+1.0f, 1.0f, 22.0f, 21.0f));
-			}
-			g.FillRectangle(&glas, RectF(float(x)+1.0f, 1.0f, float(buttonSize)-2.0f, float(rc.GetHeight())-3.0f));
-		}
-
-		g.DrawImage(item->GetIcon(), RectF(float(x)+4.0f, 4.0f, 16.0f, 16.0f));
-
-		if(item->IsSeparator()) {
-			Pen pn(theme->GetActiveStartColor());
-			g.DrawLine(&pn, PointF(float(x)+24.0f, 4.0f), PointF(float(x)+24.0f, float(rc.GetHeight())-4.0f));
-		}
-
+		bool over = ((idx==_idx) && _in);
+		DrawToolbarButton(g, x, item->GetIcon(), rc, theme, over, bool(ISVKKEYDOWN(VK_LBUTTON)!=0), item->IsSeparator());
 		x += buttonSize;
 		++it;
 		idx++;
+	}
+
+	// Draw tip window
+	if(HasTip() && (x<(rc.GetWidth()-buttonSize))) {
+		DrawToolbarButton(g, rc.GetWidth()-buttonSize, _tipIcon, rc, theme, _tip->IsShown(), _tip->IsShown(), false);
 	}
 
 	// draw description text if in & selected
@@ -160,6 +182,32 @@ void ToolbarWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
 		sf.SetAlignment(StringAlignmentNear);
 		sf.SetLineAlignment(StringAlignmentCenter);
 		g.DrawString(text.c_str(), (int)text.length(), theme->GetGUIFont(), RectF(float(lx), 0.0f, float(rc.GetWidth()), 24.0f), &sf, &br);
+	}
+}
+
+void ToolbarWnd::DrawToolbarButton(Graphics& g, Pixels x, Icon& icon, const Area& rc, ref<Theme> theme, bool over, bool down, bool separator) {
+	float fx = float(x);
+	Pixels buttonSize = theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
+
+	if(over) {
+		if(down) {
+			LinearGradientBrush active(PointF(0.0f, 0.0f), PointF(0.0f, float(rc.GetHeight())), theme->GetHighlightColorStart(), theme->GetHighlightColorEnd());
+			g.FillRectangle(&active, RectF(fx+1.0f, 1.0f, 22.0f, 21.0f));
+		}
+		else {
+			LinearGradientBrush active(PointF(0.0f, 0.0f), PointF(0.0f, float(rc.GetHeight())), theme->GetActiveStartColor(), theme->GetActiveEndColor());
+			g.FillRectangle(&active, RectF(fx+1.0f, 1.0f, 22.0f, 21.0f));
+		}
+
+		LinearGradientBrush glas(PointF(0.0f,0.0f), PointF(0.0f,float(rc.GetHeight())/2.0f), theme->GetGlassColorStart(), theme->GetGlassColorEnd());
+		g.FillRectangle(&glas, RectF(fx+1.0f, 1.0f, float(buttonSize)-2.0f, float(rc.GetHeight())-3.0f));
+	}
+
+	g.DrawImage(icon, RectF(fx+4.0f, 4.0f, 16.0f, 16.0f));
+
+	if(separator) {
+		Pen pn(theme->GetActiveStartColor());
+		g.DrawLine(&pn, PointF(fx+24.0f, 4.0f), PointF(fx+24.0f, float(rc.GetHeight())-4.0f));
 	}
 }
 
@@ -261,7 +309,7 @@ void SearchToolbarWnd::Layout() { // also called by ToolbarWnd::OnSize
 }
 
 Area SearchToolbarWnd::GetSearchBoxArea() const {
-	Area rc = GetClientArea();
+	Area rc = GetFreeArea();
 	Pixels margin = (rc.GetHeight()-_searchHeight)/2;
 	Area search(rc.GetRight()-_searchWidth-margin-_rightMargin, rc.GetTop()+margin-1, _searchWidth, _searchHeight);
 	return search;

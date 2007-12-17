@@ -33,12 +33,13 @@ namespace tj {
 				on how to fill the list */
 				virtual void SetEmptyText(const std::wstring& txt); 
 				std::wstring GetEmptyText() const;
+				virtual void SetShowHeader(bool t);
 
 			protected:
 				// implemented by child
 				virtual int GetItemCount() = 0;
 				virtual void PaintItem(int id, Gdiplus::Graphics& g, Area& row) = 0;
-				virtual int GetItemHeightInPixels();
+				virtual Pixels GetItemHeight();
 				virtual void OnClickItem(int id, int col);
 				virtual void OnRightClickItem(int id, int col);
 				virtual void OnDoubleClickItem(int id, int col);
@@ -53,7 +54,7 @@ namespace tj {
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
 				int GetRowIDByHeight(int h);
 				virtual Area GetRowArea(int rid);
-				virtual int GetHeaderHeightInPixels() const;
+				virtual Pixels GetHeaderHeight() const;
 				const static float KMinimumColumnWidth;
 			
 			private:
@@ -62,6 +63,7 @@ namespace tj {
 				int _draggingCol;
 				int _dragStartX;
 				int _selected;
+				bool _showHeader;
 		};
 	}
 }
