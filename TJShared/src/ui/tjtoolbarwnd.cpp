@@ -333,7 +333,7 @@ void SearchToolbarWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
 	Area search = GetSearchBoxArea();
 
 	// Only paint search box if we do not overlap with the toolbar buttons
-	if(search.GetLeft()>GetTotalButtonWidth()) {
+	if(search.GetLeft()>(GetTotalButtonWidth()-theme->GetMeasureInPixels(Theme::MeasureToolbarHeight))) {
 		search.Widen(1,1,1,1);
 
 		SolidBrush border(theme->GetActiveStartColor());
