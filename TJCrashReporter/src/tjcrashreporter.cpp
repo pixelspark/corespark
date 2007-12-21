@@ -4,7 +4,7 @@
 using namespace tj::shared;
 using namespace google_breakpad;
 
-static std::wstring AirbagURL = L"http://tj.ahref.nl/airbag/report";
+static std::wstring AirbagURL = L"http://www.tjshow.com/airbag/report";
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrev, LPSTR cmd, int nShow) {
 	// Get program directory
