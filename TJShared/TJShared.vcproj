@@ -432,6 +432,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ui\tjpopupwnd.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ui\tjprogresswnd.cpp"
 					>
 				</File>
@@ -823,6 +827,10 @@
 				</File>
 				<File
 					RelativePath=".\include\ui\tjpathwnd.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\ui\tjpopupwnd.h"
 					>
 				</File>
 				<File

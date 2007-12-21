@@ -2,7 +2,7 @@
 using namespace Gdiplus;
 using namespace tj::shared;
 
-SplashWnd::SplashWnd(std::wstring path, int w, int h): Wnd(L"TJShow", 0L, TJ_DROPSHADOW_CLASS_NAME) {
+SplashWnd::SplashWnd(std::wstring path, Pixels w, Pixels h) {
 	SetStyleEx(WS_EX_TOPMOST);
 	SetStyle(WS_POPUP);
 	UnsetStyle(WS_CAPTION);
@@ -22,13 +22,12 @@ SplashWnd::SplashWnd(std::wstring path, int w, int h): Wnd(L"TJShow", 0L, TJ_DRO
 	RECT nrc;
 	nrc.left   = mi.rcWork.left + (mi.rcWork.right - mi.rcWork.left - w) / 2;
     nrc.top   = mi.rcWork.top  + (mi.rcWork.bottom - mi.rcWork.top  - h) / 2;
-	MoveWindow(GetWindow(), nrc.left, nrc.top, w, h, FALSE);
-	SetWindowPos(GetWindow(), HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE|SWP_NOSIZE);
+	SetWindowPos(GetWindow(), HWND_TOPMOST, nrc.left, nrc.top, 0, 0, SWP_NOSIZE);
+	SetSize(w,h);
 	Layout();
 
 	// Make window transparent
-	SetWindowLong(GetWindow(), GWL_EXSTYLE, GetWindowLong(GetWindow(), GWL_EXSTYLE) | WS_EX_LAYERED);
-	SetLayeredWindowAttributes(GetWindow(), 0, (255 * 90) / 100, LWA_ALPHA);
+	SetOpacity(0.9f);
 }
 
 SplashWnd::~SplashWnd() {
@@ -47,17 +46,6 @@ void SplashWnd::Layout() {
 	}
 }
 
-LRESULT SplashWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
-	if(msg==WM_LBUTTONDOWN) {
-		CloseWindow(GetWindow());
-	}
-	else if(msg==WM_SIZE) {
-		Layout();
-	}
-
-	return Wnd::Message(msg, wp, lp);
-}
-
 /* Splash thread */
 SplashThread::SplashThread(std::wstring path, int w, int h) {
 	_path = path;
@@ -72,7 +60,8 @@ SplashThread::~SplashThread() {
 
 void SplashThread::Hide() {
 	if(_wnd) {
-		_wnd->Message(WM_CLOSE, 0, 0);
+		CloseWindow(_wnd->GetWindow());
+		//_wnd->Message(WM_CLOSE, 0, 0);
 	}
 	_closeEvent.Signal();
 }

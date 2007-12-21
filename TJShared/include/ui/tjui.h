@@ -10,6 +10,7 @@
 #include "tjcontextmenu.h"
 #include "tjpane.h"
 #include "tjproperty.h"
+#include "tjpopupwnd.h"
 
 // controls
 #include "tjeditwnd.h"

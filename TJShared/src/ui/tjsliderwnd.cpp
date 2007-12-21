@@ -43,13 +43,13 @@ void SliderWnd::Update() {
 	Repaint();
 }
 
-void SliderWnd::Fill(LayoutFlags flags, Area& r) {
+void SliderWnd::Fill(LayoutFlags flags, Area& r, bool direct) {
 	if(flags==LayoutLeft) {
-		Move(r.GetLeft(), r.GetTop(), KMinimumWidth, r.GetHeight());
+		if(direct) Move(r.GetLeft(), r.GetTop(), KMinimumWidth, r.GetHeight());
 		r.Narrow(KMinimumWidth,0,0,0);
 	}
 	else if(flags==LayoutRight) {
-		Move(r.GetLeft()+r.GetWidth()-KMinimumWidth, r.GetTop(), KMinimumWidth, r.GetHeight());
+		if(direct) Move(r.GetLeft()+r.GetWidth()-KMinimumWidth, r.GetTop(), KMinimumWidth, r.GetHeight());
 		r.Narrow(0,0,KMinimumWidth,0);
 	}
 	else {

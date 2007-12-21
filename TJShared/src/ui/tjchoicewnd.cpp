@@ -2,6 +2,7 @@
 using namespace tj::shared;
 using namespace Gdiplus;
 
+/** Choice **/
 Choice::Choice(const std::wstring& title, const std::wstring& text, const std::wstring& image): _title(title), _text(text), _image(image) {
 	_w = 72;
 	_h = 50;
@@ -91,11 +92,7 @@ void ChoiceListWnd::AddChoice(ref<Choice> tr) {
 }
 
 /** ChoiceWnd **/
-ChoiceWnd::ChoiceWnd(): Wnd(L"", 0L, TJ_DROPSHADOW_CLASS_NAME, true, WS_EX_TOPMOST|WS_EX_TOOLWINDOW) {
-	SetStyle(WS_BORDER);
-	UnsetStyle(WS_CAPTION);
-	SetSize(200,100);
-
+ChoiceWnd::ChoiceWnd() {
 	_choices = GC::Hold(new ChoiceListWnd());
 	Add(_choices);
 }
@@ -153,11 +150,4 @@ void ChoiceWnd::OnSize(const Area& ns) {
 void ChoiceWnd::AddChoice(ref<Choice> tr) {
 	_choices->AddChoice(tr);
 	SetSize(200, (_choices->GetItemCount()+1)*_choices->GetItemHeight());
-}
-
-LRESULT ChoiceWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
-	if(msg==WM_ACTIVATE && LOWORD(wp)==WA_INACTIVE) {
-		Show(false);
-	}
-	return Wnd::Message(msg,wp,lp);
 }

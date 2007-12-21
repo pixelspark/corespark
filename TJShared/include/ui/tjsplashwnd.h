@@ -3,11 +3,10 @@
 
 namespace tj {
 	namespace shared {
-		class EXPORTED SplashWnd: public Wnd {
+		class EXPORTED SplashWnd: public PopupWnd {
 			public:
-				SplashWnd(std::wstring path, int w, int h);
+				SplashWnd(std::wstring path, Pixels w, Pixels h);
 				virtual ~SplashWnd();
-				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme);
 				virtual void Layout();
 

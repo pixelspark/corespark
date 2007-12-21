@@ -18,7 +18,7 @@ namespace tj {
 				virtual void SetColor(int idx);
 				void SetShowValue(bool show);
 				void SetSnapToHalf(bool snap);
-				virtual void Fill(LayoutFlags flags, Area& rect);
+				virtual void Fill(LayoutFlags flags, Area& rect, bool direct = true);
 
 			protected:
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);

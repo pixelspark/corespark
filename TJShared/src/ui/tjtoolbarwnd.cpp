@@ -48,19 +48,19 @@ void ToolbarWnd::SetTip(ref<Wnd> tipWindow) {
 	Update();
 }
 
-void ToolbarWnd::Fill(LayoutFlags f, Area& r) {
+void ToolbarWnd::Fill(LayoutFlags f, Area& r, bool direct) {
 	ref<Theme> theme = ThemeManager::GetTheme();
 	Pixels h = theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
 	if(f==LayoutTop) {
-		Move(r.GetLeft(), r.GetTop(), r.GetWidth(), h);
+		if(direct) Move(r.GetLeft(), r.GetTop(), r.GetWidth(), h);
 		r.Narrow(0,h,0,0);
 	}
 	else if(f==LayoutBottom) {
-		Move(r.GetLeft(), r.GetTop()-r.GetHeight()-h, r.GetWidth(), h);
+		if(direct) Move(r.GetLeft(), r.GetTop()-r.GetHeight()-h, r.GetWidth(), h);
 		r.Narrow(0,0,0,h);
 	}
 	else {
-		ChildWnd::Fill(f, r);
+		ChildWnd::Fill(f, r, direct);
 	}
 }
 
@@ -296,7 +296,9 @@ void SearchToolbarWnd::OnSearchChange(const std::wstring& q) {
 void SearchToolbarWnd::Layout() { // also called by ToolbarWnd::OnSize
 	Area search = GetSearchBoxArea();
 
-	if(search.GetLeft()<=GetTotalButtonWidth()) {
+	ref<Theme> theme = ThemeManager::GetTheme();
+	Pixels buttonSize = theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
+	if(search.GetLeft()<=GetTotalButtonWidth()+buttonSize) { // +buttonSize is for the search icon
 		// Hide search things, because we overlap with toolbar buttons
 		_edit->Show(false);
 	}

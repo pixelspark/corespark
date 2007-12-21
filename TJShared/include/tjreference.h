@@ -27,7 +27,7 @@ namespace tj {
 				friend class tj::shared::GC;
 
 				public:
-					virtual ~Resource() {
+					~Resource() {
 						#ifdef _DEBUG
 						if(_rc!=0 || _weakrc!=0) {
 								throw Exception(L"Resource deleted while still referenced!",ExceptionTypeWarning);
@@ -43,9 +43,7 @@ namespace tj {
 					}
 
 					inline void DeleteReference() {
-						InterlockedDecrement(&_rc);
-						
-						if(_rc==0) {
+						if(InterlockedDecrement(&_rc)==0) {
 							// If there are no outstanding weak references, we can delete ourselves
 							if(_weakrc==0) {
 								#ifdef TJSHARED_MEMORY_TRACE
@@ -66,10 +64,10 @@ namespace tj {
 					}
 
 					inline void DeleteWeakReference() {
-						InterlockedDecrement(&_weakrc);
-
-						if(_rc==0 && _weakrc==0) {
-							delete this;
+						if(InterlockedDecrement(&_weakrc)==0) {
+							if(_rc==0) {
+								delete this;
+							}
 						}
 					}
 
@@ -84,6 +82,7 @@ namespace tj {
 					inline T* GetData() { return _data; }
 
 					T* _data;
+
 				protected:
 					Resource(T* x) { 
 						_rc = 0;

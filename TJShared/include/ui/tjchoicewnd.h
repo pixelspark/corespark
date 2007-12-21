@@ -39,12 +39,11 @@ namespace tj {
 				Pixels _itemHeight;
 		};
 
-		class EXPORTED ChoiceWnd: public Wnd {
+		class EXPORTED ChoiceWnd: public PopupWnd {
 			public:
 				ChoiceWnd();
 				virtual ~ChoiceWnd();
 				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme);
-				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 				virtual void Layout();
 				virtual void OnSize(const Area& ns);
 				virtual void AddChoice(ref<Choice> trick);

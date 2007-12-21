@@ -65,6 +65,7 @@ void Wnd::StopTimer(unsigned int id) {
 }
 
 void Wnd::Update() {
+	//Repaint();
 }
 
 void Wnd::Layout() {
@@ -657,7 +658,6 @@ LRESULT Wnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 
 // Default message handlers
 void Wnd::OnSize(const Area& newSize) {
-	//Repaint();
 }
 
 void Wnd::OnTimer(unsigned int id) {
@@ -761,14 +761,16 @@ std::wstring Wnd::GetTabTitle() const {
 	return L"";
 }
 
-void Wnd::Fill(LayoutFlags flags, Area& rect) {
+void Wnd::Fill(LayoutFlags flags, Area& rect, bool direct) {
 	switch(flags) {
 		case LayoutFill:
 		case LayoutTop:
 		case LayoutBottom:
 		case LayoutRight:
 		case LayoutLeft:
-			Move(rect.GetLeft(), rect.GetTop(), rect.GetWidth(), rect.GetHeight());
+			if(direct) {
+				Move(rect.GetLeft(), rect.GetTop(), rect.GetWidth(), rect.GetHeight());
+			}
 			rect.SetWidth(0);
 			rect.SetHeight(0);
 			break;
