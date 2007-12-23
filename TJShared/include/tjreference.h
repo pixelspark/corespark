@@ -1,6 +1,8 @@
 #ifndef _REFERENCE_H
 #define _REFERENCE_H
 
+#include <intrin.h>
+
 namespace tj {
 	namespace shared {
 		class BadCastException: public Exception {
@@ -92,11 +94,10 @@ namespace tj {
 					}
 			  
 					void Release() {
-						if(_data!=0) {
-							T* temp = _data;
-							_data = 0;
-							delete temp;
-						}
+						// TODO use InterlockedExchangePointer here? Gave some problems...
+						T* temp = _data;
+						_data = 0; 
+						delete temp;
 					}
 
 					long _rc;
