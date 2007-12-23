@@ -52,6 +52,5 @@
 #include "ui/tjui.h"
 #include "properties/tjproperties.h"
 
-
 #pragma warning(pop)
 #endif
