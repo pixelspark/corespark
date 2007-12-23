@@ -36,6 +36,7 @@ SplashWnd::~SplashWnd() {
 
 void SplashWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
 	Area rc = GetClientArea();
+	
 	g.DrawImage(_image, (RectF)rc);
 }
 
