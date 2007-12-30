@@ -61,8 +61,7 @@ SplashThread::~SplashThread() {
 
 void SplashThread::Hide() {
 	if(_wnd) {
-		CloseWindow(_wnd->GetWindow());
-		//_wnd->Message(WM_CLOSE, 0, 0);
+		PostMessage(_wnd->GetWindow(), WM_CLOSE, 0, 0L);
 	}
 	_closeEvent.Signal();
 }

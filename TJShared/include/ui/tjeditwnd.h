@@ -21,7 +21,7 @@ namespace tj {
 				HWND _ctrl;
 				Gdiplus::Color _back;
 				HBRUSH _backBrush;
-				ref<Listener> _listener;
+				weak<Listener> _listener;
 		};
 	}
 }

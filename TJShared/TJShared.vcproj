@@ -117,10 +117,12 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
+				InlineFunctionExpansion="2"
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
 				WholeProgramOptimization="true"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_USRDLL;TJSHARED_EXPORTS;NDEBUG"
+				StringPooling="true"
 				MinimalRebuild="true"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -713,19 +715,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\tjlistener.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\src\tjlog.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\src\tjnetwork.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\tjobject.cpp"
 					>
 				</File>
 				<File

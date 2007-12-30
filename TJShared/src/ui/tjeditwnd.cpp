@@ -57,8 +57,10 @@ LRESULT EditWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		
 	}
 	else if(msg==WM_COMMAND) {
-		if(_listener && HIWORD(wp)==EN_CHANGE) {
-			_listener->Notify(this, NotificationChanged);
+		ref<Listener> listener = _listener;
+
+		if(HIWORD(wp)==EN_CHANGE && listener) {
+			listener->Notify(this, NotificationChanged);
 		}
 		else {
 			HWND parent = ::GetParent(GetWindow());

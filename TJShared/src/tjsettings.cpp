@@ -104,7 +104,7 @@ void SettingsStorage::Load(const std::wstring& path) {
 }
 
 ref<Settings> SettingsStorage::GetNamespace(const std::wstring& ns) {
-	return GC::Hold(new SettingsNamespace(This<Settings>(), ns));
+	return GC::Hold(new SettingsNamespace(this, ns));
 }
 
 void SettingsStorage::SetValue(const std::wstring& key, const std::wstring& value) {

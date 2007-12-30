@@ -80,6 +80,7 @@ namespace tj {
 			protected:
 				virtual void SetSearchBoxRightMargin(Pixels r);
 				virtual void OnSearchChange(const std::wstring& q);
+				virtual void OnCreated();
 				Area GetSearchBoxArea() const;
 				virtual void SetSearchBoxSize(Pixels w, Pixels h);
 				virtual bool CanShowHints();

@@ -21,7 +21,6 @@ namespace tj {
 				virtual void Set(float f) = 0;
 				virtual std::wstring GetName() const;
 		};
-
 	}
 }
 

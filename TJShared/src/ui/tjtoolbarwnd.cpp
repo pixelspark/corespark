@@ -279,12 +279,14 @@ SearchToolbarWnd::SearchToolbarWnd(): _searchIcon(L"icons/search.png") {
 	_searchWidth = KDefaultBoxWidth;
 	_searchHeight = KDefaultBoxHeight;
 
-	ref<Listener> lw = GC::Hold(new ListenerWrapper(this));
 	_edit = GC::Hold(new EditWnd());
-	_edit->SetListener(lw);
 	_edit->SetCue(TL(search_banner));
 	ChildWnd::Add(_edit,true);
 	Layout();
+}
+
+void SearchToolbarWnd::OnCreated() {
+	_edit->SetListener(this);
 }
 
 SearchToolbarWnd::~SearchToolbarWnd() {

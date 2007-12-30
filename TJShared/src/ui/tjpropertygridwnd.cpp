@@ -4,6 +4,10 @@
 using namespace tj::shared;
 using namespace Gdiplus;
 
+const Pixels PropertyGridWnd::KPathHeight = 24;
+const Pixels PropertyGridWnd::KMinimumNameColumnWidth = 10;
+const Pixels PropertyGridWnd::KPropertyMargin = 3;
+
 /// TODO: Alles netjes Pixels maken ipv int (ook scrollbar), een GetPropertyAt(y=?) maken en de expand/collapse
 /// code fixen (en misschien sommige properties die nog niet met Pixels werken even fixen).
 
@@ -94,12 +98,12 @@ void PropertyGridWnd::Paint(Graphics& g, ref<Theme> theme) {
 
 		if(GetFocus()==p->GetWindow() || bold) {
 			LinearGradientBrush gbr(Gdiplus::Point(0, cH), Gdiplus::Point(0, cH+p->GetHeight()+10), theme->GetActiveStartColor(), theme->GetActiveEndColor());
-			g.FillRectangle(&gbr, Rect(1, cH+1, r.GetWidth()-2, p->GetHeight()+6-2));
+			g.FillRectangle(&gbr, Rect(1, cH+1, r.GetWidth()-2, p->GetHeight()+(2*KPropertyMargin)-2));
 		}
 
 		if(bold) {
 			SolidBrush dbr(theme->GetDisabledOverlayColor());
-			g.FillRectangle(&dbr, Rect(1, cH+1, r.GetWidth()-2, p->GetHeight()+6-2));
+			g.FillRectangle(&dbr, Rect(1, cH+1, r.GetWidth()-2, p->GetHeight()+(2*KPropertyMargin)-2));
 		}
 
 		std::wstring ws = p->GetName();
@@ -108,7 +112,7 @@ void PropertyGridWnd::Paint(Graphics& g, ref<Theme> theme) {
 		g.DrawString(ws.c_str(), (int)ws.length(),bold?theme->GetGUIFontBold():theme->GetGUIFont(), PointF(stringLeft, float(cH+5)), &tb);
 		
 		if(p->IsExpandable()) {
-			Area expander(_nameWidth-21, cH+3, 16, 16);
+			Area expander(_nameWidth-21, cH+KPropertyMargin, 16, 16);
 			if(p->IsExpanded()) {
 				g.DrawImage(_collapseIcon, expander);
 			}
@@ -118,7 +122,7 @@ void PropertyGridWnd::Paint(Graphics& g, ref<Theme> theme) {
 		}
 		
 
-		cH += p->GetHeight() + 6;
+		cH += p->GetHeight() + 2*KPropertyMargin;
 
 		++it;
 		hI++;
@@ -170,7 +174,7 @@ void PropertyGridWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 						Repaint();
 						return;
 					}
-					cH += h + 6; // TODO: make the 6 a constant (see the Paint code for more info)
+					cH += h + 2*KPropertyMargin;
 				}
 				++it;
 			}
@@ -243,7 +247,7 @@ LRESULT PropertyGridWnd::Message(UINT msg, WPARAM wParam, LPARAM lParam) {
 			Layout();
 		}
 		
-		if(HIWORD(wParam)==EN_CHANGE /*||HIWORD(wParam)==EN_UPDATE */ || HIWORD(wParam)==BN_CLICKED||HIWORD(wParam)==CBN_SELCHANGE) {
+		if(HIWORD(wParam)==EN_CHANGE || HIWORD(wParam)==BN_CLICKED||HIWORD(wParam)==CBN_SELCHANGE) {
 			Wnd* root = GetRootWindow();
 			if(root!=0) {
 				root->Update();
@@ -293,7 +297,6 @@ void PropertyGridWnd::Layout() {
 	}
 
 	float df = ThemeManager::GetTheme()->GetDPIScaleFactor();
-
 	Pixels cH = GetPathHeight() - GetVerticalPos();
 	std::vector<ref<Property> >::iterator it = _properties.begin();
 
@@ -310,9 +313,9 @@ void PropertyGridWnd::Layout() {
 			// Some nice DPI conversions...
 			SetWindowLong(vw, GWL_STYLE, style);
 			SetWindowPos(vw, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE|SWP_NOSIZE|SWP_NOACTIVATE);
-			SetWindowPos(vw, 0,  int(ceil(_nameWidth*df)), int(ceil((cH+3)*df)),  int(ceil((rect.GetWidth()-_nameWidth-3)*df)), int(ceil(h*df)), SWP_NOZORDER);
+			SetWindowPos(vw, 0,  int(ceil(_nameWidth*df)), int(ceil((cH+KPropertyMargin)*df)),  int(ceil((rect.GetWidth()-_nameWidth-KPropertyMargin)*df)), int(ceil(h*df)), SWP_NOZORDER);
 			ShowWindow(vw, SW_SHOW);
-			cH += h + 6; // TODO: make the 6 a constant
+			cH += h + 2*KPropertyMargin;
 		}
 		++it;
 	}
@@ -328,7 +331,7 @@ void PropertyGridWnd::OnSize(const Area& ns) {
 	while(it!=_properties.end()) {
 		ref<Property> pr = *it;
 		if(pr) {
-			totalHeight += pr->GetHeight() + 6;
+			totalHeight += pr->GetHeight() + 2*KPropertyMargin;
 		}
 		++it;
 	}
@@ -354,14 +357,22 @@ void PropertyGridWnd::Update() {
 
 void PropertyGridWnd::Clear() {
 	_properties.clear();
+	_subject = 0;
+	if(_path) {
+		_path->SetPath(0);
+	}
+
 	Layout();
 }
 
-void PropertyGridWnd::Inspect(Inspectable* isp, ref<Path> p) {
+// Clearly, this is NOT threadsafe (but it doesn't have to be anyway)
+void PropertyGridWnd::Inspect(ref<Inspectable> isp, ref<Path> p) {
 	_properties.clear();
+	_subject = isp;
 
-	if(isp!=0) {
+	if(isp) {
 		ref<PropertySet> propset = isp->GetProperties();
+
 		if(propset) {
 			HWND myself = GetWindow();
 			HWND first = 0;
@@ -384,36 +395,14 @@ void PropertyGridWnd::Inspect(Inspectable* isp, ref<Path> p) {
 				}
 				++it;
 			}
-
-			// Update geometry
-			if(_path) {
-				_path->SetPath(p);
-			}
-			SetFocus(first);
-			ClearThemeCache();
-			SetVerticalPos(0);
-			OnSize(GetClientArea());
-			return;
 		}
 	}
 	
-	// Otherwise, make it empty
-	ClearThemeCache();
 	if(_path) {
-		_path->SetPath(0);
+		_path->SetPath(p);
 	}
+
+	ClearThemeCache();
+	SetVerticalPos(0);
 	OnSize(GetClientArea());
-}
-
-void PropertyGridWnd::Inspect(ref<Inspectable> isp, ref<Path> p) {
-	if(!isp) {
-		_properties.clear();
-		return;
-	}
-
-	Inspectable* is = isp.GetPointer();
-	if(is==0) {
-		Throw(L"GetPointer==0!", ExceptionTypeError);
-	}
-	Inspect(is,p);
 }

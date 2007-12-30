@@ -60,7 +60,7 @@ void ScriptArray::Initialize() {
 }
 
 ref<Scriptable> ScriptArray::SValues(ref<ParameterList> p) {
-	return GC::Hold(new ScriptArrayIterator(This<ScriptArray>()));
+	return GC::Hold(new ScriptArrayIterator(this));
 }
 
 ref<Scriptable> ScriptArray::SToString(ref<ParameterList> p) {

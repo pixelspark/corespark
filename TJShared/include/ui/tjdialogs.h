@@ -15,6 +15,7 @@ namespace tj {
 
 			protected:
 				virtual void OnSize(const Area& ns);
+				virtual void OnCreated();
 				virtual void EndModal(bool result);
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 

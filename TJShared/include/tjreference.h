@@ -11,6 +11,13 @@ namespace tj {
 				}
 		};
 
+		class BadReferenceException: public Exception {
+			public:
+				BadReferenceException(): Exception(L" A reference error has occurred", ExceptionTypeError) {
+				}
+		};
+
+
 		class NullPointerException: public Exception {
 			public:
 				NullPointerException(): Exception(L"A null pointer was dereferenced", ExceptionTypeError) {
@@ -23,301 +30,318 @@ namespace tj {
 		class GC;
 
 		namespace intern {
-			template< typename T > class Resource {
-				friend class tj::shared::ref<T>;
-				friend class tj::shared::weak<T>;
-				friend class tj::shared::GC;
-
+			class Resource {
 				public:
+					inline Resource(): _referenceCount(0), _weakReferenceCount(0) {
+					}
+
 					~Resource() {
-						#ifdef _DEBUG
-						if(_rc!=0 || _weakrc!=0) {
-								throw Exception(L"Resource deleted while still referenced!",ExceptionTypeWarning);
-						}
-						#endif
-
-						this->Release();
-						GC::DecrementLive(sizeof(T));
 					}
 
-					inline void AddReference() {
-						InterlockedIncrement(&_rc);
+					inline bool AddReference(bool first = false) {
+						if(!first && _referenceCount==0) return false;
+						InterlockedIncrement(&_referenceCount);
+						return true;
 					}
 
-					inline void DeleteReference() {
-						if(InterlockedDecrement(&_rc)==0) {
-							// If there are no outstanding weak references, we can delete ourselves
-							if(_weakrc==0) {
-								#ifdef TJSHARED_MEMORY_TRACE
-								GC::Log(typeid(this).name(), false);
-								#endif
-
-								delete this;
-							}
-							else {
-								// There are outstanding weak references, but at least we can delete the object
-								Release();
-							}
-						}
+					inline long DeleteReference() {
+						long old = InterlockedDecrement(&_referenceCount);
+						if(old==0 && !IsWeaklyReferenced()) delete this;
+						return old;
 					}
 
 					inline void AddWeakReference() {
-						InterlockedIncrement(&_weakrc);
+						InterlockedIncrement(&_weakReferenceCount);
 					}
 
 					inline void DeleteWeakReference() {
-						if(InterlockedDecrement(&_weakrc)==0) {
-							if(_rc==0) {
-								delete this;
-							}
-						}
+						long old = InterlockedDecrement(&_weakReferenceCount);
+						if(old==0 && !IsReferenced()) delete this;						
 					}
 
-					inline ref<T> Reference() {
-						return ref<T>(this);
+					inline bool IsReferenced() const {
+						return _referenceCount != 0;
 					}
 
-					inline weak<T> WeakReference() {
-						return weak<T>(this);
+					inline bool IsWeaklyReferenced() const {
+						return _weakReferenceCount != 0;
 					}
 
-					inline T* GetData() { return _data; }
-
-					T* _data;
-
-				protected:
-					Resource(T* x) { 
-						_rc = 0;
-						_weakrc = 0;
-						_data = x;
-						GC::IncrementLive(sizeof(T));
-					}
-			  
-					void Release() {
-						// TODO use InterlockedExchangePointer here? Gave some problems...
-						T* temp = _data;
-						_data = 0; 
-						delete temp;
-					}
-
-					long _rc;
-					long _weakrc;
+				private:
+					volatile long _referenceCount;
+					volatile long _weakReferenceCount;
 			};
-		}
+		};
 
+		class Object;
+
+		// If _object is null, then resource is considered 0 too and we have a null reference
 		template<typename T> class ref {
-			friend class intern::Resource<T>;
+			friend class intern::Resource;
+			friend class GC;
+			friend class weak<T>;
 
-			public:
-				inline ref(intern::Resource<T>* rx=0) {
-					_res = rx;
-					if(_res!=0) {
-						_res->AddReference();
+			protected:
+				/** Called from the GC. object and rx are guaranteed to be non-null **/
+				inline ref(T* object, intern::Resource* rx): _resource(rx), _object(object) {
+					assert(rx!=0 && object!=0);
+					_resource->AddReference(true);
+				}
+
+			public:			
+				inline ref(): _object(0) {
+				}
+
+				inline ref(const weak<T>& wr) {
+					if(wr._object==0) {
+						_object = 0;
+					}
+					else {
+						if(wr._resource->AddReference()) {
+							// object still alive, we are referenced
+							_object = wr._object;
+							_resource = wr._resource;
+						}
+						else {
+							_object = 0;
+						}
 					}
 				}
 
-				inline ref(const ref<T>& org) {
-					_res = org._res;
-					if(_res!=0) {
-						_res->AddReference();
+				inline ref(Object* object) {
+					if(object!=0) {
+						/* This exception can be thrown for two reasons:
+						* The object wasn't allocated with GC::Hold
+						* The objects tries to create a ref<T> from its constructor (in that case, _resource isn't set yet) */
+						if(object->_resource==0) {
+							throw BadReferenceException();
+						}
+
+						_object = dynamic_cast<T*>(object);
+						if(_object==0) throw BadCastException();
+						_resource = object->_resource;
+						_resource->AddReference();
+					}
+					else {
+						_object = 0;
+					}
+				}
+
+				inline ref(const ref<T>& org): _object(org._object) {
+					if(_object!=0) {
+						_resource = org._resource;
+						_resource->AddReference();
 					}
 				} 
 
 				template<typename RT> inline ref(const ref<RT>& org) {	
-					if(org._res==0) {
-						_res = 0;
+					if(org._object!=0) {
+						_object = dynamic_cast<T*>(org._object);
+						if(_object==0) throw BadCastException();
+
+						_resource = org._resource;
+						_resource->AddReference();
 					}
 					else {
-						T* rt = dynamic_cast<T*>(org._res->_data);				
-						if(rt==0) throw BadCastException();
-
-						_res = reinterpret_cast<tj::shared::intern::Resource<T>* >(org._res);
-						if(_res!=0) {
-							_res->AddReference();
-						}
+						_object = 0;
 					}
 				}
 
 				inline ~ref() {
-					if(_res==0) return;
-					_res->DeleteReference();
-					///_res = 0;
+					Release();
+				}
+
+				inline T* GetPointer() {
+					return _object;
+				}
+
+				inline T* operator->() {
+					if(_object==0) throw NullPointerException();
+					return _object;
+				}
+
+				inline const T* operator->() const {
+					if(_object==0) throw NullPointerException();
+					return _object;
+				}
+
+				inline operator bool() const {
+					return _object!=0;
+				}
+
+				inline bool operator<(const ref<T>& r) const {
+					return r._object < _object;
+				}
+
+				inline bool operator>(const ref<T>& r) const {
+					return r._object > _object;
 				}
 
 				inline ref<T>& operator=(const ref<T>& o) {
-					tj::shared::intern::Resource<T>* old = _res;
-					_res = o._res;
-
-					if(_res!=0) {
-						_res->AddReference();
+					if(o._object==0) {
+						Release();
+						_object = 0;
 					}
-					if(old!=0) {
-						old->DeleteReference();
+					else {
+						// Careful: this handles self-assignment
+						intern::Resource* res = o._resource;
+						res->AddReference();
+						Release();
+						_object = o._object;
+						_resource = res;
 					}
 
 					return (*this);
 				}
 
-				inline T* GetPointer() {
-					if(_res->_data==0) return 0;
-					return dynamic_cast<T*>(_res->_data);
+				/***inline ref<T>& operator=(weak<T>& wr) {
+					Release();
+					_resource = wr._resource;
+					
+					if(_resource==0 || !_resource->IsReferenced()) {
+						_object = 0;
+					}
+					else {
+						_object = wr._object;
+						_resource->AddReference();
+					}
+
+					return *this;
 				}
 
-				inline operator ref<const T>() {
-					return ref<const T>((res<const T>*)_res);
+				inline ref<T>& operator=(const ref<T>& wr) {
+					Release();
+					_resource = wr._resource;
+					_object = wr._object;
+					
+					if(_resource!=0) {
+						_resource->AddReference();
+					}
+
+					return *this;
 				}
 
-				inline ref<const T> get_const() {
-					return ref<const T>((res<const T>*)_res);
-				}
+				inline ref<T>& operator=(Object* object) {
+					Release();
 
-				inline operator T&() {
-					if(_res->_data==0) throw NullPointerException();
-					return *(_res->_data);
-				}
+					if(object!=0) {
+						_object = dynamic_cast<T*>(object);
+						if(_object!=0) {
+							_resource = object->_resource;
+							
+							if(_resource!=0) {
+								_resource->AddReference();
+							}
+						}
+						else {
+							throw BadCastException();
+						}
+					}
+					else {
+						_object = 0;
+						_resource = 0;
+					}
 
-				inline T* operator->() {
-					if(_res->_data==0) throw NullPointerException();
-					///return dynamic_cast<T*>(_res->_data);
-					return _res->_data;
-				}
-
-				inline const T* operator->() const {
-					if(_res->_data==0) throw NullPointerException();
-					///return dynamic_cast<const T*>(_res->_data);
-					return _res->_data;
-				}
-
-				inline operator bool() const {
-					return _res!=0&&_res->_data!=0;
-				}
-
-				inline bool operator<(const ref<T>& r) const {
-					return (r._res<_res);
-				}
-
-				inline bool operator>(const ref<T>& r) const {
-					return (r._res>_res);
-				}
+					return *this;
+				}***/
 
 				// add dynamic casts for pointer comparisons
 				template<typename TT> inline bool operator==(const ref<TT>& r) const {
-					return (_res==r._res);
+					return _object == r._object;
 				}
 
 				template<typename TT> inline bool operator!=(const ref<TT>& r) const {
-					return (_res!=r._res);
+					return _object != r._object;
 				}
 
 				template<class X> inline bool IsCastableTo() const {
-					return dynamic_cast<const X*>(_res->_data)!=0;	
+					return (_object!=0) && (dynamic_cast<const X*>(_object)!=0);
 				}
 
-				intern::Resource<T>* _res;
+			private:
+				inline void Release() {
+					if(_object!=0) {
+						if(_resource->DeleteReference()==0) {
+							// This was the last reference to the object; release it
+							GC::DecrementLive(sizeof(T));
+							delete _object;
+						}
+						_object = 0;
+						_resource = 0;
+					}
+				}
+
+			public:
+				T* _object;
+				intern::Resource* _resource;
 		};
 
 		template<typename T> class weak {
-			friend class tj::shared::intern::Resource<T>;
+			friend class intern::Resource;
+			friend class ref<T>;
 
 			public:
-				inline weak(tj::shared::intern::Resource<T>* rx=0) {
-					_res = rx;
-					if(_res!=0) {
-					_res->AddWeakReference();
-					}
+				inline weak(): _object(0) {
 				}
 
-				inline weak(const ref<T>& org) {
-					_res = org._res;
-					if(_res!=0) {
-						_res->AddWeakReference();
+				inline weak(ref<T>& org) {
+					if(org._object!=0) {
+						_object = org._object;
+						_resource = org._resource;
+						_resource->AddWeakReference();
+					}
+					else {
+						_object = 0;
 					}
 				} 
 
-				template<typename RT> inline weak(const weak<RT>& org) {	
-					if(org._res==0) {
-						_res = 0;
+				template<typename RT> explicit inline weak(weak<RT>& org) {	
+					if(org._object==0) {
+						_object = 0;
 					}
 					else {
-						T* rt = dynamic_cast<T*>(org._res->_data);				
-						if(rt==0) throw BadCastException();
-
-						_res = reinterpret_cast<tj::shared::intern::Resource<T>* >(org._res);
-						if(_res!=0) {
-							_res->AddWeakReference();
-						}
+						_object = dynamic_cast<T*>(org._object);
+						if(_object==0) throw BadCastException();
+						
+						_resource = org._resource;
+						_resource->AddWeakReference();
 					}
 				}
 
 				inline ~weak() {
-					if(_res==0) return;
-					_res->DeleteWeakReference();
-					_res = 0;
-				}
-
-				inline weak<T>& operator=(const ref<T>& o) {
-					tj::shared::intern::Resource<T>* old = _res;
-					_res = o._res;
-
-					if(_res!=0) {
-						_res->AddWeakReference();
+					if(_object!=0) {
+						_resource->DeleteWeakReference();
 					}
-					if(old!=0) {
-						old->DeleteWeakReference();
-					}
-
-					return (*this);
 				}
 
-				inline operator weak<const T>() {
-					return weak<const T>((res<const T>*)_res);
+				template<typename TT> inline bool operator==(const ref<TT>& r) const {
+					return (_object == r._object);
 				}
 
-				inline weak<const T> get_const() {
-					return weak<const T>((res<const T>*)_res);
+				template<typename TT> inline bool operator!=(const ref<TT>& r) const {
+					return (_object != r._object);
 				}
 
-				inline operator ref<T>() {
-					return Reference();
+				template<typename TT> inline bool operator==(const weak<TT>& r) const {
+					return (_object == r._object);
 				}
 
-				inline bool operator==(const ref<T>& r) {
-					return (r._res==_res);
-				}
-
-				template<typename TT> inline bool operator==(ref<TT>& r) {
-					return (_res==r._res);
-				}
-
-				template<typename TT> inline bool operator!=(ref<TT>& r) {
-					return (_res!=r._res);
-				}
-
-				template<typename TT> inline bool operator==(const weak<TT>& r) {
-					return (_res==r._res);
-				}
-
-				template<typename TT> inline bool operator!=(const weak<TT>& r) {
-					return (_res!=r._res);
-				}
-
-				template<class X> inline bool IsCastableTo() {
-					if(_res==0 || _res->_data == 0) return false;
-					return dynamic_cast<X*>(_res->_data)!=0;	
-				}
-
-				inline ref<T> Reference() {
-					if(_res!=0 && _res->_rc>0) {
-						return _res->Reference();
-					}
-					return ref<T>(0);
+				template<typename TT> inline bool operator!=(const weak<TT>& r) const {
+					return (_object != r._object);
 				}
 
 				inline bool IsValid() const {
-					return _res!=0 && _res->_rc>0;
+					if(_object==0) {
+						return false;
+					}
+					else {
+						return _resource->IsReferenced();	
+					}
 				}
 
-				tj::shared::intern::Resource<T>* _res;
+			private:
+				intern::Resource* _resource;
+				T* _object;
 		};
 	}
 }

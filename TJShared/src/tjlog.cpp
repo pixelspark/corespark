@@ -35,16 +35,26 @@ namespace tj {
 
 			protected:
 				virtual void Run() {
-					_logger = new LoggerWnd();
-					SetEvent(_loggerCreatedEvent);
+					try {
+						_logger = new LoggerWnd();
+						SetEvent(_loggerCreatedEvent);
 
-					MSG msg;
-					while(GetMessage(&msg, 0, 0, 0)!=WM_QUIT) {
-						TranslateMessage(&msg);
-						DispatchMessage(&msg);
+						MSG msg;
+						while(GetMessage(&msg, 0, 0, 0)!=WM_QUIT) {
+							try {
+								TranslateMessage(&msg);
+								DispatchMessage(&msg);
+							}
+							catch(Exception& e) {
+								MessageBox(0L, e.GetMsg().c_str(), L"Logger Error", MB_OK|MB_ICONERROR);
+							}
+						}
+
+						delete _logger;
 					}
-
-					delete _logger;
+					catch(Exception& e) {
+						MessageBox(0L, e.GetMsg().c_str(), L"Logger Error", MB_OK|MB_ICONERROR);
+					}
 				}
 
 				LoggerWnd* _logger;
@@ -85,6 +95,8 @@ ref<FileLogger> FileLogger::_instance;
 
 void Log::Write(const std::wstring& source, const std::wstring& message) {
 	ThreadLock lock(&_lock);
+	OutputDebugString(message.c_str());
+	OutputDebugString(L"\r\n");
 	if(_writeToFile) {
 		ref<FileLogger> file = FileLogger::Instance();
 		file->Write(source + std::wstring(L": ") + message + std::wstring(L"\r\n"));

@@ -114,10 +114,10 @@ ref<Scriptable> ScriptMap::ToString(ref<ParameterList> p) {
 
 ref<Scriptable> ScriptMap::Keys(ref<ParameterList> p) {
 	ThreadLock lock(&_lock);
-	return GC::Hold(new ScriptMapIterator(This<ScriptMap>(), true));
+	return GC::Hold(new ScriptMapIterator(this, true));
 }
 
 ref<Scriptable> ScriptMap::Values(ref<ParameterList> p) {
 	ThreadLock lock(&_lock);
-	return GC::Hold(new ScriptMapIterator(This<ScriptMap>(), false));
+	return GC::Hold(new ScriptMapIterator(this, false));
 }

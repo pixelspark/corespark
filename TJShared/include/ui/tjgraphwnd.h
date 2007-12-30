@@ -3,8 +3,10 @@
 
 namespace tj {
 	namespace shared {
-	class GraphItem;
+		class GraphItem;
 		struct EXPORTED GraphArrow {
+			GraphArrow();
+
 			enum Direction {
 				None = 0,
 				In,

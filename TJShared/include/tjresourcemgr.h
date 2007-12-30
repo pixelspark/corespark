@@ -12,10 +12,9 @@ namespace tj {
 		};
 
 		class EXPORTED ResourceManager: public virtual Object {
-			friend class tj::shared::intern::Resource<ResourceManager>; // so it can call the destructor
-
 			public:
 				static ref<ResourceManager> Instance();
+				virtual ~ResourceManager();
 
 				/** Returns a full path to the specified resource.**/
 				std::wstring Get(const std::wstring& identifier, bool silent=false);
@@ -27,7 +26,6 @@ namespace tj {
 
 			protected:
 				ResourceManager();
-				virtual ~ResourceManager();
 				static ref<ResourceManager> _instance;
 				std::vector<std::wstring> _paths;
 				ref<ResourceListener> _listener;

@@ -118,7 +118,7 @@ ref<Scriptable> VM::Execute(ref<ScriptContext> c, ref<CompiledScript> script, re
 	_context = c; // weak reference
 	_scope = scope;
 
-	ref<VM> vm = This<VM>(); // keep us alive
+	ref<VM> vm = this; // keep us alive
 	ref<Scriptlet> main = script->GetMainScriptlet();
 	_frame = new StackFrame(main,0);
 	int opCode = 0;

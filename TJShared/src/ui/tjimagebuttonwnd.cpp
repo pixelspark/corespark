@@ -2,9 +2,8 @@
 using namespace Gdiplus;
 using namespace tj::shared;
 
-ButtonWnd::ButtonWnd(ref<Listener> listener, const wchar_t* image, const wchar_t* text): ChildWnd(L"", false, true) {
+ButtonWnd::ButtonWnd(const wchar_t* image, const wchar_t* text): ChildWnd(L"", false, true) {
 	SetWantMouseLeave(true);
-	_listener = listener;
 	std::wstring fn = ResourceManager::Instance()->Get(image);
 	_image =  Bitmap::FromFile(fn.c_str(),TRUE);
 	_down = false;
@@ -70,8 +69,9 @@ void ButtonWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 		Repaint();
 	}
 	else if(ev==MouseEventLUp) {
-		if(_listener) {
-			_listener->Notify(this, NotificationClick);
+		ref<Listener> listener = _listener;
+		if(listener) {
+			listener->Notify(this, NotificationClick);
 		}
 
 		_down = false;
@@ -95,8 +95,8 @@ LRESULT ButtonWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 }
 
 /* StateButtonWnd */
-StateButtonWnd::StateButtonWnd(ref<Listener> listener, const wchar_t* imageOn, const wchar_t* imageOff, const wchar_t* imageOther):
-ButtonWnd(listener, imageOn) {
+StateButtonWnd::StateButtonWnd( const wchar_t* imageOn, const wchar_t* imageOff, const wchar_t* imageOther):
+ButtonWnd(imageOn) {
 	std::wstring fn = ResourceManager::Instance()->Get(imageOff);
 	_offImage =  Bitmap::FromFile(fn.c_str(),TRUE);
 	fn = ResourceManager::Instance()->Get(imageOn);

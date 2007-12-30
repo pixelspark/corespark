@@ -27,16 +27,8 @@ GraphicsInit::GraphicsInit() {
 GraphicsInit::~GraphicsInit() {
 }
 
-Wnd::Wnd(const wchar_t* title, HWND parent, const wchar_t* className, bool usedb, int exStyle) {
+Wnd::Wnd(const wchar_t* title, HWND parent, const wchar_t* className, bool usedb, int exStyle): _horizontalPos(0), _verticalPos(0), _horizontalPageSize(1), _verticalPageSize(1), _fullScreen(false), _buffer(0), _doubleBuffered(usedb) {
 	RegisterClasses();
-	_horizontalPos = 0;
-	_verticalPos = 0;
-	_horizontalPageSize = 1;
-	_verticalPageSize = 1;
-	_fullScreen = false;
-	_buffer = 0;
-	_doubleBuffered = usedb;
-
 	_wnd = CreateWindowEx(exStyle, className, title, WS_CLIPCHILDREN|WS_CLIPSIBLINGS, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, parent, (HMENU)0, GetModuleHandle(NULL), (void*)this);
 	if(_wnd==0) Throw(L"Could not create window", ExceptionTypeError);
 

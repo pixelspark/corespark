@@ -474,7 +474,7 @@ class ScriptGrammar : public grammar<ScriptGrammar> {
 ref<CompiledScript> ScriptContext::Compile(std::wstring source) {
 	ref<CompiledScript> script = GC::Hold(new CompiledScript(this));
 
-	ScriptGrammar parser(script, This<ScriptContext>());
+	ScriptGrammar parser(script, this);
 	parse_info<> info = parse(Mbs(source).c_str(), parser, space_p);
 	if(!info.full) {
 		throw ParserException(std::wstring(L"Parsing stopped at")+Wcs(info.stop));
@@ -491,7 +491,7 @@ ref<CompiledScript> ScriptContext::CompileFile(std::wstring fn) {
 	ref<CompiledScript> script = GC::Hold(new CompiledScript(this));
 
 	std::string fns = Mbs(fn);
-	ScriptGrammar parser(script, This<ScriptContext>());
+	ScriptGrammar parser(script, this);
 	file_iterator<char> begin(fns.c_str());
 	file_iterator<char> end = begin.make_end();
 

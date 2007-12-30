@@ -125,7 +125,7 @@ void GraphWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 
 	ref<GraphItem> gi = GetItemAt(x,y);
 	if(gi) {
-		gi->OnMouse(ev,x,y, This<GraphWnd>());
+		gi->OnMouse(ev, x, y, this);
 	}
 	else if(ev==MouseEventRDown) {
 		ContextMenu cm;
@@ -288,6 +288,9 @@ void GraphItem::Hide(bool h) {
 
 Area& GraphItem::GetArea() {
 	return _area;
+}
+
+GraphArrow::GraphArrow() {
 }
 
 void GraphItem::OnMouse(MouseEvent me, Pixels x, Pixels y, ref<GraphWnd> gw) {

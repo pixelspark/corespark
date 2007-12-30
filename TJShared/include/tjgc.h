@@ -16,22 +16,24 @@ namespace tj {
 				static inline void SetObjectPointer(...) {
 				}
 				
-				static inline void SetObjectPointer(Object* object, tj::shared::intern::Resource<Object>* rs) {
+				static inline void SetObjectPointer(Object* object, intern::Resource* rs) {
 					object->_resource = rs;
+					object->OnCreated();
 				}
 
 				static std::map< void*, std::wstring> _objects;
 		};
 
 		template<class T> ref<T> GC::Hold(T* x) {
-			tj::shared::intern::Resource<T>* rs = new tj::shared::intern::Resource<T>(x);
-			SetObjectPointer(x, reinterpret_cast< tj::shared::intern::Resource<Object>* >(rs));
+			intern::Resource* rs = new intern::Resource();
+			SetObjectPointer(x, rs);
 			
 			#ifdef TJSHARED_MEMORY_TRACE
 				Log(typeid(x).name(),true);
 			#endif
 
-			return rs->Reference();
+			GC::IncrementLive(sizeof(T));
+			return ref<T>(x, rs);
 		}
 	}
 }

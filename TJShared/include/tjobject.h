@@ -3,20 +3,28 @@
 
 namespace tj {
 	namespace shared {
+		/**  All classes that want Object functionality should inherit from it virtually:
+
+		class X: public virtual Object, public OtherClass, public virtual SomeInterface {..};
+
+		Without the virtual keyword, duplicate base instances of Object could be instantiated, which is not
+		guaranteed to work. Object should be listed first in the list of extended classes.
+
+		**/
 		class EXPORTED Object {
 			friend class GC;
 
 			public:
-				template<class T> inline ref<T> This() {
-					if(_resource!=0) {
-						tj::shared::intern::Resource<T>* tr = reinterpret_cast< tj::shared::intern::Resource<T>* >(_resource);
-						return tr->Reference();
-					}
-					return 0;
+				inline Object(): _resource(0) {
 				}
 
-			private:
-				tj::shared::intern::Resource<Object>* _resource;
+				// To make it a polymorphic type
+				virtual ~Object() {
+				}
+
+				virtual void OnCreated();
+
+				intern::Resource* _resource;
 		};
 	}
 }

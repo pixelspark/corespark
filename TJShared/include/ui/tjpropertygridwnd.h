@@ -17,7 +17,6 @@ namespace tj {
 				}
 
 				void Inspect(ref<Inspectable> isp, ref<Path> p = 0);
-				void Inspect(Inspectable* isp, ref<Path> p = 0);
 				LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 				void Layout();
 				void ClearThemeCache();
@@ -45,8 +44,9 @@ namespace tj {
 				bool _showHints;
 				Icon _expandIcon, _collapseIcon;
 
-				const static Pixels KPathHeight = 24;
-				const static Pixels KMinimumNameColumnWidth = 10;
+				const static Pixels KPathHeight;
+				const static Pixels KMinimumNameColumnWidth;
+				const static Pixels KPropertyMargin;
 		};
 	}
 }

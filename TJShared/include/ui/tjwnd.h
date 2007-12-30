@@ -118,7 +118,7 @@ namespace tj {
 				virtual void OnSettingsChanged();
 				virtual void OnDropFiles(const std::vector<std::wstring>& files);
 				virtual void OnTimer(unsigned int id);
-
+				
 				// Timer
 				virtual void StartTimer(Time interval, unsigned int id);
 				virtual void StopTimer(unsigned int id);

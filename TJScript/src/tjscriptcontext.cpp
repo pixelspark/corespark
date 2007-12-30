@@ -27,12 +27,12 @@ ref<Scriptable> ScriptContext::Execute(ref<CompiledScript> scr, ref<ScriptScope>
 
 	if(scope) {
 		scope->SetPrevious(_global);
-		ref<Scriptable> val = _vm->Execute(This<ScriptContext>(), scr, scope);
+		ref<Scriptable> val = _vm->Execute(this, scr, scope);
 		scope->SetPrevious(0);
 		return val;
 	}
 	else {
-		return _vm->Execute(This<ScriptContext>(), scr, _global);
+		return _vm->Execute(this, scr, _global);
 	}
 }
 
@@ -40,7 +40,7 @@ ref<ScriptThread> ScriptContext::CreateExecutionThread(ref<CompiledScript> scr) 
 	if(scr->_creatingContext!=this) {
 		throw ScriptException(L"Cannot create execution thread for this script, because it was not created by this context");
 	}
-	ref<ScriptThread> thread = GC::Hold(new ScriptThread(This<ScriptContext>()));
+	ref<ScriptThread> thread = GC::Hold(new ScriptThread(this));
 	thread->SetScript(scr);
 	return thread;
 }
