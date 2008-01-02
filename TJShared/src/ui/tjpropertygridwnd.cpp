@@ -91,7 +91,10 @@ void PropertyGridWnd::Paint(Graphics& g, ref<Theme> theme) {
 	float stringLeft = 5.0f;
 	while(it!=_properties.end()) {
 		ref<Property> p = *it;
-		if(!p) continue;
+		if(!p) {
+			++it; 
+			continue;
+		}
 
 		p->Update();
 		bool bold = p.IsCastableTo<PropertySeparator>();
