@@ -75,7 +75,7 @@ void ColorWheel::Paint(Gdiplus::Graphics& g, ref<Theme> theme, Pixels offx, Pixe
 	g.DrawImage(_bitmap, RectF(float(offx), float(offy), float(_w), float(_h)));
 }
 
-Gdiplus::Color ColorWheel::GetColorAt(Pixels x, Pixels y, double brightness) {
+RGBColor ColorWheel::GetColorAt(Pixels x, Pixels y, double brightness) {
 	return ColorSpaces::HSVToRGB(GetHueAt(x,y), GetSaturationAt(x,y), brightness);	
 }
 
@@ -140,8 +140,8 @@ void ColorPopupWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
 	Pixels textLeft = 150+KWheelMargin*2+(_brightness->GetClientArea().GetWidth());
 	Pixels textTop = 2*KWheelMargin+24;
 	
-	std::wstring rgb = L"RGB: "+Stringify(_color.GetR())+L", "+Stringify(_color.GetG())+L", "+Stringify(_color.GetB());
-	CMYKColor cmyk = ColorSpaces::RGBToCMYK(_color.GetR()/255.0, _color.GetG()/255.0, _color.GetB()/255.0);
+	std::wstring rgb = L"RGB: "+Stringify(int(_color._r*255.0))+L", "+Stringify(int(_color._g*255.0))+L", "+Stringify(int(_color._b*255.0));
+	CMYKColor cmyk = ColorSpaces::RGBToCMYK(_color._r, _color._g, _color._b);
 	
 	std::wostringstream cmos;
 	cmos << L"CMYK: " << int(cmyk._c*100) << L"%, " << int(cmyk._m*100) << L"%, " << int(cmyk._y*100) << L"%, " << int(cmyk._k*100) << L"%, ";
@@ -181,26 +181,41 @@ void ColorPopupWnd::Update() {
 
 	ref<Listener> listener = _myListener;
 	if(listener) {
-		listener->Notify(dynamic_cast<Wnd*>(this), NotificationUpdate);
+		listener->Notify(dynamic_cast<Wnd*>(this), NotificationChanged);
 	}
 	Repaint();
 }
 
 void ColorPopupWnd::OnSize(const Area& ns) {
+	Layout();
 }
 
 void ColorPopupWnd::Layout() {
 	Area rc = GetClientArea();
 	rc.Narrow(150+KWheelMargin, 35, KWheelMargin, KWheelMargin);
-	_brightness->Fill(LayoutLeft, rc);
+	if(_brightness) {
+		_brightness->Fill(LayoutLeft, rc);
+	}
 }
 
-Color ColorPopupWnd::GetColor() {
+RGBColor ColorPopupWnd::GetColor() const {
 	return _color;
+}
+
+HSVColor ColorPopupWnd::GetHSVColor() const {
+	return HSVColor(_hue, _sat, _val);
 }
 
 void ColorPopupWnd::SetColor(double r, double g, double b) {
 	HSVColor hsv = ColorSpaces::RGBToHSV(r,g,b);
+	SetColor(hsv);
+}
+
+void ColorPopupWnd::SetColor(const RGBColor& col) {
+	SetColor(col._r, col._g, col._b);
+}
+
+void ColorPopupWnd::SetColor(const HSVColor& hsv) {
 	_hue = float(hsv._h);
 	_sat = float(hsv._s);
 	_val = float(hsv._v);
@@ -209,13 +224,7 @@ void ColorPopupWnd::SetColor(double r, double g, double b) {
 }
 
 /* ColorChooserWnd */
-ColorChooserWnd::ColorChooserWnd(unsigned char* red, unsigned char* green, unsigned char* blue, unsigned char* tred, unsigned char* tgreen, unsigned char* tblue): ChildWnd(L""), _colorsIcon(L"icons/shared/colors.png") {
-	_red = red;
-	_green = green;
-	_blue = blue;
-	_tred = tred;
-	_tgreen = tgreen;
-	_tblue = tblue;
+ColorChooserWnd::ColorChooserWnd(RGBColor* c, RGBColor* tc): ChildWnd(L""), _colorsIcon(L"icons/shared/colors.png"), _color(c), _tcolor(tc) {
 }
 
 ColorChooserWnd::~ColorChooserWnd() {
@@ -227,7 +236,7 @@ void ColorChooserWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
 	g.FillRectangle(&bbr, rc);
 
 	rc.Narrow(1,1,1,1);
-	SolidBrush cbr(Color(*_red, *_green, *_blue));
+	SolidBrush cbr(*_color);
 	g.FillRectangle(&cbr, rc);
 
 	Area iconArea(rc.GetRight()-20, rc.GetTop(), 16, 16);
@@ -235,14 +244,9 @@ void ColorChooserWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
 }
 
 void ColorChooserWnd::Notify(Wnd* source, Notification not) {
-	if(not==NotificationUpdate && _cpw) {
-		Color col = _cpw->GetColor();
-		*_red = col.GetRed();
-		*_green = col.GetGreen();
-		*_blue = col.GetBlue();
-		if(_tred!=0) *_tred = *_red;
-		if(_tgreen!=0) *_tgreen = *_green;
-		if(_tblue!=0) *_tblue = *_blue;
+	if(not==NotificationChanged && _cpw) {
+		*_color = _cpw->GetColor();
+		if(_tcolor!=0) *_tcolor = *_color;
 		Repaint();
 	}
 }
@@ -253,19 +257,13 @@ void ColorChooserWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 			_cpw = GC::Hold(new ColorPopupWnd());
 			_cpw->SetListener(this);
 		}
-		POINT pt;
 
-		ref<Theme> theme = ThemeManager::GetTheme();
 		Area rc = GetClientArea();
-		pt.x = 0;
-		pt.y = rc.GetHeight()+1;
-		ClientToScreen(GetWindow(), &pt);
-		SetWindowPos(_cpw->GetWindow(), 0, pt.x, pt.y, 0, 0, SWP_NOZORDER|SWP_NOSIZE);
-		_cpw->SetColor(double(*_red)/255.0, double(*_green)/255.0, double(*_blue)/255.0);
-		_cpw->Show(true);
+		_cpw->PopupAt(0,rc.GetHeight()+1,this);
+		_cpw->SetColor(*_color);
 	}
 	else if(ev==MouseEventRDown) {
-		COLORREF g_rgbBackground = RGB(*_red, *_green, *_blue);
+		COLORREF g_rgbBackground = RGB(BYTE((_color->_r)*255.0), BYTE((_color->_g)*255.0), BYTE((_color->_b)*255.0));
 		COLORREF g_rgbCustom[16] = {0};
 
 		CHOOSECOLOR cc = {sizeof(CHOOSECOLOR)};
@@ -276,28 +274,17 @@ void ColorChooserWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 		cc.lpCustColors = g_rgbCustom;
 
 		if(ChooseColor(&cc)) {
-			*_red = GetRValue(cc.rgbResult);
-			*_green = GetGValue(cc.rgbResult);
-			*_blue = GetBValue(cc.rgbResult);
-
-			if(_tred!=0) {
-				*_tred = *_red;
-			}
-
-			if(_tgreen!=0) {
-				*_tgreen = *_green;
-			}
-
-			if(_tblue!=0) {
-				*_tblue = *_blue;
-			}
+			_color->_r = double(GetRValue(cc.rgbResult))/255.0;
+			_color->_g = double(GetGValue(cc.rgbResult))/255.0;
+			_color->_b = double(GetBValue(cc.rgbResult))/255.0;
+			if(_tcolor!=0) *_tcolor = *_color;
 		}
 
 		Repaint();
 	}
 }
 
-ColorProperty::ColorProperty(std::wstring name,unsigned char* red, unsigned char* green, unsigned char* blue,unsigned char* tred, unsigned char* tgreen, unsigned char* tblue): Property(name), _red(red), _green(green), _blue(blue), _wnd(0), _tRed(tred), _tGreen(tgreen), _tBlue(tblue)  {
+ColorProperty::ColorProperty(const std::wstring& name, RGBColor* color, RGBColor* tc): Property(name), _color(color), _tcolor(tc)  {
 }
 
 ColorProperty::~ColorProperty() {
@@ -308,7 +295,7 @@ void ColorProperty::Changed() {
 
 HWND ColorProperty::Create(HWND parent) {
 	if(!_wnd) {
-		_wnd = GC::Hold(new ColorChooserWnd(_red, _green, _blue, _tRed, _tGreen, _tBlue));
+		_wnd = GC::Hold(new ColorChooserWnd(_color, _tcolor));
 		SetParent(_wnd->GetWindow(), parent);
 		_wnd->SetStyle(WS_CHILD);
 	}

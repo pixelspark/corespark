@@ -264,7 +264,7 @@ void SliderWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 	if(ev==MouseEventMove ||ev==MouseEventLDown || ev==MouseEventRDown) {
 		if(ISVKKEYDOWN(VK_LBUTTON) || ISVKKEYDOWN(VK_RBUTTON)) {
 			Area rc = GetClientArea();
-			rc.Narrow(0,5, 0, _showValue?10:25);
+			rc.Narrow(0,5, 0, 25);
 
 			y -= rc.GetTop();
 			float val = float(y)/rc.GetHeight();

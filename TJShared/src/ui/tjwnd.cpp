@@ -32,8 +32,6 @@ Wnd::Wnd(const wchar_t* title, HWND parent, const wchar_t* className, bool usedb
 	_wnd = CreateWindowEx(exStyle, className, title, WS_CLIPCHILDREN|WS_CLIPSIBLINGS, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, parent, (HMENU)0, GetModuleHandle(NULL), (void*)this);
 	if(_wnd==0) Throw(L"Could not create window", ExceptionTypeError);
 
-	SetWindowLong(_wnd, GWL_USERDATA, (LONG)(long long)this);
-
 	SetParent(_wnd,parent);
 	UpdateWindow(_wnd);
 	_oldStyle = 0;
@@ -190,20 +188,30 @@ void Wnd::Repaint() {
 }
 
 LRESULT CALLBACK WndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) {
-	if(msg==WM_CREATE) {
-		return 1;
-	}
-	else if(msg==WM_DESTROY) {
-		return 1;
-	}
-	
-	Wnd* dp = reinterpret_cast<Wnd*>((long long)GetWindowLong(wnd,GWL_USERDATA));
+	switch(msg) {
+		case WM_DESTROY:
+			return 0;
 
-	if(dp!=0) {
-		return dp->PreMessage(msg,wp,lp);
-	}
+		case WM_NCCREATE: {
+			CREATESTRUCT* cs = (CREATESTRUCT*)lp;
+			if(cs!=0) {
+				SetWindowLong(wnd, GWL_USERDATA, (long)reinterpret_cast<long long>(cs->lpCreateParams));
+			}
+			return DefWindowProc(wnd, msg, wp, lp);
+		}
+		break;
 
-	return DefWindowProc(wnd, msg, wp, lp);
+		default: {
+			Wnd* dp = reinterpret_cast<Wnd*>((long long)GetWindowLong(wnd,GWL_USERDATA));
+
+			if(dp!=0) {
+				return dp->PreMessage(msg,wp,lp);
+			}
+
+			return DefWindowProc(wnd, msg, wp, lp);
+		}
+		break;
+	}
 }
 
 void Wnd::RegisterClasses() {

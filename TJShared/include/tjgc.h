@@ -5,10 +5,6 @@ namespace tj {
 	namespace shared {
 		class EXPORTED GC {
 			public:
-				static void IncrementLive(size_t size=0);
-				static void DecrementLive(size_t size=0);
-				static long GetLiveCount();
-				static long GetSize();
 				template<typename T> static ref< T > Hold(T* x);
 				static void Log(const char* name, bool allocate);
 
@@ -17,8 +13,21 @@ namespace tj {
 				}
 				
 				static inline void SetObjectPointer(Object* object, intern::Resource* rs) {
-					object->_resource = rs;
-					object->OnCreated();
+					/** There is potential danger here: when SetObjectPointer is called, rs->_referenceCount == 0.
+					When a reference is created in OnCreated (which is likely!) and then destroyed, it will see 
+					a reference count of 0 and will delete the object. So then, we probably return some bad memory...
+					a recipe for trouble. Therefore, this function increments the reference count before doing anything.
+					We need to catch errors for OnCreated, because otherwise the reference count is wrong anyway */
+					rs->_referenceCount++;
+					try {
+						object->_resource = rs;
+						object->OnCreated();
+						rs->_referenceCount--;
+					}
+					catch(...) {
+						rs->_referenceCount--;
+						throw;
+					}
 				}
 
 				static std::map< void*, std::wstring> _objects;
@@ -32,7 +41,6 @@ namespace tj {
 				Log(typeid(x).name(),true);
 			#endif
 
-			GC::IncrementLive(sizeof(T));
 			return ref<T>(x, rs);
 		}
 	}

@@ -74,7 +74,7 @@ HSVColor ColorSpaces::RGBToHSV(double r, double g, double b) {
 }
 
 // Hue (h), Saturation (s) and Value (v) between 0 and 1
-Color ColorSpaces::HSVToRGB(double h, double s, double v)  {
+RGBColor ColorSpaces::HSVToRGB(double h, double s, double v)  {
 	double r,g,b;
 	r = g = b = 0.0;
 
@@ -84,7 +84,7 @@ Color ColorSpaces::HSVToRGB(double h, double s, double v)  {
 
 	if(s == 0.0) {
 		// Gray shade
-		return Color(int(v*255.0f),int(v*255.0f),int(v*255.0f));
+		return RGBColor(v,v,v);
 	} 
 	else {
 		// The color wheel consists of 6 sectors.
@@ -143,7 +143,7 @@ Color ColorSpaces::HSVToRGB(double h, double s, double v)  {
 				break;
 		}
 
-		return Color(BYTE(r*255.0), BYTE(g*255.0), BYTE(b*255.0));
+		return RGBColor(r,g,b);
 	}
 }
 
@@ -151,20 +151,20 @@ Color ColorSpaces::HSVToRGB(double h, double s, double v)  {
 /* RGBColor */
 void RGBColor::Save(TiXmlElement* parent) {
 	TiXmlElement color("color");
-	SaveAttributeSmall(&color,"r", (int)r);
-	SaveAttributeSmall(&color, "g", (int)g);
-	SaveAttributeSmall(&color, "b", (int)b);
+	SaveAttributeSmall(&color,"r", (int)(_r*255.0));
+	SaveAttributeSmall(&color, "g", (int)(_g*255.0));
+	SaveAttributeSmall(&color, "b", (int)(_b*255.0));
 	parent->InsertEndChild(color);
 }
 
 void RGBColor::Load(TiXmlElement* you) {
-	r = LoadAttributeSmall(you, "r", (int)r);
-	g = LoadAttributeSmall(you, "g", (int)g);
-	b = LoadAttributeSmall(you, "b", (int)b);
+	_r = double(LoadAttributeSmall(you, "r", (int)(_r*255.0))) / 255.0;
+	_g = double(LoadAttributeSmall(you, "g", (int)(_g*255.0))) / 255.0;
+	_b = double(LoadAttributeSmall(you, "b", (int)(_b*255.0))) / 255.0;
 }
 
 RGBColor::operator Gdiplus::Color() {
-	return Gdiplus::Color(r,g,b);
+	return Gdiplus::Color(BYTE(_r*255.0),BYTE(_g*255.0),BYTE(_b*255.0));
 }
 
 ColorWnd::ColorWnd(unsigned char r, unsigned char g, unsigned char b): ChildWnd(L"Color") {

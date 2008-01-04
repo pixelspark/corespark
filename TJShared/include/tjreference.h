@@ -30,13 +30,12 @@ namespace tj {
 		class GC;
 
 		namespace intern {
-			class Resource {
-				public:
-					inline Resource(): _referenceCount(0), _weakReferenceCount(0) {
-					}
+			class EXPORTED Resource {
+				friend class GC;
 
-					~Resource() {
-					}
+				public:
+					Resource();
+					~Resource(); // tjshared.cpp
 
 					inline bool AddReference(bool first = false) {
 						if(!first && _referenceCount==0) return false;
@@ -56,7 +55,9 @@ namespace tj {
 
 					inline void DeleteWeakReference() {
 						long old = InterlockedDecrement(&_weakReferenceCount);
-						if(old==0 && !IsReferenced()) delete this;						
+						if(old==0 && !IsReferenced()) {
+							delete this;	
+						}
 					}
 
 					inline bool IsReferenced() const {
@@ -67,9 +68,12 @@ namespace tj {
 						return _weakReferenceCount != 0;
 					}
 
+					static long GetResourceCount();
+
 				private:
 					volatile long _referenceCount;
 					volatile long _weakReferenceCount;
+					volatile static long _resourceCount;
 			};
 		};
 
@@ -194,57 +198,6 @@ namespace tj {
 					return (*this);
 				}
 
-				/***inline ref<T>& operator=(weak<T>& wr) {
-					Release();
-					_resource = wr._resource;
-					
-					if(_resource==0 || !_resource->IsReferenced()) {
-						_object = 0;
-					}
-					else {
-						_object = wr._object;
-						_resource->AddReference();
-					}
-
-					return *this;
-				}
-
-				inline ref<T>& operator=(const ref<T>& wr) {
-					Release();
-					_resource = wr._resource;
-					_object = wr._object;
-					
-					if(_resource!=0) {
-						_resource->AddReference();
-					}
-
-					return *this;
-				}
-
-				inline ref<T>& operator=(Object* object) {
-					Release();
-
-					if(object!=0) {
-						_object = dynamic_cast<T*>(object);
-						if(_object!=0) {
-							_resource = object->_resource;
-							
-							if(_resource!=0) {
-								_resource->AddReference();
-							}
-						}
-						else {
-							throw BadCastException();
-						}
-					}
-					else {
-						_object = 0;
-						_resource = 0;
-					}
-
-					return *this;
-				}***/
-
 				// add dynamic casts for pointer comparisons
 				template<typename TT> inline bool operator==(const ref<TT>& r) const {
 					return _object == r._object;
@@ -263,7 +216,6 @@ namespace tj {
 					if(_object!=0) {
 						if(_resource->DeleteReference()==0) {
 							// This was the last reference to the object; release it
-							GC::DecrementLive(sizeof(T));
 							delete _object;
 						}
 						_object = 0;
@@ -282,6 +234,13 @@ namespace tj {
 
 			public:
 				inline weak(): _object(0) {
+				}
+
+				inline weak(const weak<T>& org): _object(org._object) {
+					if(_object!=0) {
+						_resource = org._resource;
+						_resource->AddWeakReference();
+					}
 				}
 
 				inline weak(ref<T>& org) {
@@ -309,9 +268,23 @@ namespace tj {
 				}
 
 				inline ~weak() {
-					if(_object!=0) {
-						_resource->DeleteWeakReference();
+					Release();
+				}
+
+				inline weak<T>& operator=(const weak<T>& o) {
+					if(o._object==0) {
+						Release();
 					}
+					else {
+						// Careful: this handles self-assignment
+						intern::Resource* res = o._resource;
+						res->AddWeakReference();
+						Release();
+						_object = o._object;
+						_resource = res;
+					}
+
+					return (*this);
 				}
 
 				template<typename TT> inline bool operator==(const ref<TT>& r) const {
@@ -340,6 +313,12 @@ namespace tj {
 				}
 
 			private:
+				inline void Release() {
+					if(_object!=0) {
+						_object = 0;
+						_resource->DeleteWeakReference();
+					}
+				}
 				intern::Resource* _resource;
 				T* _object;
 		};

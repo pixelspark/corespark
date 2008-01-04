@@ -4,34 +4,34 @@
 namespace tj {
 	namespace shared {
 		struct EXPORTED CMYKColor {
-			CMYKColor(double c, double m, double y, double k);
+			CMYKColor(double c = 0.0, double m = 0.0, double y = 0.0, double k = 0.0);
 			double _c, _m, _y, _k;
 		};
 
 		struct EXPORTED HSVColor {
-			HSVColor(double h, double s, double v);
+			HSVColor(double h = 0.0, double s = 0.0, double v = 0.0);
 			double _h, _s, _v;
 		};
 
 		struct EXPORTED RGBColor: public virtual Object, public Serializable {
-			RGBColor(unsigned char ar=0, unsigned char ag=0, unsigned char ab=0) {
-				r = ar;
-				g = ag;
-				b = ab;
+			RGBColor(double ar = 0.0, double ag = 0.0, double ab = 0.0) {
+				_r = ar;
+				_g = ag;
+				_b = ab;
 			}
 
 			virtual void Save(TiXmlElement* parent);
 			virtual void Load(TiXmlElement* you);
 			operator Gdiplus::Color();
 
-			unsigned char r;
-			unsigned char g;
-			unsigned char b;
+			double _r;
+			double _g;
+			double _b;
 		};
 
 		class EXPORTED ColorSpaces {
 			public:
-				static Gdiplus::Color HSVToRGB(double h, double s, double v);
+				static RGBColor HSVToRGB(double h, double s, double v);
 				static CMYKColor RGBToCMYK(double r, double g, double b);
 				static HSVColor RGBToHSV(double r, double g, double b);
 		};

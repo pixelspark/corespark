@@ -13,6 +13,8 @@ namespace tj {
 				So theme+dpi switching will be handled correctly. */
 				virtual void SetSize(Pixels x, Pixels y);
 				virtual void SetOpacity(float f);
+				virtual void PopupAt(Pixels clientX, Pixels clientY, ref<Wnd> window);
+				virtual void PopupAtMouse();
 
 			protected:
 				virtual void OnActivate(bool activate);
