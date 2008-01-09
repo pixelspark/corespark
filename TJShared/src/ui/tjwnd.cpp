@@ -46,6 +46,64 @@ bool Wnd::IsFullScreen() {
 	return _fullScreen;
 }
 
+bool Wnd::IsKeyDown(Key k) {
+	int vk = 0;
+	switch(k) {
+		case KeyLeft:
+			vk = VK_LEFT;
+			break;
+
+		case KeyRight:
+			vk = VK_RIGHT;
+			break;
+
+		case KeyUp:
+			vk = VK_UP;
+			break;
+
+		case KeyDown:
+			vk = VK_DOWN;
+			break;
+
+		case KeyControl:
+			vk = VK_CONTROL;
+			break;
+
+		case KeyShift:
+			vk = VK_SHIFT;
+			break;
+
+		case KeyPageUp:
+			vk = VK_PRIOR;
+			break;
+
+		case KeyPageDown:
+			vk = VK_NEXT;
+			break;
+
+		case KeyMouseLeft: {
+			bool swap = (GetSystemMetrics(SM_SWAPBUTTON)==TRUE);
+			vk = swap?VK_RBUTTON:VK_LBUTTON;
+			break;
+		}
+
+		case KeyMouseRight: {
+			bool swap = (GetSystemMetrics(SM_SWAPBUTTON)==TRUE);
+			vk = swap?VK_LBUTTON:VK_RBUTTON;
+			break;
+		}
+
+		case KeyMouseMiddle:
+			vk = VK_MBUTTON;
+			break;
+
+		default:
+			return false;
+	}
+
+	return (GetAsyncKeyState(vk) & 0x8000) == 0x8000;
+}
+
 void Wnd::StartTimer(Time t, unsigned int id) {
 	::SetTimer(_wnd, id, t.ToInt(), NULL);
 }
@@ -837,7 +895,7 @@ LRESULT CALLBACK PropertyEditNumericWndProc(HWND wnd, UINT msg, WPARAM wp, LPARA
 		ReleaseCapture();
 		begin_y = begin_value = -1;
 	}
-	else if(msg==WM_MOUSEMOVE && ISVKKEYDOWN(VK_MBUTTON)) {
+	else if(msg==WM_MOUSEMOVE && Wnd::IsKeyDown(KeyMouseMiddle)) {
 		if(begin_y>=0) {
 			int dy = begin_y - GET_Y_LPARAM(lp);
 

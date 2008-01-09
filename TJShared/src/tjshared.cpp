@@ -48,3 +48,7 @@ Listener::~Listener() {
 /* Object */
 void Object::OnCreated() {
 }
+
+/* Serializable */
+Serializable::~Serializable() {
+}

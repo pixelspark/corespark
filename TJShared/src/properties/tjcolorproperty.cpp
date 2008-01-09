@@ -161,7 +161,7 @@ void ColorPopupWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
 }
 
 void ColorPopupWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
-	if(ev==MouseEventMove && ISVKKEYDOWN(VK_LBUTTON) && x<155) {
+	if(ev==MouseEventMove && IsKeyDown(KeyMouseLeft) && x<155) {
 		Pixels cx = x-KWheelMargin;
 		Pixels cy = y-KWheelMargin;
 

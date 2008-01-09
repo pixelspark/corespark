@@ -457,7 +457,7 @@ void TabWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 		}
 	}
 	else if(ev==MouseEventMove) {
-		if(_dragging && ISVKKEYDOWN(VK_LBUTTON)) {
+		if(_dragging && IsKeyDown(KeyMouseLeft)) {
 			// we're dragging a tab
 			int dx = abs(_dragStartX - x);
 			int dy = abs(_dragStartY - y);

@@ -41,6 +41,20 @@ namespace tj {
 			MouseEventMUp,
 		};
 
+		enum Key {
+			KeyMouseLeft = 1,
+			KeyMouseRight,
+			KeyMouseMiddle,
+			KeyControl,
+			KeyShift,
+			KeyUp,
+			KeyDown,
+			KeyLeft,
+			KeyRight,
+			KeyPageUp,
+			KeyPageDown,
+		};
+
 		class EXPORTED Wnd: public virtual Object {
 			friend class FloatingPane;
 
@@ -96,6 +110,7 @@ namespace tj {
 				virtual Gdiplus::Image* GetTabIcon() const;		// should return 0 when you don't want to override the tab icon set in Pane
 				virtual void Focus();
 				bool HasFocus() const;
+				static bool IsKeyDown(Key k);
 				virtual void BringToFront();
 
 				/* Drag & Drop - Sleur & Pleur */

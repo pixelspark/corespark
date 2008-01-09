@@ -3,8 +3,6 @@
 using namespace Gdiplus;
 using namespace tj::shared;
 
-#define ISVKKEYDOWN(vk_code) ((GetAsyncKeyState(vk_code) & 0x8000))
-
 const int SliderWnd::KDraggerWidth = 18;
 
 SliderWnd::SliderWnd(const wchar_t* title): ChildWnd(title) {
@@ -176,7 +174,7 @@ LRESULT SliderWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		_flash = false;
 	}
 	else if(msg==WM_KEYDOWN) {
-		if(ISVKKEYDOWN(VK_CONTROL)) {
+		if(IsKeyDown(KeyControl)) {
 			if(!_flash) {
 				_flash = true;	
 				_oldValue = _value;
@@ -262,7 +260,7 @@ void SliderWnd::SetListener(Listener* listener) {
 
 void SliderWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 	if(ev==MouseEventMove ||ev==MouseEventLDown || ev==MouseEventRDown) {
-		if(ISVKKEYDOWN(VK_LBUTTON) || ISVKKEYDOWN(VK_RBUTTON)) {
+		if(IsKeyDown(KeyMouseLeft) || IsKeyDown(KeyMouseRight)) {
 			Area rc = GetClientArea();
 			rc.Narrow(0,5, 0, 25);
 

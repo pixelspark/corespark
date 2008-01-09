@@ -78,7 +78,7 @@ void ButtonWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 		Repaint();
 	}
 	else if(ev==MouseEventMove) {
-		if(ISVKKEYDOWN(VK_LBUTTON)) {
+		if(IsKeyDown(KeyMouseLeft)) {
 			_down = true;
 		}
 		Repaint();

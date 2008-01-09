@@ -78,7 +78,7 @@ void ToolbarWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 	if(ev==MouseEventMove||ev==MouseEventLDown) {
 		_in = true;
 
-		if(!ISVKKEYDOWN(VK_LBUTTON)||ev==MouseEventLDown) {
+		if(!IsKeyDown(KeyMouseLeft)||ev==MouseEventLDown) {
 			_idx = x/bs;
 		}
 		// track leave event
@@ -161,7 +161,7 @@ void ToolbarWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
 	while(it!=_items.end()) {
 		ref<ToolbarItem> item = *it;
 		bool over = ((idx==_idx) && _in);
-		DrawToolbarButton(g, x, item->GetIcon(), rc, theme, over, bool(ISVKKEYDOWN(VK_LBUTTON)!=0), item->IsSeparator());
+		DrawToolbarButton(g, x, item->GetIcon(), rc, theme, over, bool(IsKeyDown(KeyMouseLeft)!=0), item->IsSeparator());
 		x += buttonSize;
 		++it;
 		idx++;
@@ -335,7 +335,7 @@ void SearchToolbarWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
 	Area search = GetSearchBoxArea();
 
 	// Only paint search box if we do not overlap with the toolbar buttons
-	if(search.GetLeft()>(GetTotalButtonWidth()-theme->GetMeasureInPixels(Theme::MeasureToolbarHeight))) {
+	if(search.GetLeft()>(GetTotalButtonWidth()+theme->GetMeasureInPixels(Theme::MeasureToolbarHeight))) {
 		search.Widen(1,1,1,1);
 
 		SolidBrush border(theme->GetActiveStartColor());

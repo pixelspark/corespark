@@ -3,8 +3,9 @@
 
 namespace tj {
 	namespace shared {
-		class Serializable {
+		class EXPORTED Serializable {
 			public:
+				virtual ~Serializable();
 				virtual void Save(TiXmlElement* parent) = 0;
 				virtual void Load(TiXmlElement* you) = 0;
 		};
