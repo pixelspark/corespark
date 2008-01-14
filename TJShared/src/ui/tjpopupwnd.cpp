@@ -42,13 +42,41 @@ void PopupWnd::PopupAt(Pixels x, Pixels y, ref<Wnd> window) {
 	pt.x = long(x*theme->GetDPIScaleFactor());
 	pt.y = long(y*theme->GetDPIScaleFactor());
 	ClientToScreen(window->GetWindow(), &pt);
+	FitToMonitor(pt);
 	SetWindowPos(GetWindow(), 0, pt.x, pt.y, 0, 0, SWP_NOZORDER|SWP_NOSIZE);
 	Show(true);
+}
+
+void PopupWnd::FitToMonitor(POINT& pt) {
+	MONITORINFO info;
+	memset(&info,0,sizeof(info));
+	info.cbSize = sizeof(MONITORINFO);
+	HMONITOR mon = MonitorFromPoint(pt, MONITOR_DEFAULTTONULL);
+	if(GetMonitorInfo(mon, &info)==TRUE) {
+		RECT wr;
+		GetWindowRect(GetWindow(), &wr);
+
+		// Adjust point so it falls inside the monitor completely
+		if((pt.x+(wr.right-wr.left))>(info.rcWork.right)) {
+			pt.x = (info.rcWork.right - (wr.right-wr.left));
+		}
+		else if(pt.x < info.rcWork.left) {
+			pt.x = info.rcWork.left;
+		}
+		
+		if(pt.y < info.rcWork.top) {
+			pt.y = info.rcWork.top;
+		}
+		else if((pt.y+(wr.bottom-wr.top)) > (info.rcWork.bottom)) {
+			pt.y = info.rcWork.bottom - (wr.bottom-wr.top);
+		}
+	}
 }
 
 void PopupWnd::PopupAtMouse() {
 	POINT pt;
 	GetCursorPos(&pt);
+	FitToMonitor(pt);
 	SetWindowPos(GetWindow(), 0, pt.x, pt.y, 0, 0, SWP_NOZORDER|SWP_NOSIZE);
 	Show(true);
 }

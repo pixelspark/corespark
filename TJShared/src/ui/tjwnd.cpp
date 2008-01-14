@@ -439,7 +439,7 @@ void Wnd::SetHorizontalScrollInfo(Range<int> rng, int pageSize) {
 	SetScrollInfo(_wnd, SB_HORZ,&srl,TRUE);
 
 	int pos = GetHorizontalPos();
-	if(pos > rng.End() || pos < rng.Start()) {
+	if(pos > (rng.End()-pageSize) || pos < rng.Start()) {
 		SetHorizontalPos(0);
 	}
 }
@@ -457,7 +457,7 @@ void Wnd::SetVerticalScrollInfo(Range<int> rng, int pageSize) {
 	SetScrollInfo(_wnd, SB_VERT,&srl,TRUE);
 
 	int pos = GetVerticalPos();
-	if(pos > rng.End() || pos < rng.Start()) {
+	if(pos > (pageSize+rng.End()) || pos < rng.Start()) {
 		SetVerticalPos(0);
 	}
 }
@@ -610,6 +610,10 @@ LRESULT Wnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		}
 	}
 	else if(msg==WM_ACTIVATE) {
+		HWND activated = (HWND)lp;
+		// If a direct child of this window is activated or deactivated,
+		// there should be no message (useful for PopupWnd if it wants to
+		// display some window (e.g. DialogWnd) without closing itself.
 		OnActivate(LOWORD(wp)!=WA_INACTIVE);
 		return 0;
 	}

@@ -17,6 +17,7 @@ namespace tj {
 				virtual void PopupAtMouse();
 
 			protected:
+				virtual void FitToMonitor(POINT& p);
 				virtual void OnActivate(bool activate);
 				Pixels _w, _h;
 		};

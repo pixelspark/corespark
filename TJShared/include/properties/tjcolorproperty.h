@@ -57,12 +57,15 @@ namespace tj {
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
 				virtual void OnSize(const Area& ns);
 
+				const static int KFavouriteColorCount = 10;
+				const static Pixels KWheelMargin;
+				static RGBColor _favColors[KFavouriteColorCount];
+
 				ref<SliderWnd> _brightness;
 				weak<Listener> _myListener;
 				ColorWheel _wheel;
 				RGBColor _color;
 				float _hue, _sat, _val;
-				const static Pixels KWheelMargin;
 		};
 
 		class EXPORTED ColorProperty: public Property {

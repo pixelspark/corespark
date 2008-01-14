@@ -96,6 +96,13 @@ double ColorWheel::GetSaturationAt(Pixels x, Pixels y) {
 	return min(1.0,sqrt(double((dx*dx) + (dy*dy)))/radius);
 }
 
+RGBColor ColorPopupWnd::_favColors[ColorPopupWnd::KFavouriteColorCount] = {
+	RGBColor(0.0f, 0.0f, 0.0f), RGBColor(1.0f, 1.0f, 1.0f), RGBColor(1.0f, 0.0f, 0.0f),
+	RGBColor(0.0f, 1.0f, 0.0f), RGBColor(0.0f, 0.0f, 1.0f), RGBColor(1.0f, 1.0f, 0.0f),
+	RGBColor(0.0f, 1.0f, 1.0f), RGBColor(1.0f, 0.0f, 1.0f), RGBColor(0.0f, 0.0f, 0.5f),
+	RGBColor(0.5f, 0.5f, 0.5f),
+};
+
 /* ColorPopupWnd */
 ColorPopupWnd::ColorPopupWnd(): _hue(0.0f), _sat(0.0f), _val(1.0) {
 	SetSize(300,160);
@@ -134,11 +141,22 @@ void ColorPopupWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
 
 	Pixels left = 150+KWheelMargin;
 	SolidBrush color(_color);
-	g.FillRectangle(&color, RectF(float(left), float(KWheelMargin), rc.GetWidth()-float(left)-2.0f*float(KWheelMargin), 24.0f));
+	Pixels width = Pixels(rc.GetWidth()-float(left)-2.0f*float(KWheelMargin));
+	g.FillRectangle(&color, RectF(float(left), float(KWheelMargin), float(width), 24.0f));
+
+	// Often used colors
+	Pixels w = width/KFavouriteColorCount;
+
+	for(int a=0;a<KFavouriteColorCount;a++) {
+		const RGBColor& col = _favColors[a];
+		Color gcol((BYTE)(col._r*255), (BYTE)(col._g*255), (BYTE)(col._b*255));
+		SolidBrush brush(gcol);
+		g.FillRectangle(&brush, RectF(float(left+w*a+1), float(KWheelMargin)+24.0f+1.0f, float(w-2), 12.0f-2.0f));
+	}
 
 	// text
 	Pixels textLeft = 150+KWheelMargin*2+(_brightness->GetClientArea().GetWidth());
-	Pixels textTop = 2*KWheelMargin+24;
+	Pixels textTop = 2*KWheelMargin+24+24;
 	
 	std::wstring rgb = L"RGB: "+Stringify(int(_color._r*255.0))+L", "+Stringify(int(_color._g*255.0))+L", "+Stringify(int(_color._b*255.0));
 	CMYKColor cmyk = ColorSpaces::RGBToCMYK(_color._r, _color._g, _color._b);
@@ -169,6 +187,22 @@ void ColorPopupWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 		_sat = float(_wheel.GetSaturationAt(cx,cy));
 		Update();
 	}
+	else if(ev==MouseEventLDown) {
+		if(x>(KWheelMargin*2+150) && y > KWheelMargin+24 && y < KWheelMargin+24+12) {
+			Area rc = GetClientArea();
+			Pixels width = rc.GetWidth()-3*KWheelMargin-150;
+			int idx = (x-(KWheelMargin*2)-150)/(width/KFavouriteColorCount);
+			if(idx>=0 && idx < KFavouriteColorCount) {
+				RGBColor color = _favColors[idx];
+				HSVColor col = ColorSpaces::RGBToHSV(color._r, color._g, color._b);
+				_hue = float(col._h);
+				_sat = float(col._s);
+				_val = float(col._v);
+				_brightness->SetValue(_val, false);
+				Update();
+			}
+		}
+	}
 }
 
 void ColorPopupWnd::SetListener(ref<Listener> listener) {
@@ -192,7 +226,7 @@ void ColorPopupWnd::OnSize(const Area& ns) {
 
 void ColorPopupWnd::Layout() {
 	Area rc = GetClientArea();
-	rc.Narrow(150+KWheelMargin, 35, KWheelMargin, KWheelMargin);
+	rc.Narrow(150+KWheelMargin, 48, KWheelMargin, KWheelMargin);
 	if(_brightness) {
 		_brightness->Fill(LayoutLeft, rc);
 	}
