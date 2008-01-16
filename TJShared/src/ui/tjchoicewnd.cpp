@@ -50,7 +50,7 @@ int ChoiceListWnd::GetItemHeight() {
 	return _itemHeight;
 }
 
-void ChoiceListWnd::OnClickItem(int id, int col) {
+void ChoiceListWnd::OnClickItem(int id, int col, Pixels x, Pixels y) {
 	SetSelectedRow(id);
 }
 

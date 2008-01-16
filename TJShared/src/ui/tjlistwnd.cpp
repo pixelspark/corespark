@@ -315,11 +315,12 @@ void ListWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 
 			// find column
 			std::map<int,Column>::iterator it = _cols.begin();
-			int cx = 0;
+			Pixels cx = 0;
 			while(it!=_cols.end()) {
 				Column& col = it->second;
 				if(col._visible) {
-					cx += int(col._width*area.GetWidth());
+					Pixels px = cx;
+					cx += Pixels(col._width*area.GetWidth());
 					if(x<cx) {
 						if(ev==MouseEventRDown) {
 							OnRightClickItem(idx, it->first);
@@ -328,7 +329,8 @@ void ListWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 							OnDoubleClickItem(idx, it->first);
 						}
 						else {
-							OnClickItem(idx, it->first);
+							Area row = GetRowArea(idx);
+							OnClickItem(idx, it->first, x-px, y-row.GetTop());
 						}
 						break;
 					}
@@ -393,7 +395,7 @@ int ListWnd::GetRowIDByHeight(int y) {
 	return (y - GetHeaderHeight() + int(GetVerticalPos()))/ih;
 }
 
-void ListWnd::OnClickItem(int id, int col) {
+void ListWnd::OnClickItem(int id, int col, Pixels x, Pixels y) {
 }
 
 void ListWnd::OnRightClickItem(int id, int col) {

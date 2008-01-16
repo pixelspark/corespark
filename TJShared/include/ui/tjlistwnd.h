@@ -40,7 +40,7 @@ namespace tj {
 				virtual int GetItemCount() = 0;
 				virtual void PaintItem(int id, Gdiplus::Graphics& g, Area& row) = 0;
 				virtual Pixels GetItemHeight();
-				virtual void OnClickItem(int id, int col);
+				virtual void OnClickItem(int id, int col, Pixels x, Pixels y);
 				virtual void OnRightClickItem(int id, int col);
 				virtual void OnDoubleClickItem(int id, int col);
 				virtual void OnColumnSizeChanged();

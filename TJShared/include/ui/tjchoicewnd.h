@@ -29,7 +29,7 @@ namespace tj {
 				virtual int GetItemHeight();
 				virtual void AddChoice(ref<Choice> choice);
 				virtual void SetItemHeight(Pixels h);
-				virtual void OnClickItem(int id, int col);
+				virtual void OnClickItem(int id, int col, Pixels x, Pixels y);
 
 			protected:
 				enum {
