@@ -5,6 +5,7 @@ using namespace Gdiplus;
 PopupWnd::PopupWnd(): Wnd(L"", 0L, TJ_DROPSHADOW_CLASS_NAME, true, 0) {
 	SetStyle(WS_BORDER);
 	UnsetStyle(WS_CAPTION);
+	SetStyleEx(WS_EX_TOOLWINDOW);
 	SetSize(200,100); // default size for popups?
 }
 

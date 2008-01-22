@@ -3,6 +3,13 @@
 
 namespace tj {
 	namespace shared {
+		template<typename T> T GetNextPowerOfTwo(T k) {
+			k--;
+			for(int i=1; i < (sizeof(T)*8); i *= 2) {
+				k = k | k >> i;
+			}
+			return k+1;
+		}
 
 		inline std::string Mbs(const std::wstring& ws) {
 			char* buf  = new char[ws.length()+2];

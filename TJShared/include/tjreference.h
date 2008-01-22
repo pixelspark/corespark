@@ -124,6 +124,9 @@ namespace tj {
 						_object = dynamic_cast<T*>(object);
 						if(_object==0) throw BadCastException();
 						_resource = object->_resource;
+						if(_resource==0) throw BadReferenceException();
+						if(!_resource->IsReferenced()) throw BadReferenceException();
+
 						_resource->AddReference();
 					}
 					else {
@@ -301,6 +304,18 @@ namespace tj {
 
 				template<typename TT> inline bool operator!=(const weak<TT>& r) const {
 					return (_object != r._object);
+				}
+
+				template<typename TT> inline bool operator==(const TT* r) const {
+					return dynamic_cast<const TT*>(_object) == r;
+				}
+
+				inline bool operator<(const weak<T>& r) const {
+					return r._object < _object;
+				}
+
+				inline bool operator>(const weak<T>& r) const {
+					return r._object > _object;
 				}
 
 				inline bool IsValid() const {

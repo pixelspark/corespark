@@ -2,7 +2,7 @@
 using namespace tj::shared;
 
 CriticalSection::CriticalSection() {
-	InitializeCriticalSectionAndSpinCount(&_cs, 2);
+	InitializeCriticalSectionAndSpinCount(&_cs, 1024);
 }
 
 CriticalSection::~CriticalSection() {

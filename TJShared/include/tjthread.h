@@ -9,22 +9,6 @@ namespace tj {
 				virtual void Run() = 0;
 		};
 
-		template<typename T> class GenericRunnable {
-			public:
-				GenericRunnable(T* t): _ptr(t) {
-				}
-
-				virtual ~GenericRunnable() {
-				}
-
-				virtual void Run() {
-					_ptr->Run();
-				}
-
-			protected:
-				T* _ptr;
-		};
-
 		class EXPORTED Event {
 			public:
 				Event() {
