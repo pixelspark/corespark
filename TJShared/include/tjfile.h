@@ -3,8 +3,6 @@
 
 namespace tj {
 	namespace shared {
-		typedef long long Bytes; // This is equivalent to __int64 on MSVC++
-
 		class EXPORTED File {
 			public:
 				static std::wstring GetDirectory(const std::wstring& pathToFile);

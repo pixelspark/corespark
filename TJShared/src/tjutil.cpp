@@ -1,4 +1,69 @@
 #include "../include/tjshared.h"
+#include <math.h>
+#include <iomanip>
+using namespace tj::shared;
+
+float Util::RandomFloat() { 
+	return rand()/(float)RAND_MAX;
+}
+
+/* rand() returns a number between 0 and RAND_MAX, which is guaranteed to be at least
+32767, which is 7FFF (so we have 15 random bits). So just call this function twice and we
+get a random number between 0 and 0x3FFFFFF (30 bits). This means that the int this function
+returns is always positive, since the left-most bit is always 0.
+
+The rand()&0x7FFF make sure that this also works correctly on systems with a RAND_MAX higher than
+0x7FFF (we just cut the remaining bits off)
+*/
+int Util::RandomInt() {
+	return (rand() & 0x7FFF) | ((rand() & 0x7FFF) << 15);
+}
+
+char* Util::CopyString(const char* str) {
+	char* buf = new char[strlen(str)+1];
+	strcpy_s(buf,strlen(str)+1,str);
+	return buf;
+}
+
+wchar_t* Util::IntToWide(int x) {
+	wchar_t* str = new wchar_t[33];
+	_itow_s(x,str,33,10);
+	return str;
+}
+
+std::wstring Util::IPToString(in_addr ip) {
+	return Wcs(std::string(inet_ntoa(ip)));
+}
+
+std::wstring Util::GetSizeString(Bytes bytes) {
+	std::wstring x;
+
+	const static Bytes BytesInAGigaByte = 1024*1024*1024;
+	const static Bytes BytesInAMegaByte = 1024*1024;
+	const static Bytes BytesInAKiloByte = 1024;
+
+	if(bytes>BytesInAGigaByte) {
+		x = Stringify(int(bytes/BytesInAGigaByte)) + std::wstring(L" GB");
+	}
+
+	else if(bytes>BytesInAMegaByte) { // 
+		x = Stringify(int(bytes/BytesInAMegaByte)) + std::wstring(L" MB");
+	}
+
+	else if(bytes>BytesInAKiloByte) {
+		x = Stringify(int(bytes/BytesInAKiloByte)) + std::wstring(L" kB");
+	}
+	else {
+		x = Stringify(bytes)+ std::wstring(L" B");
+	}
+
+	return x;
+}
+
+std::wstring& Util::StringToLower(std::wstring& r) {
+	transform(r.begin(), r.end(), r.begin(), tolower);
+	return r;
+}
 
 namespace tj {
 	namespace shared {

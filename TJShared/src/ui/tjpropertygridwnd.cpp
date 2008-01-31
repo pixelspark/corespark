@@ -89,6 +89,8 @@ void PropertyGridWnd::Paint(Graphics& g, ref<Theme> theme) {
 
 	// TODO: cache theme colors over here
 	float stringLeft = 5.0f;
+	bool previousCollapsed = false;
+
 	while(it!=_properties.end()) {
 		ref<Property> p = *it;
 		if(!p) {
@@ -96,36 +98,43 @@ void PropertyGridWnd::Paint(Graphics& g, ref<Theme> theme) {
 			continue;
 		}
 
+		bool isSeparator = p.IsCastableTo<PropertySeparator>();
+		if(isSeparator) {
+			ref<PropertySeparator> sep = p;
+			previousCollapsed = sep->IsCollapsed();
+		}
+
 		p->Update();
-		bool bold = p.IsCastableTo<PropertySeparator>();
-
-		if(GetFocus()==p->GetWindow() || bold) {
-			LinearGradientBrush gbr(Gdiplus::Point(0, cH), Gdiplus::Point(0, cH+p->GetHeight()+10), theme->GetActiveStartColor(), theme->GetActiveEndColor());
-			g.FillRectangle(&gbr, Rect(1, cH+1, r.GetWidth()-2, p->GetHeight()+(2*KPropertyMargin)-2));
-		}
-
-		if(bold) {
-			SolidBrush dbr(theme->GetDisabledOverlayColor());
-			g.FillRectangle(&dbr, Rect(1, cH+1, r.GetWidth()-2, p->GetHeight()+(2*KPropertyMargin)-2));
-		}
-
-		std::wstring ws = p->GetName();
-		SolidBrush tb(theme->GetTextColor());
-		
-		g.DrawString(ws.c_str(), (int)ws.length(),bold?theme->GetGUIFontBold():theme->GetGUIFont(), PointF(stringLeft, float(cH+5)), &tb);
-		
-		if(p->IsExpandable()) {
-			Area expander(_nameWidth-21, cH+KPropertyMargin, 16, 16);
-			if(p->IsExpanded()) {
-				g.DrawImage(_collapseIcon, expander);
+		if(isSeparator || !previousCollapsed) {
+			if(GetFocus()==p->GetWindow() || isSeparator) {
+				LinearGradientBrush gbr(Gdiplus::Point(0, cH), Gdiplus::Point(0, cH+p->GetHeight()+10), theme->GetActiveStartColor(), theme->GetActiveEndColor());
+				g.FillRectangle(&gbr, Rect(1, cH+1, r.GetWidth()-2, p->GetHeight()+(2*KPropertyMargin)-2));
 			}
-			else {
-				g.DrawImage(_expandIcon, expander);
-			}
-		}
-		
 
-		cH += p->GetHeight() + 2*KPropertyMargin;
+			if(isSeparator) {
+				SolidBrush dbr(theme->GetDisabledOverlayColor());
+				g.FillRectangle(&dbr, Rect(1, cH+1, r.GetWidth()-2, p->GetHeight()+(2*KPropertyMargin)-2));
+			}
+
+			std::wstring ws = p->GetName();
+			SolidBrush tb(theme->GetTextColor());
+			
+			g.DrawString(ws.c_str(), (int)ws.length(),isSeparator?theme->GetGUIFontBold():theme->GetGUIFont(), PointF(stringLeft+(isSeparator?(KPropertyMargin+16):0), float(cH+5)), &tb);
+			
+			// Draw collapse/expand icon for separator
+			if(isSeparator) {
+				Area expander(KPropertyMargin, cH+KPropertyMargin, 16, 16);
+				ref<PropertySeparator> sep = p;
+				g.DrawImage(sep->IsCollapsed()?_expandIcon:_collapseIcon, expander);
+			}
+			// Draw collapse/expand icon if this property is collapsable
+			else if(p->IsExpandable()) {
+				Area expander(_nameWidth-21, cH+KPropertyMargin, 16, 16);
+				g.DrawImage(p->IsExpanded()?_collapseIcon:_expandIcon, expander);
+			}
+			
+			cH += p->GetHeight() + 2*KPropertyMargin;
+		}
 
 		++it;
 		hI++;
@@ -155,29 +164,50 @@ void PropertyGridWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 			_isDraggingSplitter = true;
 			SetCapture(GetWindow());
 		}
-		else if(x>(_nameWidth-21) && x<(_nameWidth-5)) {
+		else {
 			// Expander/collapse icon
 			// Find the property at that location and collapse/expand it
 			// TODO: move to separate function
 			y -= GetPathHeight();
 			int cH = -GetVerticalPos();
 			std::vector<ref<Property> >::iterator it = _properties.begin();
+			bool previousCollapsed = false;
 
 			while(it!=_properties.end()) {
 				ref<Property> pr = *it;
+				Pixels h = pr->GetHeight();
+
 				if(pr) {
-					Pixels h = pr->GetHeight();
-					if(y>cH && y<cH+h) {
-						// found
-						if(pr->IsExpandable()) {
-							pr->SetExpanded(!pr->IsExpanded());
+					if(pr.IsCastableTo<PropertySeparator>()) {
+						previousCollapsed = ref<PropertySeparator>(pr)->IsCollapsed();
+						if(y>cH && y<cH+h) {
+							// found, clicked a separator
+							ref<PropertySeparator> sep = pr;
+							sep->SetCollapsed(!sep->IsCollapsed());
+
+							OnSize(GetClientArea()); // So our scrollbar is updated
+							Layout();
+							Repaint();
+							Layout();
+							return;
 						}
-						OnSize(GetClientArea()); // So our scrollbar is updated
-						Layout();
-						Repaint();
-						return;
+						cH += h + 2*KPropertyMargin;
 					}
-					cH += h + 2*KPropertyMargin;
+					else if(!previousCollapsed) {
+						if(y>cH && y<cH+h) {
+							if(x>(_nameWidth-21) && x<(_nameWidth-5)) { // expand/collapse icons have this x
+								// found
+								if(pr->IsExpandable()) {
+									pr->SetExpanded(!pr->IsExpanded());
+								}
+								OnSize(GetClientArea()); // So our scrollbar is updated
+								Layout();
+								Repaint();
+								return;
+							}
+						}
+						cH += h + 2*KPropertyMargin;
+					}
 				}
 				++it;
 			}
@@ -303,22 +333,35 @@ void PropertyGridWnd::Layout() {
 	Pixels cH = GetPathHeight() - GetVerticalPos();
 	std::vector<ref<Property> >::iterator it = _properties.begin();
 
+	bool previousCollapsed = false;
 	while(it!=_properties.end()) {
 		ref<Property> pr = *it;
 		if(pr) {
-			HWND vw = pr->GetWindow();
 			Pixels h = pr->GetHeight();
 
-			SendMessage(vw, WM_SETFONT, (WPARAM)(HFONT)_editFont, FALSE);
-			LONG style = GetWindowLong(vw, GWL_STYLE);
-			style |= WS_CLIPSIBLINGS;
-			
-			// Some nice DPI conversions...
-			SetWindowLong(vw, GWL_STYLE, style);
-			SetWindowPos(vw, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE|SWP_NOSIZE|SWP_NOACTIVATE);
-			SetWindowPos(vw, 0,  int(ceil(_nameWidth*df)), int(ceil((cH+KPropertyMargin)*df)),  int(ceil((rect.GetWidth()-_nameWidth-KPropertyMargin)*df)), int(ceil(h*df)), SWP_NOZORDER);
-			ShowWindow(vw, SW_SHOW);
-			cH += h + 2*KPropertyMargin;
+			if(pr.IsCastableTo<PropertySeparator>()) {
+				previousCollapsed = ref<PropertySeparator>(pr)->IsCollapsed();
+				cH += h + 2*KPropertyMargin;
+			}
+			else {
+				HWND vw = pr->GetWindow();
+
+				if(!previousCollapsed) {
+					SendMessage(vw, WM_SETFONT, (WPARAM)(HFONT)_editFont, FALSE);
+					LONG style = GetWindowLong(vw, GWL_STYLE);
+					style |= WS_CLIPSIBLINGS;
+					
+					// Some nice DPI conversions...
+					SetWindowLong(vw, GWL_STYLE, style);
+					SetWindowPos(vw, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE|SWP_NOSIZE|SWP_NOACTIVATE);
+					SetWindowPos(vw, 0,  int(ceil(_nameWidth*df)), int(ceil((cH+KPropertyMargin)*df)),  int(ceil((rect.GetWidth()-_nameWidth-KPropertyMargin)*df)), int(ceil(h*df)), SWP_NOZORDER);
+					ShowWindow(vw, SW_SHOW);
+					cH += h + 2*KPropertyMargin;
+				}
+				else {
+					ShowWindow(vw, SW_HIDE);
+				}
+			}
 		}
 		++it;
 	}
@@ -331,10 +374,18 @@ void PropertyGridWnd::OnSize(const Area& ns) {
 	// Get total property height
 	int totalHeight = 0;
 	std::vector< ref<Property> >::iterator it = _properties.begin();
+	bool previousCollapsed = false;
 	while(it!=_properties.end()) {
 		ref<Property> pr = *it;
 		if(pr) {
-			totalHeight += pr->GetHeight() + 2*KPropertyMargin;
+			if(pr.IsCastableTo<PropertySeparator>()) {
+				previousCollapsed = ref<PropertySeparator>(pr)->IsCollapsed();
+				totalHeight += pr->GetHeight() + 2*KPropertyMargin;
+			}
+
+			if(!previousCollapsed) {
+				totalHeight += pr->GetHeight() + 2*KPropertyMargin;
+			}
 		}
 		++it;
 	}

@@ -3,6 +3,19 @@
 
 namespace tj {
 	namespace shared {
+		typedef long long Bytes; // This is equivalent to __int64 on MSVC++
+
+		class EXPORTED Util {
+			public:
+				static float RandomFloat();
+				static int RandomInt();
+				static char* CopyString(const char* str);
+				static wchar_t* IntToWide(int x);
+				static std::wstring& StringToLower(std::wstring& r);
+				static std::wstring GetSizeString(Bytes bytes);
+				static std::wstring IPToString(in_addr ip);
+		};
+
 		template<typename T> T GetNextPowerOfTwo(T k) {
 			k--;
 			for(int i=1; i < (sizeof(T)*8); i *= 2) {
