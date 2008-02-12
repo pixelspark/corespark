@@ -53,6 +53,7 @@ namespace tj {
 			KeyRight,
 			KeyPageUp,
 			KeyPageDown,
+			KeyCharacter,
 		};
 
 		class EXPORTED Wnd: public virtual Object {
@@ -133,6 +134,7 @@ namespace tj {
 				virtual void OnSettingsChanged();
 				virtual void OnDropFiles(const std::vector<std::wstring>& files);
 				virtual void OnTimer(unsigned int id);
+				virtual void OnKey(Key k, wchar_t t, bool down);
 				
 				// Timer
 				virtual void StartTimer(Time interval, unsigned int id);

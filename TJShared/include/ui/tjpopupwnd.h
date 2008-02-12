@@ -3,10 +3,9 @@
 
 namespace tj {
 	namespace shared {
-
 		class EXPORTED PopupWnd: public Wnd {
 			public:
-				PopupWnd();
+				PopupWnd(ref<Wnd> parent = 0);
 				virtual ~PopupWnd();
 
 				/* Popup windows automatically recalculate their size each time they 'pop up'.
@@ -15,6 +14,7 @@ namespace tj {
 				virtual void SetOpacity(float f);
 				virtual void PopupAt(Pixels clientX, Pixels clientY, ref<Wnd> window);
 				virtual void PopupAtMouse();
+				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 
 			protected:
 				virtual void FitToMonitor(POINT& p);

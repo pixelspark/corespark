@@ -251,7 +251,7 @@ void PathWnd::DoCrumbMenu(ref<Crumb> crumb, int x) {
 		}
 	}
 
-	int command = cm.DoContextMenu(GetWindow(), x, rc.GetHeight()-1, true);
+	int command = cm.DoContextMenu(this, x, rc.GetHeight()-1);
 	ref<Crumb> next = 0;
 	if(command==1) {
 		next = crumb;

@@ -56,30 +56,13 @@ bool DialogWnd::DoModal(HWND parent) {
 	RECT rootRect;
 	GetWindowRect(root, &rootRect);
 	SetWindowPos(GetWindow(), 0L, rootRect.left + ((rootRect.right-rootRect.left - w)/2), rootRect.top + ((rootRect.bottom-rootRect.top - h)/2), 0,0, SWP_NOSIZE|SWP_NOZORDER);
-	
-	HWND me = GetWindow();
-	MSG msg;
 	Show(true);
 
-	_result = false;
-	_running = true;
-	ReplyMessage(0);
-
-	while(GetMessage(&msg,0,0,0) && _running) {
-		TranslateMessage(&msg);
-
-		if(msg.message==WM_KEYDOWN && LOWORD(msg.wParam)==VK_ESCAPE) {
-			// End modal loop
-			EndModal(false);
-		}
-		else {
-			DispatchMessage(&msg);
-		}
-	}
+	ModalLoop::Result result = _loop.Enter();
 
 	EnableWindow(root, TRUE);
 	SetForegroundWindow(root);
-	return _result;
+	return result == ModalLoop::ResultSucceeded;
 }
 
 LRESULT DialogWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
@@ -91,10 +74,7 @@ LRESULT DialogWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 }
 
 void DialogWnd::EndModal(bool result) {
-	if(_running) {
-		_result = result;
-		_running = false; // This will exit the loop in DoModal
-	}
+	_loop.End(result?ModalLoop::ResultSucceeded:ModalLoop::ResultCancelled);
 }
 
 void DialogWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {

@@ -129,3 +129,42 @@ Core::Core() {
 Core::~Core() {
 	delete _init;
 }
+
+/* ModalLoop */
+ModalLoop::ModalLoop(): _running(false), _result(ResultUnknown) {
+}
+
+ModalLoop::~ModalLoop() {
+}
+
+ModalLoop::Result ModalLoop::Enter() {
+	if(!_running) {
+		_result = ResultUnknown;
+		ReplyMessage(0);
+		MSG msg;
+		_running = true;
+
+		while(GetMessage(&msg,0,0,0) && _running) {
+			TranslateMessage(&msg);
+
+			if(msg.message==WM_KEYDOWN && LOWORD(msg.wParam)==VK_ESCAPE) {
+				// End modal loop
+				End(ResultCancelled);
+			}
+			else {
+				DispatchMessage(&msg);
+			}
+		}
+
+		return _result;
+	}
+
+	return ResultUnknown;
+}
+
+void ModalLoop::End(Result r) {
+	if(_running) {
+		_result = r;
+		_running = false;
+	}
+}

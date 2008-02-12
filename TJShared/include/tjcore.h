@@ -36,6 +36,25 @@ namespace tj {
 
 				void ProcessActions();
 		};
+
+		class EXPORTED ModalLoop {
+			public:
+				ModalLoop();
+				virtual ~ModalLoop();
+				
+				enum Result {
+					ResultUnknown = 0,
+					ResultSucceeded = 1,
+					ResultCancelled = 2,
+				};
+				
+				virtual Result Enter();
+				virtual void End(Result r = ResultUnknown);
+
+			protected:
+				volatile bool _running;
+				volatile Result _result;
+		};
 	}
 }
 

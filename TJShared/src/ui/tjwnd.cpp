@@ -32,7 +32,6 @@ Wnd::Wnd(const wchar_t* title, HWND parent, const wchar_t* className, bool usedb
 	_wnd = CreateWindowEx(exStyle, className, title, WS_CLIPCHILDREN|WS_CLIPSIBLINGS, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, parent, (HMENU)0, GetModuleHandle(NULL), (void*)this);
 	if(_wnd==0) Throw(L"Could not create window", ExceptionTypeError);
 
-	SetParent(_wnd,parent);
 	UpdateWindow(_wnd);
 	_oldStyle = 0;
 	_oldStyleEx = 0;
@@ -528,6 +527,9 @@ LRESULT Wnd::PreMessage(UINT msg, WPARAM wp, LPARAM lp) {
 	}
 }
 
+void Wnd::OnKey(Key k, wchar_t ch, bool down) {
+}
+
 LRESULT Wnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	if(msg==WM_CLOSE) {
 		Show(false);
@@ -610,11 +612,8 @@ LRESULT Wnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		}
 	}
 	else if(msg==WM_ACTIVATE) {
-		HWND activated = (HWND)lp;
-		// If a direct child of this window is activated or deactivated,
-		// there should be no message (useful for PopupWnd if it wants to
-		// display some window (e.g. DialogWnd) without closing itself.
-		OnActivate(LOWORD(wp)!=WA_INACTIVE);
+		bool activate = LOWORD(wp)!=WA_INACTIVE;
+		OnActivate(activate);
 		return 0;
 	}
 	else if(msg==WM_DROPFILES) {
@@ -713,6 +712,41 @@ LRESULT Wnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	}
 	else if(msg==WM_SETFOCUS) {
 		return 0;
+	}
+	else if(msg==WM_KEYDOWN || msg==WM_KEYUP) {
+		Key key = KeyCharacter;
+		wchar_t ch = L'\0';
+
+		switch(wp) {
+			case VK_LEFT:
+				key = KeyLeft;
+				break;
+
+			case VK_RIGHT:
+				key = KeyRight;
+				break;
+
+			case VK_DOWN:
+				key = KeyDown;
+				break;
+
+			case VK_UP:
+				key = KeyUp;
+				break;
+
+			case VK_NEXT:
+				key = KeyPageDown;
+				break;
+
+			case VK_PRIOR:
+				key = KeyPageUp;
+				break;
+
+			default:
+				ch = (wchar_t)key;
+		}
+
+		OnKey(key, ch, msg==WM_KEYDOWN);
 	}
 
 	return DefWindowProc(_wnd, msg, wp, lp);
@@ -1005,14 +1039,14 @@ void TopWnd::OnSettingsChanged() {
 	int y = StringTo<int>(st->GetValue(L"y", L"0"), 0);
 
 	// Set window position (but only if x>0 and y>0)
-	if(x>0 && y>0) {
-		SetWindowPos(GetWindow(), 0L, x, y, 0, 0, SWP_NOZORDER|SWP_NOSIZE);
+	if(x>=0 && y>=0) {
+		SetWindowPos(GetWindow(), 0L, x, y, 0, 0, SWP_NOZORDER|SWP_NOSIZE|SWP_NOACTIVATE);
 	}
 
 	// Set window size (but only if w>0 and h>0)
 	if(w>0 && h>0) {
 		ref<Theme> theme = ThemeManager::GetTheme();
-		SetWindowPos(GetWindow(), 0L, 0, 0l, long(w*theme->GetDPIScaleFactor()), long(h*theme->GetDPIScaleFactor()), SWP_NOZORDER|SWP_NOMOVE);
+		SetWindowPos(GetWindow(), 0L, 0, 0l, long(w*theme->GetDPIScaleFactor()), long(h*theme->GetDPIScaleFactor()), SWP_NOZORDER|SWP_NOMOVE|SWP_NOACTIVATE);
 	}
 }
 

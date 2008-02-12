@@ -356,7 +356,7 @@ LRESULT TabWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	return ChildWnd::Message(msg,wp,lp);
 }
 
-void TabWnd::DoContextMenu(int x, int y) {
+void TabWnd::DoContextMenu(Pixels x, Pixels y) {
 	RECT rc;
 	GetClientRect(GetWindow(), &rc);
 	ref<Pane> pane = GetPaneAt(x);
@@ -365,7 +365,7 @@ void TabWnd::DoContextMenu(int x, int y) {
 		enum {cmdDetach=1,cmdFullScreen};
 		ContextMenu context;
 		context.AddItem(TL(detach_tab), cmdDetach, true);
-		switch(context.DoContextMenu(GetWindow(), x+rc.left, y)) {
+		switch(context.DoContextMenu(this, x+rc.left, y)) {
 			case cmdDetach:
 				_current = 0;
 				Detach(pane);
@@ -379,81 +379,87 @@ void TabWnd::DoContextMenu(int x, int y) {
 void TabWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 	if(ev==MouseEventLDown || ev==MouseEventLUp) {
 		Area rect = GetClientArea();
-		if(_detachAttachAllowed && ev==MouseEventLDown) {
-			if(x>rect.GetWidth()-_headerHeight && y<_headerHeight) {
-				// close button
-				if(_current && _root) {
-					std::vector< ref<Pane> >::iterator it = _panes.begin();
-					while(it!=_panes.end()) {
-						ref<Pane> pn = *it;
-						if(pn==_current) {
-							_panes.erase(it);
-							break;
+		if(y<_headerHeight) {
+			if(_detachAttachAllowed) {
+				if(x>rect.GetWidth()-_headerHeight && y<_headerHeight) {
+					// close button
+					if(ev==MouseEventLUp) {
+						if(_current && _root) {
+							std::vector< ref<Pane> >::iterator it = _panes.begin();
+							while(it!=_panes.end()) {
+								ref<Pane> pn = *it;
+								if(pn==_current) {
+									_panes.erase(it);
+									break;
+								}
+								++it;
+							}
+
+							ref<Wnd> wnd = _current->GetWindow();
+							if(wnd) wnd->Show(false);
+
+							if(!_current->IsClosable()) {
+								_root->AddOrphanPane(_current);
+							}
+							_current = 0;
+							SelectPane(0);
+							Update();
 						}
-						++it;
+						return;
 					}
-
-					ref<Wnd> wnd = _current->GetWindow();
-					if(wnd) wnd->Show(false);
-
-					if(!_current->IsClosable()) {
-						_root->AddOrphanPane(_current);
-					}
-					_current = 0;
-					SelectPane(0);
-					Update();
 				}
-				return;
+				else if((x>rect.GetWidth()-2*_headerHeight)) {
+					if(ev==MouseEventLUp) {
+						// add button
+						DoAddMenu(x,y);
+						return;
+					}
+				}
 			}
-			else if(x>rect.GetWidth()-2*_headerHeight) {
-				// add button
-				DoAddMenu(x,y);
-				return;
-			}
-		}
-		
-		// Select tab
-		std::vector< ref<Pane> >::iterator it = _panes.begin();
-		unsigned int idx = 0; 
-		int left = 0;
-		Graphics g(GetWindow());
+			
+			// Select tab
+			std::vector< ref<Pane> >::iterator it = _panes.begin();
+			unsigned int idx = 0; 
+			int left = 0;
+			Graphics g(GetWindow());
 
-		ref<Theme> theme = ThemeManager::GetTheme();
+			ref<Theme> theme = ThemeManager::GetTheme();
 
-		while(it!=_panes.end()) {
-			ref<Pane> pane = *it;
-			if(pane->_detached) {
-				++it;
+			while(it!=_panes.end()) {
+				ref<Pane> pane = *it;
+				if(pane->_detached) {
+					++it;
+					idx++;
+					continue;
+				}
+				RectF bound;
+				std::wstring title = pane->GetTitle();
+				g.MeasureString(title.c_str(), (INT)title.length(), theme->GetGUIFontBold(), PointF(0.0f, 0.0f), &bound);				
+				left += int(bound.Width) + 4 + (pane->HasIcon()?KIconWidth:0);
+				if(x<left) {
+					if(ev==MouseEventLUp) {
+						SelectPane(idx);
+						_dragging = 0;
+					}
+					else {
+						SetDraggingPane(pane);
+						_dragStartX = x;
+						_dragStartY = y;
+					}
+					break;
+				}
 				idx++;
-				continue;
+				++it;
 			}
-			RectF bound;
-			std::wstring title = pane->GetTitle();
-			g.MeasureString(title.c_str(), (INT)title.length(), theme->GetGUIFontBold(), PointF(0.0f, 0.0f), &bound);				
-			left += int(bound.Width) + 4 + (pane->HasIcon()?KIconWidth:0);
-			if(x<left) {
-				if(ev==MouseEventLUp) {
-					SelectPane(idx);
-					_dragging = 0;
-				}
-				else {
-					SetDraggingPane(pane);
-					_dragStartX = x;
-					_dragStartY = y;
-				}
-				break;
-			}
-			idx++;
-			++it;
-		}
 
-		if(_dragging) {
-			if(ev==MouseEventLDown) {
-				SetCapture(GetWindow());
+			if(_dragging) {
+				if(ev==MouseEventLDown) {
+					SetCapture(GetWindow());
+				}
 			}
-		}
-		else {
-			ReleaseCapture();
+			else {
+				ReleaseCapture();
+			}
 		}
 	}
 	else if(ev==MouseEventMove) {
@@ -587,7 +593,7 @@ bool TabWnd::RevealWindow(ref<Wnd> w) {
 	return false;
 }
 
-void TabWnd::DoAddMenu(int x, int y) {
+void TabWnd::DoAddMenu(Pixels x, Pixels y) {
 	ContextMenu m;
 	std::vector< ref<Pane> >* pv = _root->GetOrphanPanes();
 	std::vector< ref<Pane> >::iterator it = pv->begin();
@@ -601,7 +607,7 @@ void TabWnd::DoAddMenu(int x, int y) {
 		++it;
 	}
 
-	int c = m.DoContextMenu(GetWindow(), x,y,true);
+	int c = m.DoContextMenu(this, x, y);
 	if(c>0) {
 		try {
 			if(_current) {

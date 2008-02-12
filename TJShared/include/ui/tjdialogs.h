@@ -22,10 +22,9 @@ namespace tj {
 				static const Pixels KHeaderHeight = 24;
 				
 			private:
+				ModalLoop _loop;
 				ref<PropertyGridWnd> _grid;
 				ref<ButtonWnd> _ok;
-				bool _result;
-				bool _running;
 				std::wstring _question;
 				
 

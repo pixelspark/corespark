@@ -73,6 +73,10 @@ const ref<Wnd> SplitterWnd::GetSecond() const {
 	return _b;
 }
 
+bool SplitterWnd::IsCollapsed() const {
+	return _collapse != CollapseNone;
+}
+
 void SplitterWnd::OnSettingsChanged() {
 	ref<Settings> st = GetSettings();
 

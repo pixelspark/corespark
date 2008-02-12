@@ -38,14 +38,14 @@ namespace tj {
 			protected:
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
 				void SetDraggingPane(ref<Pane> pane);
-				void DoContextMenu(int x, int y);
-				void DoAddMenu(int x, int y);
+				void DoContextMenu(Pixels x, Pixels y);
+				void DoAddMenu(Pixels x, Pixels y);
 				
 				std::vector< ref<Pane> > _panes;
 				ref<Pane> _current;
 				ref<Pane> _dragging;
 				RootWnd* _root;
-				int _headerHeight;
+				Pixels _headerHeight;
 				int _dragStartX, _dragStartY;
 				Gdiplus::Bitmap* _closeIcon;
 				Gdiplus::Bitmap* _addIcon;

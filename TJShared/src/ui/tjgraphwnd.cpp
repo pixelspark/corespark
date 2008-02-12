@@ -142,7 +142,7 @@ void GraphWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 			++it;
 		}
 
-		int r = cm.DoContextMenu(GetWindow());
+		int r = cm.DoContextMenu(this);
 		if(r>0 && r<=int(inMenu.size())) {
 			ref<GraphItem> gi = inMenu.at(r-1);
 			if(gi) {
@@ -299,7 +299,7 @@ void GraphItem::OnMouse(MouseEvent me, Pixels x, Pixels y, ref<GraphWnd> gw) {
 
 	cm->AddItem(TL(graph_item_hide), KCHide, false, _hidden);
 
-	int r = cm->DoContextMenu(gw->GetWindow());
+	int r = cm->DoContextMenu(gw);
 	if(r==KCHide) {
 		Hide(true);
 	}

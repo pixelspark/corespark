@@ -2,11 +2,9 @@
 using namespace tj::shared;
 using namespace Gdiplus;
 
-PopupWnd::PopupWnd(): Wnd(L"", 0L, TJ_DROPSHADOW_CLASS_NAME, true, 0) {
-	SetStyle(WS_BORDER);
+PopupWnd::PopupWnd(ref<Wnd> parent): Wnd(L"", parent?parent->GetWindow():0, TJ_DROPSHADOW_CLASS_NAME, true, WS_EX_TOPMOST|WS_EX_TOOLWINDOW) {
 	UnsetStyle(WS_CAPTION);
-	SetStyleEx(WS_EX_TOOLWINDOW);
-	SetSize(200,100); // default size for popups?
+	SetStyle(WS_POPUP);
 }
 
 PopupWnd::~PopupWnd() {
@@ -23,7 +21,12 @@ void PopupWnd::OnActivate(bool activate) {
 		Wnd::SetSize(_w,_h);
 	}
 	else {
-		Show(false);
+		// Context menus disable the owner window before opening a popup, so if a context menu popup
+		// is created from a PopupWnd, this will prevent this popup from disappearing
+		DWORD style = GetWindowLong(GetWindow(), GWL_STYLE) & WS_DISABLED;
+		if(style==0) {
+			Show(false);
+		}
 	}
 }
 
@@ -44,8 +47,21 @@ void PopupWnd::PopupAt(Pixels x, Pixels y, ref<Wnd> window) {
 	pt.y = long(y*theme->GetDPIScaleFactor());
 	ClientToScreen(window->GetWindow(), &pt);
 	FitToMonitor(pt);
-	SetWindowPos(GetWindow(), 0, pt.x, pt.y, 0, 0, SWP_NOZORDER|SWP_NOSIZE);
-	Show(true);
+	SetWindowPos(GetWindow(), 0, pt.x, pt.y, 0, 0, SWP_SHOWWINDOW|SWP_NOSIZE/*|SWP_NOACTIVATE*/|SWP_NOSENDCHANGING);
+}
+
+void PopupWnd::PopupAtMouse() {
+	POINT pt;
+	GetCursorPos(&pt);
+	FitToMonitor(pt);
+	SetWindowPos(GetWindow(), 0, pt.x, pt.y, 0, 0, SWP_SHOWWINDOW|SWP_NOZORDER|SWP_NOSIZE|SWP_NOACTIVATE);
+}
+
+LRESULT PopupWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
+	if(msg==WM_MOUSEACTIVATE) {
+		return MA_NOACTIVATE;
+	}
+	return Wnd::Message(msg,wp,lp);
 }
 
 void PopupWnd::FitToMonitor(POINT& pt) {
@@ -72,12 +88,4 @@ void PopupWnd::FitToMonitor(POINT& pt) {
 			pt.y = info.rcWork.bottom - (wr.bottom-wr.top);
 		}
 	}
-}
-
-void PopupWnd::PopupAtMouse() {
-	POINT pt;
-	GetCursorPos(&pt);
-	FitToMonitor(pt);
-	SetWindowPos(GetWindow(), 0, pt.x, pt.y, 0, 0, SWP_NOZORDER|SWP_NOSIZE);
-	Show(true);
 }

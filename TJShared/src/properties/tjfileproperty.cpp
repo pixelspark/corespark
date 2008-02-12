@@ -66,7 +66,7 @@ void FilePropertyWnd::OnMouse(MouseEvent me, Pixels x, Pixels y) {
 		ContextMenu cm;
 		cm.AddItem(TL(file_property_manual_entry), KCManualEntry, false, _edit!=0);
 
-		int r = cm.DoContextMenu(GetWindow());
+		int r = cm.DoContextMenu(this);
 		if(r==KCManualEntry) {
 			if(!_edit) {
 				_edit = GC::Hold(new EditWnd());

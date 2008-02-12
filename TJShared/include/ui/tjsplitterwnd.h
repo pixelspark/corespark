@@ -40,6 +40,7 @@ namespace tj {
 				const ref<Wnd> GetFirst() const;
 				const ref<Wnd> GetSecond() const;
 				virtual std::wstring GetTabTitle() const;
+				bool IsCollapsed() const;
 
 			protected:
 				virtual void OnSettingsChanged();

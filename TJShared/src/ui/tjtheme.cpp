@@ -22,6 +22,23 @@ Theme::~Theme() {
 	DestroyCursor(_grabbed);
 }
 
+Area Theme::MeasureText(const std::wstring& text, Gdiplus::Font* font) const {
+	HDC dc = GetDC(NULL);
+	float df = GetDPIScaleFactor();
+	Area ret;
+	RectF bound;
+	{
+		Graphics g(dc);
+		StringFormat sf;
+		sf.SetAlignment(StringAlignmentNear);
+		g.MeasureString(text.c_str(), (int)text.length(), font, PointF(0.0f, 0.0f), &sf, &bound);
+	}
+	ReleaseDC(NULL, dc);
+	ret.SetWidth(Pixels(bound.Width / df));
+	ret.SetHeight(Pixels(bound.Height / df));
+	return ret;
+}
+
 /** DPI Stuff */
 float Theme::GetDPIScaleFactor() const {
 	return _dpi;

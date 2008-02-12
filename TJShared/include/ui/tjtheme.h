@@ -17,6 +17,7 @@ namespace tj {
 				};
 
 				// Colors
+				virtual Area MeasureText(const std::wstring& text, Gdiplus::Font* font) const;
 				virtual Gdiplus::Color GetBackgroundColor() const;
 				virtual Gdiplus::Color GetVideoBackgroundColor() const;
 				virtual Gdiplus::Color GetEditBackgroundColor() const;
