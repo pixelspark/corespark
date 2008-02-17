@@ -40,20 +40,21 @@ int ContextMenu::DoContextMenu(ref<Wnd> wnd, Pixels x, Pixels y) {
 		}
 
 		// Create popup
-		EnableWindow(wnd->GetWindow(), FALSE);
-
-		ref<ContextPopupWnd> cpw = GC::Hold(new ContextPopupWnd(this, wnd));
+		ref<ContextPopupWnd> cpw = GC::Hold(new ContextPopupWnd(this, wnd->GetWindow()));
 
 		// Calculate size of text
 		ref<Theme> theme = ThemeManager::GetTheme();
 		Area measured = theme->MeasureText(_longestString, theme->GetGUIFontBold());
-		Pixels width = max(KMinContextMenuWidth, measured.GetWidth());
+		Pixels width = max(KMinContextMenuWidth, measured.GetWidth()+10)+ContextMenu::KItemHeight;
 
 		// Showtime
 		cpw->SetSize(width, Pixels(int(_items.size())*KItemHeight));
 		cpw->PopupAt(x,y,wnd);
+		EnableWindow(wnd->GetWindow(), FALSE);
 		int result =  cpw->DoModal();
 		EnableWindow(wnd->GetWindow(), TRUE);
+		SetActiveWindow(wnd->GetWindow());
+		cpw->Show(false);
 		return result;
 	}
 
@@ -87,7 +88,7 @@ void ContextMenu::AddSeparator() {
 }
 
 /** ContextPopupWnd **/
-ContextPopupWnd::ContextPopupWnd(ContextMenu* cm, ref<Wnd> parent): PopupWnd(parent), _cm(cm), _result(-1), _mouseOver(-1), _mouseDown(-1), _checkedIcon(L"icons/shared/check.png"), _radioCheckedIcon(L"icons/shared/radiocheck.png") {
+ContextPopupWnd::ContextPopupWnd(ContextMenu* cm, HWND parent): PopupWnd(parent,false), _cm(cm), _result(-1), _mouseOver(-1), _mouseDown(-1), _checkedIcon(L"icons/shared/check.png"), _radioCheckedIcon(L"icons/shared/radiocheck.png") {
 	SetWantMouseLeave(true);
 }
 
@@ -145,14 +146,16 @@ void ContextPopupWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 }
 
 void ContextPopupWnd::OnActivate(bool a) {
-	PopupWnd::OnActivate(a);
-
 	if(!a) {
 		_loop.End(ModalLoop::ResultCancelled);
+	}
+	else {
+		PopupWnd::OnActivate(a);
 	}
 }
 
 void ContextPopupWnd::OnKey(Key k, wchar_t ch, bool down) {
+	Log::Write(L"TJShared/CPW", L"OnKey k="+Stringify(k));
 	switch(k) {
 		case KeyDown:
 			if(down) {
@@ -174,7 +177,7 @@ void ContextPopupWnd::OnKey(Key k, wchar_t ch, bool down) {
 			}
 			break;
 		case KeyCharacter:
-			if(ch==L'\n') {
+			if(ch==VK_SPACE) {
 				if(down) {
 					_mouseDown = _mouseOver;
 				}
@@ -186,6 +189,7 @@ void ContextPopupWnd::OnKey(Key k, wchar_t ch, bool down) {
 			}
 			break;
 	}
+	Repaint();
 }
 
 void ContextPopupWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {

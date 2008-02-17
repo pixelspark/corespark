@@ -4,7 +4,7 @@
 using namespace Gdiplus;
 using namespace tj::shared;
 
-TabWnd::TabWnd(RootWnd* root, const std::wstring& id): ChildWnd(L"TabWnd", NULL) {
+TabWnd::TabWnd(ref<WindowManager> root, const std::wstring& id): ChildWnd(L"TabWnd", NULL) {
 	SetStyle(WS_CLIPCHILDREN|WS_CLIPSIBLINGS);
 	SetStyleEx(WS_EX_CONTROLPARENT);
 	_headerHeight = defaultHeaderHeight;
@@ -95,8 +95,9 @@ void TabWnd::Paint(Graphics& g, ref<Theme> theme) {
 			}
 		}
 
-		if(_root) {
-			ref<TabWnd> dt =  _root->GetDragTarget();
+		ref<WindowManager> root = _root;
+		if(root) {
+			ref<TabWnd> dt =  root->GetDragTarget();
 			if(dt && dt.GetPointer()==this) {
 				LinearGradientBrush br(PointF(0.0f, 0.0f), PointF(0.0f,float(_headerHeight)), theme->GetHighlightColorStart(), theme->GetHighlightColorEnd());
 				g.FillRectangle(&br, Rect(rect.GetLeft()+1, rect.GetTop(), rect.GetRight(), _headerHeight));
@@ -384,7 +385,8 @@ void TabWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 				if(x>rect.GetWidth()-_headerHeight && y<_headerHeight) {
 					// close button
 					if(ev==MouseEventLUp) {
-						if(_current && _root) {
+						ref<WindowManager> root = _root;
+						if(_current && root) {
 							std::vector< ref<Pane> >::iterator it = _panes.begin();
 							while(it!=_panes.end()) {
 								ref<Pane> pn = *it;
@@ -399,7 +401,7 @@ void TabWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 							if(wnd) wnd->Show(false);
 
 							if(!_current->IsClosable()) {
-								_root->AddOrphanPane(_current);
+								root->AddOrphanPane(_current);
 							}
 							_current = 0;
 							SelectPane(0);
@@ -523,9 +525,12 @@ void TabWnd::Detach(ref<Pane> p) {
 	if(p==_current) {
 		_current = 0;
 	}
-	ref<FloatingPane> fp = _root->AddFloatingPane(p);
-	ReleaseCapture();
-	SendMessage(fp->GetWindow(), WM_NCLBUTTONDOWN, HTCAPTION, 0);
+	ref<WindowManager> root = _root;
+	if(root) {
+		ref<FloatingPane> fp = root->AddFloatingPane(p);
+		ReleaseCapture();
+		SendMessage(fp->GetWindow(), WM_NCLBUTTONDOWN, HTCAPTION, 0);
+	}
 	Update();
 }
 
@@ -595,7 +600,12 @@ bool TabWnd::RevealWindow(ref<Wnd> w) {
 
 void TabWnd::DoAddMenu(Pixels x, Pixels y) {
 	ContextMenu m;
-	std::vector< ref<Pane> >* pv = _root->GetOrphanPanes();
+	ref<WindowManager> root = _root;
+	if(!root) {
+		return;
+	}
+
+	std::vector< ref<Pane> >* pv = root->GetOrphanPanes();
 	std::vector< ref<Pane> >::iterator it = pv->begin();
 	int n = 1;
 	while(it!=pv->end()) {
@@ -617,7 +627,7 @@ void TabWnd::DoAddMenu(Pixels x, Pixels y) {
 			ref<Pane> selected = pv->at(c-1);
 
 			if(selected) {
-				_root->RemoveOrphanPane(selected);
+				root->RemoveOrphanPane(selected);
 				Attach(selected);
 				_current = selected;
 				Layout();

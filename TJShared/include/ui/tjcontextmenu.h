@@ -31,7 +31,7 @@ namespace tj {
 		
 		class EXPORTED ContextPopupWnd: public PopupWnd {
 			public:
-				ContextPopupWnd(ContextMenu* cm, ref<Wnd> parent);
+				ContextPopupWnd(ContextMenu* cm, HWND parent);
 				virtual ~ContextPopupWnd();
 				virtual int DoModal(); // return -1 when no command
 				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme);

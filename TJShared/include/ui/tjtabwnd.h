@@ -7,7 +7,7 @@ namespace tj {
 			friend class FloatingPane;
 
 			public:
-				TabWnd(RootWnd* root, const std::wstring& id = L"");
+				TabWnd(ref<WindowManager> root, const std::wstring& id = L"");
 				virtual ~TabWnd();
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 				ref<Pane> AddPane(ref<Pane> pane, bool select = false);
@@ -44,7 +44,7 @@ namespace tj {
 				std::vector< ref<Pane> > _panes;
 				ref<Pane> _current;
 				ref<Pane> _dragging;
-				RootWnd* _root;
+				weak<WindowManager> _root;
 				Pixels _headerHeight;
 				int _dragStartX, _dragStartY;
 				Gdiplus::Bitmap* _closeIcon;

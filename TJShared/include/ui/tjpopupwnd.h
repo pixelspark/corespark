@@ -5,7 +5,7 @@ namespace tj {
 	namespace shared {
 		class EXPORTED PopupWnd: public Wnd {
 			public:
-				PopupWnd(ref<Wnd> parent = 0);
+				PopupWnd(HWND parent = 0, bool isDialog = true);
 				virtual ~PopupWnd();
 
 				/* Popup windows automatically recalculate their size each time they 'pop up'.

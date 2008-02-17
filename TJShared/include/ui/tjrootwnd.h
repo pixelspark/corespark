@@ -5,36 +5,67 @@ namespace tj {
 	namespace shared {
 		class NotificationWnd;
 
-		class EXPORTED RootWnd: public TopWnd {
+		class EXPORTED WindowManager: public virtual Object {
+			public:
+				virtual ~WindowManager();
+
+				// Floating panes
+				virtual ref<FloatingPane> AddFloatingPane(ref<Pane> pane) = 0;
+				virtual void RemoveFloatingPane(ref<Pane> pn) = 0;
+
+				// Tab windows (pane holders)
+				virtual void AddTabWindow(ref<TabWnd> tw) = 0;
+				virtual void RemoveTabWindow(ref<TabWnd> tw) = 0;
+				virtual void RemoveTabWindow(TabWnd* tw) = 0;
+
+				// Orphan panes
+				virtual bool IsOrphanPane(ref<Wnd> wnd) = 0;
+				virtual void AddOrphanPane(ref<Pane> pane) = 0;
+				virtual std::vector< ref<Pane> >* GetOrphanPanes() = 0;
+				virtual void RemoveOrphanPane(ref<Pane> pane) = 0;
+
+				// Other
+				virtual void RevealWindow(ref<Wnd> wnd, ref<TabWnd> addTo=0) = 0;
+				virtual ref<TabWnd> FindTabWindowAt(int x, int y) = 0;
+				virtual ref<TabWnd> GetTabWindowById(const std::wstring& id) = 0;
+				virtual void SetDragTarget(ref<TabWnd> tw) = 0;
+				virtual ref<TabWnd> GetDragTarget() = 0;
+				virtual void RemoveWindow(ref<Wnd> w) = 0;
+				virtual void RenameWindow(ref<Wnd> w, std::wstring name) = 0;
+				virtual void AddPane(ref<Pane> p, bool select = false) = 0; // add by preferred placement
+
+		};
+
+		class EXPORTED RootWnd: public TopWnd, public WindowManager {
 			friend class NotificationWnd; 
 
 			public:
 				RootWnd(std::wstring title, const wchar_t* className=TJ_DEFAULT_CLASS_NAME, bool useDoubleBuffering=true);
 				virtual ~RootWnd();
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
-				ref<FloatingPane> AddFloatingPane(ref<Pane> pane);
-				void RemoveFloatingPane(ref<Pane> pn);
 				virtual void Update();
 
-				void AddTabWindow(ref<TabWnd> tw);
-				void RemoveTabWindow(ref<TabWnd> tw);
-				void RemoveTabWindow(TabWnd* tw);
+				// WindowManager implementation
+				virtual ref<FloatingPane> AddFloatingPane(ref<Pane> pane);
+				virtual void RemoveFloatingPane(ref<Pane> pn);
 
-				// If wnd is not visible and addTo!=0, the pane will be added to the specified TabWnd
-				void RevealWindow(ref<Wnd> wnd, ref<TabWnd> addTo=0);
-				ref<TabWnd> FindTabWindowAt(int x, int y);
-				ref<TabWnd> GetTabWindowById(const std::wstring& id);
-				void SetDragTarget(ref<TabWnd> tw);
-				ref<TabWnd> GetDragTarget();
-				bool IsOrphanPane(ref<Wnd> wnd);
+				virtual void AddTabWindow(ref<TabWnd> tw);
+				virtual void RemoveTabWindow(ref<TabWnd> tw);
+				virtual void RemoveTabWindow(TabWnd* tw);
 
-				void AddOrphanPane(ref<Pane> pane);
-				std::vector< ref<Pane> >* GetOrphanPanes();
-				void RemoveOrphanPane(ref<Pane> pane);
-				void RemoveWindow(ref<Wnd> w);
-				void RenameWindow(ref<Wnd> w, std::wstring name);
+				virtual void RevealWindow(ref<Wnd> wnd, ref<TabWnd> addTo=0);
+				virtual ref<TabWnd> FindTabWindowAt(int x, int y);
+				virtual ref<TabWnd> GetTabWindowById(const std::wstring& id);
+				virtual void SetDragTarget(ref<TabWnd> tw);
+				virtual ref<TabWnd> GetDragTarget();
+				virtual bool IsOrphanPane(ref<Wnd> wnd);
 
-				void AddPane(ref<Pane> p, bool select = false); // add by preferred placement
+				virtual void AddOrphanPane(ref<Pane> pane);
+				virtual std::vector< ref<Pane> >* GetOrphanPanes();
+				virtual void RemoveOrphanPane(ref<Pane> pane);
+				virtual void RemoveWindow(ref<Wnd> w);
+				virtual void RenameWindow(ref<Wnd> w, std::wstring name);
+				virtual void AddPane(ref<Pane> p, bool select = false); // add by preferred placement
 
 				/* Notification API */
 				virtual void AddNotification(const std::wstring& message, std::wstring icon, int time=-1);

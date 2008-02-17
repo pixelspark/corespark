@@ -743,7 +743,7 @@ LRESULT Wnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 				break;
 
 			default:
-				ch = (wchar_t)key;
+				ch = (wchar_t)wp;
 		}
 
 		OnKey(key, ch, msg==WM_KEYDOWN);

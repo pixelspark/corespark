@@ -1,6 +1,9 @@
 #include "../../include/tjshared.h"
 using namespace tj::shared;
 
+WindowManager::~WindowManager() {
+}
+
 RootWnd::RootWnd(std::wstring title, const wchar_t* className, bool usedb): TopWnd(title.c_str(),0, className, usedb) {
 	SetStyleEx(WS_EX_CONTROLPARENT);
 }
