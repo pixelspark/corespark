@@ -22,17 +22,19 @@ namespace tj {
 
 			protected:
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
+				virtual void OnFocus(bool focus);
 
 				Listener* _listener;
 				float _value;
 				float _displayValue;
-				bool _hasFocus;
 				bool _flash;
 				float _oldValue;
 				int _color;
 				float _mark;
 				bool _showValue;
 				bool _snapHalf;
+				Pixels _startX, _startY;
+				bool _preciseDrag;
 
 				const static int KMinimumWidth = 30;
 				const static int KDraggerWidth;

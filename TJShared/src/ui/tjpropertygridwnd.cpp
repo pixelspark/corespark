@@ -13,7 +13,7 @@ const Pixels PropertyGridWnd::KPropertyMargin = 3;
 
 /* PropertyGridWnd implementation */
 PropertyGridWnd::PropertyGridWnd(bool withPath): ChildWnd(TL(properties)),
-_expandIcon(L"icons/shared/expand.png"), _collapseIcon(L"icons/shared/collapse.png") {
+_expandIcon(Icons::GetIconPath(Icons::IconExpand)), _collapseIcon(Icons::GetIconPath(Icons::IconCollapse)) {
 	ClearThemeCache();
 	_nameWidth = 100;
 	SetStyle(WS_CLIPCHILDREN|WS_CLIPSIBLINGS);
@@ -106,12 +106,15 @@ void PropertyGridWnd::Paint(Graphics& g, ref<Theme> theme) {
 
 		p->Update();
 		if(isSeparator || !previousCollapsed) {
-			if(GetFocus()==p->GetWindow() || isSeparator) {
-				LinearGradientBrush gbr(Gdiplus::Point(0, cH), Gdiplus::Point(0, cH+p->GetHeight()+10), theme->GetActiveStartColor(), theme->GetActiveEndColor());
+			if(GetFocus()==p->GetWindow()) {
+				LinearGradientBrush gbr(Gdiplus::Point(0, cH), Gdiplus::Point(0, cH+p->GetHeight()+10), theme->GetTimeSelectionColorStart(), theme->GetTimeSelectionColorEnd());
 				g.FillRectangle(&gbr, Rect(1, cH+1, r.GetWidth()-2, p->GetHeight()+(2*KPropertyMargin)-2));
 			}
 
 			if(isSeparator) {
+				LinearGradientBrush gbr(Gdiplus::Point(0, cH), Gdiplus::Point(0, cH+p->GetHeight()+10), theme->GetActiveStartColor(), theme->GetActiveEndColor());
+				g.FillRectangle(&gbr, Rect(1, cH+1, r.GetWidth()-2, p->GetHeight()+(2*KPropertyMargin)-2));
+
 				SolidBrush dbr(theme->GetDisabledOverlayColor());
 				g.FillRectangle(&dbr, Rect(1, cH+1, r.GetWidth()-2, p->GetHeight()+(2*KPropertyMargin)-2));
 			}

@@ -4,25 +4,21 @@
 using namespace Gdiplus;
 using namespace tj::shared;
 
-TabWnd::TabWnd(ref<WindowManager> root, const std::wstring& id): ChildWnd(L"TabWnd", NULL) {
+TabWnd::TabWnd(ref<WindowManager> root, const std::wstring& id): ChildWnd(L"TabWnd", NULL), 
+	_closeIcon(Icons::GetIconPath(Icons::IconTabClose)),
+	_addIcon(Icons::GetIconPath(Icons::IconTabAdd)) {
+
 	SetStyle(WS_CLIPCHILDREN|WS_CLIPSIBLINGS);
 	SetStyleEx(WS_EX_CONTROLPARENT);
 	_headerHeight = defaultHeaderHeight;
 	_root = root;
 	_detachAttachAllowed = true;
-
-	std::wstring fn = ResourceManager::Instance()->Get(L"icons/shared/tab_close.png");
-	_closeIcon = Bitmap::FromFile(fn.c_str(), TRUE);
-	fn = ResourceManager::Instance()->Get(L"icons/shared/tab_add.png");
-	_addIcon = Bitmap::FromFile(fn.c_str(), TRUE);
 	_childStyle = false;
 	_id = id;
 	Layout();
 }
 
 TabWnd::~TabWnd() {
-	delete _closeIcon;
-	delete _addIcon;
 }
 
 void TabWnd::SetDetachAttachAllowed(bool allow) {

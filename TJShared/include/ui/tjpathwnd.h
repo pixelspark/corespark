@@ -68,7 +68,7 @@ namespace tj {
 
 				ref<Path> _path;
 				PropertyGridWnd* _propertyGrid;
-				Gdiplus::Bitmap* _separator;
+				Icon _separator;
 				ref<Crumb> _over;
 		};
 	}

@@ -96,20 +96,17 @@ void GenericProperty<Time>::Update() {
 
 HWND GenericProperty<bool>::Create(HWND parent) {
 	if(_wnd!=0) return _wnd;
-	_wnd = ::CreateWindowEx(0, (const wchar_t*)L"BUTTON", Stringify(*_value).c_str(), WS_TABSTOP|BS_AUTOCHECKBOX|WS_CHILD, 0, 0, 100, 100, parent, (HMENU)0, GetModuleHandle(NULL), 0);
-	if(_wnd!=0) {
-		SetWindowLong(_wnd, GWL_USERDATA, (LONG)(long long)this);
-	}
-	else {
-		Throw(L"Property window creation failed", ExceptionTypeError);
-	}
+	//_wnd = ::CreateWindowEx(0, (const wchar_t*)L"BUTTON", Stringify(*_value).c_str(), WS_TABSTOP|BS_AUTOCHECKBOX|WS_CHILD, 0, 0, 100, 100, parent, (HMENU)0, GetModuleHandle(NULL), 0);
+	_wndHold = GC::Hold(new CheckboxWnd());
+	_wnd = _wndHold->GetWindow();
+	SetParent(_wnd, parent);
 	return _wnd;
 }
 
 // for numeric edit stuff, spinner boxes and lots of other candy
 HWND GenericProperty<unsigned int>::Create(HWND parent) {
 	if(_wnd!=0) return _wnd;
-	_wnd = ::CreateWindowEx(WS_EX_CLIENTEDGE, TJ_PROPERTY_EDIT_NUMERIC_CLASS_NAME, Stringify(*_value).c_str(), WS_CHILD|ES_AUTOHSCROLL, 0, 0, 100, 100, parent, (HMENU)0, GetModuleHandle(NULL), 0);
+	_wnd = ::CreateWindowEx(WS_EX_CLIENTEDGE, TJ_PROPERTY_EDIT_NUMERIC_CLASS_NAME, Stringify(*_value).c_str(), WS_TABSTOP|WS_CHILD|ES_AUTOHSCROLL, 0, 0, 100, 100, parent, (HMENU)0, GetModuleHandle(NULL), 0);
 	if(_wnd==0) {
 		Throw(L"Property window creation failed", ExceptionTypeError);
 	}
@@ -118,7 +115,7 @@ HWND GenericProperty<unsigned int>::Create(HWND parent) {
 
 HWND GenericProperty<int>::Create(HWND parent) {
 	if(_wnd!=0) return _wnd;
-	_wnd = ::CreateWindowEx(WS_EX_CLIENTEDGE, TJ_PROPERTY_EDIT_NUMERIC_CLASS_NAME, Stringify(*_value).c_str(), WS_CHILD|ES_AUTOHSCROLL, 0, 0, 100, 100, parent, (HMENU)0, GetModuleHandle(NULL), 0);
+	_wnd = ::CreateWindowEx(WS_EX_CLIENTEDGE, TJ_PROPERTY_EDIT_NUMERIC_CLASS_NAME, Stringify(*_value).c_str(), WS_TABSTOP|WS_CHILD|ES_AUTOHSCROLL, 0, 0, 100, 100, parent, (HMENU)0, GetModuleHandle(NULL), 0);
 	if(_wnd==0) {
 		Throw(L"Property window creation failed", ExceptionTypeError);
 	}
@@ -142,35 +139,22 @@ void GenericProperty<std::wstring>::Changed() {
 }
 
 void GenericProperty<bool>::Changed() {
-	LRESULT st = SendMessage(_wnd, BM_GETCHECK, 0, 0);
-	bool value = _default;
-	if(st==BST_CHECKED) {
-		value = true;
-	}
-	else if(st==BST_UNCHECKED) {
-		value = false;
-	}
+	ref<CheckboxWnd> cb = _wndHold;
 
-	(*_value) = value;
-	if(_alsoSet!=0) {
-		(*_alsoSet) = value;
-	}
+	if(cb) {
+		bool value = cb->IsChecked();
 
-	if(value) {
-		SetWindowText(_wnd, Language::Get(L"yes"));
-	}
-	else {
-		SetWindowText(_wnd, Language::Get(L"no"));
+		(*_value) = value;
+		if(_alsoSet!=0) {
+			(*_alsoSet) = value;
+		}
 	}
 }
 
 void GenericProperty<bool>::Update() {
-	SendMessage(_wnd, BM_SETCHECK, (*_value)?BST_CHECKED:BST_UNCHECKED,0L);
+	ref<CheckboxWnd> cb = _wndHold;
 
-	if((*_value)) {
-		SetWindowText(_wnd, Language::Get(L"yes"));
-	}
-	else {
-		SetWindowText(_wnd, Language::Get(L"no"));
+	if(cb) {
+		cb->SetChecked(*_value);
 	}
 }

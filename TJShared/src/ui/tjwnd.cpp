@@ -145,6 +145,7 @@ void Wnd::Add(ref<Wnd> child, bool shown) {
 		SetParent(child->GetWindow(), GetWindow());
 		child->SetStyle(WS_CHILD);
 		child->Show(shown);
+		SetStyleEx(WS_EX_CONTROLPARENT);
 	}
 }
 
@@ -711,7 +712,10 @@ LRESULT Wnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		return 0;
 	}
 	else if(msg==WM_SETFOCUS) {
-		return 0;
+		OnFocus(true);
+	}
+	else if(msg==WM_KILLFOCUS) {
+		OnFocus(false);
 	}
 	else if(msg==WM_KEYDOWN || msg==WM_KEYUP) {
 		Key key = KeyCharacter;
@@ -772,23 +776,9 @@ LRESULT CALLBACK PropertyEditWndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) {
 		HWND first = GetWindow(wnd, GW_HWNDFIRST);
 		HWND last = GetWindow(wnd, GW_HWNDLAST);
 
-		if(wp==VK_DOWN) {
-			if(wnd==last) {
-				SetFocus(first);
-			}
-			else {
-				HWND next = GetWindow(wnd, GW_HWNDNEXT);
-				SetFocus(next);
-			}
-		}
-		else if(wp==VK_UP) {
-			if(wnd==first) {
-				SetFocus(last);
-			}
-			else {
-				HWND next = GetWindow(wnd, GW_HWNDPREV);
-				SetFocus(next);
-			}
+		if(wp==VK_DOWN || wp==VK_UP || wp==VK_TAB) {
+			HWND root = GetAncestor(wnd, GA_ROOT);
+			SetFocus(GetNextDlgTabItem(root, wnd, wp==VK_UP));
 		}
 
 		RECT rc;
@@ -886,6 +876,9 @@ void Wnd::Fill() {
 void Wnd::OnActivate(bool a) {
 }
 
+void Wnd::OnFocus(bool a) {
+}
+
 void Wnd::OnMouse(MouseEvent me, Pixels x, Pixels y) {
 }
 
@@ -910,6 +903,10 @@ LRESULT CALLBACK PropertyEditNumericWndProc(HWND wnd, UINT msg, WPARAM wp, LPARA
 		}
 		if((wp>L'9' || wp < L'0')&&wp!=L'-' &&wp!=L':' && wp!=VK_DELETE && wp!=VK_HOME && wp!=VK_END && wp!=L'\b' && wp!=VK_UP && wp!=VK_DOWN) {
 			return 0; // no alpha-numeric stuff in here please!
+		}
+		else if(wp==VK_DOWN || wp==VK_UP || wp==VK_TAB) {
+			HWND root = GetAncestor(wnd, GA_ROOT);
+			SetFocus(GetNextDlgTabItem(root, wnd, wp==VK_UP));
 		}
 	}
 	else if(msg==WM_CHAR) {

@@ -130,6 +130,7 @@ namespace tj {
 				virtual void OnSize(const Area& newSize);
 				virtual void OnScroll(ScrollDirection dir);
 				virtual void OnActivate(bool activate);
+				virtual void OnFocus(bool focus);
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
 				virtual void OnSettingsChanged();
 				virtual void OnDropFiles(const std::vector<std::wstring>& files);

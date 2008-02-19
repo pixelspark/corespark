@@ -3,6 +3,7 @@
 
 namespace tj {
 	namespace shared {
+		/** The icon for a ContextItem needs to be 16x16 */
 		class EXPORTED ContextItem {
 			friend class ContextMenu;
 			friend class ContextPopupWnd;
@@ -15,10 +16,14 @@ namespace tj {
 				};
 
 				ContextItem(); // separator
-				ContextItem(const std::wstring& title, int command, bool highlight = false, CheckType checked = NotChecked);
-				~ContextItem();
-				bool IsSeparator() const;
-				bool IsDisabled() const;
+				ContextItem(const std::wstring& title, int command, bool highlight = false, CheckType checked = NotChecked, const std::wstring& icon = L"");
+				virtual ~ContextItem();
+				virtual bool IsSeparator() const;
+				virtual bool IsDisabled() const;
+				virtual bool HasIcon() const;
+				virtual void SetIcon(const std::wstring& icon);
+				virtual Icon* GetIcon();
+				virtual const std::wstring& GetTitle() const;
 
 			protected:
 				std::wstring _title;
@@ -26,9 +31,9 @@ namespace tj {
 				bool _hilite;
 				CheckType _checked;
 				bool _separator;
+				Icon* _icon;
 		};
 
-		
 		class EXPORTED ContextPopupWnd: public PopupWnd {
 			public:
 				ContextPopupWnd(ContextMenu* cm, HWND parent);
@@ -59,10 +64,11 @@ namespace tj {
 				int DoContextMenu(ref<Wnd> wnd);
 				void AddItem(const std::wstring& name, int command, bool hilite = false, bool checked = false);
 				void AddItem(const std::wstring& name, int command, bool hilite, ContextItem::CheckType checked);
+				void AddItem(ref<ContextItem> ci);
 				void AddSeparator();
 
 			protected:
-				std::vector<ContextItem> _items;
+				std::vector< ref<ContextItem> > _items;
 				std::wstring _longestString;
 				const static Pixels KItemHeight;
 				const static Pixels KMinContextMenuWidth;

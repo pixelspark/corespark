@@ -3,11 +3,10 @@
 using namespace Gdiplus;
 using namespace tj::shared;
 
-const int SliderWnd::KDraggerWidth = 18;
+const int SliderWnd::KDraggerWidth = 16;
 
 SliderWnd::SliderWnd(const wchar_t* title): ChildWnd(title) {
 	_value = 0.0f;
-	_hasFocus = false;
 	_listener = 0;
 	_displayValue = 0.0f;
 	_flash = false;
@@ -15,7 +14,10 @@ SliderWnd::SliderWnd(const wchar_t* title): ChildWnd(title) {
 	_mark = -1.0f;
 	_showValue = true;
 	_snapHalf = false;
+	_preciseDrag = false;
 	_color = 0;
+
+	SetStyle(WS_TABSTOP);
 }
 
 void SliderWnd::SetShowValue(bool t) {
@@ -147,7 +149,7 @@ void SliderWnd::Paint(Graphics& g, ref<Theme> theme) {
 	g.FillRectangle(&border, RectF(float(x), float(y), float(KDraggerWidth), 6.0f));
 	g.FillRectangle(&backBrush, RectF(float(x+1), float(y+1), float(KDraggerWidth-2), 4.0f));
 	
-	if(_hasFocus||_flash) {
+	if(HasFocus()||_flash) {
 		LinearGradientBrush lbr(PointF(float(x+1), float(y)), PointF(float(x+1), float(y+6)), colorStart, colorEnd );
 		g.FillRectangle(&lbr, RectF(float(x+1), float(y+1), float(KDraggerWidth-2), 4.0f));
 	}
@@ -239,14 +241,6 @@ LRESULT SliderWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 			Repaint();
 		}
 	}
-	else if(msg==WM_SETFOCUS) {
-		_hasFocus = true;
-		Repaint();
-	}
-	else if(msg==WM_KILLFOCUS) {
-		_hasFocus = false;
-		Repaint();
-	}
 	else if(msg==WM_SIZE) {
 		Repaint();
 	}
@@ -254,31 +248,69 @@ LRESULT SliderWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	return ChildWnd::Message(msg, wp, lp);
 }
 
+void SliderWnd::OnFocus(bool a) {
+	Repaint();
+}
+
 void SliderWnd::SetListener(Listener* listener) {
 	_listener = listener;
 }
 
 void SliderWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
-	if(ev==MouseEventMove ||ev==MouseEventLDown || ev==MouseEventRDown) {
-		if(IsKeyDown(KeyMouseLeft) || IsKeyDown(KeyMouseRight)) {
+	if(ev==MouseEventLDown) {
+		_preciseDrag = IsKeyDown(KeyControl);
+	}
+
+	if(_preciseDrag) {
+		if(ev==MouseEventLDown) {
+			SetCapture(GetWindow());
+			SetCursor(LoadCursor(NULL, IDC_SIZENS));
+		}
+		else if(ev==MouseEventMove && IsKeyDown(KeyMouseLeft)) {
+			Pixels dx = _startX - x;
+			Pixels dy = _startY - y;
+
+			float ratio = 1.0f;
 			Area rc = GetClientArea();
-			rc.Narrow(0,5, 0, 25);
+			if(rc.GetHeight()!=0) {
+				ratio = 1.0f / (rc.GetHeight()*15);
+			}
 
-			y -= rc.GetTop();
-			float val = float(y)/rc.GetHeight();
+			float val = _value + (dy * ratio);
+			val = max(0.0f, val);
+			val = min(1.0f, val);
+			SetValue(val);
+		}
+		else if(ev==MouseEventLUp) {
+			ReleaseCapture();
+			SetCursor(LoadCursor(NULL, IDC_ARROW));
+		}
 
-			if(ev==MouseEventRDown) {
-				if(!_flash) {
-					_oldValue = _value;
-					_flash = true;
+		_startX = x;
+		_startY = y;
+	}
+	else {
+		if(ev==MouseEventMove ||ev==MouseEventLDown || ev==MouseEventRDown) {
+			if(IsKeyDown(KeyMouseLeft) || IsKeyDown(KeyMouseRight)) {
+				Area rc = GetClientArea();
+				rc.Narrow(0,5, 0, 25);
+
+				y -= rc.GetTop();
+				float val = float(y)/rc.GetHeight();
+
+				if(ev==MouseEventRDown) {
+					if(!_flash) {
+						_oldValue = _value;
+						_flash = true;
+					}
 				}
-			}
-			
-			if(_snapHalf && val<0.51f && val>0.49f) {
-				SetValue(0.5f);
-			}
-			else {
-				SetValue(1.0f - val);
+				
+				if(_snapHalf && val<0.51f && val>0.49f) {
+					SetValue(0.5f);
+				}
+				else {
+					SetValue(1.0f - val);
+				}
 			}
 		}
 	}

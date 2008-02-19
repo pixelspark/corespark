@@ -205,20 +205,11 @@ void BrowserWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
 
 BrowserToolbarWnd::BrowserToolbarWnd(BrowserWnd *browser): ToolbarWnd() {
 	_browser = browser;
-	Gdiplus::Bitmap* bmp = Bitmap::FromFile(ResourceManager::Instance()->Get(L"icons/step_backward.png").c_str());
-	Add(GC::Hold(new ToolbarItem(CmdBack, bmp)));
-
-	bmp = Bitmap::FromFile(ResourceManager::Instance()->Get(L"icons/step_forward.png").c_str());
-	Add(GC::Hold(new ToolbarItem(CmdForward, bmp)));
-
-	bmp = Bitmap::FromFile(ResourceManager::Instance()->Get(L"icons/browser/stop.png").c_str());
-	Add(GC::Hold(new ToolbarItem(CmdStop, bmp)));
-
-	bmp = Bitmap::FromFile(ResourceManager::Instance()->Get(L"icons/browser/reload.png").c_str());
-	Add(GC::Hold(new ToolbarItem(CmdReload, bmp)));
-
-	bmp = Bitmap::FromFile(ResourceManager::Instance()->Get(L"icons/browser/go.png").c_str());
-	Add(GC::Hold(new ToolbarItem(CmdGo, bmp)));
+	Add(GC::Hold(new ToolbarItem(CmdBack, Icons::GetIconPath(Icons::IconBack))));
+	Add(GC::Hold(new ToolbarItem(CmdForward, Icons::GetIconPath(Icons::IconForward))));
+	Add(GC::Hold(new ToolbarItem(CmdStop, Icons::GetIconPath(Icons::IconStop))));
+	Add(GC::Hold(new ToolbarItem(CmdReload, Icons::GetIconPath(Icons::IconReload))));
+	Add(GC::Hold(new ToolbarItem(CmdGo, Icons::GetIconPath(Icons::IconGo))));
 	
 
 	_url = GC::Hold(new EditWnd());

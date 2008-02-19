@@ -11,6 +11,7 @@ ListWnd::ListWnd(): ChildWnd(L"", true, true) {
 	_dragStartX = 0;
 	_selected = -1;
 	_showHeader = true;
+	SetStyle(WS_TABSTOP);
 }
 
 ListWnd::~ListWnd() {
@@ -115,17 +116,17 @@ void ListWnd::Paint(Gdiplus::Graphics &g, ref<Theme> theme) {
 	Pixels headHeight = GetHeaderHeight();
 
 	SolidBrush back(theme->GetBackgroundColor());
+	SolidBrush disabled(theme->GetDisabledOverlayColor());
 	g.FillRectangle(&back, area);
 	Pen border(theme->GetActiveStartColor(), 1.0f);
 	Pen lineBorder(theme->GetActiveEndColor(), 1.0f);
+	bool hasFocus = (::GetFocus()==GetWindow());
 
 	int n = GetItemCount();
 	if(n>0) {
 		// draw items, if they fit
 		int h = -int(GetVerticalPos());
-		
 		Pixels itemHeight = GetItemHeight();
-
 		SolidBrush colorEven(theme->GetTimeBackgroundColor());
 		LinearGradientBrush colorSelected(PointF(0.0f, float(h+headHeight)), PointF(0.0f, float(h+headHeight+itemHeight)), theme->GetTimeSelectionColorStart(), theme->GetTimeSelectionColorEnd());
 
@@ -138,6 +139,7 @@ void ListWnd::Paint(Gdiplus::Graphics &g, ref<Theme> theme) {
 				// draw a background if odd
 				if(a==_selected) {
 					g.FillRectangle(&colorSelected, rowArea);
+					if(!hasFocus) g.FillRectangle(&disabled, rowArea);
 				}
 				else if(a%2==1) {
 					g.FillRectangle(&colorEven, rowArea);
@@ -275,6 +277,9 @@ LRESULT ListWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 			_selected++;
 			Repaint();
 		}
+	}
+	else if(msg==WM_SETFOCUS||msg==WM_KILLFOCUS) {
+		Repaint();
 	}
 	return ChildWnd::Message(msg,wp,lp);
 }

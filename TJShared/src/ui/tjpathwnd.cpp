@@ -81,16 +81,13 @@ ref< std::vector< ref<Crumb> > > BasicCrumb::GetChildren() {
 }
 
 /* PathWnd*/
-PathWnd::PathWnd(PropertyGridWnd* pg): ChildWnd(L"", true, true) {
+PathWnd::PathWnd(PropertyGridWnd* pg): ChildWnd(L"", true, true), _separator(Icons::GetIconPath(Icons::IconPathSeparator)) {
 	SetStyle(WS_CLIPSIBLINGS);
 	_propertyGrid = pg;
-	std::wstring spfn = ResourceManager::Instance()->Get(L"icons/path_separator.png");
-	_separator = Bitmap::FromFile(spfn.c_str(), TRUE);
 	SetWantMouseLeave(true);
 }
 
 PathWnd::~PathWnd() {
-	delete _separator;
 }
 
 void PathWnd::Update() {

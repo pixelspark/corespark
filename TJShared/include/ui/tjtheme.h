@@ -3,6 +3,35 @@
 
 namespace tj {
 	namespace shared {
+		class EXPORTED Icons {
+			public:
+				enum IconIdentifier {
+					IconChecked = 0,
+					IconColorChooser,
+					IconFile,
+					IconBack,
+					IconForward,
+					IconStop,
+					IconReload,
+					IconGo,
+					IconRadioChecked,
+					IconOK,
+					IconPathSeparator,
+					IconExpand,
+					IconCollapse,
+					IconTabAdd,
+					IconTabClose,
+					IconTip,
+					IconSearch,
+					_IconLast,
+				};
+
+				static std::wstring GetIconPath(IconIdentifier i);
+
+			protected:
+				static const wchar_t* _paths[_IconLast];
+		};
+
 		class EXPORTED Theme: public virtual Object {
 			public:
 				Theme(float dpi);

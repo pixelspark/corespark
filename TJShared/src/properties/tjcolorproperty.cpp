@@ -258,7 +258,7 @@ void ColorPopupWnd::SetColor(const HSVColor& hsv) {
 }
 
 /* ColorChooserWnd */
-ColorChooserWnd::ColorChooserWnd(RGBColor* c, RGBColor* tc): ChildWnd(L""), _colorsIcon(L"icons/shared/colors.png"), _color(c), _tcolor(tc) {
+ColorChooserWnd::ColorChooserWnd(RGBColor* c, RGBColor* tc): ChildWnd(L""), _colorsIcon(Icons::GetIconPath(Icons::IconColorChooser)), _color(c), _tcolor(tc) {
 }
 
 ColorChooserWnd::~ColorChooserWnd() {

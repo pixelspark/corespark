@@ -47,8 +47,8 @@ namespace tj {
 				weak<WindowManager> _root;
 				Pixels _headerHeight;
 				int _dragStartX, _dragStartY;
-				Gdiplus::Bitmap* _closeIcon;
-				Gdiplus::Bitmap* _addIcon;
+				Icon _closeIcon;
+				Icon _addIcon;
 				bool _detachAttachAllowed;
 				bool _childStyle;
 				std::wstring _id;

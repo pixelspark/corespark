@@ -5,7 +5,7 @@ using namespace Gdiplus;
 DialogWnd::DialogWnd(const std::wstring& title, const std::wstring& question): TopWnd(title.c_str()), _question(question) {
 	SetStyle(WS_POPUPWINDOW|WS_THICKFRAME);
 	_grid = GC::Hold(new PropertyGridWnd(false));
-	_ok = GC::Hold(new ButtonWnd(L"icons/enable.png", TL(ok)));
+	_ok = GC::Hold(new ButtonWnd(Icons::GetIconPath(Icons::IconOK).c_str(), TL(ok)));
 	Add(_grid, true);
 	Add(_ok, true);
 

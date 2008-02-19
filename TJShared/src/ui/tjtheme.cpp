@@ -22,6 +22,53 @@ Theme::~Theme() {
 	DestroyCursor(_grabbed);
 }
 
+/*IconChecked = 1,
+					IconColorChooser,
+					IconFile,
+					IconBack,
+					IconForward,
+					IconStop,
+					IconReload,
+					IconGo,
+					IconRadioChecked,
+					IconOK,
+					IconPathSeparator,
+					IconExpand,
+					IconCollapse,
+					IconTabAdd,
+					IconTabClose,
+					IconTip,
+					IconSearch,
+					_IconLast,*/
+
+const wchar_t* Icons::_paths[Icons::_IconLast] = {
+	L"icons/shared/check.png",
+	L"icons/shared/colors.png",
+	L"icons/shared/file.png",
+	L"icons/browser/back.png",
+	L"icons/browser/forward.png",
+	L"icons/browser/stop.png",
+	L"icons/browser/reload.png",
+	L"icons/browser/go.png",
+	L"icons/shared/radiocheck.png",
+	L"icons/shared/ok.png",
+	L"icons/shared/path-separator.png",
+	L"icons/shared/expand.png",
+	L"icons/shared/collapse.png",
+	L"icons/shared/tab-add.png",
+	L"icons/shared/tab-close.png",
+	L"icons/shared/tip.png",
+	L"icons/shared/search.png",
+};
+
+std::wstring Icons::GetIconPath(IconIdentifier i) {
+	if(i<_IconLast) {
+		return _paths[(unsigned int)i];
+	}
+
+	Throw(L"Icon with specified does not exist (programming error)!", ExceptionTypeError);
+}
+
 Area Theme::MeasureText(const std::wstring& text, Gdiplus::Font* font) const {
 	HDC dc = GetDC(NULL);
 	float df = GetDPIScaleFactor();

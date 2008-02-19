@@ -5,7 +5,8 @@ using namespace Gdiplus;
 using namespace tj::shared;
 
 // ToolbarWnd
-ToolbarWnd::ToolbarWnd(): ChildWnd(L""), _tipIcon(L"icons/tip.png") {
+ToolbarWnd::ToolbarWnd(): ChildWnd(L""), _tipIcon(Icons::GetIconPath(Icons::IconTip)) {
+	UnsetStyle(WS_TABSTOP);
 	SetWantMouseLeave(true);
 	_in = false;
 	_idx = -1;
@@ -274,7 +275,7 @@ Icon& StateToolbarItem::GetIcon() {
 }
 
 /* SearchToolbarWnd */
-SearchToolbarWnd::SearchToolbarWnd(): _searchIcon(L"icons/search.png") {
+SearchToolbarWnd::SearchToolbarWnd(): _searchIcon(Icons::GetIconPath(Icons::IconSearch)) {
 	_rightMargin = 0;
 	_searchWidth = KDefaultBoxWidth;
 	_searchHeight = KDefaultBoxHeight;

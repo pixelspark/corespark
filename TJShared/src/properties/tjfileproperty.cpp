@@ -3,7 +3,7 @@ using namespace tj::shared;
 using namespace Gdiplus;
 
 /* FilePropertyWnd */
-FilePropertyWnd::FilePropertyWnd(std::wstring name, std::wstring* path, const wchar_t* filter): ChildWnd(L""), _name(name), _filter(filter), _path(path), _linkIcon(L"icons/shared/file.png") {
+FilePropertyWnd::FilePropertyWnd(std::wstring name, std::wstring* path, const wchar_t* filter): ChildWnd(L""), _name(name), _filter(filter), _path(path), _linkIcon(Icons::GetIconPath(Icons::IconFile)) {
 	assert(path!=0);
 	SetWantMouseLeave(true);
 	SetDropTarget(true);

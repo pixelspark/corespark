@@ -54,6 +54,7 @@ void Core::Run(RunnableApplication* app, ref<Arguments> args) {
 			if(msg.message==WM_QUIT) { 
 				return;
 			}
+
 			_app->Message(msg);
 		}
 

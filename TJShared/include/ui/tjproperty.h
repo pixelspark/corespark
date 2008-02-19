@@ -70,7 +70,7 @@ namespace tj {
 					if(_wnd!=0) return _wnd;
 					HINSTANCE hinst;
 					hinst = GetModuleHandle(NULL);
-					_wnd = ::CreateWindowEx(WS_EX_CLIENTEDGE, TJ_PROPERTY_EDIT_CLASS_NAME, Stringify(*_value).c_str(), ES_AUTOHSCROLL|WS_CHILD, 0, 0, 100, 100, parent, (HMENU)0, hinst, 0);
+					_wnd = ::CreateWindowEx(WS_EX_CLIENTEDGE, TJ_PROPERTY_EDIT_CLASS_NAME, Stringify(*_value).c_str(), WS_TABSTOP|ES_AUTOHSCROLL|WS_CHILD, 0, 0, 100, 100, parent, (HMENU)0, hinst, 0);
 					if(_wnd==0) {
 						int x = GetLastError();
 						Throw(L"Property window creation failed ", ExceptionTypeError);
@@ -137,6 +137,7 @@ namespace tj {
 				T _default;
 				T* _alsoSet;
 				HWND _wnd;
+				ref<Wnd> _wndHold;
 		};
 
 		template<> HWND EXPORTED GenericProperty<Time>::Create(HWND parent);
