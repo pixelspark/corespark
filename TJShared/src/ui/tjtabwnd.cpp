@@ -234,7 +234,7 @@ void TabWnd::RemovePane(ref<Wnd> wnd) {
 		ref<Pane> pane = *it;
 		if(pane->GetWindow() == wnd) {
 			_panes.erase(it);
-			return;
+			break;
 		}
 		++it;
 	}

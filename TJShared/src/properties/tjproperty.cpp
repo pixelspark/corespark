@@ -94,15 +94,6 @@ void GenericProperty<Time>::Update() {
 	SetWindowText(_wnd, val.c_str());
 }
 
-HWND GenericProperty<bool>::Create(HWND parent) {
-	if(_wnd!=0) return _wnd;
-	//_wnd = ::CreateWindowEx(0, (const wchar_t*)L"BUTTON", Stringify(*_value).c_str(), WS_TABSTOP|BS_AUTOCHECKBOX|WS_CHILD, 0, 0, 100, 100, parent, (HMENU)0, GetModuleHandle(NULL), 0);
-	_wndHold = GC::Hold(new CheckboxWnd());
-	_wnd = _wndHold->GetWindow();
-	SetParent(_wnd, parent);
-	return _wnd;
-}
-
 // for numeric edit stuff, spinner boxes and lots of other candy
 HWND GenericProperty<unsigned int>::Create(HWND parent) {
 	if(_wnd!=0) return _wnd;
@@ -138,23 +129,49 @@ void GenericProperty<std::wstring>::Changed() {
 	}
 }
 
-void GenericProperty<bool>::Changed() {
-	ref<CheckboxWnd> cb = _wndHold;
-
-	if(cb) {
-		bool value = cb->IsChecked();
-
-		(*_value) = value;
-		if(_alsoSet!=0) {
-			(*_alsoSet) = value;
+class PropertyCheckBoxWnd: public CheckboxWnd {
+	public:
+		PropertyCheckBoxWnd(bool* value, bool* also): _value(value), _also(also) {
+			assert(value!=0);
 		}
-	}
+
+		virtual ~PropertyCheckBoxWnd() {
+		}
+
+		virtual void SetChecked(bool t) {
+			CheckboxWnd::SetChecked(t);
+			*_value = t;
+			if(_also!=0) {
+				*_also = t;
+			}
+		}
+
+		virtual void Update() {
+			CheckboxWnd::SetChecked(*_value);
+			CheckboxWnd::Update();
+		}
+
+	protected:
+		bool* _value;
+		bool* _also;
+};
+
+HWND GenericProperty<bool>::Create(HWND parent) {
+	if(_wnd!=0) return _wnd;
+	_wndHold = GC::Hold(new PropertyCheckBoxWnd(_value, _alsoSet));
+	_wnd = _wndHold->GetWindow();
+	SetParent(_wnd, parent);
+	return _wnd;
+}
+
+void GenericProperty<bool>::Changed() {
+	// Not used, done by PropertyCheckBoxWnd
 }
 
 void GenericProperty<bool>::Update() {
 	ref<CheckboxWnd> cb = _wndHold;
 
 	if(cb) {
-		cb->SetChecked(*_value);
+		cb->Update();
 	}
 }

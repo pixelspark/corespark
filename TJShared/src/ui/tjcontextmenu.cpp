@@ -282,7 +282,9 @@ ContextItem::ContextItem(): _separator(true), _hilite(false), _checked(NotChecke
 }
 
 ContextItem::ContextItem(const std::wstring& title, int command, bool highlight, CheckType checked, const std::wstring& icon): _title(title), _command(command), _hilite(highlight), _checked(checked), _separator(false), _icon(0) {
-	SetIcon(icon);
+	if(icon.length()>0) {
+		SetIcon(icon);
+	}
 }
 
 ContextItem::~ContextItem() {
