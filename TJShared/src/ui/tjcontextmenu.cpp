@@ -161,7 +161,6 @@ void ContextPopupWnd::OnActivate(bool a) {
 }
 
 void ContextPopupWnd::OnKey(Key k, wchar_t ch, bool down) {
-	Log::Write(L"TJShared/CPW", L"OnKey k="+Stringify(k));
 	switch(k) {
 		case KeyDown:
 			if(down) {

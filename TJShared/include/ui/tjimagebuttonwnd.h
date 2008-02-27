@@ -11,12 +11,20 @@ namespace tj {
 				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme);
 				virtual void SetListener(ref<Listener> lf);
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
+				virtual void Fill(LayoutFlags lf, Area& rect, bool direct = true);
+				virtual void SetText(const wchar_t* t);
+				virtual void SetDisabled(bool d);
+				virtual bool IsDisabled() const;
 				
 			protected:
+				virtual void OnKey(Key k, wchar_t t, bool down);
+				virtual void OnFocus(bool f);
+
 				std::wstring _text;
 				Gdiplus::Bitmap* _image;
 				weak<Listener> _listener;
 				bool _down;
+				bool _disabled;
 		};
 
 		class EXPORTED StateButtonWnd: public ButtonWnd {

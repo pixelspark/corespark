@@ -57,7 +57,7 @@ void ToolbarWnd::Fill(LayoutFlags f, Area& r, bool direct) {
 		r.Narrow(0,h,0,0);
 	}
 	else if(f==LayoutBottom) {
-		if(direct) Move(r.GetLeft(), r.GetTop()-r.GetHeight()-h, r.GetWidth(), h);
+		if(direct) Move(r.GetLeft(), (r.GetTop()+r.GetHeight())-h, r.GetWidth(), h);
 		r.Narrow(0,0,0,h);
 	}
 	else {
