@@ -22,16 +22,19 @@ namespace tj {
 				virtual bool IsDisabled() const;
 				virtual bool HasIcon() const;
 				virtual void SetIcon(const std::wstring& icon);
+				virtual bool IsLink() const;
+				virtual void SetLink(bool l);
 				virtual Icon* GetIcon();
 				virtual const std::wstring& GetTitle() const;
 
 			protected:
 				std::wstring _title;
 				int _command;
-				bool _hilite;
 				CheckType _checked;
-				bool _separator;
 				Icon* _icon;
+				bool _separator;
+				bool _hilite;
+				bool _link;
 		};
 
 		class EXPORTED ContextPopupWnd: public PopupWnd {

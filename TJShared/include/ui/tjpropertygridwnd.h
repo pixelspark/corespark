@@ -27,6 +27,7 @@ namespace tj {
 				virtual void OnSize(const Area& ar);
 				void SetShowHints(bool h);
 				bool GetShowHints() const;
+				void FocusFirstProperty();
 
 				HBRUSH _editBackground;
 				HFONT _editFont;

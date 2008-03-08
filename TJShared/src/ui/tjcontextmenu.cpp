@@ -24,6 +24,16 @@ int ContextMenu::DoContextMenu(ref<Wnd> wnd, Pixels x, Pixels y) {
 	}
 	
 	if(wnd) {
+		// If this context menu is called from a popup window, disable it,
+		// so it won't disappear when it is deactivated
+		HWND root = ::GetAncestor(wnd->GetWindow(), GA_ROOT);
+		DWORD style = GetWindowLong(root, GWL_STYLE);
+		bool fromPopup = ((style & WS_POPUP) !=0);
+		if(fromPopup) {
+			///Log::Write(L"TJShared/ContextMenu", L"Owner of this context menu is a popup");
+			EnableWindow(root, FALSE);
+		}
+
 		if(x<0 || y<0) {
 			ref<Theme> theme = ThemeManager::GetTheme();
 			float df = theme->GetDPIScaleFactor();
@@ -50,11 +60,13 @@ int ContextMenu::DoContextMenu(ref<Wnd> wnd, Pixels x, Pixels y) {
 		// Showtime
 		cpw->SetSize(width, Pixels(int(_items.size())*KItemHeight));
 		cpw->PopupAt(x,y,wnd);
-		EnableWindow(wnd->GetWindow(), FALSE);
 		int result =  cpw->DoModal();
-		EnableWindow(wnd->GetWindow(), TRUE);
-		SetActiveWindow(wnd->GetWindow());
 		cpw->Show(false);
+
+		if(fromPopup) {
+			EnableWindow(root, TRUE);
+		}
+
 		return result;
 	}
 
@@ -203,6 +215,7 @@ void ContextPopupWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
 	g.FillRectangle(&back, rc);
 
 	SolidBrush text(theme->GetTextColor());
+	SolidBrush link(theme->GetLinkColor());
 	SolidBrush disabled(theme->GetDisabledOverlayColor());
 	SolidBrush colorSeparator(theme->GetActiveEndColor());
 	Pen separator(&colorSeparator, 1.0f);
@@ -244,7 +257,13 @@ void ContextPopupWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
 
 			Area currentText = current;
 			currentText.Narrow(ContextMenu::KItemHeight,2,2,2);
-			g.DrawString(item->GetTitle().c_str(), (int)item->GetTitle().length(), item->_hilite?theme->GetGUIFontBold():theme->GetGUIFont(), currentText, &sf, &text);
+
+			if(item->IsLink()) {
+				g.DrawString(item->GetTitle().c_str(), (int)item->GetTitle().length(), theme->GetLinkFont(), currentText, &sf, &link);
+			}
+			else {
+				g.DrawString(item->GetTitle().c_str(), (int)item->GetTitle().length(), item->_hilite?theme->GetGUIFontBold():theme->GetGUIFont(), currentText, &sf, &text);
+			}
 
 			if(item->HasIcon() || item->_checked!=ContextItem::NotChecked) {
 				Area iconArea = current;
@@ -277,10 +296,10 @@ void ContextPopupWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
 }
 
 /** ContextItem */
-ContextItem::ContextItem(): _separator(true), _hilite(false), _checked(NotChecked), _command(0), _icon(0) {
+ContextItem::ContextItem(): _separator(true), _hilite(false), _link(false), _checked(NotChecked), _command(0), _icon(0) {
 }
 
-ContextItem::ContextItem(const std::wstring& title, int command, bool highlight, CheckType checked, const std::wstring& icon): _title(title), _command(command), _hilite(highlight), _checked(checked), _separator(false), _icon(0) {
+ContextItem::ContextItem(const std::wstring& title, int command, bool highlight, CheckType checked, const std::wstring& icon): _title(title), _command(command), _hilite(highlight), _checked(checked), _separator(false), _icon(0), _link(false) {
 	if(icon.length()>0) {
 		SetIcon(icon);
 	}
@@ -288,6 +307,14 @@ ContextItem::ContextItem(const std::wstring& title, int command, bool highlight,
 
 ContextItem::~ContextItem() {
 	delete _icon;
+}
+
+bool ContextItem::IsLink() const {
+	return _link;
+}
+
+void ContextItem::SetLink(bool l) {
+	_link = l;
 }
 
 bool ContextItem::IsDisabled() const {

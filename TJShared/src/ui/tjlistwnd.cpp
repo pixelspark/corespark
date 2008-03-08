@@ -102,6 +102,16 @@ void ListWnd::DrawCellIcon(Gdiplus::Graphics& g, int col, Area row, Icon& icon) 
 	}
 }
 
+void ListWnd::DrawCellDownArrow(Gdiplus::Graphics& g, int col, const Area& row) {
+	Column& column = _cols[col];
+	if(column._visible) {
+		Icon ic(Icons::GetIconPath(Icons::IconDownArrow));
+
+		Area cell(Pixels((GetColumnX(col)+GetColumnWidth(col))*row.GetWidth()-16), row.GetTop(), 16, 16);
+		g.DrawImage(ic, cell);
+	}
+}
+
 void ListWnd::SetEmptyText(const std::wstring& t) {
 	_emptyText = t;
 	Repaint();

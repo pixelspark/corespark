@@ -58,6 +58,8 @@ bool DialogWnd::DoModal(HWND parent) {
 	SetWindowPos(GetWindow(), 0L, rootRect.left + ((rootRect.right-rootRect.left - w)/2), rootRect.top + ((rootRect.bottom-rootRect.top - h)/2), 0,0, SWP_NOSIZE|SWP_NOZORDER);
 	Show(true);
 
+	// Focus first property
+	_grid->FocusFirstProperty();
 	ModalLoop::Result result = _loop.Enter();
 
 	EnableWindow(root, TRUE);

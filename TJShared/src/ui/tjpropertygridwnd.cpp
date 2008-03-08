@@ -39,6 +39,13 @@ PropertyGridWnd::~PropertyGridWnd() {
 	_editFont = 0;
 }
 
+void PropertyGridWnd::FocusFirstProperty() {
+	if(_properties.size()>0) {
+		ref<Property> p = (*_properties.begin());
+		SetFocus(p->GetWindow());
+	}
+}
+
 void PropertyGridWnd::SetNameWidth(int w) {
 	_nameWidth = w;
 	Repaint();

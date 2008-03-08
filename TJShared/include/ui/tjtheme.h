@@ -23,6 +23,7 @@ namespace tj {
 					IconTabClose,
 					IconTip,
 					IconSearch,
+					IconDownArrow,
 					_IconLast,
 				};
 
@@ -47,6 +48,7 @@ namespace tj {
 
 				// Colors
 				virtual Area MeasureText(const std::wstring& text, Gdiplus::Font* font) const;
+				virtual Gdiplus::Color GetLinkColor() const;
 				virtual Gdiplus::Color GetBackgroundColor() const;
 				virtual Gdiplus::Color GetVideoBackgroundColor() const;
 				virtual Gdiplus::Color GetEditBackgroundColor() const;
@@ -99,6 +101,7 @@ namespace tj {
 				// Fonts
 				virtual Gdiplus::Font* GetGUIFont() const;
 				virtual Gdiplus::Font* GetGUIFontBold() const;
+				virtual Gdiplus::Font* GetLinkFont() const;
 				virtual Gdiplus::Font* GetGUIFontSmall() const;
 
 				// Cursors
@@ -135,6 +138,7 @@ namespace tj {
 				mutable Gdiplus::Font* _font;
 				mutable Gdiplus::Font* _fontBold;
 				mutable Gdiplus::Font* _fontSmall;
+				mutable Gdiplus::Font* _fontLink;
 				HCURSOR _grab, _grabbed;
 				float _dpi;
 		};

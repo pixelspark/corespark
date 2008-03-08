@@ -10,6 +10,7 @@ Theme::Theme(float dpi) {
 	_font = 0;
 	_fontBold = 0;
 	_fontSmall = 0;
+	_fontLink = 0;
 	_grab = LoadCursor(GetModuleHandle(L"TJShared"), MAKEINTRESOURCE(IDC_GRABHAND));
 	_grabbed = LoadCursor(GetModuleHandle(L"TJShared"), MAKEINTRESOURCE(IDC_GRAB));
 }
@@ -18,28 +19,14 @@ Theme::~Theme() {
 	delete _font;
 	delete _fontBold;
 	delete _fontSmall;
+	delete _fontLink;
 	DestroyCursor(_grab);
 	DestroyCursor(_grabbed);
 }
 
-/*IconChecked = 1,
-					IconColorChooser,
-					IconFile,
-					IconBack,
-					IconForward,
-					IconStop,
-					IconReload,
-					IconGo,
-					IconRadioChecked,
-					IconOK,
-					IconPathSeparator,
-					IconExpand,
-					IconCollapse,
-					IconTabAdd,
-					IconTabClose,
-					IconTip,
-					IconSearch,
-					_IconLast,*/
+Gdiplus::Color Theme::GetLinkColor() const {
+	return Color(0,0,255);
+}
 
 const wchar_t* Icons::_paths[Icons::_IconLast] = {
 	L"icons/shared/check.png",
@@ -59,6 +46,7 @@ const wchar_t* Icons::_paths[Icons::_IconLast] = {
 	L"icons/shared/tab-close.png",
 	L"icons/shared/tip.png",
 	L"icons/shared/search.png",
+	L"icons/shared/down-arrow.png",
 };
 
 std::wstring Icons::GetIconPath(IconIdentifier i) {
@@ -150,6 +138,14 @@ Gdiplus::Font* Theme::GetGUIFont() const {
 		_font = new Font(L"Tahoma", 11, FontStyleRegular, UnitPixel, 0);
 	}
 	return _font;
+}
+
+
+Gdiplus::Font* Theme::GetLinkFont() const {
+	if(_fontLink==0) {
+		_fontLink = new Font(L"Tahoma", 11, FontStyleUnderline, UnitPixel, 0);
+	}
+	return _fontLink;
 }
 
 Gdiplus::Font* Theme::GetGUIFontSmall() const {

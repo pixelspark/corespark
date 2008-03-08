@@ -5,9 +5,9 @@ using namespace Gdiplus;
 PopupWnd::PopupWnd(HWND parent, bool isDialog): Wnd(L"", parent, TJ_DROPSHADOW_CLASS_NAME, true, WS_EX_TOPMOST|WS_EX_TOOLWINDOW) {
 	UnsetStyle(WS_CAPTION);
 
-	if(isDialog) {
+	//if(isDialog) {
 		SetStyle(WS_POPUP);
-	}
+	//}
 }
 
 PopupWnd::~PopupWnd() {
@@ -24,10 +24,8 @@ void PopupWnd::OnActivate(bool activate) {
 		Wnd::SetSize(_w,_h);
 	}
 	else {
-		// Context menus disable the owner window before opening a popup, so if a context menu popup
-		// is created from a PopupWnd, this will prevent this popup from disappearing
-		DWORD style = GetWindowLong(GetWindow(), GWL_STYLE) & WS_DISABLED;
-		if(style==0) {
+		bool disabled = (GetWindowLong(GetWindow(), GWL_STYLE) & WS_DISABLED) != 0;
+		if(!disabled) {
 			Show(false);
 		}
 	}
@@ -54,8 +52,8 @@ void PopupWnd::PopupAt(Pixels x, Pixels y, ref<Wnd> window) {
 	SetWindowPos(GetWindow(), 0, pt.x, pt.y, 0, 0, SWP_NOSIZE|SWP_NOZORDER);
 	Show(true);
 	if(SetFocus(GetWindow())==NULL) {
-		DWORD error = GetLastError();
-		Log::Write(L"TJShared/PopupWnd", L"SetFocus failed: "+Stringify(error)+L" hex: "+StringifyHex(error));
+		/*DWORD error = GetLastError();
+		Log::Write(L"TJShared/PopupWnd", L"SetFocus failed: "+Stringify(error)+L" hex: "+StringifyHex(error));*/
 	}
 }
 

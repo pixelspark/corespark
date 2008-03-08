@@ -49,6 +49,7 @@ namespace tj {
 
 				// other stuff
 				void DrawCellText(Gdiplus::Graphics& g, Gdiplus::StringFormat* sf, Gdiplus::SolidBrush* br, Gdiplus::Font* font, int col, Area row, const std::wstring& str);
+				void DrawCellDownArrow(Gdiplus::Graphics& g, int col, const Area& row);
 				void DrawCellIcon(Gdiplus::Graphics& g, int col, Area row, Icon& icon);
 
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
