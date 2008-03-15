@@ -10,7 +10,6 @@ NotificationWnd::NotificationWnd(const std::wstring& text, std::wstring icon, in
 	assert(parent!=0);
 	SetStyle(WS_POPUP);
 	UnsetStyle(WS_CAPTION|WS_BORDER);
-	SetStyleEx(WS_EX_LAYERED);
 	_text = text;
 	_index = h;
 	std::wstring fn = ResourceManager::Instance()->Get(icon);
@@ -22,12 +21,12 @@ NotificationWnd::NotificationWnd(const std::wstring& text, std::wstring icon, in
 	}
 
 	RECT rc;
-	GetClientRect(parent->GetWindow(), &rc);
+	GetWindowRect(parent->GetWindow(), &rc);
 
 	if(time>0) {
 		SetTimer(GetWindow(), 1337, time, 0L);
 	}
-	SetWindowPos(GetWindow(), 0L, DefaultNotificationMargin,DefaultNotificationMargin+h*(DefaultNotificationMargin+DefaultNotificationHeight), rc.right-rc.left-(2*DefaultNotificationMargin), DefaultNotificationHeight, SWP_NOZORDER);
+	SetWindowPos(GetWindow(), 0L, rc.left+DefaultNotificationMargin,rc.top+DefaultNotificationMargin+h*(DefaultNotificationMargin+DefaultNotificationHeight), rc.right-rc.left-(2*DefaultNotificationMargin), DefaultNotificationHeight, SWP_NOZORDER|SWP_NOACTIVATE);
 	SetWindowPos(GetWindow(), HWND_TOPMOST, 0, 0, 0, 0, SWP_NOACTIVATE|SWP_NOMOVE | SWP_NOSIZE);
 	Show(true);
 }
