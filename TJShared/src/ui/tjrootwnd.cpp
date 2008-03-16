@@ -95,6 +95,7 @@ LRESULT RootWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	if(msg==WM_ENTERMENULOOP) {
 		return 0;
 	}
+	
 	return TopWnd::Message(msg,wp,lp);
 }
 

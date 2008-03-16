@@ -72,6 +72,25 @@ LRESULT ToolbarWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	return ChildWnd::Message(msg,wp,lp);
 }
 
+Pixels ToolbarWnd::GetButtonX(int command) {
+	ref<Theme> theme = ThemeManager::GetTheme();
+	Pixels bs = theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
+
+	Pixels left = 0;
+	std::vector< ref<ToolbarItem> >::iterator it = _items.begin();
+	while(it!=_items.end()) {
+		ref<ToolbarItem> ti = *it;
+		if(ti && ti->GetCommand()==command) {
+			return left;
+		}
+
+		left += bs;
+		++it;
+	}
+
+	return 0;
+}
+
 void ToolbarWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 	ref<Theme> theme = ThemeManager::GetTheme();
 	Pixels bs = theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);

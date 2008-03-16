@@ -52,6 +52,7 @@ namespace tj {
 				virtual void SetTip(ref<Wnd> tipWindow);
 
 			protected:
+				virtual Pixels GetButtonX(int command);
 				virtual Area GetFreeArea() const; // returns the area which child classes can freely use to paint on
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
 				virtual void OnSize(const Area& ns);
