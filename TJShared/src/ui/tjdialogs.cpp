@@ -60,7 +60,7 @@ bool DialogWnd::DoModal(HWND parent) {
 
 	// Focus first property
 	_grid->FocusFirstProperty();
-	ModalLoop::Result result = _loop.Enter();
+	ModalLoop::Result result = _loop.Enter(GetWindow(),true);
 
 	EnableWindow(root, TRUE);
 	SetForegroundWindow(root);

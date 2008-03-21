@@ -258,6 +258,7 @@ void SliderWnd::SetListener(Listener* listener) {
 
 void SliderWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 	if(ev==MouseEventLDown) {
+		Focus();
 		_preciseDrag = IsKeyDown(KeyControl);
 	}
 

@@ -138,7 +138,7 @@ ModalLoop::ModalLoop(): _running(false), _result(ResultUnknown) {
 ModalLoop::~ModalLoop() {
 }
 
-ModalLoop::Result ModalLoop::Enter() {
+ModalLoop::Result ModalLoop::Enter(HWND m, bool isDialog) {
 	if(!_running) {
 		_result = ResultUnknown;
 		ReplyMessage(0);
@@ -151,6 +151,22 @@ ModalLoop::Result ModalLoop::Enter() {
 			if(msg.message==WM_KEYDOWN && LOWORD(msg.wParam)==VK_ESCAPE) {
 				// End modal loop
 				End(ResultCancelled);
+			}
+			else if(!isDialog && msg.message==WM_ACTIVATE && msg.wParam==WA_INACTIVE) {
+				if(!IsChild(m,msg.hwnd)) {
+					End(ResultCancelled);
+				}
+				else {
+					DispatchMessage(&msg);
+				}
+			}
+			else if(!isDialog && msg.message==WM_LBUTTONDOWN && msg.hwnd != m) {
+				if(!IsChild(m,msg.hwnd)) {
+					End(ResultCancelled);
+				}
+				else {
+					DispatchMessage(&msg);
+				}
 			}
 			else {
 				DispatchMessage(&msg);

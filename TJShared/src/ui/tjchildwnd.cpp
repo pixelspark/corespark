@@ -37,6 +37,7 @@ void CheckboxWnd::SetChecked(bool t) {
 
 void CheckboxWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 	if(ev==MouseEventLDown) {
+		Focus();
 		SetChecked(!_checked);
 		Repaint();
 	}

@@ -43,6 +43,7 @@ namespace tj {
 				virtual void OnClickItem(int id, int col, Pixels x, Pixels y);
 				virtual void OnRightClickItem(int id, int col);
 				virtual void OnDoubleClickItem(int id, int col);
+				virtual void OnFocus(bool f);
 				virtual void OnColumnSizeChanged();
 				virtual void OnSettingsChanged();
 				virtual void DoContextMenu(Pixels x, Pixels y);

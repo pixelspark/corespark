@@ -15,6 +15,7 @@ namespace tj {
 				virtual void PopupAt(Pixels clientX, Pixels clientY, ref<Wnd> window);
 				virtual void PopupAtMouse();
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
+				virtual void Show(bool t);
 
 			protected:
 				virtual void FitToMonitor(POINT& p);

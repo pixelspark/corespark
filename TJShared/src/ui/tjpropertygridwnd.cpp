@@ -170,6 +170,8 @@ void PropertyGridWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 		}
 	}
 	else if(ev==MouseEventLDown) {
+		Focus();
+
 		if(x>(_nameWidth-5) && x<(_nameWidth+5)) {
 			_isDraggingSplitter = true;
 			SetCapture(GetWindow());

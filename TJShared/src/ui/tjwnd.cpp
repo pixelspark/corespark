@@ -198,7 +198,6 @@ void Wnd::SetFullScreen(bool fs, int d) {
 
 		Displays displays;
 		RECT r = displays.GetDisplayRectangle(d);
-		Log::Write(L"TJShared/UI", L"Set full screen: d="+Stringify(d)+L" Rect="+Stringify(r.left)+L","+Stringify(r.top)+L"x"+Stringify(r.right)+L","+Stringify(r.bottom));
 		SetWindowPos(_wnd, 0L, r.left, r.top, r.right-r.left, r.bottom-r.top, SWP_NOZORDER);
 	}
 	else if(_fullScreen) {
@@ -545,7 +544,6 @@ LRESULT Wnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		ref<Theme> theme = ThemeManager::GetTheme();
 		float df = theme->GetDPIScaleFactor();
 		OnMouse(MouseEventLDown, int(ceil(GET_X_LPARAM(lp)/df)), int(ceil(GET_Y_LPARAM(lp)/df)));
-		SetFocus(_wnd);
 		return 0;
 	}
 	else if(msg==WM_RBUTTONDOWN) {

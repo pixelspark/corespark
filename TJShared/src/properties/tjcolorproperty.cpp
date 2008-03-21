@@ -295,6 +295,9 @@ void ColorChooserWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 		Area rc = GetClientArea();
 		_cpw->PopupAt(0,rc.GetHeight()+1,this);
 		_cpw->SetColor(*_color);
+		ModalLoop ml;
+		ml.Enter(_cpw->GetWindow(), false);
+		_cpw->Show(false);
 	}
 	else if(ev==MouseEventRDown) {
 		COLORREF g_rgbBackground = RGB(BYTE((_color->_r)*255.0), BYTE((_color->_g)*255.0), BYTE((_color->_b)*255.0));

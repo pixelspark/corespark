@@ -115,7 +115,7 @@ ContextPopupWnd::~ContextPopupWnd() {
 
 int ContextPopupWnd::DoModal() {
 	_result = -1;
-	ModalLoop::Result res = _loop.Enter();
+	ModalLoop::Result res = _loop.Enter(GetWindow(),false);
 	if(res==ModalLoop::ResultSucceeded) {
 		return _result;
 	}

@@ -288,19 +288,23 @@ LRESULT ListWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 			Repaint();
 		}
 	}
-	else if(msg==WM_SETFOCUS||msg==WM_KILLFOCUS) {
-		Repaint();
-	}
 	return ChildWnd::Message(msg,wp,lp);
 }
 
+void ListWnd::OnFocus(bool f) {
+	Repaint();
+}
+
 void ListWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
+	if(ev==MouseEventLDown) {
+		Focus();
+	}
+
 	if(ev==MouseEventRDown && y<=GetHeaderHeight()) {
 		DoContextMenu(x,y);
 	}
 	else if(ev==MouseEventLDown||ev==MouseEventLDouble||ev==MouseEventRDown) {
 		Pixels ch = GetHeaderHeight();
-
 		if(y<ch && ev!=MouseEventLDouble) {
 			_dragStartX = x;
 			Area r = GetClientArea();

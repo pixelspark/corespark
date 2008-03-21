@@ -258,7 +258,6 @@ class ScriptGrammar : public grammar<ScriptGrammar> {
 				intValue =
 					int_p[ScriptInstruction(&self, Ops::OpPushInt)];
 
-				/* TODO: create instructions OpPushTrue and OpPushFalse instead of OpPushBool */
 				boolValue =
 					lexeme_d[str_p("true")[ScriptInstruction(&self, Ops::OpPushTrue)] | str_p("false")[ScriptInstruction(&self, Ops::OpPushFalse)]];
 

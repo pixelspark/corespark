@@ -48,7 +48,7 @@ namespace tj {
 					ResultCancelled = 2,
 				};
 				
-				virtual Result Enter();
+				virtual Result Enter(HWND m, bool isDialog);
 				virtual void End(Result r = ResultUnknown);
 
 			protected:

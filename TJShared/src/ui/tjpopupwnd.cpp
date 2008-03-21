@@ -2,12 +2,8 @@
 using namespace tj::shared;
 using namespace Gdiplus;
 
-PopupWnd::PopupWnd(HWND parent, bool isDialog): Wnd(L"", parent, TJ_DROPSHADOW_CLASS_NAME, true, WS_EX_TOPMOST|WS_EX_TOOLWINDOW) {
+PopupWnd::PopupWnd(HWND parent, bool isDialog): Wnd(L"", parent, TJ_DROPSHADOW_CLASS_NAME, true, WS_EX_TOOLWINDOW|WS_EX_CONTROLPARENT) {
 	UnsetStyle(WS_CAPTION);
-
-	//if(isDialog) {
-		SetStyle(WS_POPUP);
-	//}
 }
 
 PopupWnd::~PopupWnd() {
@@ -49,12 +45,8 @@ void PopupWnd::PopupAt(Pixels x, Pixels y, ref<Wnd> window) {
 	ClientToScreen(window->GetWindow(), &pt);
 	FitToMonitor(pt);
 
-	SetWindowPos(GetWindow(), 0, pt.x, pt.y, 0, 0, SWP_NOSIZE|SWP_NOZORDER);
-	Show(true);
-	if(SetFocus(GetWindow())==NULL) {
-		/*DWORD error = GetLastError();
-		Log::Write(L"TJShared/PopupWnd", L"SetFocus failed: "+Stringify(error)+L" hex: "+StringifyHex(error));*/
-	}
+	SetWindowPos(GetWindow(), 0, pt.x, pt.y, 0, 0, SWP_NOSIZE|SWP_NOZORDER|SWP_NOACTIVATE);
+	ShowWindow(GetWindow(), SW_SHOWNA);
 }
 
 void PopupWnd::PopupAtMouse() {
@@ -64,7 +56,19 @@ void PopupWnd::PopupAtMouse() {
 	SetWindowPos(GetWindow(), 0, pt.x, pt.y, 0, 0, SWP_SHOWWINDOW|SWP_NOZORDER|SWP_NOSIZE|SWP_NOACTIVATE);
 }
 
+void PopupWnd::Show(bool s) {
+	if(s) {
+		ShowWindow(GetWindow(), SW_SHOWNA);
+	}
+	else {
+		Wnd::Show(s);
+	}
+}
+
 LRESULT PopupWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
+	if(msg==WM_MOUSEACTIVATE) {
+		return MA_NOACTIVATE;
+	}
 	return Wnd::Message(msg,wp,lp);
 }
 
