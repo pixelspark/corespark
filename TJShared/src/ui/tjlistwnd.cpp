@@ -397,7 +397,9 @@ void ListWnd::DoContextMenu(Pixels x, Pixels y) {
 	std::map<int, Column>::const_iterator it = _cols.begin();
 	while(it!=_cols.end()) {
 		const std::pair<int, Column>& data = *it;
-		cm.AddItem(data.second._title, data.first+1, false, data.second._visible);
+		if(data.second._title.length()>0) { // columns without a title usually show icons and should not be hidden
+			cm.AddItem(data.second._title, data.first+1, false, data.second._visible);
+		}
 		++it;
 	}
 

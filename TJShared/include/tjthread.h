@@ -50,12 +50,14 @@ namespace tj {
 				void WaitForCompletion();
 				int GetID() const;
 				void SetName(const char* name);
+				static long GetThreadCount();
 
 			protected:
 				virtual void Run();
 				HANDLE _thread;
 				int _id;
 				bool _started;
+				static volatile long _count;
 		};
 
 		class EXPORTED CriticalSection {
