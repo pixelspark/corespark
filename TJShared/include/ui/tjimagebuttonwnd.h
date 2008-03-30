@@ -17,7 +17,7 @@ namespace tj {
 				virtual bool IsDisabled() const;
 				
 			protected:
-				virtual void OnKey(Key k, wchar_t t, bool down);
+				virtual void OnKey(Key k, wchar_t t, bool down, bool isAccelerator);
 				virtual void OnFocus(bool f);
 
 				std::wstring _text;

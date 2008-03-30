@@ -85,8 +85,8 @@ void CheckboxWnd::OnFocus(bool f) {
 	Repaint();
 }
 
-void CheckboxWnd::OnKey(Key k, wchar_t ch, bool down) {
-	if(down && (k==KeyLeft || k==KeyRight)) {
+void CheckboxWnd::OnKey(Key k, wchar_t ch, bool down, bool isAccelerator) {
+	if(!isAccelerator && down && (k==KeyLeft || k==KeyRight)) {
 		SetChecked(!_checked);
 	}
 }

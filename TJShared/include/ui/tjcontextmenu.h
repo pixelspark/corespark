@@ -17,6 +17,8 @@ namespace tj {
 
 				ContextItem(); // separator
 				ContextItem(const std::wstring& title, int command, bool highlight = false, CheckType checked = NotChecked, const std::wstring& icon = L"");
+				ContextItem(const std::wstring& title, int command, bool highlight, CheckType checked, ref<Icon> icon);
+				
 				virtual ~ContextItem();
 				virtual bool IsSeparator() const;
 				virtual bool IsDisabled() const;
@@ -24,14 +26,14 @@ namespace tj {
 				virtual void SetIcon(const std::wstring& icon);
 				virtual bool IsLink() const;
 				virtual void SetLink(bool l);
-				virtual Icon* GetIcon();
+				virtual ref<Icon> GetIcon();
 				virtual const std::wstring& GetTitle() const;
 
 			protected:
 				std::wstring _title;
 				int _command;
 				CheckType _checked;
-				Icon* _icon;
+				ref<Icon> _icon;
 				bool _separator;
 				bool _hilite;
 				bool _link;
@@ -44,7 +46,7 @@ namespace tj {
 				virtual int DoModal(); // return -1 when no command
 				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme);
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
-				virtual void OnKey(Key k, wchar_t ch, bool down);
+				virtual void OnKey(Key k, wchar_t ch, bool down, bool isAccelerator);
 
 			protected:
 				virtual void EndModal(int r);

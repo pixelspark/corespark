@@ -140,6 +140,10 @@ void Wnd::OnDropFiles(const std::vector< std::wstring >& files) {
 	// Do nothing
 }
 
+void Wnd::OnContextMenu(Pixels x, Pixels y) {
+	// Do nothing
+}
+
 void Wnd::Add(ref<Wnd> child, bool shown) {
 	if(child) {
 		SetParent(child->GetWindow(), GetWindow());
@@ -527,7 +531,7 @@ LRESULT Wnd::PreMessage(UINT msg, WPARAM wp, LPARAM lp) {
 	}
 }
 
-void Wnd::OnKey(Key k, wchar_t ch, bool down) {
+void Wnd::OnKey(Key k, wchar_t ch, bool down, bool accelerator) {
 }
 
 LRESULT Wnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
@@ -538,6 +542,28 @@ LRESULT Wnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	else if(msg==WM_TIMER) {
 		OnTimer((unsigned int)wp);
 		return 0;
+	}
+	else if(msg==WM_CONTEXTMENU) {
+		ref<Theme> theme = ThemeManager::GetTheme();
+		float df = theme->GetDPIScaleFactor();
+		POINT p;
+		p.x = GET_X_LPARAM(lp);
+		p.y = GET_Y_LPARAM(lp);
+		ScreenToClient(GetWindow(), &p);
+		OnContextMenu(Pixels(df*p.x), Pixels(df*p.y));
+	}
+	else if(msg==WM_APPCOMMAND) {
+		int c = GET_APPCOMMAND_LPARAM(lp);
+
+		switch(c) {
+			case APPCOMMAND_BROWSER_BACKWARD:
+				OnKey(KeyBrowseBack, 0, true, false);
+				break;
+
+			case APPCOMMAND_BROWSER_FORWARD:
+				OnKey(KeyBrowseForward, 0, true, false);
+				break;
+		}
 	}
 	// OnMouse handlers
 	else if(msg==WM_LBUTTONDOWN) {
@@ -715,43 +741,52 @@ LRESULT Wnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	else if(msg==WM_KILLFOCUS) {
 		OnFocus(false);
 	}
-	else if(msg==WM_KEYDOWN || msg==WM_KEYUP) {
-		Key key = KeyCharacter;
+	else if(msg==WM_KEYDOWN || msg==WM_KEYUP || msg==WM_SYSKEYDOWN || msg==WM_SYSKEYUP) {
+		Key key = KeyNone;
 		wchar_t ch = L'\0';
-
-		switch(wp) {
-			case VK_LEFT:
-				key = KeyLeft;
-				break;
-
-			case VK_RIGHT:
-				key = KeyRight;
-				break;
-
-			case VK_DOWN:
-				key = KeyDown;
-				break;
-
-			case VK_UP:
-				key = KeyUp;
-				break;
-
-			case VK_NEXT:
-				key = KeyPageDown;
-				break;
-
-			case VK_PRIOR:
-				key = KeyPageUp;
-				break;
-
-			default:
-				ch = (wchar_t)wp;
-		}
-
-		OnKey(key, ch, msg==WM_KEYDOWN);
+		TranslateKeyCodes((int)wp, key, ch);
+		OnKey(key, ch, msg==WM_KEYDOWN, (msg==WM_SYSKEYUP || msg==WM_SYSKEYDOWN));
 	}
 
 	return DefWindowProc(_wnd, msg, wp, lp);
+}
+
+void Wnd::TranslateKeyCodes(int vk, Key& key, wchar_t& ch) {
+	ch = L'\0';
+
+	switch(vk) {
+		case VK_LEFT:
+			key = KeyLeft;
+			break;
+
+		case VK_RIGHT:
+			key = KeyRight;
+			break;
+
+		case VK_DOWN:
+			key = KeyDown;
+			break;
+
+		case VK_UP:
+			key = KeyUp;
+			break;
+
+		case VK_NEXT:
+			key = KeyPageDown;
+			break;
+
+		case VK_PRIOR:
+			key = KeyPageUp;
+			break;
+
+		case VK_MENU:
+			key = KeyAlt;
+			break;
+
+		default:
+			key = KeyCharacter;
+			ch = (wchar_t)vk;
+	}
 }
 
 // Default message handlers
@@ -764,7 +799,7 @@ void Wnd::OnTimer(unsigned int id) {
 void Wnd::OnScroll(ScrollDirection dir) {
 }
 
-Gdiplus::Image* Wnd::GetTabIcon() const {
+ref<Icon> Wnd::GetTabIcon() const {
 	return 0;
 }
 

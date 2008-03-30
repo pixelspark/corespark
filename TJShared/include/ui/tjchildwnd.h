@@ -30,7 +30,7 @@ namespace tj {
 				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme);
 				virtual void OnSize(const Area& ns);
 				virtual void OnFocus(bool f);
-				virtual void OnKey(Key k, wchar_t ch, bool down);
+				virtual void OnKey(Key k, wchar_t ch, bool down, bool isAccelerator);
 
 			protected:
 				bool _checked;

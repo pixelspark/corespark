@@ -152,6 +152,12 @@ ModalLoop::Result ModalLoop::Enter(HWND m, bool isDialog) {
 				// End modal loop
 				End(ResultCancelled);
 			}
+			else if(!isDialog && ((msg.message==WM_KEYUP || msg.message==WM_KEYDOWN) && (msg.wParam==VK_SPACE || msg.wParam==VK_DOWN || msg.wParam==VK_UP))) {
+				// Context menus do not take focus (since they do not activate), hence direct all key messages
+				// it needs to the window from here.
+				msg.hwnd = m;
+				DispatchMessage(&msg);
+			}
 			else if(!isDialog && msg.message==WM_ACTIVATE && msg.wParam==WA_INACTIVE) {
 				if(!IsChild(m,msg.hwnd)) {
 					End(ResultCancelled);

@@ -172,39 +172,41 @@ void ContextPopupWnd::OnActivate(bool a) {
 	}
 }
 
-void ContextPopupWnd::OnKey(Key k, wchar_t ch, bool down) {
-	switch(k) {
-		case KeyDown:
-			if(down) {
-				++_mouseOver;
-				if(_mouseOver > int(_cm->_items.size())-1) {
-					_mouseOver = 0;
-				}
-				_mouseDown = -1;
-			}
-			break;
-
-		case KeyUp:
-			if(down) {
-				--_mouseOver;
-				if(_mouseOver < 0) {
-					_mouseOver = int(_cm->_items.size())-1;
-				}
-				_mouseDown = -1;
-			}
-			break;
-		case KeyCharacter:
-			if(ch==VK_SPACE) {
+void ContextPopupWnd::OnKey(Key k, wchar_t ch, bool down, bool accelerator) {
+	if(!accelerator) {
+		switch(k) {
+			case KeyDown:
 				if(down) {
-					_mouseDown = _mouseOver;
+					++_mouseOver;
+					if(_mouseOver > int(_cm->_items.size())-1) {
+						_mouseOver = 0;
+					}
+					_mouseDown = -1;
 				}
-				else {
-					if(_mouseDown >= 0 && _mouseDown < int(_cm->_items.size())) {
-						EndModal(_cm->_items.at(_mouseDown)->_command);
+				break;
+
+			case KeyUp:
+				if(down) {
+					--_mouseOver;
+					if(_mouseOver < 0) {
+						_mouseOver = int(_cm->_items.size())-1;
+					}
+					_mouseDown = -1;
+				}
+				break;
+			case KeyCharacter:
+				if(ch==VK_SPACE) {
+					if(down) {
+						_mouseDown = _mouseOver;
+					}
+					else {
+						if(_mouseDown >= 0 && _mouseDown < int(_cm->_items.size())) {
+							EndModal(_cm->_items.at(_mouseDown)->_command);
+						}
 					}
 				}
-			}
-			break;
+				break;
+		}
 	}
 	Repaint();
 }
@@ -305,8 +307,10 @@ ContextItem::ContextItem(const std::wstring& title, int command, bool highlight,
 	}
 }
 
+ContextItem::ContextItem(const std::wstring& title, int command, bool highlight, CheckType ct, ref<Icon> icon): _title(title), _command(command), _hilite(highlight), _checked(ct), _separator(false), _icon(icon), _link(false) {
+}
+
 ContextItem::~ContextItem() {
-	delete _icon;
 }
 
 bool ContextItem::IsLink() const {
@@ -329,7 +333,7 @@ const std::wstring& ContextItem::GetTitle() const {
 	return _title;
 }
 
-Icon* ContextItem::GetIcon() {
+ref<Icon> ContextItem::GetIcon() {
 	return _icon;
 }
 
@@ -338,8 +342,5 @@ bool ContextItem::HasIcon() const {
 }
 
 void ContextItem::SetIcon(const std::wstring& icon) {
-	if(_icon!=0) {
-		delete _icon;
-	}
-	_icon = new Icon(icon);
+	_icon = GC::Hold(new Icon(icon));
 }

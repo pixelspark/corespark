@@ -18,16 +18,11 @@ Pane::Pane(const std::wstring& title, ref<Wnd> window, bool detached, bool closa
 	_settings = st;
 
 	if(icon.length()>0) {
-		std::wstring path = ResourceManager::Instance()->Get(icon,true);
-		_icon = Image::FromFile(path.c_str(), TRUE);
-	}
-	else {
-		_icon = 0;
+		_icon = GC::Hold(new Icon(icon));
 	}
 };
 
 Pane::~Pane() {
-	delete _icon;
 }
 
 std::wstring Placement::TypeToString(Placement::Type t) {
@@ -105,10 +100,10 @@ Placement Pane::GetPreferredPlacement() {
 	}
 }
 
-Gdiplus::Image* Pane::GetIcon() const {
+ref<Icon> Pane::GetIcon() const {
 	// If the window specifies a tab icon, return that one instead
-	Gdiplus::Image* ni = _wnd->GetTabIcon();
-	return ni==0?_icon:ni;
+	ref<Icon> ni = _wnd->GetTabIcon();
+	return ni?ni:_icon;
 }
 
 std::wstring Pane::GetTitle() const {

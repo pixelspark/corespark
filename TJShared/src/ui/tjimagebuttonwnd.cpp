@@ -48,21 +48,23 @@ void ButtonWnd::SetText(const wchar_t* t) {
 	Repaint();
 }
 
-void ButtonWnd::OnKey(Key k, wchar_t t, bool down) {
-	if(k==KeyCharacter && t==VK_SPACE) {
-		if(down) {
-			_down = true;
-		}
-		else {
-			if(!_disabled) {
-				ref<Listener> listener = _listener;
-				if(listener) {
-					listener->Notify(this, NotificationClick);
-				}
+void ButtonWnd::OnKey(Key k, wchar_t t, bool down, bool isAccelerator) {
+	if(!isAccelerator) {
+		if(k==KeyCharacter && t==VK_SPACE) {
+			if(down) {
+				_down = true;
 			}
-			_down = false;
+			else {
+				if(!_disabled) {
+					ref<Listener> listener = _listener;
+					if(listener) {
+						listener->Notify(this, NotificationClick);
+					}
+				}
+				_down = false;
+			}
+			Repaint();
 		}
-		Repaint();
 	}
 }
 void ButtonWnd::OnFocus(bool f) {

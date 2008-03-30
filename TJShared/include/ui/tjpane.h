@@ -32,7 +32,7 @@ namespace tj {
 				virtual ~Pane();
 				ref<Wnd> GetWindow();
 				const ref<Wnd> GetWindow() const;
-				Gdiplus::Image* GetIcon() const;
+				ref<Icon> GetIcon() const;
 				std::wstring GetTitle() const;
 				bool IsClosable() const;
 				virtual void SetTitle(std::wstring c);
@@ -51,7 +51,7 @@ namespace tj {
 				bool _detached;
 				bool _fullscreen;
 				bool _closable;
-				Gdiplus::Image* _icon;
+				ref<Icon> _icon;
 		};
 
 		class FloatingPane: public Wnd {

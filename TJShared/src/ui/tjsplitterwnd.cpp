@@ -247,7 +247,7 @@ void SplitterWnd::Paint(Graphics& g, ref<Theme> theme) {
 
 		// Draw text
 		std::wstring title;
-		Gdiplus::Image* icon = 0;
+		ref<Icon> icon = 0;
 		if(_collapse==CollapseFirst && _b) {
 			title = _b->GetTabTitle();
 			icon = _b->GetTabIcon();
@@ -272,8 +272,8 @@ void SplitterWnd::Paint(Graphics& g, ref<Theme> theme) {
 			g.TranslateTransform(float(bar.GetLeft())+3.0f, float(bar.GetTop())+3.0f);
 		}
 		
-		if(icon!=0) {
-			g.DrawImage(icon, RectF(0.0f, 0.0f,14.0f,14.0f));
+		if(icon) {
+			g.DrawImage(icon->GetBitmap(), RectF(0.0f, 0.0f,14.0f,14.0f));
 			offset += 20.0f;
 		}
 

@@ -42,6 +42,7 @@ namespace tj {
 		};
 
 		enum Key {
+			KeyNone = 0,
 			KeyMouseLeft = 1,
 			KeyMouseRight,
 			KeyMouseMiddle,
@@ -54,6 +55,9 @@ namespace tj {
 			KeyPageUp,
 			KeyPageDown,
 			KeyCharacter,
+			KeyBrowseBack,
+			KeyBrowseForward,
+			KeyAlt,
 		};
 
 		class EXPORTED Wnd: public virtual Object {
@@ -108,7 +112,7 @@ namespace tj {
 
 				HWND GetWindow();
 				virtual std::wstring GetTabTitle() const;		// return an empty string if you don't want to override Pane's title
-				virtual Gdiplus::Image* GetTabIcon() const;		// should return 0 when you don't want to override the tab icon set in Pane
+				virtual ref<Icon> GetTabIcon() const;		// should return 0 when you don't want to override the tab icon set in Pane
 				virtual void Focus();
 				bool HasFocus() const;
 				static bool IsKeyDown(Key k);
@@ -135,11 +139,15 @@ namespace tj {
 				virtual void OnSettingsChanged();
 				virtual void OnDropFiles(const std::vector<std::wstring>& files);
 				virtual void OnTimer(unsigned int id);
-				virtual void OnKey(Key k, wchar_t t, bool down);
-				
+				virtual void OnKey(Key k, wchar_t t, bool down, bool isAccelerator);
+				virtual void OnContextMenu(Pixels x, Pixels y);
+
 				// Timer
 				virtual void StartTimer(Time interval, unsigned int id);
 				virtual void StopTimer(unsigned int id);
+
+				// Keys
+				static void TranslateKeyCodes(int vk, Key& key, wchar_t& ch);
 			
 			private:
 				static void RegisterClasses();
