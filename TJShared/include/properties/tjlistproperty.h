@@ -8,14 +8,16 @@ namespace tj {
 				struct Item {
 					std::wstring _name;
 					T _value;
+
+					bool operator <(const Item& b) const {
+						return _name < b._name;
+					}
 				};
 
-				GenericListProperty(std::wstring name, T* value, T* also, T def): Property(name) {
+				GenericListProperty(std::wstring name, T* value, T* also, T def): Property(name), _sort(true), _editable(false), _wnd(0) {
 					_value = value;
 					_alsoSet = also;
 					_default = def;
-					_wnd = 0;
-					_editable = false;
 				}
 
 				virtual ~GenericListProperty() {
@@ -24,6 +26,10 @@ namespace tj {
 
 				void SetEditable(bool e) {
 					_editable = e;
+				}
+
+				void SetSort(bool s) {
+					_sort = false;
 				}
 
 				void AddOption(std::wstring name, T value) {
@@ -38,6 +44,9 @@ namespace tj {
 					_wnd = ::CreateWindowEx(WS_EX_CLIENTEDGE, L"COMBOBOX", L"", (_editable?CBS_DROPDOWN:CBS_DROPDOWNLIST)|WS_VSCROLL|WS_CHILD, 0, 0, 100, 100, parent, (HMENU)0, GetModuleHandle(NULL), 0);
 
 					// Add strings
+					if(_sort) {
+						std::sort(_options.begin(), _options.end());
+					}
 					std::vector<Item>::iterator it = _options.begin();
 					while(it!=_options.end()) {
 						Item item = *it;
@@ -109,6 +118,7 @@ namespace tj {
 				HWND _wnd;
 				std::vector<Item> _options;
 				bool _editable;
+				bool _sort;
 		};
 	}
 }

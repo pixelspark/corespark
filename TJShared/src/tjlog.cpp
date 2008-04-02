@@ -6,6 +6,19 @@ bool Log::_writeToFile = false;
 
 namespace tj {
 	namespace shared {
+		class LogEventLogger: public EventLogger {
+			public:
+				LogEventLogger() {
+				}
+
+				virtual ~LogEventLogger() {
+				}
+
+				virtual void AddEvent(const std::wstring& message, ExceptionType e, bool read) {
+					Log::Write(L"TJShared/LogEventLogger", message);
+				}
+		};
+
 		class LogThread: public Thread {
 			public:
 				LogThread() {
@@ -92,6 +105,15 @@ namespace tj {
 }
 
 ref<FileLogger> FileLogger::_instance;
+ref<EventLogger> Log::_eventLogger;
+
+strong<EventLogger> Log::GetEventLogger() {
+	ThreadLock lock(&_lock);
+	if(!_eventLogger) {
+		_eventLogger = GC::Hold(new LogEventLogger());
+	}
+	return _eventLogger;
+}
 
 void Log::Write(const std::wstring& source, const std::wstring& message) {
 	ThreadLock lock(&_lock);
@@ -120,4 +142,7 @@ void Log::Show(bool t) {
 std::wstring Log::GetContents() {
 	ThreadLock lock(&_lock);
 	return _logger.GetContents();
+}
+
+EventLogger::~EventLogger() {
 }

@@ -17,7 +17,7 @@ void RunnableApplication::AddCommandHistory(ref<Action> action) {
 Runnable::~Runnable() {
 }
 
-ref<Core> Core::Instance() {
+strong<Core> Core::Instance() {
 	if(!_instance) {
 		_instance = GC::Hold(new Core());
 	}

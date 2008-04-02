@@ -11,6 +11,12 @@ namespace tj {
 				}
 		};
 
+		class StrongReferenceException: public Exception {
+			public:
+				StrongReferenceException(): Exception(L"A null reference tried to become a strong reference", ExceptionTypeError) {
+				}
+		};
+
 		class BadReferenceException: public Exception {
 			public:
 				BadReferenceException(): Exception(L" A reference error has occurred", ExceptionTypeError) {
@@ -27,6 +33,7 @@ namespace tj {
 		// T must be a pointer, like MyClass*
 		template<typename T> class ref;
 		template<typename T> class weak;
+		template<typename T> class strong;
 		class GC;
 
 		namespace intern {
@@ -84,6 +91,7 @@ namespace tj {
 			friend class intern::Resource;
 			friend class GC;
 			friend class weak<T>;
+			friend class strong<T>;
 
 			protected:
 				/** Called from the GC. object and rx are guaranteed to be non-null **/
@@ -94,6 +102,47 @@ namespace tj {
 
 			public:			
 				inline ref(): _object(0) {
+				}
+
+				inline ref(const strong<T>& org) {
+					if(org._object._object!=0) {
+						_object = dynamic_cast<T*>(org._object._object);
+						if(_object==0) throw BadCastException();
+
+						_resource = org._object._resource;
+						_resource->AddReference();
+					}
+					else {
+						_object = 0;
+					}
+				} 
+
+				template<typename RT> inline ref(const strong<RT>& org): _object(org._object._object) {
+					if(_object!=0) {
+						_resource = org._object._resource;
+						_resource->AddReference();
+					}
+				} 
+
+
+				inline ref(const ref<T>& org): _object(org._object) {
+					if(_object!=0) {
+						_resource = org._resource;
+						_resource->AddReference();
+					}
+				} 
+
+				template<typename RT> inline ref(const ref<RT>& org) {	
+					if(org._object!=0) {
+						_object = dynamic_cast<T*>(org._object);
+						if(_object==0) throw BadCastException();
+
+						_resource = org._resource;
+						_resource->AddReference();
+					}
+					else {
+						_object = 0;
+					}
 				}
 
 				inline ref(const weak<T>& wr) {
@@ -127,26 +176,6 @@ namespace tj {
 						if(_resource==0) throw BadReferenceException();
 						if(!_resource->IsReferenced()) throw BadReferenceException();
 
-						_resource->AddReference();
-					}
-					else {
-						_object = 0;
-					}
-				}
-
-				inline ref(const ref<T>& org): _object(org._object) {
-					if(_object!=0) {
-						_resource = org._resource;
-						_resource->AddReference();
-					}
-				} 
-
-				template<typename RT> inline ref(const ref<RT>& org) {	
-					if(org._object!=0) {
-						_object = dynamic_cast<T*>(org._object);
-						if(_object==0) throw BadCastException();
-
-						_resource = org._resource;
 						_resource->AddReference();
 					}
 					else {
@@ -229,6 +258,81 @@ namespace tj {
 			public:
 				T* _object;
 				intern::Resource* _resource;
+		};
+
+		template<typename T> class strong {
+			friend class ref<T>;
+			friend class weak<T>;
+
+			public:
+				inline strong(const ref<T>& t): _object(t) {
+					if(!t) {
+						throw StrongReferenceException();
+					}
+				}
+
+				inline strong(const strong<T>& t): _object(t._object) {
+					if(!_object) {
+						throw StrongReferenceException();
+					}
+				}
+
+				// This could throw BadCastException
+				template<typename TT> inline strong(const strong<TT>& t): _object(t._object) {
+				}
+
+				inline ~strong() {
+				}
+
+				inline strong<T>& operator=(const strong<T>& o) {
+					if(!o._object) {
+						throw StrongReferenceException();
+					}
+					_object = o._object;
+					return (*this);
+				}
+
+				inline strong<T>& operator=(const ref<T>& o) {
+					if(!o) {
+						throw StrongReferenceException();
+					}
+					_object = o;
+					return (*this);
+				}
+
+				template<typename TT> inline bool operator==(const strong<TT>& r) const {
+					return (_object == r._object);
+				}
+
+				template<typename TT> inline bool operator!=(const strong<TT>& r) const {
+					return (_object != r._object);
+				}
+
+				template<typename TT> inline bool operator==(const ref<TT>& r) const {
+					return (_object == r._object);
+				}
+
+				template<typename TT> inline bool operator!=(const ref<TT>& r) const {
+					return (_object != r._object);
+				}
+
+				inline bool operator<(const strong<T>& r) const {
+					return r._object < _object;
+				}
+
+				inline bool operator>(const strong<T>& r) const {
+					return r._object > _object;
+				}
+
+				inline T* operator->() {
+					return _object._object;
+				}
+
+				inline const T* operator->() const {
+					return _object._object;
+				}
+
+				ref<T> _object;
 		};
 
 		template<typename T> class weak {

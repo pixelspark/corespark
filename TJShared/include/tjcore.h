@@ -17,7 +17,7 @@ namespace tj {
 
 		class EXPORTED Core {
 			public:
-				static ref<Core> Instance();
+				static strong<Core> Instance();
 				void Run(RunnableApplication* app, ref<Arguments> args);
 				RunnableApplication* GetApplicationPointer();
 				Core();

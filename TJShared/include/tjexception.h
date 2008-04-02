@@ -14,7 +14,7 @@ namespace tj {
 
 		class EXPORTED Exception {
 			public:
-				Exception(std::wstring message, ExceptionType type,const char* file="", int line=0) {
+				Exception(const std::wstring& message, ExceptionType type,const char* file="", int line=0) {
 					_message = message;
 					_type = type;
 					_file = file;
@@ -23,11 +23,12 @@ namespace tj {
 
 				virtual ~Exception() {}
 
-				const std::wstring GetMsg() const { return _message; }
+				const std::wstring& GetMsg() const { return _message; }
 				ExceptionType GetType() const { return _type; }
 				int GetLine() const { return _line; }
 				const char* GetFile() const { return _file; }
 				std::wstring ToString() const;
+
 			protected:
 				std::wstring _message;
 				ExceptionType _type;

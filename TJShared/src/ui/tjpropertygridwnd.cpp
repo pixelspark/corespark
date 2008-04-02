@@ -246,7 +246,7 @@ LRESULT PropertyGridWnd::Message(UINT msg, WPARAM wParam, LPARAM lParam) {
 		return 1;
 	}
 	else if(msg==WM_COMMAND) {
-		if(HIWORD(wParam)==EN_UPDATE||HIWORD(wParam)==BN_CLICKED||HIWORD(wParam)==CBN_SELCHANGE) {
+		if(HIWORD(wParam)==EN_UPDATE||HIWORD(wParam)==BN_CLICKED||HIWORD(wParam)==CBN_SELCHANGE||HIWORD(wParam)==CBN_EDITCHANGE) {
 			HWND he = (HWND)lParam;
 
 			std::vector< ref<Property> >::iterator it = _properties.begin();
