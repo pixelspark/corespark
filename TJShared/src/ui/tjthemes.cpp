@@ -20,6 +20,7 @@ namespace tj {
 
 					virtual Gdiplus::Color GetActiveStartColor() const;
 					virtual Gdiplus::Color GetActiveEndColor() const;
+					virtual Gdiplus::Color GetFocusColor() const;
 
 					virtual Gdiplus::Color GetSplitterStartColor() const;
 					virtual Gdiplus::Color GetSplitterEndColor() const;
@@ -110,6 +111,10 @@ namespace tj {
 
 					virtual Gdiplus::Color GetActiveEndColor() const {
 						return Color(145,175,194);
+					}
+
+					virtual Gdiplus::Color GetFocusColor() const {
+						return Color::DarkBlue;
 					}
 
 					virtual Gdiplus::Color GetSplitterStartColor() const {
@@ -259,6 +264,10 @@ Color BrightTheme::GetTrackDescriptionTextColor() const {
 
 Color BrightTheme::GetFaderColor() const {
 	return Color(0,0,0);
+}
+
+Color BrightTheme::GetFocusColor() const {
+	return Color(200, 0,0,255);
 }
 
 Gdiplus::Color BrightTheme::GetTimeSelectionColorEnd() const {

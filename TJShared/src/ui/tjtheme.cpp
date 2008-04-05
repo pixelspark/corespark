@@ -98,6 +98,58 @@ void Theme::DrawToolbarBackground(Gdiplus::Graphics& g, const Area& rc) {
 	g.FillRectangle(&glas, RectF(float(rc.GetLeft()), float(rc.GetTop()), float(rc.GetWidth()), float(rc.GetHeight())/2.0f));
 }
 
+Gdiplus::Color Theme::GetFocusColor() const {
+	return Color::LightBlue;
+}
+
+void Theme::DrawFocusRectangle(Gdiplus::Graphics& g, const Area& c) {
+	static REAL blendPositions[3] = {0.0f, 0.2f, 1.0f};
+	static REAL blendFactors[3] = {1.0f, 0.0f, 0.0f};
+	static const Pixels KFocusRectangleWidth = 3;
+	static Color KSurroundColors[1] = { Color::Transparent };
+
+	Area rc = c;
+	GraphicsPath path;
+	rc.Widen(KFocusRectangleWidth,KFocusRectangleWidth,KFocusRectangleWidth,KFocusRectangleWidth);
+	path.AddRectangle(rc);
+	PathGradientBrush gbrush(&path);
+	gbrush.SetCenterColor(GetFocusColor());
+	int KNumSurroundColors = 1;
+	gbrush.SetSurroundColors(KSurroundColors, &KNumSurroundColors);
+
+	float fx = max(0.0f, float(rc.GetWidth()-5*KFocusRectangleWidth)/float(rc.GetWidth()));
+	float fy = max(0.0f, float(rc.GetHeight()-5*KFocusRectangleWidth)/float(rc.GetHeight()));
+	gbrush.SetFocusScales(fx,fy);
+	
+	rc.Narrow(KFocusRectangleWidth,KFocusRectangleWidth,KFocusRectangleWidth,KFocusRectangleWidth);
+	Pen focusPen(&gbrush, 3.0f);
+	g.DrawRectangle(&focusPen, rc);
+}
+
+void Theme::DrawFocusEllipse(Gdiplus::Graphics& g, const Area& c) {
+	static REAL blendPositions[3] = {0.0f, 0.2f, 1.0f};
+	static REAL blendFactors[3] = {1.0f, 0.0f, 0.0f};
+	static const Pixels KFocusRectangleWidth = 3;
+	static Color KSurroundColors[1] = { Color::Transparent };
+
+	Area rc = c;
+	GraphicsPath path;
+	rc.Widen(KFocusRectangleWidth,KFocusRectangleWidth,KFocusRectangleWidth,KFocusRectangleWidth);
+	path.AddEllipse(rc);
+	PathGradientBrush gbrush(&path);
+	gbrush.SetCenterColor(GetFocusColor());
+	int KNumSurroundColors = 1;
+	gbrush.SetSurroundColors(KSurroundColors, &KNumSurroundColors);
+
+	float fx = max(0.0f, float(rc.GetWidth()-5*KFocusRectangleWidth)/float(rc.GetWidth()));
+	float fy = max(0.0f, float(rc.GetHeight()-5*KFocusRectangleWidth)/float(rc.GetHeight()));
+	gbrush.SetFocusScales(fx,fy);
+	
+	rc.Narrow(KFocusRectangleWidth,KFocusRectangleWidth,KFocusRectangleWidth,KFocusRectangleWidth);
+	Pen focusPen(&gbrush, 3.0f);
+	g.DrawEllipse(&focusPen, rc);
+}
+
 int Theme::GetMeasureInPixels(Measure m) const {
 	switch(m) {
 		case MeasureToolbarHeight:

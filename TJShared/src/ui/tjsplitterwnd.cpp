@@ -174,7 +174,7 @@ void SplitterWnd::SetRatio(float f) {
 }
 
 void SplitterWnd::Expand() {
-	_collapse = CollapseNone;
+	Collapse(CollapseNone);
 	Layout();
 	Repaint();
 }

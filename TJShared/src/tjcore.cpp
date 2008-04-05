@@ -166,7 +166,7 @@ ModalLoop::Result ModalLoop::Enter(HWND m, bool isDialog) {
 					DispatchMessage(&msg);
 				}
 			}
-			else if(!isDialog && msg.message==WM_LBUTTONDOWN && msg.hwnd != m) {
+			else if(!isDialog && (msg.message==WM_LBUTTONDOWN || msg.message==WM_RBUTTONDOWN) && msg.hwnd != m) {
 				if(!IsChild(m,msg.hwnd)) {
 					End(ResultCancelled);
 				}
