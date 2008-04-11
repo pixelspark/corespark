@@ -46,6 +46,7 @@ namespace tj {
 				virtual void OnFocus(bool f);
 				virtual void OnColumnSizeChanged();
 				virtual void OnSettingsChanged();
+				virtual void OnContextMenu(Pixels x, Pixels y);
 				virtual void DoContextMenu(Pixels x, Pixels y);
 
 				// other stuff

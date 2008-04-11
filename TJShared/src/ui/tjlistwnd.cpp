@@ -392,6 +392,11 @@ void ListWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 	}
 }
 
+void ListWnd::OnContextMenu(Pixels x, Pixels y) {
+	OnMouse(MouseEventRDown, x, y);
+	OnMouse(MouseEventRUp, x, y);
+}
+
 void ListWnd::DoContextMenu(Pixels x, Pixels y) {
 	ContextMenu cm;
 	std::map<int, Column>::const_iterator it = _cols.begin();

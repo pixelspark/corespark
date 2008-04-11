@@ -105,7 +105,7 @@ Gdiplus::Color Theme::GetFocusColor() const {
 void Theme::DrawFocusRectangle(Gdiplus::Graphics& g, const Area& c) {
 	static REAL blendPositions[3] = {0.0f, 0.2f, 1.0f};
 	static REAL blendFactors[3] = {1.0f, 0.0f, 0.0f};
-	static const Pixels KFocusRectangleWidth = 3;
+	static const Pixels KFocusRectangleWidth = 6;
 	static Color KSurroundColors[1] = { Color::Transparent };
 
 	Area rc = c;

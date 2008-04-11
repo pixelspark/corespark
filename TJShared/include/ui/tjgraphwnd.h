@@ -37,6 +37,8 @@ namespace tj {
 				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme) = 0;
 				virtual void AddArrow(ref<GraphItem> to, GraphArrow::Direction dir, const std::wstring& text);
 				virtual void OnMouse(MouseEvent e, Pixels x, Pixels y, ref<GraphWnd> gw);
+				virtual void OnContextMenu(Pixels x, Pixels y, ref<GraphWnd> gw);
+				virtual void OnKey(Key k, wchar_t key, bool down, bool isAccelerator, ref<GraphWnd> gw);
 
 			protected:
 				Area _area;
@@ -79,8 +81,13 @@ namespace tj {
 				virtual void Update();
 
 			protected:
+				virtual void OnFocus(bool focus);
+				virtual void OnContextMenu(Pixels x, Pixels y);
+				virtual void OnKey(Key k, wchar_t key, bool down, bool isAccelerator);
+
 				std::vector< ref<GraphItem> > _items;
 				ref<GraphItem> _dragging;
+				ref<GraphItem> _focus;
 				Pixels _dragStartX, _dragStartY;
 				Pixels _dragBeginX, _dragBeginY;
 		};

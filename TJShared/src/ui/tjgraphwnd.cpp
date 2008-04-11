@@ -102,9 +102,16 @@ void GraphWnd::HideAll() {
 	Repaint();
 }
 
+void GraphWnd::OnFocus(bool f) {
+	Repaint();
+}
+
 void GraphWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 	if(ev==MouseEventLDown) {
+		Focus();
 		_dragging = GetItemAt(x,y);
+		_focus = _dragging;
+
 		if(_dragging) {
 			_dragBeginX = x-_dragging->GetArea().GetX();
 			_dragBeginY = y-_dragging->GetArea().GetY();
@@ -214,6 +221,9 @@ void GraphWnd::Paint(Graphics& g, ref<Theme> theme) {
 		ref<GraphItem> item = *it;
 		if(!item->IsHidden()) {
 			item->Paint(g, theme);
+			if(HasFocus() && _focus==item) {
+				theme->DrawFocusRectangle(g, item->GetArea());
+			}
 
 			// Draw arrows
 			Pen arrowOut(theme->GetLineColor(), 2.0f);
@@ -262,6 +272,38 @@ void GraphWnd::Paint(Graphics& g, ref<Theme> theme) {
 	}
 }
 
+void GraphWnd::OnContextMenu(Pixels x, Pixels y) {
+	if(_focus) {
+		_focus->OnContextMenu(x,y, this);
+	}
+}
+
+void GraphWnd::OnKey(Key k, wchar_t key, bool down, bool isAccelerator) {
+	if(_focus) {
+		Area rc = _focus->GetArea();
+		if(k==KeyLeft) {
+			_focus->SetPosition(max(0,rc.GetLeft()-10), rc.GetTop());
+		}
+		else if(k==KeyRight) {
+			_focus->SetPosition(max(0,rc.GetLeft()+10), rc.GetTop());
+		}
+		else if(k==KeyUp) {
+			_focus->SetPosition(max(0,rc.GetLeft()), max(0,rc.GetTop()-10));
+		}
+		else if(k==KeyDown) {
+			_focus->SetPosition(rc.GetLeft(), rc.GetTop()+10);
+		}
+		else if(k==KeyCharacter && key==VK_DELETE) {
+			_focus->Hide(true);
+		}
+		else {
+			_focus->OnKey(k,key,down,isAccelerator, this);
+		}
+	}
+
+	Repaint();
+}
+
 GraphItem::GraphItem() {
 	_selected = false;
 	_hidden = false;
@@ -286,6 +328,23 @@ void GraphItem::Hide(bool h) {
 	_hidden = h;
 }
 
+void GraphItem::OnContextMenu(Pixels x, Pixels y, ref<GraphWnd> gw) {
+	ref<ContextMenu> cm = GC::Hold(new ContextMenu());
+	enum {KCHide=1};
+
+	cm->AddItem(TL(graph_item_hide), KCHide, false, _hidden);
+
+	int r = cm->DoContextMenu(gw, x, y);
+	if(r==KCHide) {
+		Hide(true);
+	}
+
+	gw->Update();
+	
+}
+void GraphItem::OnKey(Key k, wchar_t key, bool down, bool isAccelerator, ref<GraphWnd> gw) {
+}
+
 Area& GraphItem::GetArea() {
 	return _area;
 }
@@ -294,19 +353,10 @@ GraphArrow::GraphArrow() {
 }
 
 void GraphItem::OnMouse(MouseEvent me, Pixels x, Pixels y, ref<GraphWnd> gw) {
-	ref<ContextMenu> cm = GC::Hold(new ContextMenu());
-	enum {KCHide=1};
-
-	cm->AddItem(TL(graph_item_hide), KCHide, false, _hidden);
-
-	int r = cm->DoContextMenu(gw);
-	if(r==KCHide) {
-		Hide(true);
+	if(me==MouseEventRDown) {
+		OnContextMenu(x,y, gw);
 	}
-
-	gw->Update();
 }
-
 
 void GraphItem::AddArrow(ref<GraphItem> to, GraphArrow::Direction dir, const std::wstring& text) {
 	GraphArrow ga;
