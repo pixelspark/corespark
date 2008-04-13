@@ -130,7 +130,7 @@ void ListWnd::Paint(Gdiplus::Graphics &g, ref<Theme> theme) {
 	g.FillRectangle(&back, area);
 	Pen border(theme->GetActiveStartColor(), 1.0f);
 	Pen lineBorder(theme->GetActiveEndColor(), 1.0f);
-	bool hasFocus = (::GetFocus()==GetWindow());
+	bool hasFocus = HasFocus(true);
 
 	int n = GetItemCount();
 	if(n>0) {

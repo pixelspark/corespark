@@ -24,6 +24,7 @@ namespace tj {
 					IconTip,
 					IconSearch,
 					IconDownArrow,
+					IconGrabber,
 					_IconLast,
 				};
 

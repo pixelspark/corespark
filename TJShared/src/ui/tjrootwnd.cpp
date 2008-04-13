@@ -1,14 +1,27 @@
 #include "../../include/tjshared.h"
+#include <windowsx.h> 
 using namespace tj::shared;
+using namespace Gdiplus;
+
+const Pixels RootWnd::KStatusBarHeight = 18;
 
 WindowManager::~WindowManager() {
 }
 
-RootWnd::RootWnd(std::wstring title, const wchar_t* className, bool usedb): TopWnd(title.c_str(),0, className, usedb) {
+RootWnd::RootWnd(std::wstring title, const wchar_t* className, bool usedb): TopWnd(title.c_str(),0, className, usedb), _grabberIcon(Icons::GetIconPath(Icons::IconGrabber)), _showStatusBar(true) {
 	SetStyleEx(WS_EX_CONTROLPARENT);
 }
 
 RootWnd::~RootWnd() {
+}
+
+void RootWnd::SetShowStatusBar(bool s) {
+	_showStatusBar = s;
+	Repaint();
+}
+
+bool RootWnd::IsStatusBarShown() const {
+	return _showStatusBar;
 }
 
 void RootWnd::RenameWindow(ref<Wnd> w, std::wstring n) {
@@ -38,6 +51,38 @@ void RootWnd::RenameWindow(ref<Wnd> w, std::wstring n) {
 	}
 }
 
+void RootWnd::Layout() {
+}
+
+Area RootWnd::GetClientArea() const {
+	Area rc = Wnd::GetClientArea();
+	if(IsStatusBarShown()) {
+		rc.Narrow(0,0,0,KStatusBarHeight);
+	}
+	return rc;
+}
+
+void RootWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
+	if(IsStatusBarShown()) {
+		Area wrc = Wnd::GetClientArea();
+		Area rc(wrc.GetLeft(), wrc.GetBottom()-KStatusBarHeight, wrc.GetWidth(), KStatusBarHeight);
+		SolidBrush back(theme->GetBackgroundColor());
+		g.FillRectangle(&back, rc);
+
+		LinearGradientBrush lbr(PointF(0.0f, (float)rc.GetTop()-2.0f), PointF(0.0f, (float)rc.GetBottom()+2.0f), Theme::ChangeAlpha(theme->GetActiveEndColor(),127), theme->GetBackgroundColor());
+		g.FillRectangle(&lbr, rc);
+
+		WINDOWPLACEMENT wp;
+		wp.length = sizeof(wp);
+		GetWindowPlacement(GetWindow(), &wp);
+
+		if(wp.showCmd!=SW_SHOWMAXIMIZED) {
+			Area icon(rc.GetRight()-KStatusBarHeight, rc.GetTop(), KStatusBarHeight, KStatusBarHeight);
+			g.DrawImage(_grabberIcon, icon);
+		}
+	}
+}
+
 void RootWnd::FullRepaint() {
 	RECT rc;
 	GetClientRect(GetWindow(), &rc);
@@ -55,6 +100,10 @@ bool RootWnd::IsOrphanPane(ref<Wnd> w) {
 	}
 
 	return false;
+}
+
+void RootWnd::OnSize(const Area& ns) {
+	Repaint();
 }
 
 void RootWnd::RemoveWindow(ref<Wnd> w) {
@@ -94,6 +143,30 @@ void RootWnd::RemoveWindow(ref<Wnd> w) {
 LRESULT RootWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	if(msg==WM_ENTERMENULOOP) {
 		return 0;
+	}
+	else if(msg==WM_NCHITTEST) {
+		if(IsStatusBarShown() && !IsFullScreen()) {
+			WINDOWPLACEMENT wp;
+			wp.length = sizeof(wp);
+			GetWindowPlacement(GetWindow(), &wp);
+
+			if(wp.showCmd!=SW_SHOWMAXIMIZED) {
+				ref<Theme> theme = ThemeManager::GetTheme();
+				float df = theme->GetDPIScaleFactor();
+				POINT p;
+				p.x = GET_X_LPARAM(lp);
+				p.y = GET_Y_LPARAM(lp);
+				ScreenToClient(GetWindow(), &p);
+				Pixels px = Pixels(p.x/df);
+				Pixels py = Pixels(p.y/df);
+
+				Area rc = Wnd::GetClientArea();
+				if(py > rc.GetBottom()-KStatusBarHeight && px > rc.GetRight()-KStatusBarHeight) {
+					// status bar
+					return HTBOTTOMRIGHT;
+				}
+			}
+		}
 	}
 	
 	return TopWnd::Message(msg,wp,lp);

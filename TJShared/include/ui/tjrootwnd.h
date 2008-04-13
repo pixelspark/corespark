@@ -72,8 +72,18 @@ namespace tj {
 				void RemoveNotification(NotificationWnd* nw);
 
 				void FullRepaint(); // use after switching theme
+				virtual void Layout();
+				virtual Area GetClientArea() const;
+				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme);
+				virtual void OnSize(const Area& ns);
+
+				virtual void SetShowStatusBar(bool s);
+				virtual bool IsStatusBarShown() const;
 
 			protected:
+				bool _showStatusBar;
+				const static Pixels KStatusBarHeight;
+				Icon _grabberIcon;
 				std::vector< ref<FloatingPane> > _floatingPanes;
 				std::vector < ref<TabWnd> > _tabWindows;
 				std::vector< ref<Pane> > _orphans;

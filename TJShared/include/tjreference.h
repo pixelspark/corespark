@@ -248,6 +248,9 @@ namespace tj {
 					if(_object!=0) {
 						if(_resource->DeleteReference()==0) {
 							// This was the last reference to the object; release it
+							#ifdef TJSHARED_MEMORY_TRACE
+							GC::Log(typeid(_object).name(), false);
+							#endif
 							delete _object;
 						}
 						_object = 0;

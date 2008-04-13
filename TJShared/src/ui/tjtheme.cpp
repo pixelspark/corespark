@@ -47,6 +47,7 @@ const wchar_t* Icons::_paths[Icons::_IconLast] = {
 	L"icons/shared/tip.png",
 	L"icons/shared/search.png",
 	L"icons/shared/down-arrow.png",
+	L"icons/shared/grabber.png",
 };
 
 std::wstring Icons::GetIconPath(IconIdentifier i) {

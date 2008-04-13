@@ -120,6 +120,7 @@ std::wstring Dialog::AskForSaveFile(HWND owner, std::wstring title, const wchar_
 	fn.lpstrFilter = filter;
 	fn.lpstrFile = fname;
 	fn.nMaxFile = 1023; 
+	fn.Flags = OFN_HIDEREADONLY;
 	fn.lpstrTitle = title.c_str();
 	fn.lpstrDefExt = defExt.c_str();
 
@@ -141,6 +142,7 @@ std::wstring Dialog::AskForOpenFile(HWND owner, std::wstring title, const wchar_
 	fn.lpstrFilter = filter;
 	fn.lpstrFile = fname;
 	fn.nMaxFile = 1023; 
+	fn.Flags = OFN_HIDEREADONLY;
 	fn.lpstrTitle = title.c_str();
 	fn.lpstrDefExt = defExt.c_str();
 

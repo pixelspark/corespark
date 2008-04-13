@@ -12,3 +12,10 @@ ScriptConstantsInitializer::ScriptConstantsInitializer() {
 	ScriptConstants::True = GC::Hold(new ScriptBool(true));
 	ScriptConstants::False = GC::Hold(new ScriptBool(false));
 }
+
+Scriptable::~Scriptable() {
+}
+
+bool Scriptable::Set(Field field, tj::shared::ref<Scriptable> value) {
+	return false;
+}

@@ -7,8 +7,9 @@ using namespace Gdiplus;
 // - Tekenen en afhandelen mouse clicks/mouse overs in popup wnd
 // - Mooie layout
 
-const Pixels ContextMenu::KItemHeight = 19;
-const Pixels ContextMenu::KMinContextMenuWidth = 150;
+const Pixels ContextPopupWnd::KItemHeight = 19;
+const Pixels ContextPopupWnd::KMinContextMenuWidth = 150;
+const unsigned int ContextPopupWnd::KMaxItems = 15;
 
 ContextMenu::ContextMenu() {
 }
@@ -53,15 +54,7 @@ int ContextMenu::DoContextMenu(ref<Wnd> wnd, Pixels x, Pixels y) {
 		ref<ContextPopupWnd> cpw = GC::Hold(new ContextPopupWnd(this, wnd->GetWindow()));
 
 		// Calculate size of text
-		ref<Theme> theme = ThemeManager::GetTheme();
-		Area measured = theme->MeasureText(_longestString, theme->GetGUIFontBold());
-		Pixels width = max(KMinContextMenuWidth, measured.GetWidth()+10)+ContextMenu::KItemHeight;
-
-		// Showtime
-		cpw->SetSize(width, Pixels(int(_items.size())*KItemHeight));
-		cpw->PopupAt(x,y,wnd);
-		int result =  cpw->DoModal();
-		cpw->Show(false);
+		int result =  cpw->DoModal(wnd,x,y);
 
 		if(fromPopup) {
 			EnableWindow(root, TRUE);
@@ -108,14 +101,32 @@ void ContextMenu::AddSeparator() {
 /** ContextPopupWnd **/
 ContextPopupWnd::ContextPopupWnd(ContextMenu* cm, HWND parent): PopupWnd(parent,false), _cm(cm), _result(-1), _mouseOver(-1), _mouseDown(-1), _checkedIcon(Icons::GetIconPath(Icons::IconChecked)), _radioCheckedIcon(Icons::GetIconPath(Icons::IconRadioChecked)) {
 	SetWantMouseLeave(true);
+	SetVerticallyScrollable(true);
 }
 
 ContextPopupWnd::~ContextPopupWnd() {
 }
 
-int ContextPopupWnd::DoModal() {
+int ContextPopupWnd::DoModal(ref<Wnd> parent, Pixels x, Pixels y) {
+	ref<Theme> theme = ThemeManager::GetTheme();
+	Area measured = theme->MeasureText(_cm->_longestString, theme->GetGUIFontBold());
+	Pixels width = max(KMinContextMenuWidth, measured.GetWidth()+10)+KItemHeight;
+
+	// Showtime
+	unsigned int itemsShown = min((unsigned int)_cm->_items.size(), ContextPopupWnd::KMaxItems);
+	SetSize(width, Pixels(int(itemsShown)*KItemHeight));
+	
+	// Set scroll info
+	SetVerticalScrollInfo(Range<int>(0,int(_cm->_items.size())*KItemHeight), itemsShown*KItemHeight + 1);
+	SetVerticalPos(0);
+
+	PopupAt(x,y,parent);
+
+	// Start modality
 	_result = -1;
 	ModalLoop::Result res = _loop.Enter(GetWindow(),false);
+	Show(false);
+
 	if(res==ModalLoop::ResultSucceeded) {
 		return _result;
 	}
@@ -128,9 +139,13 @@ void ContextPopupWnd::EndModal(int r) {
 	_loop.End(ModalLoop::ResultSucceeded);
 }
 
+int ContextPopupWnd::GetItemAt(Pixels y) {
+	return ((y+GetVerticalPos())/KItemHeight);
+}
+
 void ContextPopupWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 	if(ev==MouseEventMove || ev==MouseEventLDown) {
-		int idx = y/ContextMenu::KItemHeight;
+		int idx = GetItemAt(y);
 		if(idx>=0 && idx<int(_cm->_items.size())) {
 			_mouseOver = idx;
 			if(ev==MouseEventLDown) {
@@ -147,7 +162,7 @@ void ContextPopupWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 		Repaint();
 	}
 	else if(ev==MouseEventLUp) {
-		int idx = y/ContextMenu::KItemHeight;
+		int idx = GetItemAt(y);
 		if(idx>=0 && idx<int(_cm->_items.size())) {
 			ref<ContextItem> ci = _cm->_items.at(idx);
 			if(!ci->IsDisabled() || ci->IsSeparator()) {
@@ -216,13 +231,15 @@ void ContextPopupWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
 	SolidBrush back(theme->GetBackgroundColor());
 	g.FillRectangle(&back, rc);
 
+	Pixels y = -GetVerticalPos();
+
 	SolidBrush text(theme->GetTextColor());
 	SolidBrush link(theme->GetLinkColor());
 	SolidBrush disabled(theme->GetDisabledOverlayColor());
 	SolidBrush colorSeparator(theme->GetActiveEndColor());
 	Pen separator(&colorSeparator, 1.0f);
-	LinearGradientBrush selected(PointF(0.0f, 0.0f), PointF(0.0f, REAL(ContextMenu::KItemHeight)), theme->GetTimeSelectionColorStart(), theme->GetTimeSelectionColorEnd());
-	LinearGradientBrush down(PointF(0.0f, 0.0f), PointF(0.0f, REAL(ContextMenu::KItemHeight)), theme->GetTimeSelectionColorEnd(), theme->GetTimeSelectionColorStart());
+	LinearGradientBrush selected(PointF(0.0f, float(y)), PointF(0.0f, float(y+KItemHeight)), theme->GetTimeSelectionColorStart(), theme->GetTimeSelectionColorEnd());
+	LinearGradientBrush down(PointF(0.0f, float(y)), PointF(0.0f, float(y+KItemHeight)), theme->GetTimeSelectionColorEnd(), theme->GetTimeSelectionColorStart());
 	
 	StringFormat sf;
 	sf.SetAlignment(StringAlignmentNear);
@@ -231,17 +248,16 @@ void ContextPopupWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
 	REAL tabs[] = {50, 50, 50};
 	sf.SetTabStops(0, 3, tabs);
 
-	Pixels y = 0;
 	int n = 0;
 	std::vector< ref<ContextItem> >::iterator it = _cm->_items.begin();
 	while(it!=_cm->_items.end()) {
 		ref<ContextItem> item = *it;
 		Area current = rc;
 		current.SetY(y);
-		current.SetHeight(ContextMenu::KItemHeight);
+		current.SetHeight(KItemHeight);
 
 		if(item->IsSeparator()) {
-			current.Narrow(ContextMenu::KItemHeight,0,ContextMenu::KItemHeight,0);
+			current.Narrow(KItemHeight,0,KItemHeight,0);
 			Pixels y = current.GetTop() + (current.GetBottom()-current.GetTop())/2;
 			g.DrawLine(&separator, current.GetLeft(), y, current.GetRight(), y);
 		}
@@ -258,7 +274,7 @@ void ContextPopupWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
 			}
 
 			Area currentText = current;
-			currentText.Narrow(ContextMenu::KItemHeight,2,2,2);
+			currentText.Narrow(KItemHeight,2,2,2);
 
 			if(item->IsLink()) {
 				g.DrawString(item->GetTitle().c_str(), (int)item->GetTitle().length(), theme->GetLinkFont(), currentText, &sf, &link);
@@ -285,7 +301,7 @@ void ContextPopupWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
 			}
 		}
 
-		y += ContextMenu::KItemHeight;
+		y += KItemHeight;
 		++it;
 		++n;
 	}

@@ -133,15 +133,15 @@ void SplitterWnd::Layout() {
 		if(_a) _a->Show(true);
 		if(_b) _b->Show(true);
 		if(_orientation==OrientationHorizontal) {
-			int heightA = (int)floor(_ratio*(rc.GetHeight()))-KBarHeight;
+			int heightA = (int)floor(_ratio*(rc.GetHeight()));
 			int heightB = rc.GetHeight()-heightA;
 
 			if(_a) {
-				_a->Move(0, 0, rc.GetWidth(), heightA-KBarHeight);
+				_a->Move(0, 0, rc.GetWidth(), heightA-(KBarHeight/2));
 			}
 
 			if(_b) {
-				_b->Move(0, heightA+KBarHeight-1, rc.GetWidth(), heightB-3);
+				_b->Move(0, heightA+(KBarHeight/2)-1, rc.GetWidth(), heightB-(KBarHeight/2));
 			}
 		}
 		else if(_orientation==OrientationVertical) {

@@ -43,7 +43,7 @@ namespace tj {
 			public:
 				ContextPopupWnd(ContextMenu* cm, HWND parent);
 				virtual ~ContextPopupWnd();
-				virtual int DoModal(); // return -1 when no command
+				virtual int DoModal(ref<Wnd> parent, Pixels x, Pixels y); // return -1 when no command
 				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme);
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
 				virtual void OnKey(Key k, wchar_t ch, bool down, bool isAccelerator);
@@ -51,6 +51,14 @@ namespace tj {
 			protected:
 				virtual void EndModal(int r);
 				virtual void OnActivate(bool a);
+				int GetItemAt(Pixels y);
+
+				// TODO: move some of these to Theme GetMeasure
+				const static unsigned int KMaxItems;
+				const static Pixels KItemHeight;
+				const static Pixels KMinContextMenuWidth;
+
+			private:
 				ContextMenu* _cm;
 				int _result;
 				ModalLoop _loop;
@@ -75,8 +83,6 @@ namespace tj {
 			protected:
 				std::vector< ref<ContextItem> > _items;
 				std::wstring _longestString;
-				const static Pixels KItemHeight;
-				const static Pixels KMinContextMenuWidth;
 		};
 	}
 }

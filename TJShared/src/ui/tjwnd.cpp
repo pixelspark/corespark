@@ -224,8 +224,9 @@ void Wnd::Show(bool t) {
 	}
 }
 
-bool Wnd::HasFocus() const {
-	return GetFocus()==_wnd;
+bool Wnd::HasFocus(bool childrenToo) const {
+	HWND focus = GetFocus();
+	return GetFocus()==_wnd || (childrenToo && IsChild(_wnd, focus));
 }
 
 bool Wnd::IsShown() const {
@@ -550,7 +551,7 @@ LRESULT Wnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		p.x = GET_X_LPARAM(lp);
 		p.y = GET_Y_LPARAM(lp);
 		ScreenToClient(GetWindow(), &p);
-		OnContextMenu(Pixels(df*p.x), Pixels(df*p.y));
+		OnContextMenu(Pixels(p.x/df), Pixels(p.y/df));
 	}
 	else if(msg==WM_APPCOMMAND) {
 		int c = GET_APPCOMMAND_LPARAM(lp);

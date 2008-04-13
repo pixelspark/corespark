@@ -16,12 +16,14 @@ namespace tj {
 		like reflection. **/
 		class SCRIPT_EXPORTED Scriptable {
 			public:
+				virtual ~Scriptable();
+
 				/* Returns 0 if command is unknown or used incorrectly. When null value is needed in the script
 				return a ScriptNull instance. */
 				virtual tj::shared::ref<Scriptable> Execute(Command command, tj::shared::ref<ParameterList> params) = 0;
 
 				/* Sets a field; return false if you are not mutable */
-				virtual bool Set(Field field, tj::shared::ref<Scriptable> value) { return false; };
+				virtual bool Set(Field field, tj::shared::ref<Scriptable> value);
 		};
 	}
 }

@@ -98,7 +98,7 @@ namespace tj {
 				virtual std::wstring GetText();
 				virtual void SetText(std::wstring text);
 				void SetSize(Pixels w, Pixels h);
-				Area GetClientArea() const;
+				virtual Area GetClientArea() const;
 				Area GetWindowArea();
 				virtual void Fill(LayoutFlags flags, Area& rect, bool direct = true);
 				void Fill();
@@ -114,7 +114,7 @@ namespace tj {
 				virtual std::wstring GetTabTitle() const;		// return an empty string if you don't want to override Pane's title
 				virtual ref<Icon> GetTabIcon() const;		// should return 0 when you don't want to override the tab icon set in Pane
 				virtual void Focus();
-				bool HasFocus() const;
+				bool HasFocus(bool childrenToo = false) const;
 				static bool IsKeyDown(Key k);
 				virtual void BringToFront();
 

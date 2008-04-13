@@ -110,7 +110,7 @@ namespace tj {
 					}
 
 					virtual Gdiplus::Color GetActiveEndColor() const {
-						return Color(145,175,194);
+						return Color(130,158,175);
 					}
 
 					virtual Gdiplus::Color GetFocusColor() const {
