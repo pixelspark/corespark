@@ -671,6 +671,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\tjany.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\tjarguments.cpp"
 					>
 				</File>
@@ -930,6 +934,10 @@
 				</File>
 				<File
 					RelativePath=".\include\tjaction.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\tjany.h"
 					>
 				</File>
 				<File

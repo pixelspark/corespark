@@ -3,8 +3,17 @@
 
 namespace tj {
 	namespace shared {
-		/** The icon for a ContextItem needs to be 16x16 */
-		class EXPORTED ContextItem {
+		class MenuItem;
+
+		class EXPORTED Menu {
+			public:
+				virtual ~Menu();
+				virtual void AddSeparator(const std::wstring& text = L"") = 0;
+				virtual void AddItem(ref<MenuItem> ci) = 0;
+		};
+
+		/** The icon for a MenuItem needs to be 16x16 */
+		class EXPORTED MenuItem {
 			friend class ContextMenu;
 			friend class ContextPopupWnd;
 
@@ -15,11 +24,11 @@ namespace tj {
 					RadioChecked = 2,
 				};
 
-				ContextItem(); // separator
-				ContextItem(const std::wstring& title, int command, bool highlight = false, CheckType checked = NotChecked, const std::wstring& icon = L"");
-				ContextItem(const std::wstring& title, int command, bool highlight, CheckType checked, ref<Icon> icon);
+				MenuItem(); // separator
+				MenuItem(const std::wstring& title, int command, bool highlight = false, CheckType checked = NotChecked, const std::wstring& icon = L"");
+				MenuItem(const std::wstring& title, int command, bool highlight, CheckType checked, ref<Icon> icon);
 				
-				virtual ~ContextItem();
+				virtual ~MenuItem();
 				virtual bool IsSeparator() const;
 				virtual bool IsDisabled() const;
 				virtual bool HasIcon() const;
@@ -28,6 +37,10 @@ namespace tj {
 				virtual void SetLink(bool l);
 				virtual ref<Icon> GetIcon();
 				virtual const std::wstring& GetTitle() const;
+
+				virtual void SetTitle(const std::wstring& title);
+				virtual void SetSeparator(bool s);
+
 
 			protected:
 				std::wstring _title;
@@ -67,7 +80,7 @@ namespace tj {
 				int _mouseDown;
 		};
 
-		class EXPORTED ContextMenu {
+		class EXPORTED ContextMenu: public Menu {
 			friend class ContextPopupWnd;
 
 			public:
@@ -75,13 +88,13 @@ namespace tj {
 				virtual ~ContextMenu();
 				int DoContextMenu(ref<Wnd> wnd, Pixels x, Pixels y);
 				int DoContextMenu(ref<Wnd> wnd);
-				void AddItem(const std::wstring& name, int command, bool hilite = false, bool checked = false);
-				void AddItem(const std::wstring& name, int command, bool hilite, ContextItem::CheckType checked);
-				void AddItem(ref<ContextItem> ci);
-				void AddSeparator();
+				virtual void AddItem(ref<MenuItem> ci);
+				virtual void AddSeparator(const std::wstring& text = L"");
+				virtual void AddItem(const std::wstring& name, int command, bool hilite = false, bool checked = false);
+				virtual void AddItem(const std::wstring& name, int command, bool hilite, MenuItem::CheckType checked);
 
 			protected:
-				std::vector< ref<ContextItem> > _items;
+				std::vector< ref<MenuItem> > _items;
 				std::wstring _longestString;
 		};
 	}

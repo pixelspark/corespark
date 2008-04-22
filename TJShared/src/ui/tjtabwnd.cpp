@@ -680,7 +680,7 @@ void TabWnd::DoAddMenu(Pixels x, Pixels y) {
 		while(it!=pv->end()) {
 			ref<Pane> pane = *it;
 			if(pane) {
-				ref<ContextItem> ci = GC::Hold(new ContextItem(pane->GetTitle(), n, false, ContextItem::NotChecked, pane->GetIcon()));
+				ref<MenuItem> ci = GC::Hold(new MenuItem(pane->GetTitle(), n, false, MenuItem::NotChecked, pane->GetIcon()));
 				m.AddItem(ci);
 				n++;
 			}

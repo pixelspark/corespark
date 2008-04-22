@@ -69,8 +69,9 @@ void RootWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
 		SolidBrush back(theme->GetBackgroundColor());
 		g.FillRectangle(&back, rc);
 
-		LinearGradientBrush lbr(PointF(0.0f, (float)rc.GetTop()-2.0f), PointF(0.0f, (float)rc.GetBottom()+2.0f), Theme::ChangeAlpha(theme->GetActiveEndColor(),127), theme->GetBackgroundColor());
-		g.FillRectangle(&lbr, rc);
+		/*LinearGradientBrush lbr(PointF(0.0f, (float)rc.GetTop()-2.0f), PointF(0.0f, (float)rc.GetBottom()+2.0f), Theme::ChangeAlpha(theme->GetActiveEndColor(),127), theme->GetBackgroundColor());
+		g.FillRectangle(&lbr, rc);*/
+		theme->DrawToolbarBackground(g, rc);
 
 		WINDOWPLACEMENT wp;
 		wp.length = sizeof(wp);

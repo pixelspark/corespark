@@ -2,14 +2,12 @@
 using namespace tj::shared;
 using namespace Gdiplus;
 
-/// TODO: 
-// - Alle calls naar ContextMenu::DoContextMenu omschrijven (gebruikt nu Pixels ipv gerotzooi)
-// - Tekenen en afhandelen mouse clicks/mouse overs in popup wnd
-// - Mooie layout
-
 const Pixels ContextPopupWnd::KItemHeight = 19;
 const Pixels ContextPopupWnd::KMinContextMenuWidth = 150;
 const unsigned int ContextPopupWnd::KMaxItems = 15;
+
+Menu::~Menu() {
+}
 
 ContextMenu::ContextMenu() {
 }
@@ -59,6 +57,7 @@ int ContextMenu::DoContextMenu(ref<Wnd> wnd, Pixels x, Pixels y) {
 		if(fromPopup) {
 			EnableWindow(root, TRUE);
 		}
+		SetForegroundWindow(wnd->GetWindow());
 
 		return result;
 	}
@@ -77,15 +76,15 @@ int ContextMenu::DoContextMenu(ref<Wnd> wnd) {
 
 /** if command == -1, then the item will be grayed out/disabled **/
 void ContextMenu::AddItem(const std::wstring& name, int command, bool hilite, bool radiocheck) {
-	AddItem(name,command,hilite, radiocheck?ContextItem::Checked: ContextItem::NotChecked);
+	AddItem(name,command,hilite, radiocheck?MenuItem::Checked: MenuItem::NotChecked);
 }
 
-void ContextMenu::AddItem(const std::wstring& name, int command, bool hilite, ContextItem::CheckType checked) {
-	ref<ContextItem> ci = GC::Hold(new ContextItem(name,command,hilite,checked));
+void ContextMenu::AddItem(const std::wstring& name, int command, bool hilite, MenuItem::CheckType checked) {
+	ref<MenuItem> ci = GC::Hold(new MenuItem(name,command,hilite,checked));
 	AddItem(ci);
 }
 
-void ContextMenu::AddItem(ref<ContextItem> ci) {
+void ContextMenu::AddItem(ref<MenuItem> ci) {
 	if(!ci) Throw(L"Cannot add a null context item", ExceptionTypeError);
 	_items.push_back(ci);
 
@@ -94,8 +93,11 @@ void ContextMenu::AddItem(ref<ContextItem> ci) {
 	}
 }
 
-void ContextMenu::AddSeparator() {
-	_items.push_back(GC::Hold(new ContextItem()));
+void ContextMenu::AddSeparator(const std::wstring& title) {
+	ref<MenuItem> item = GC::Hold(new MenuItem());
+	item->SetTitle(title);
+	item->SetSeparator(true);
+	_items.push_back(item);
 }
 
 /** ContextPopupWnd **/
@@ -164,7 +166,7 @@ void ContextPopupWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 	else if(ev==MouseEventLUp) {
 		int idx = GetItemAt(y);
 		if(idx>=0 && idx<int(_cm->_items.size())) {
-			ref<ContextItem> ci = _cm->_items.at(idx);
+			ref<MenuItem> ci = _cm->_items.at(idx);
 			if(!ci->IsDisabled() || ci->IsSeparator()) {
 				int command = _cm->_items.at(idx)->_command;
 				EndModal(command);
@@ -234,6 +236,7 @@ void ContextPopupWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
 	Pixels y = -GetVerticalPos();
 
 	SolidBrush text(theme->GetTextColor());
+	SolidBrush header(theme->GetActiveStartColor());
 	SolidBrush link(theme->GetLinkColor());
 	SolidBrush disabled(theme->GetDisabledOverlayColor());
 	SolidBrush colorSeparator(theme->GetActiveEndColor());
@@ -249,19 +252,33 @@ void ContextPopupWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
 	sf.SetTabStops(0, 3, tabs);
 
 	int n = 0;
-	std::vector< ref<ContextItem> >::iterator it = _cm->_items.begin();
+	std::vector< ref<MenuItem> >::iterator it = _cm->_items.begin();
 	while(it!=_cm->_items.end()) {
-		ref<ContextItem> item = *it;
+		ref<MenuItem> item = *it;
 		Area current = rc;
 		current.SetY(y);
 		current.SetHeight(KItemHeight);
 
+		Area currentText = current;
+		
+
 		if(item->IsSeparator()) {
+			const std::wstring& title = item->GetTitle();
+			if(title.length()>0) {
+				currentText.Narrow(KItemHeight/2,2,2,2);
+				g.DrawString(title.c_str(), (int)title.length(), theme->GetGUIFontBold(), currentText, &sf, &header);
+				RectF lr;
+				g.MeasureString(title.c_str(), (int)title.length(), theme->GetGUIFontBold(), currentText, &sf, &lr);
+				current.Narrow((Pixels)lr.Width, 0,0,0);
+			}
+
 			current.Narrow(KItemHeight,0,KItemHeight,0);
 			Pixels y = current.GetTop() + (current.GetBottom()-current.GetTop())/2;
 			g.DrawLine(&separator, current.GetLeft(), y, current.GetRight(), y);
 		}
 		else {
+			currentText.Narrow(KItemHeight,2,2,2);
+
 			if(n==_mouseDown) {
 				Area selection = current;
 				selection.Narrow(1,0,1,0);
@@ -273,9 +290,6 @@ void ContextPopupWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
 				g.FillRectangle(&selected, selection);
 			}
 
-			Area currentText = current;
-			currentText.Narrow(KItemHeight,2,2,2);
-
 			if(item->IsLink()) {
 				g.DrawString(item->GetTitle().c_str(), (int)item->GetTitle().length(), theme->GetLinkFont(), currentText, &sf, &link);
 			}
@@ -283,7 +297,7 @@ void ContextPopupWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
 				g.DrawString(item->GetTitle().c_str(), (int)item->GetTitle().length(), item->_hilite?theme->GetGUIFontBold():theme->GetGUIFont(), currentText, &sf, &text);
 			}
 
-			if(item->HasIcon() || item->_checked!=ContextItem::NotChecked) {
+			if(item->HasIcon() || item->_checked!=MenuItem::NotChecked) {
 				Area iconArea = current;
 				iconArea.Narrow(3,1,1,1);
 				iconArea.SetWidth(16);
@@ -292,7 +306,7 @@ void ContextPopupWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
 					g.DrawImage(item->GetIcon()->GetBitmap(), iconArea);
 				}
 				else {
-					g.DrawImage((item->_checked == ContextItem::Checked)?_checkedIcon:_radioCheckedIcon, iconArea);
+					g.DrawImage((item->_checked == MenuItem::Checked)?_checkedIcon:_radioCheckedIcon, iconArea);
 				}
 			}
 
@@ -313,50 +327,58 @@ void ContextPopupWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
 	g.DrawRectangle(&pn, rc);
 }
 
-/** ContextItem */
-ContextItem::ContextItem(): _separator(true), _hilite(false), _link(false), _checked(NotChecked), _command(0), _icon(0) {
+/** MenuItem */
+MenuItem::MenuItem(): _separator(true), _hilite(false), _link(false), _checked(MenuItem::NotChecked), _command(0), _icon(0) {
 }
 
-ContextItem::ContextItem(const std::wstring& title, int command, bool highlight, CheckType checked, const std::wstring& icon): _title(title), _command(command), _hilite(highlight), _checked(checked), _separator(false), _icon(0), _link(false) {
+MenuItem::MenuItem(const std::wstring& title, int command, bool highlight, MenuItem::CheckType checked, const std::wstring& icon): _title(title), _command(command), _hilite(highlight), _checked(checked), _separator(false), _icon(0), _link(false) {
 	if(icon.length()>0) {
 		SetIcon(icon);
 	}
 }
 
-ContextItem::ContextItem(const std::wstring& title, int command, bool highlight, CheckType ct, ref<Icon> icon): _title(title), _command(command), _hilite(highlight), _checked(ct), _separator(false), _icon(icon), _link(false) {
+MenuItem::MenuItem(const std::wstring& title, int command, bool highlight, MenuItem::CheckType ct, ref<Icon> icon): _title(title), _command(command), _hilite(highlight), _checked(ct), _separator(false), _icon(icon), _link(false) {
 }
 
-ContextItem::~ContextItem() {
+MenuItem::~MenuItem() {
 }
 
-bool ContextItem::IsLink() const {
+bool MenuItem::IsLink() const {
 	return _link;
 }
 
-void ContextItem::SetLink(bool l) {
+void MenuItem::SetLink(bool l) {
 	_link = l;
 }
 
-bool ContextItem::IsDisabled() const {
+bool MenuItem::IsDisabled() const {
 	return _command == -1;
 }
 
-bool ContextItem::IsSeparator() const {
+bool MenuItem::IsSeparator() const {
 	return _separator;
 }
 
-const std::wstring& ContextItem::GetTitle() const {
+const std::wstring& MenuItem::GetTitle() const {
 	return _title;
 }
 
-ref<Icon> ContextItem::GetIcon() {
+ref<Icon> MenuItem::GetIcon() {
 	return _icon;
 }
 
-bool ContextItem::HasIcon() const {
+bool MenuItem::HasIcon() const {
 	return _icon!=0;
 }
 
-void ContextItem::SetIcon(const std::wstring& icon) {
+void MenuItem::SetIcon(const std::wstring& icon) {
 	_icon = GC::Hold(new Icon(icon));
+}
+
+void MenuItem::SetTitle(const std::wstring& title) {
+	_title = title;
+}
+
+void MenuItem::SetSeparator(bool s) {
+	_separator = s;
 }
