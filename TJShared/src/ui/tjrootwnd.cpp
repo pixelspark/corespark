@@ -378,7 +378,7 @@ void RootWnd::RemoveOrphanPane(ref<Pane> pane) {
 }
 
 /** AddNotificationRunnable */
-AddNotificationRunnable::AddNotificationRunnable(RootWnd* root, const std::wstring& text, std::wstring icon, int time) {
+AddNotificationRunnable::AddNotificationRunnable(ref<RootWnd> root, const std::wstring& text, std::wstring icon, int time) {
 	_root = root;
 	_text = text;
 	_icon = icon;
@@ -386,11 +386,10 @@ AddNotificationRunnable::AddNotificationRunnable(RootWnd* root, const std::wstri
 }
 
 AddNotificationRunnable::~AddNotificationRunnable() {
-
 }
 
 void AddNotificationRunnable::Run() {
-	if(_root!=0) {
+	if(_root) {
 		_root->AddNotification(_text, _icon, _time);
 	}
 }

@@ -93,12 +93,12 @@ namespace tj {
 
 		class EXPORTED AddNotificationRunnable: public Runnable {
 			public:
-				AddNotificationRunnable(RootWnd* root, const std::wstring& text, std::wstring icon, int time);
+				AddNotificationRunnable(ref<RootWnd> root, const std::wstring& text, std::wstring icon, int time);
 				virtual ~AddNotificationRunnable();
 				virtual void Run();
 
 			protected:
-				RootWnd* _root;
+				ref<RootWnd> _root;
 				std::wstring _text;
 				std::wstring _icon;
 				int _time;
