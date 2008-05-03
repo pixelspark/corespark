@@ -36,10 +36,16 @@ namespace tj {
 				bool operator!=(const Any& o) const;
 				bool operator||(const Any& o) const;
 				bool operator&&(const Any& o) const;
+
+				operator bool() const;
+				operator double() const;
+				operator int() const;
+
 				Any operator%(const Any& o) const;
 				Any operator-() const;
 				Any operator!() const;
 				Any Abs() const;
+				Any Force(Type t) const;
 
 				std::wstring ToString() const;
 				Type GetType() const;

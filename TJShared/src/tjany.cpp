@@ -1,4 +1,5 @@
 #include "../include/tjshared.h"
+#include <limits>
 using namespace tj::shared;
 
 /* Any */
@@ -341,6 +342,87 @@ bool Any::operator&&(const Any& o) const {
 
 bool Any::operator!=(const Any& o) const {
 	return !this->operator==(o);
+}
+
+Any Any::Force(Any::Type t) const {
+	if(t==_type) {
+		return *this;
+	}
+	else if(t==TypeNull) {
+		return Any();
+	}
+	else if(t==TypeInteger) {
+		return Any(this->operator int());
+	}
+	else if(t==TypeDouble) {
+		return Any(this->operator double());
+	}
+	else if(t==TypeBool) {
+		return Any(this->operator bool());
+	}
+	else if(t==TypeString) {
+		return Any(ToString());
+	}
+	else if(t==TypeObject) {
+		return Any(ref<Object>(0));
+	}
+
+	return Any(); // typically everything with Object
+}
+
+Any::operator bool() const {
+	switch(_type) {
+		case TypeDouble:
+			return _doubleValue != 0.0;
+
+		case TypeInteger:
+			return _intValue == 1;
+
+		case TypeString:
+			return _stringValue == L"true";
+
+		case TypeBool:
+			return _boolValue;
+
+		case TypeObject:
+			return _object;
+
+		case TypeNull:
+		default:
+			return false;
+	}	
+}
+
+Any::operator double() const {
+	switch(_type) {
+		case TypeBool:
+			return _boolValue ? 1.0 : 0.0;
+
+		case TypeInteger:
+			return double(_intValue);
+
+		case TypeString:
+			return StringTo<double>(_stringValue, 0.0);
+
+		default:
+			return std::numeric_limits<double>::quiet_NaN();
+	}	
+}
+
+Any::operator int() const {
+	switch(_type) {
+		case TypeBool:
+			return _boolValue ? 1 : 0;
+
+		case TypeDouble:
+			return int(_doubleValue);
+
+		case TypeString:
+			return StringTo<int>(_stringValue, 0);
+
+		default:
+			return 0;
+	}	
 }
 
 std::wstring Any::ToString() const {

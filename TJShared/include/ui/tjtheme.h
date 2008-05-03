@@ -25,6 +25,10 @@ namespace tj {
 					IconSearch,
 					IconDownArrow,
 					IconGrabber,
+					IconExceptionMessage,
+					IconExceptionNotify,
+					IconExceptionError,
+					IconExceptionFatal,
 					_IconLast,
 				};
 
