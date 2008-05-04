@@ -35,16 +35,27 @@ namespace tj {
 							if(IsMouseOver()) {
 								theme->DrawToolbarBackground(g, 0.0f, 0.0f, float(rc.GetWidth()), float(rc.GetHeight()));
 							}
-							
-							// Draw icon to the right
-							Area iconArea(rc.GetRight()-rc.GetHeight(), rc.GetTop(), 16, 16);
-							g.DrawImage(_arrowIcon, iconArea);
 
 							Gdiplus::SolidBrush borderBrush(theme->GetActiveStartColor());
 							Area borderArea = rc;
 							borderArea.Narrow(0,0,1,1);
 							Gdiplus::Pen borderPen(&borderBrush, 1.0f);
 							g.DrawRectangle(&borderPen, borderArea);
+							
+							Area buttonArea(rc.GetRight()-16, rc.GetTop(), 16,rc.GetHeight());
+
+							Gdiplus::LinearGradientBrush buttonBr(Gdiplus::PointF(0.0f, float(rc.GetTop()-1)), Gdiplus::PointF(0.0f, float(rc.GetBottom()+1)), theme->GetActiveStartColor(), theme->GetActiveEndColor());
+							g.FillRectangle(&buttonBr, buttonArea);
+
+							if(!IsMouseOver()) {
+								buttonArea.Narrow(1,1,1,1);
+								Gdiplus::SolidBrush disabledBr(theme->GetDisabledOverlayColor());
+								g.FillRectangle(&disabledBr, buttonArea);
+							}
+
+							// Draw icon to the right
+							Area iconArea(rc.GetRight()-rc.GetHeight(), rc.GetTop(), 16, 16);
+							g.DrawImage(_arrowIcon, iconArea);
 
 							// Text parameters
 							Gdiplus::SolidBrush tbr(theme->GetTextColor());
