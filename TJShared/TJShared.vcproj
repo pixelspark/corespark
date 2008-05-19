@@ -383,6 +383,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ui\tjbuttonwnd.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ui\tjchildwnd.cpp"
 					>
 				</File>
@@ -408,10 +412,6 @@
 				</File>
 				<File
 					RelativePath=".\src\tjicon.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\ui\tjimagebuttonwnd.cpp"
 					>
 				</File>
 				<File
@@ -777,6 +777,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\include\ui\tjbuttonwnd.h"
+					>
+				</File>
+				<File
 					RelativePath=".\include\ui\tjchildwnd.h"
 					>
 				</File>
@@ -802,10 +806,6 @@
 				</File>
 				<File
 					RelativePath=".\include\tjicon.h"
-					>
-				</File>
-				<File
-					RelativePath=".\include\ui\tjimagebuttonwnd.h"
 					>
 				</File>
 				<File

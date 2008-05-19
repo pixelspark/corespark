@@ -21,7 +21,7 @@
 #include "tjtooltipwnd.h"
 #include "tjbrowserwnd.h"
 #include "tjrootwnd.h"
-#include "tjimagebuttonwnd.h"
+#include "tjbuttonwnd.h"
 #include "tjloggerwnd.h"
 #include "tjnotificationwnd.h"
 #include "tjtabwnd.h"

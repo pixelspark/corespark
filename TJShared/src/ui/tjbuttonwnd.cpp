@@ -67,6 +67,7 @@ void ButtonWnd::OnKey(Key k, wchar_t t, bool down, bool isAccelerator) {
 		}
 	}
 }
+
 void ButtonWnd::OnFocus(bool f) {
 	Repaint();
 }
@@ -84,17 +85,20 @@ void ButtonWnd::Paint(Graphics& g, ref<Theme> theme) {
 
 	// Fill background
 	LinearGradientBrush backGradient(PointF(0.0f, 0.0f), PointF(0.0f, (float)rc.GetHeight()), theme->GetActiveStartColor(), theme->GetActiveEndColor());
-	LinearGradientBrush backGradientReverse(PointF(0.0f, (float)rc.GetHeight()), PointF(0.0f, 0.0f), theme->GetActiveStartColor(), theme->GetActiveEndColor());
+	LinearGradientBrush shadowGradient(PointF(0.0f, (float)rc.GetHeight()/2), PointF(0.0f, 0.0f), Color(0,0,0,0), Color(50,0,0,0));
+	LinearGradientBrush highlightGradient(PointF(0.0f, (float)rc.GetHeight()/2), PointF(0.0f, 0.0f), Color(0,255,255,255), Color(50,255,255,255));
 	SolidBrush disabledBrush(theme->GetDisabledOverlayColor());
 
+	g.FillRectangle(&backGradient, rc);
+	Area shadowRC = rc;
+	shadowRC.Narrow(0,0,0,rc.GetHeight()/2);
+
 	if(_down) {
-		g.FillRectangle(&backGradient, rc);
+		g.FillRectangle(&shadowGradient, shadowRC);
 	}
 	else {
-		g.FillRectangle(&backGradientReverse, rc);
-		if(!IsMouseOver()) {
-			g.FillRectangle(&disabledBrush, rc);
-		}
+		g.FillRectangle(&disabledBrush, rc);
+		g.FillRectangle(&highlightGradient, shadowRC);
 	}
 	
 	// Draw icon
@@ -105,7 +109,7 @@ void ButtonWnd::Paint(Graphics& g, ref<Theme> theme) {
 	}
 	
 	// Draw border
-	SolidBrush border(theme->GetActiveStartColor());
+	SolidBrush border(theme->GetActiveEndColor());
 	rc.Narrow(0,0,1,1);
 	Pen borderPen(&border,1.0f);
 	g.DrawRectangle(&borderPen, rc);
@@ -128,6 +132,7 @@ void ButtonWnd::Paint(Graphics& g, ref<Theme> theme) {
 
 void ButtonWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 	if(ev==MouseEventLDown) {
+		Focus();
 		_down = true;
 		Repaint();
 	}
