@@ -1,6 +1,8 @@
 #ifndef _TJSERIALIZABLE_H
 #define _TJSERIALIZABLE_H
 
+class TiXmlElement;
+
 namespace tj {
 	namespace shared {
 		class EXPORTED Serializable {
