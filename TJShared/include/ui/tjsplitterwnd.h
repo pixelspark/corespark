@@ -25,7 +25,7 @@ namespace tj {
 				virtual void Update();
 				void SetRatio(float f);
 				virtual bool IsSplitter();
-				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme);
+				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
 				void Collapse(CollapseMode cm = CollapseFirst);
 				void Expand();
 				void SetOrientation(Orientation o);

@@ -1,6 +1,6 @@
 #include "../../include/tjshared.h"
 using namespace tj::shared;
-using namespace Gdiplus;
+using namespace tj::shared::graphics;
 
 // TODO: move to some general class in TJShared
 int GetEncoderClsid(const WCHAR* format, CLSID* pClsid) {
@@ -60,8 +60,8 @@ void GraphWnd::SaveImage(const std::wstring& path) {
 			HDC windowDC = GetDC(GetWindow());
 
 			{
-				Gdiplus::Metafile mf(path.c_str(), windowDC);
-				Gdiplus::Graphics g(&mf);
+				graphics::Metafile mf(path.c_str(), windowDC);
+				graphics::Graphics g(&mf);
 				Paint(g, theme);
 			}
 			ReleaseDC(GetWindow(), windowDC);					
@@ -71,7 +71,7 @@ void GraphWnd::SaveImage(const std::wstring& path) {
 			std::wstring mime = std::wstring(L"image/")+ext;
 			Area rc = GetClientArea();
 			Bitmap* bmp = new Bitmap(rc.GetWidth(), rc.GetHeight());
-			Gdiplus::Graphics g(bmp);
+			graphics::Graphics g(bmp);
 			Paint(g, theme);
 			CLSID pngClsid;
 			GetEncoderClsid(mime.c_str(), &pngClsid);
@@ -386,7 +386,7 @@ void SimpleGraphItem::SetText(const std::wstring& t) {
 	_text = t;
 }
 
-void SimpleGraphItem::SetColor(const Gdiplus::Color& c) {
+void SimpleGraphItem::SetColor(const graphics::Color& c) {
 	_color = c;
 }
 
@@ -394,7 +394,7 @@ std::wstring SimpleGraphItem::GetText() const {
 	return _text;
 }
 
-void SimpleGraphItem::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
+void SimpleGraphItem::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	LinearGradientBrush brush(PointF(0.0f, float(_area.GetTop())), PointF(0.0f, float(_area.GetBottom())), Theme::ChangeAlpha(_color, 200), _color);
 	Pen border(_color, 1.0f);
 	g.FillRectangle(&brush, _area);

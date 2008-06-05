@@ -1,7 +1,7 @@
 #include "../../include/tjshared.h"
 #include <windowsx.h> 
 using namespace tj::shared;
-using namespace Gdiplus;
+using namespace tj::shared::graphics;
 
 const Pixels RootWnd::KStatusBarHeight = 18;
 
@@ -62,7 +62,7 @@ Area RootWnd::GetClientArea() const {
 	return rc;
 }
 
-void RootWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
+void RootWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	if(IsStatusBarShown()) {
 		Area wrc = Wnd::GetClientArea();
 		Area rc(wrc.GetLeft(), wrc.GetBottom()-KStatusBarHeight, wrc.GetWidth(), KStatusBarHeight);

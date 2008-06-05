@@ -25,7 +25,7 @@ namespace tj {
 				ChoiceListWnd();
 				virtual ~ChoiceListWnd();
 				virtual int GetItemCount();
-				virtual void PaintItem(int id, Gdiplus::Graphics& g, Area& row);
+				virtual void PaintItem(int id, graphics::Graphics& g, Area& row);
 				virtual int GetItemHeight();
 				virtual void AddChoice(ref<Choice> choice);
 				virtual void SetItemHeight(Pixels h);
@@ -43,7 +43,7 @@ namespace tj {
 			public:
 				ChoiceWnd();
 				virtual ~ChoiceWnd();
-				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme);
+				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
 				virtual void Layout();
 				virtual void OnSize(const Area& ns);
 				virtual void AddChoice(ref<Choice> trick);

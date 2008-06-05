@@ -1,6 +1,6 @@
 #include "../../include/tjshared.h"
 using namespace tj::shared;
-using namespace Gdiplus;
+using namespace tj::shared::graphics;
 
 /* ColorWheel */
 ColorWheel::ColorWheel() {
@@ -20,7 +20,7 @@ void ColorWheel::SetSize(Pixels x, Pixels y) {
 	_bitmap = 0;
 }
 
-void ColorWheel::PaintMarker(Gdiplus::Graphics& g, ref<Theme> theme, Pixels offx, Pixels offy, double h, double s) {
+void ColorWheel::PaintMarker(graphics::Graphics& g, ref<Theme> theme, Pixels offx, Pixels offy, double h, double s) {
 	Pixels centerX = (_w/2)+offx;
 	Pixels centerY = (_h/2)+offy;
 	float radius = float(min(_w,_h))/2.0f;
@@ -32,7 +32,7 @@ void ColorWheel::PaintMarker(Gdiplus::Graphics& g, ref<Theme> theme, Pixels offx
 	g.FillEllipse(&black, RectF(float(x-2.5f), float(y-2.5f), 5.0f, 5.0f));
 }
 
-void ColorWheel::Paint(Gdiplus::Graphics& g, ref<Theme> theme, Pixels offx, Pixels offy) {	
+void ColorWheel::Paint(graphics::Graphics& g, ref<Theme> theme, Pixels offx, Pixels offy) {	
 	if(_bitmap==0) {
 		float scale = theme->GetDPIScaleFactor();
 		int bitmapWidth = int(scale*_w);
@@ -131,7 +131,7 @@ void ColorPopupWnd::Notify(Wnd* source, Notification evt) {
 	Update();
 }
 
-void ColorPopupWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
+void ColorPopupWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	Area rc = GetClientArea();
 	SolidBrush back(theme->GetBackgroundColor());
 	g.FillRectangle(&back, rc);
@@ -264,7 +264,7 @@ ColorChooserWnd::ColorChooserWnd(RGBColor* c, RGBColor* tc): ChildWnd(L""), _col
 ColorChooserWnd::~ColorChooserWnd() {
 }
 
-void ColorChooserWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
+void ColorChooserWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	Area rc = GetClientArea();
 	SolidBrush bbr(theme->GetBackgroundColor());
 	g.FillRectangle(&bbr, rc);

@@ -1,6 +1,6 @@
 #include "../../include/tjshared.h"
 using namespace tj::shared;
-using namespace Gdiplus;
+using namespace tj::shared::graphics;
 
 PopupWnd::PopupWnd(HWND parent, bool isDialog): Wnd(L"", parent, TJ_DROPSHADOW_CLASS_NAME, true, WS_EX_TOOLWINDOW|WS_EX_CONTROLPARENT) {
 	UnsetStyle(WS_CAPTION);

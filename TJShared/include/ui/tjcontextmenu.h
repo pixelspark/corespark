@@ -57,7 +57,7 @@ namespace tj {
 				ContextPopupWnd(ContextMenu* cm, HWND parent);
 				virtual ~ContextPopupWnd();
 				virtual int DoModal(ref<Wnd> parent, Pixels x, Pixels y); // return -1 when no command
-				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme);
+				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
 				virtual void OnKey(Key k, wchar_t ch, bool down, bool isAccelerator);
 

@@ -130,7 +130,7 @@ namespace tj {
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 
 				// Messages
-				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme) = 0;
+				virtual void Paint(graphics::Graphics& g, ref<Theme> theme) = 0;
 				virtual void OnSize(const Area& newSize);
 				virtual void OnScroll(ScrollDirection dir);
 				virtual void OnActivate(bool activate);
@@ -151,7 +151,7 @@ namespace tj {
 			
 			private:
 				static void RegisterClasses();
-				Gdiplus::Bitmap* _buffer;
+				graphics::Bitmap* _buffer;
 				bool _doubleBuffered;
 				int _horizontalPos;
 				int _verticalPos;

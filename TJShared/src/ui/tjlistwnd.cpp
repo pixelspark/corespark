@@ -1,6 +1,6 @@
 #include "../../include/tjshared.h"
 #include <windowsx.h>
-using namespace Gdiplus;
+using namespace tj::shared::graphics;
 using namespace tj::shared;
 
 const float ListWnd::KMinimumColumnWidth = 0.075f;
@@ -77,7 +77,7 @@ Pixels ListWnd::GetHeaderHeight() const {
 	return theme->GetMeasureInPixels(Theme::MeasureListHeaderHeight);
 }
 
-void ListWnd::DrawCellText(Gdiplus::Graphics& g, Gdiplus::StringFormat* sf, Gdiplus::SolidBrush* br, Gdiplus::Font* font, int col, Area row, const std::wstring& str) {
+void ListWnd::DrawCellText(graphics::Graphics& g, graphics::StringFormat* sf, graphics::SolidBrush* br, graphics::Font* font, int col, Area row, const std::wstring& str) {
 	Column& column = _cols[col];
 	if(column._visible) {
 		sf->SetFormatFlags(sf->GetFormatFlags()|StringFormatFlagsLineLimit);
@@ -88,10 +88,10 @@ void ListWnd::DrawCellText(Gdiplus::Graphics& g, Gdiplus::StringFormat* sf, Gdip
 	}
 }
 
-void ListWnd::DrawCellIcon(Gdiplus::Graphics& g, int col, Area row, Icon& icon) {
+void ListWnd::DrawCellIcon(graphics::Graphics& g, int col, Area row, Icon& icon) {
 	Column& column = _cols[col];
 	if(column._visible) {
-		Gdiplus::Image* bitmap = icon.GetBitmap();
+		graphics::Image* bitmap = icon.GetBitmap();
 		if(bitmap==0) return;
 
 		Area cell(Pixels(GetColumnX(col)*row.GetWidth()), row.GetTop(), Pixels(GetColumnWidth(col)*row.GetWidth()), row.GetHeight());
@@ -102,7 +102,7 @@ void ListWnd::DrawCellIcon(Gdiplus::Graphics& g, int col, Area row, Icon& icon) 
 	}
 }
 
-void ListWnd::DrawCellDownArrow(Gdiplus::Graphics& g, int col, const Area& row) {
+void ListWnd::DrawCellDownArrow(graphics::Graphics& g, int col, const Area& row) {
 	Column& column = _cols[col];
 	if(column._visible) {
 		Icon ic(Icons::GetIconPath(Icons::IconDownArrow));
@@ -121,7 +121,7 @@ std::wstring ListWnd::GetEmptyText() const {
 	return _emptyText;
 }
 
-void ListWnd::Paint(Gdiplus::Graphics &g, ref<Theme> theme) {
+void ListWnd::Paint(graphics::Graphics &g, ref<Theme> theme) {
 	Area area = GetClientArea();
 	Pixels headHeight = GetHeaderHeight();
 

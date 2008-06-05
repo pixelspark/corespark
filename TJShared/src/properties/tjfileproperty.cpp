@@ -1,6 +1,6 @@
 #include "../../include/tjshared.h"
 using namespace tj::shared;
-using namespace Gdiplus;
+using namespace tj::shared::graphics;
 
 /* FilePropertyWnd */
 FilePropertyWnd::FilePropertyWnd(std::wstring name, std::wstring* path, const wchar_t* filter): ChildWnd(L""), _name(name), _filter(filter), _path(path), _linkIcon(Icons::GetIconPath(Icons::IconFile)) {

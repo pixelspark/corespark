@@ -1,6 +1,6 @@
 #include "../../include/tjshared.h"
 
-using namespace Gdiplus;
+using namespace tj::shared::graphics;
 using namespace tj::shared;
 #include <math.h>
 
@@ -24,7 +24,7 @@ void ProgressWnd::Update() {
 	}
 }
 
-void ProgressWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
+void ProgressWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	float v = fabs(_value);
 	
 	Area rc = GetClientArea();	

@@ -7,7 +7,7 @@ namespace tj {
 			public:
 				DialogWnd(const std::wstring& title, const std::wstring& question);
 				virtual ~DialogWnd();
-				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme);
+				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
 				virtual ref<PropertyGridWnd> GetPropertyGrid();
 				virtual void Layout();
 				virtual bool DoModal(HWND parent);

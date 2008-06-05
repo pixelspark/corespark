@@ -9,7 +9,7 @@ namespace tj {
 				virtual ~NotificationWnd();
 				virtual void Show(bool t);
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
-				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme);
+				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
 				int GetIndex();
 
 				enum {
@@ -19,7 +19,7 @@ namespace tj {
 				
 			protected:
 				std::wstring _text;
-				Gdiplus::Bitmap* _icon;
+				graphics::Bitmap* _icon;
 				RootWnd* _root;
 				int _index;
 

@@ -1,7 +1,7 @@
 #include "../../include/tjshared.h"
 #include "../../include/tjplatform.h"
 #include <windowsx.h> 
-using namespace Gdiplus;
+using namespace tj::shared::graphics;
 using namespace tj::shared;
 
 TabWnd::TabWnd(ref<WindowManager> root, const std::wstring& id): ChildWnd(L"TabWnd", NULL), 
@@ -86,7 +86,7 @@ void TabWnd::Paint(Graphics& g, ref<Theme> theme) {
 		}
 		else {
 			HWND root = GetAncestor(GetWindow(), GA_ROOT);
-			Gdiplus::Brush* abr = theme->GetApplicationBackgroundBrush(root, GetWindow());
+			graphics::Brush* abr = theme->GetApplicationBackgroundBrush(root, GetWindow());
 			if(abr!=0) {
 				g.FillRectangle(abr, Rect(rect.GetLeft(), rect.GetTop(), rect.GetRight(), _current?_headerHeight:(rect.GetHeight())));
 				Pen back(abr, 2.0f);
@@ -176,7 +176,7 @@ void TabWnd::Paint(Graphics& g, ref<Theme> theme) {
 			if(!(left<(rect.GetWidth()-2*_headerHeight))) {
 				//LinearGradientBrush disabled(PointF(float(buttonsLeft), 0.0f), PointF(rect.GetWidth(), 0.0f), Color(0,255,255,255),theme->GetDisabledOverlayColor());
 				HWND root = GetAncestor(GetWindow(), GA_ROOT);
-				Gdiplus::Brush* abr = theme->GetApplicationBackgroundBrush(root, GetWindow());
+				graphics::Brush* abr = theme->GetApplicationBackgroundBrush(root, GetWindow());
 
 				g.FillRectangle(abr, RectF((float)buttonsLeft, 0.0f, float(rect.GetWidth()-buttonsLeft), float(_headerHeight)-1.0f));
 			}

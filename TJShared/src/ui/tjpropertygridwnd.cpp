@@ -2,7 +2,7 @@
 #include <windowsx.h>
 #include <commctrl.h>
 using namespace tj::shared;
-using namespace Gdiplus;
+using namespace tj::shared::graphics;
 
 const Pixels PropertyGridWnd::KPathHeight = 24;
 const Pixels PropertyGridWnd::KMinimumNameColumnWidth = 10;
@@ -114,12 +114,12 @@ void PropertyGridWnd::Paint(Graphics& g, ref<Theme> theme) {
 		p->Update();
 		if(isSeparator || !previousCollapsed) {
 			if(GetFocus()==p->GetWindow()) {
-				LinearGradientBrush gbr(Gdiplus::Point(0, cH), Gdiplus::Point(0, cH+p->GetHeight()+10), theme->GetTimeSelectionColorStart(), theme->GetTimeSelectionColorEnd());
+				LinearGradientBrush gbr(graphics::Point(0, cH), graphics::Point(0, cH+p->GetHeight()+10), theme->GetTimeSelectionColorStart(), theme->GetTimeSelectionColorEnd());
 				g.FillRectangle(&gbr, Rect(1, cH+1, r.GetWidth()-2, p->GetHeight()+(2*KPropertyMargin)-2));
 			}
 
 			if(isSeparator) {
-				LinearGradientBrush gbr(Gdiplus::Point(0, cH), Gdiplus::Point(0, cH+p->GetHeight()+10), theme->GetActiveStartColor(), theme->GetActiveEndColor());
+				LinearGradientBrush gbr(graphics::Point(0, cH), graphics::Point(0, cH+p->GetHeight()+10), theme->GetActiveStartColor(), theme->GetActiveEndColor());
 				g.FillRectangle(&gbr, Rect(1, cH+1, r.GetWidth()-2, p->GetHeight()+(2*KPropertyMargin)-2));
 
 				SolidBrush dbr(theme->GetDisabledOverlayColor());

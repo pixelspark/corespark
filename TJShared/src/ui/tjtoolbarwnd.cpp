@@ -1,7 +1,7 @@
 #include "../../include/tjshared.h"
 #include <iomanip>
 #include <windowsx.h>
-using namespace Gdiplus;
+using namespace tj::shared::graphics;
 using namespace tj::shared;
 
 // ToolbarWnd
@@ -31,7 +31,7 @@ void ToolbarWnd::SetBackground(bool t) {
 	Repaint();
 }
 
-void ToolbarWnd::SetBackgroundColor(Gdiplus::Color c) {
+void ToolbarWnd::SetBackgroundColor(graphics::Color c) {
 	_bkColor = c;
 	Repaint();
 }
@@ -147,7 +147,7 @@ Area ToolbarWnd::GetFreeArea() const {
 	return rc;
 }
 
-void ToolbarWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
+void ToolbarWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	Area rc = GetClientArea();
 	int buttonSize = theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
 	
@@ -237,7 +237,7 @@ bool ToolbarWnd::CanShowHints() {
 }
 
 // ToolbarItem
-ToolbarItem::ToolbarItem(int command, Gdiplus::Bitmap* bmp, std::wstring text, bool separator): _icon(bmp) {
+ToolbarItem::ToolbarItem(int command, graphics::Bitmap* bmp, std::wstring text, bool separator): _icon(bmp) {
 	_separator = separator;
 	_command = command;
 	_text = text;
@@ -350,7 +350,7 @@ void SearchToolbarWnd::SetSearchBoxSize(Pixels w, Pixels h) {
 	Layout();
 }
 
-void SearchToolbarWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
+void SearchToolbarWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	ToolbarWnd::Paint(g,theme);
 	Area search = GetSearchBoxArea();
 

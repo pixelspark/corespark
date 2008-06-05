@@ -1,7 +1,7 @@
 #include "../include/tjshared.h"
 #include <math.h>
 using namespace tj::shared;
-using namespace Gdiplus;
+using namespace tj::shared::graphics;
 
 Vector::Vector(float fx, float fy, float fz): x(fx), y(fy), z(fz) {
 }

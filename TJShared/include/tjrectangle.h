@@ -28,7 +28,7 @@ namespace tj {
 					_w = T(r.right-r.left);
 				}
 
-				BasicRectangle(const Gdiplus::RectF& r) {
+				BasicRectangle(const graphics::RectF& r) {
 					_x = (T)r.GetLeft();
 					_y = (T)r.GetTop();
 					_h = T(r.GetBottom())-_y;
@@ -90,8 +90,8 @@ namespace tj {
 					return IsInside(pt.x, pt.y);
 				}
 
-				inline operator Gdiplus::RectF() const {
-					return Gdiplus::RectF(float(_x), float(_y), float(_w), float(_h));
+				inline operator graphics::RectF() const {
+					return graphics::RectF(float(_x), float(_y), float(_w), float(_h));
 				}
 
 				inline operator RECT() const {

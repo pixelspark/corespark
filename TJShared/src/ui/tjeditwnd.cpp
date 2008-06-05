@@ -1,7 +1,7 @@
 #include "../../include/tjshared.h"
 #include <commctrl.h>
 using namespace tj::shared;
-using namespace Gdiplus;
+using namespace tj::shared::graphics;
 
 // declared and used in tjui.cpp, but shouldn't be public
 LRESULT CALLBACK WndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
@@ -35,7 +35,7 @@ void EditWnd::UpdateColor() {
 	
 }
 
-void EditWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
+void EditWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 }
 
 void EditWnd::Layout() {

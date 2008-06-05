@@ -17,7 +17,7 @@ LoggerWnd::~LoggerWnd() {
 	DeleteObject(_font);
 }
 
-void LoggerWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
+void LoggerWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 }
 
 void LoggerWnd::Log(const std::wstring& ws) {

@@ -62,7 +62,7 @@ namespace tj {
 				virtual ~FloatingPane();
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 				virtual void Layout();
-				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme);
+				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
 
 			protected:
 				ref<Pane> _pane;

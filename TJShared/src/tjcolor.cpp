@@ -1,6 +1,6 @@
 #include "../include/tjshared.h"
 using namespace tj::shared;
-using namespace Gdiplus;
+using namespace tj::shared::graphics;
 
 const Pixels ColorPopupWnd::KWheelMargin = 5;
 
@@ -163,8 +163,8 @@ void RGBColor::Load(TiXmlElement* you) {
 	_b = double(LoadAttributeSmall(you, "b", (int)(_b*255.0))) / 255.0;
 }
 
-RGBColor::operator Gdiplus::Color() {
-	return Gdiplus::Color(BYTE(_r*255.0),BYTE(_g*255.0),BYTE(_b*255.0));
+RGBColor::operator graphics::Color() {
+	return graphics::Color(BYTE(_r*255.0),BYTE(_g*255.0),BYTE(_b*255.0));
 }
 
 ColorWnd::ColorWnd(unsigned char r, unsigned char g, unsigned char b): ChildWnd(L"Color") {

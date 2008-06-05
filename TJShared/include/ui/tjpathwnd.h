@@ -13,14 +13,14 @@ namespace tj {
 				virtual ~Crumb();
 				std::wstring GetText() const;
 				std::wstring GetTextTrimmed() const;
-				Gdiplus::Bitmap* GetIcon();
+				graphics::Bitmap* GetIcon();
 				virtual ref< std::vector< ref<Crumb> > > GetChildren();
 				virtual ref<Inspectable> GetSubject();
 				virtual void SetText(const std::wstring& x);
 
 			protected:
 				std::wstring _text;
-				Gdiplus::Bitmap* _icon;
+				graphics::Bitmap* _icon;
 				static const int KMaxTextLength = 15;
 		};
 
@@ -54,7 +54,7 @@ namespace tj {
 				PathWnd(PropertyGridWnd* grid);
 				virtual ~PathWnd();
 				virtual void Update();
-				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme);
+				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
 				virtual void SetPath(ref<Path> p);
 				virtual ref<Crumb> GetCrumbAt(Pixels x, int* left=0);
 

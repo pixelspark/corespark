@@ -1,7 +1,7 @@
 #include "../../include/tjshared.h"
 #include <math.h>
 #include <windowsx.h>
-using namespace Gdiplus;
+using namespace tj::shared::graphics;
 using namespace tj::shared;
 
 const float SplitterWnd::KSnapMargin = 0.07f;
@@ -209,7 +209,7 @@ void SplitterWnd::Paint(Graphics& g, ref<Theme> theme) {
 	
 	if(_collapse==CollapseNone) {
 		HWND root = GetAncestor(GetWindow(), GA_ROOT);
-		Gdiplus::Brush* abr = theme->GetApplicationBackgroundBrush(root, GetWindow());
+		graphics::Brush* abr = theme->GetApplicationBackgroundBrush(root, GetWindow());
 		if(abr!=0) {
 			g.FillRectangle(abr, rc);
 		}

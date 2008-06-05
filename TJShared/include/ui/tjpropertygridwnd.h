@@ -20,7 +20,7 @@ namespace tj {
 				LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 				void Layout();
 				void ClearThemeCache();
-				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme);
+				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
 				void Clear();
 				void SetNameWidth(int w);
 				virtual void OnScroll(ScrollDirection dir);

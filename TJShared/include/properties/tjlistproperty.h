@@ -27,29 +27,29 @@ namespace tj {
 						virtual ~PropertyWnd() {
 						}
 
-						virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
+						virtual void Paint(graphics::Graphics& g, ref<Theme> theme) {
 							// Draw background
 							Area rc = GetClientArea();
-							Gdiplus::SolidBrush back(theme->GetBackgroundColor());
+							graphics::SolidBrush back(theme->GetBackgroundColor());
 							g.FillRectangle(&back, rc);
 							if(IsMouseOver()) {
 								theme->DrawToolbarBackground(g, 0.0f, 0.0f, float(rc.GetWidth()), float(rc.GetHeight()));
 							}
 
-							Gdiplus::SolidBrush borderBrush(theme->GetActiveStartColor());
+							graphics::SolidBrush borderBrush(theme->GetActiveStartColor());
 							Area borderArea = rc;
 							borderArea.Narrow(0,0,1,1);
-							Gdiplus::Pen borderPen(&borderBrush, 1.0f);
+							graphics::Pen borderPen(&borderBrush, 1.0f);
 							g.DrawRectangle(&borderPen, borderArea);
 							
 							Area buttonArea(rc.GetRight()-16, rc.GetTop(), 16,rc.GetHeight());
 
-							Gdiplus::LinearGradientBrush buttonBr(Gdiplus::PointF(0.0f, float(rc.GetTop()-1)), Gdiplus::PointF(0.0f, float(rc.GetBottom()+1)), theme->GetActiveStartColor(), theme->GetActiveEndColor());
+							graphics::LinearGradientBrush buttonBr(graphics::PointF(0.0f, float(rc.GetTop()-1)), graphics::PointF(0.0f, float(rc.GetBottom()+1)), theme->GetActiveStartColor(), theme->GetActiveEndColor());
 							g.FillRectangle(&buttonBr, buttonArea);
 
 							if(!IsMouseOver()) {
 								buttonArea.Narrow(1,1,1,1);
-								Gdiplus::SolidBrush disabledBr(theme->GetDisabledOverlayColor());
+								graphics::SolidBrush disabledBr(theme->GetDisabledOverlayColor());
 								g.FillRectangle(&disabledBr, buttonArea);
 							}
 
@@ -58,11 +58,11 @@ namespace tj {
 							g.DrawImage(_arrowIcon, iconArea);
 
 							// Text parameters
-							Gdiplus::SolidBrush tbr(theme->GetTextColor());
+							graphics::SolidBrush tbr(theme->GetTextColor());
 							Area text = rc;
 							text.Narrow(2,2,0,0);
-							Gdiplus::StringFormat sf;
-							sf.SetTrimming(Gdiplus::StringTrimmingEllipsisPath);
+							graphics::StringFormat sf;
+							sf.SetTrimming(graphics::StringTrimmingEllipsisPath);
 
 							// Fetch text
 							T value = *(_prop._value);

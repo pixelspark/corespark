@@ -1,6 +1,6 @@
 #include "../../include/tjshared.h"
 using namespace tj::shared;
-using namespace Gdiplus;
+using namespace tj::shared::graphics;
 
 TextProperty::TextProperty(std::wstring name, std::wstring* value, Pixels height): Property(name, true) {
 	assert(value!=0);

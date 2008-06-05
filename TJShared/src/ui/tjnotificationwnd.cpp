@@ -1,6 +1,6 @@
 #include "../../include/tjshared.h"
 using namespace tj::shared;
-using namespace Gdiplus;
+using namespace tj::shared::graphics;
 
 const int NotificationWnd::DefaultNotificationHeight = 30;
 const int NotificationWnd::DefaultNotificationMargin = 10;
@@ -43,7 +43,7 @@ int NotificationWnd::GetIndex() {
 	return _index;
 }
 
-void NotificationWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
+void NotificationWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	Area rect = GetClientArea();
 	
 	SolidBrush r(theme->GetBackgroundColor());

@@ -34,7 +34,7 @@ namespace tj {
 				virtual Area& GetArea();
 				virtual void SetPosition(Pixels x, Pixels y);
 				virtual void SetSize(Pixels x, Pixels y);
-				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme) = 0;
+				virtual void Paint(graphics::Graphics& g, ref<Theme> theme) = 0;
 				virtual void AddArrow(ref<GraphItem> to, GraphArrow::Direction dir, const std::wstring& text);
 				virtual void OnMouse(MouseEvent e, Pixels x, Pixels y, ref<GraphWnd> gw);
 				virtual void OnContextMenu(Pixels x, Pixels y, ref<GraphWnd> gw);
@@ -55,13 +55,13 @@ namespace tj {
 				SimpleGraphItem();
 				virtual ~SimpleGraphItem();
 				virtual void SetText(const std::wstring& t);
-				virtual void SetColor(const Gdiplus::Color& c);
+				virtual void SetColor(const graphics::Color& c);
 				virtual std::wstring GetText() const;
-				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme);
+				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
 
 			protected:
 				std::wstring _text;
-				Gdiplus::Color _color;
+				graphics::Color _color;
 		};
 
 		class EXPORTED GraphWnd: public ChildWnd {
@@ -69,7 +69,7 @@ namespace tj {
 				GraphWnd();
 				virtual ~GraphWnd();
 				virtual void OnSize(const Area& ns);
-				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme);
+				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
 				virtual void AddItem(ref<GraphItem> item);
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
 				virtual ref<GraphItem> GetItemAt(Pixels x, Pixels y);

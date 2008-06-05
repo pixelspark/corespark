@@ -1,6 +1,6 @@
 #include "../include/tjshared.h"
 using namespace tj::shared;
-using namespace Gdiplus;
+using namespace tj::shared::graphics;
 
 Icon::Icon(std::wstring rid) {
 	std::wstring path = ResourceManager::Instance()->Get(rid, true);
@@ -11,7 +11,7 @@ Icon::Icon(std::wstring rid) {
 	}
 }
 
-Icon::Icon(Gdiplus::Image* bmp) {
+Icon::Icon(graphics::Image* bmp) {
 	_bitmap = bmp;
 }
 
@@ -23,10 +23,10 @@ bool Icon::IsLoaded() const {
 	return _bitmap!=0;
 }
 
-Gdiplus::Image* Icon::GetBitmap() {
+graphics::Image* Icon::GetBitmap() {
 	return _bitmap;
 }
 
-Icon::operator Gdiplus::Image*() {
+Icon::operator graphics::Image*() {
 	return _bitmap;
 }

@@ -1,5 +1,5 @@
 #include "../../include/tjshared.h"
-using namespace Gdiplus;
+using namespace tj::shared::graphics;
 using namespace tj::shared;
 
 ButtonWnd::ButtonWnd(const wchar_t* image, const wchar_t* text): ChildWnd(L"", false, true), _disabled(false) {

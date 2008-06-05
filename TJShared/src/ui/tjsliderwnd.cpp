@@ -1,6 +1,6 @@
 #include "../../include/tjshared.h"
 #include <windowsx.h>
-using namespace Gdiplus;
+using namespace tj::shared::graphics;
 using namespace tj::shared;
 
 const int SliderWnd::KDraggerWidth = 16;
@@ -99,8 +99,8 @@ void SliderWnd::Paint(Graphics& g, ref<Theme> theme) {
 
 	Area rect = GetClientArea();
 
-	Gdiplus::Color colorStart = theme->GetSliderColorStart(_color);
-	Gdiplus::Color colorEnd = theme->GetSliderColorEnd(_color);
+	graphics::Color colorStart = theme->GetSliderColorStart(_color);
+	graphics::Color colorEnd = theme->GetSliderColorEnd(_color);
 
 	// background
 	SolidBrush backBrush(theme->GetBackgroundColor());

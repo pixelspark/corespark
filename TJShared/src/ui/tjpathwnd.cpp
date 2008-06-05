@@ -1,7 +1,7 @@
 #include "../../include/tjshared.h"
 #include <windowsx.h>
 using namespace tj::shared;
-using namespace Gdiplus;
+using namespace tj::shared::graphics;
 
 /* Path */
 Path::Path() {
@@ -60,7 +60,7 @@ void Crumb::SetText(const std::wstring& x) {
 	_text = x;
 }
 
-Gdiplus::Bitmap* Crumb::GetIcon() {
+graphics::Bitmap* Crumb::GetIcon() {
 	return _icon;
 }
 
@@ -124,7 +124,7 @@ ref<Crumb> PathWnd::GetCrumbAt(int x, int* left) {
 	return 0;
 }
 
-void PathWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
+void PathWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	Area rc = GetClientArea();
 	
 	SolidBrush zwart(theme->GetBackgroundColor());

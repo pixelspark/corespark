@@ -29,6 +29,7 @@ namespace tj {
 				tj::shared::Timestamp GetLastAnnounce() const;
 				Features GetFeatures() const;
 				void SetFeatures(Features f);
+				const tj::shared::Networking::MACAddress& GetMACAddress() const;
 
 				static std::wstring GetHostName(const std::wstring& ip);
 				static std::wstring GetHostName(const in_addr& addr);
@@ -45,6 +46,7 @@ namespace tj {
 				std::wstring _hostName;
 				int _instance;
 				Features _features;
+				tj::shared::Networking::MACAddress _mac;
 		};
 	}
 }

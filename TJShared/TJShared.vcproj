@@ -143,7 +143,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="gdiplus.lib comctl32.lib strmiids.lib quartz.lib ../libraries/tinyxml.lib comsupp.lib ws2_32.lib"
+				AdditionalDependencies="gdiplus.lib comctl32.lib strmiids.lib quartz.lib iphlpapi.lib ../libraries/tinyxml.lib comsupp.lib ws2_32.lib"
 				OutputFile="$(OutDir)\..\..\Release\tjshared.dll"
 				GenerateManifest="true"
 				GenerateDebugInformation="true"

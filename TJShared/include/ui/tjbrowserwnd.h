@@ -10,7 +10,7 @@ namespace tj {
 				BrowserToolbarWnd(BrowserWnd* browser);
 				virtual ~BrowserToolbarWnd();
 				virtual void OnCommand(int c);
-				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme);
+				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
 				virtual void SetURL(std::wstring url);
 				virtual void Layout();
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
@@ -37,7 +37,7 @@ namespace tj {
 			public:
 				BrowserWnd(std::wstring title);
 				virtual ~BrowserWnd();
-				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme);
+				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
 				void Hide(bool t);
 				void Navigate(const std::wstring& url);
 				virtual void Layout();

@@ -15,7 +15,7 @@ namespace tj {
 				ColorWnd(unsigned char r, unsigned char g, unsigned char b);
 				virtual ~ColorWnd();
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
-				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme);
+				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
 
 				unsigned char _r,_g,_b;
 		};
@@ -27,7 +27,7 @@ namespace tj {
 				virtual bool IsChecked() const;
 				virtual void SetChecked(bool t);
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
-				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme);
+				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
 				virtual void OnSize(const Area& ns);
 				virtual void OnFocus(bool f);
 				virtual void OnKey(Key k, wchar_t ch, bool down, bool isAccelerator);

@@ -8,7 +8,7 @@ namespace tj {
 				ButtonWnd(const wchar_t* image, const wchar_t* text=0);
 				virtual ~ButtonWnd();
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
-				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme);
+				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
 				virtual void SetListener(ref<Listener> lf);
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
 				virtual void Fill(LayoutFlags lf, Area& rect, bool direct = true);
@@ -21,7 +21,7 @@ namespace tj {
 				virtual void OnFocus(bool f);
 
 				std::wstring _text;
-				Gdiplus::Bitmap* _image;
+				graphics::Bitmap* _image;
 				weak<Listener> _listener;
 				bool _down;
 				bool _disabled;
@@ -34,11 +34,11 @@ namespace tj {
 				virtual ~StateButtonWnd();
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 				void SetOn(ButtonState o);
-				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme);
+				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
 				
 			protected:
-				Gdiplus::Bitmap* _offImage;
-				Gdiplus::Bitmap* _otherImage;
+				graphics::Bitmap* _offImage;
+				graphics::Bitmap* _otherImage;
 				ButtonState _on;
 		};
 	}

@@ -1,6 +1,6 @@
 #include "../../include/tjshared.h"
 using namespace tj::shared;
-using namespace Gdiplus;
+using namespace tj::shared::graphics;
 
 const Pixels ContextPopupWnd::KItemHeight = 19;
 const Pixels ContextPopupWnd::KMinContextMenuWidth = 150;
@@ -228,7 +228,7 @@ void ContextPopupWnd::OnKey(Key k, wchar_t ch, bool down, bool accelerator) {
 	Repaint();
 }
 
-void ContextPopupWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
+void ContextPopupWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	Area rc = GetClientArea();
 	SolidBrush back(theme->GetBackgroundColor());
 	g.FillRectangle(&back, rc);

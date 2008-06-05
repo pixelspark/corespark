@@ -1,6 +1,6 @@
 #include "../../include/tjshared.h"
 using namespace tj::shared;
-using namespace Gdiplus;
+using namespace tj::shared::graphics;
 
 /** Choice **/
 Choice::Choice(const std::wstring& title, const std::wstring& text, const std::wstring& image): _title(title), _text(text), _image(image) {
@@ -63,7 +63,7 @@ int ChoiceListWnd::GetItemCount() {
 	return (int)_choices.size();
 }
 
-void ChoiceListWnd::PaintItem(int id, Gdiplus::Graphics &g, tj::shared::Area &row) {
+void ChoiceListWnd::PaintItem(int id, graphics::Graphics &g, tj::shared::Area &row) {
 	ref<Theme> theme = ThemeManager::GetTheme();
 	ref<Choice> choice = _choices.at(id);
 	if(choice) {

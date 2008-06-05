@@ -1,7 +1,7 @@
 #include "../../include/tjshared.h"
 #include <math.h>
 using namespace tj::shared;
-using namespace Gdiplus;
+using namespace tj::shared::graphics;
 
 namespace tj {
 	namespace shared {
@@ -32,7 +32,7 @@ namespace tj {
 					DeleteObject((HGDIOBJ)_font);
 				}
 
-				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
+				virtual void Paint(graphics::Graphics& g, ref<Theme> theme) {
 				}
 
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp) {

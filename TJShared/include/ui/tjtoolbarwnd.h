@@ -6,7 +6,7 @@ namespace tj {
 
 		class EXPORTED ToolbarItem {
 			public:
-				ToolbarItem(int command=0, Gdiplus::Bitmap* bmp=0, std::wstring text=L"", bool separator=false);
+				ToolbarItem(int command=0, graphics::Bitmap* bmp=0, std::wstring text=L"", bool separator=false);
 				ToolbarItem(int command, std::wstring icon, std::wstring text=L"", bool separator=false);
 				~ToolbarItem();
 				bool IsSeparator() const;
@@ -40,14 +40,14 @@ namespace tj {
 				ToolbarWnd();
 				virtual ~ToolbarWnd();
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
-				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme);
+				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
 				virtual void Layout();
 				virtual void Add(ref<ToolbarItem> item);
 				virtual void OnCommand(int c);
 				virtual void Fill(LayoutFlags f, Area& r, bool direct = true);
 				virtual Pixels GetTotalButtonWidth() const;
 				virtual void SetBackground(bool t);
-				virtual void SetBackgroundColor(Gdiplus::Color c);
+				virtual void SetBackgroundColor(graphics::Color c);
 				virtual bool HasTip() const;
 				virtual void SetTip(ref<Wnd> tipWindow);
 
@@ -57,7 +57,7 @@ namespace tj {
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
 				virtual void OnSize(const Area& ns);
 				virtual bool CanShowHints();
-				virtual void DrawToolbarButton(Gdiplus::Graphics& g, Pixels x, Icon& icon, const Area& rc, ref<Theme> theme, bool over, bool down, bool separator=false);
+				virtual void DrawToolbarButton(graphics::Graphics& g, Pixels x, Icon& icon, const Area& rc, ref<Theme> theme, bool over, bool down, bool separator=false);
 
 				std::vector< ref<ToolbarItem> > _items;
 				static const int KIconWidth = 16;
@@ -65,7 +65,7 @@ namespace tj {
 				bool _in;
 				int _idx;
 				bool _bk;
-				Gdiplus::Color _bkColor;
+				graphics::Color _bkColor;
 				Icon _tipIcon;
 				ref<Wnd> _tip;
 		};
@@ -75,7 +75,7 @@ namespace tj {
 				SearchToolbarWnd();
 				virtual ~SearchToolbarWnd();
 				virtual void Layout();
-				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme);
+				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
 				virtual void Notify(Wnd* src, Notification n);
 
 			protected:

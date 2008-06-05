@@ -1,6 +1,6 @@
 #include "../../include/tjshared.h"
 using namespace tj::shared;
-using namespace Gdiplus;
+using namespace tj::shared::graphics;
 
 DialogWnd::DialogWnd(const std::wstring& title, const std::wstring& question): TopWnd(title.c_str()), _question(question) {
 	SetStyle(WS_POPUPWINDOW|WS_THICKFRAME);
@@ -79,7 +79,7 @@ void DialogWnd::EndModal(bool result) {
 	_loop.End(result?ModalLoop::ResultSucceeded:ModalLoop::ResultCancelled);
 }
 
-void DialogWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
+void DialogWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	Area header = GetClientArea();
 	header.SetHeight(KHeaderHeight);
 

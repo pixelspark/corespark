@@ -14,7 +14,7 @@ namespace tj {
 
 				ListWnd();
 				virtual ~ListWnd();
-				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme);
+				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
 				virtual void OnSize(const Area& ns);
 				virtual void OnScroll(ScrollDirection dir);
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
@@ -38,7 +38,7 @@ namespace tj {
 			protected:
 				// implemented by child
 				virtual int GetItemCount() = 0;
-				virtual void PaintItem(int id, Gdiplus::Graphics& g, Area& row) = 0;
+				virtual void PaintItem(int id, graphics::Graphics& g, Area& row) = 0;
 				virtual Pixels GetItemHeight();
 				virtual void OnClickItem(int id, int col, Pixels x, Pixels y);
 				virtual void OnRightClickItem(int id, int col);
@@ -50,9 +50,9 @@ namespace tj {
 				virtual void DoContextMenu(Pixels x, Pixels y);
 
 				// other stuff
-				void DrawCellText(Gdiplus::Graphics& g, Gdiplus::StringFormat* sf, Gdiplus::SolidBrush* br, Gdiplus::Font* font, int col, Area row, const std::wstring& str);
-				void DrawCellDownArrow(Gdiplus::Graphics& g, int col, const Area& row);
-				void DrawCellIcon(Gdiplus::Graphics& g, int col, Area row, Icon& icon);
+				void DrawCellText(graphics::Graphics& g, graphics::StringFormat* sf, graphics::SolidBrush* br, graphics::Font* font, int col, Area row, const std::wstring& str);
+				void DrawCellDownArrow(graphics::Graphics& g, int col, const Area& row);
+				void DrawCellIcon(graphics::Graphics& g, int col, Area row, Icon& icon);
 
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
 				int GetRowIDByHeight(int h);

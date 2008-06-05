@@ -1,6 +1,6 @@
 #include "../../include/tjshared.h"
 #include "../../resource.h"
-using namespace Gdiplus;
+using namespace tj::shared::graphics;
 using namespace tj::shared;
 
 const float Theme::KDefaultDPI = 96.0f;
@@ -24,7 +24,7 @@ Theme::~Theme() {
 	DestroyCursor(_grabbed);
 }
 
-Gdiplus::Color Theme::GetLinkColor() const {
+graphics::Color Theme::GetLinkColor() const {
 	return Color(0,0,255);
 }
 
@@ -62,7 +62,7 @@ std::wstring Icons::GetIconPath(IconIdentifier i) {
 	Throw(L"Icon with specified does not exist (programming error)!", ExceptionTypeError);
 }
 
-Area Theme::MeasureText(const std::wstring& text, Gdiplus::Font* font) const {
+Area Theme::MeasureText(const std::wstring& text, graphics::Font* font) const {
 	HDC dc = GetDC(NULL);
 	float df = GetDPIScaleFactor();
 	Area ret;
@@ -84,11 +84,11 @@ float Theme::GetDPIScaleFactor() const {
 	return _dpi;
 }
 
-void Theme::DrawToolbarBackground(Gdiplus::Graphics& g, float x, float y, float w, float h) {
+void Theme::DrawToolbarBackground(graphics::Graphics& g, float x, float y, float w, float h) {
 	DrawToolbarBackground(g,Area(Pixels(x),Pixels(y),Pixels(w),Pixels(h)));
 }
 
-void Theme::DrawToolbarBackground(Gdiplus::Graphics& g, const Area& rc) {
+void Theme::DrawToolbarBackground(graphics::Graphics& g, const Area& rc) {
 	SolidBrush zwart(GetBackgroundColor());
 	g.FillRectangle(&zwart, rc);
 
@@ -103,11 +103,11 @@ void Theme::DrawToolbarBackground(Gdiplus::Graphics& g, const Area& rc) {
 	g.FillRectangle(&glas, RectF(float(rc.GetLeft()), float(rc.GetTop()), float(rc.GetWidth()), float(rc.GetHeight())/2.0f));
 }
 
-Gdiplus::Color Theme::GetFocusColor() const {
+graphics::Color Theme::GetFocusColor() const {
 	return Color::LightBlue;
 }
 
-void Theme::DrawFocusRectangle(Gdiplus::Graphics& g, const Area& c) {
+void Theme::DrawFocusRectangle(graphics::Graphics& g, const Area& c) {
 	static REAL blendPositions[3] = {0.0f, 0.2f, 1.0f};
 	static REAL blendFactors[3] = {1.0f, 0.0f, 0.0f};
 	static const Pixels KFocusRectangleWidth = 6;
@@ -131,7 +131,7 @@ void Theme::DrawFocusRectangle(Gdiplus::Graphics& g, const Area& c) {
 	g.DrawRectangle(&focusPen, rc);
 }
 
-void Theme::DrawFocusEllipse(Gdiplus::Graphics& g, const Area& c) {
+void Theme::DrawFocusEllipse(graphics::Graphics& g, const Area& c) {
 	static REAL blendPositions[3] = {0.0f, 0.2f, 1.0f};
 	static REAL blendFactors[3] = {1.0f, 0.0f, 0.0f};
 	static const Pixels KFocusRectangleWidth = 3;
@@ -179,18 +179,18 @@ HCURSOR Theme::GetGrabbedCursor() const {
 	return _grabbed;
 }
 
-Gdiplus::Color Theme::ChangeAlpha(Gdiplus::Color col, int a) {
-	return Gdiplus::Color(a, col.GetR(), col.GetG(), col.GetB());
+graphics::Color Theme::ChangeAlpha(graphics::Color col, int a) {
+	return graphics::Color(a, col.GetR(), col.GetG(), col.GetB());
 }
 
-Gdiplus::Font* Theme::GetGUIFontBold() const {
+graphics::Font* Theme::GetGUIFontBold() const {
 	if(_fontBold==0) {
 		_fontBold = new Font(L"Tahoma", 11, FontStyleBold, UnitPixel, 0);
 	}
 	return _fontBold;
 }
 
-Gdiplus::Font* Theme::GetGUIFont() const {
+graphics::Font* Theme::GetGUIFont() const {
 	if(_font==0) {
 		_font = new Font(L"Tahoma", 11, FontStyleRegular, UnitPixel, 0);
 	}
@@ -198,14 +198,14 @@ Gdiplus::Font* Theme::GetGUIFont() const {
 }
 
 
-Gdiplus::Font* Theme::GetLinkFont() const {
+graphics::Font* Theme::GetLinkFont() const {
 	if(_fontLink==0) {
 		_fontLink = new Font(L"Tahoma", 11, FontStyleUnderline, UnitPixel, 0);
 	}
 	return _fontLink;
 }
 
-Gdiplus::Font* Theme::GetGUIFontSmall() const {
+graphics::Font* Theme::GetGUIFontSmall() const {
 	if(_fontSmall==0) {
 		_fontSmall = new Font(L"Tahoma", 9, FontStyleRegular, UnitPixel, 0);
 	}
@@ -316,11 +316,11 @@ Color Theme::GetTrackDescriptionTextColor() const {
 	return Color(120,120,120);
 }
 
-Gdiplus::Color Theme::GetTimeSelectionColorEnd() const {
+graphics::Color Theme::GetTimeSelectionColorEnd() const {
 	return Color(100,100,50, 0); //Color(50,255,255,255);
 }
 
-Gdiplus::Color Theme::GetTimeSelectionColorStart() const {
+graphics::Color Theme::GetTimeSelectionColorStart() const {
 	return Color(100,200,100, 0); //Color(0, 255, 255, 255);
 }
 
@@ -383,7 +383,7 @@ Brush* Theme::GetApplicationBackgroundBrush(HWND root, HWND child) const {
 	GetWindowRect(root, &rootrc);
 	GetWindowRect(child, &childrc);
 
-	Gdiplus::LinearGradientBrush* lbr = new Gdiplus::LinearGradientBrush(PointF(0.0f, -float(childrc.top-rootrc.top)), PointF(0.0f,float(rootrc.bottom-rootrc.top)), Color(0,0,0), Color(90,90,90));
+	graphics::LinearGradientBrush* lbr = new graphics::LinearGradientBrush(PointF(0.0f, -float(childrc.top-rootrc.top)), PointF(0.0f,float(rootrc.bottom-rootrc.top)), Color(0,0,0), Color(90,90,90));
 	lbr->SetWrapMode(WrapModeClamp);
 	REAL factors[3] = {1.0f, 0.0f, 0.0f};
 	REAL positions[3] = {0.0f, 0.25f ,1.0f};

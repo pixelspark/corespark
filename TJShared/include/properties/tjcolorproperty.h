@@ -9,7 +9,7 @@ namespace tj {
 			public:
 				ColorChooserWnd(RGBColor* c, RGBColor* tc);
 				virtual ~ColorChooserWnd();
-				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme);
+				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
 				virtual void Notify(Wnd* source, Notification n);
 
@@ -26,22 +26,22 @@ namespace tj {
 				ColorWheel();
 				virtual ~ColorWheel();
 				virtual void SetSize(Pixels x, Pixels y);
-				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme, Pixels offx, Pixels offy);
-				virtual void PaintMarker(Gdiplus::Graphics& g, ref<Theme> theme, Pixels offx, Pixels offy, double h, double s);
+				virtual void Paint(graphics::Graphics& g, ref<Theme> theme, Pixels offx, Pixels offy);
+				virtual void PaintMarker(graphics::Graphics& g, ref<Theme> theme, Pixels offx, Pixels offy, double h, double s);
 				virtual RGBColor GetColorAt(Pixels x, Pixels y, double brightness);
 				virtual double GetHueAt(Pixels x, Pixels y);
 				virtual double GetSaturationAt(Pixels x, Pixels y);
 
 			protected:
 				Pixels _w, _h;
-				Gdiplus::Bitmap* _bitmap;
+				graphics::Bitmap* _bitmap;
 		};
 		
 		class EXPORTED ColorPopupWnd: public PopupWnd, public Listener {
 			public:
 				ColorPopupWnd();
 				virtual ~ColorPopupWnd();
-				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme);
+				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
 				virtual void Layout();
 				virtual void Notify(Wnd* source, Notification evt);
 				virtual void Update();

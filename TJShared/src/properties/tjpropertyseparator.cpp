@@ -1,6 +1,6 @@
 #include "../../include/tjshared.h"
 using namespace tj::shared;
-using namespace Gdiplus;
+using namespace tj::shared::graphics;
 
 PropertySeparator::PropertySeparator(std::wstring group, bool collapsed): Property(group), _collapsed(collapsed) {
 }

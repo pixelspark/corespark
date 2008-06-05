@@ -19,13 +19,21 @@
 #include <deque>
 #include <math.h>
 
-#include <winsock2.h>
-#include <windows.h>
-#include <Gdiplus.h>
+#ifdef _WIN32
+	#include <winsock2.h>
+	#include <windows.h>
+	#include <Gdiplus.h>
 
-interface IGraphBuilder;
-interface IPin;
-interface IBaseFilter;
+	namespace tj {
+		namespace shared {
+			namespace graphics = ::Gdiplus;
+		}
+	}
+
+	interface IGraphBuilder;
+	interface IPin;
+	interface IBaseFilter;
+#endif
 
 // TODO: move tinyxml to other folder
 #include "../../Libraries/tinyxml.h"

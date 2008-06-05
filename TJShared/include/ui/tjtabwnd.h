@@ -18,7 +18,7 @@ namespace tj {
 				virtual void Layout();
 				virtual void Update();
 				virtual void Clear();
-				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme);
+				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
 				void SetChildStyle(bool c);
 				
 				void Rename(ref<Wnd> pane, std::wstring name);

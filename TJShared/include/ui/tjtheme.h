@@ -52,68 +52,68 @@ namespace tj {
 				};
 
 				// Colors
-				virtual Area MeasureText(const std::wstring& text, Gdiplus::Font* font) const;
-				virtual Gdiplus::Color GetLinkColor() const;
-				virtual Gdiplus::Color GetBackgroundColor() const;
-				virtual Gdiplus::Color GetVideoBackgroundColor() const;
-				virtual Gdiplus::Color GetEditBackgroundColor() const;
-				virtual Gdiplus::Color GetTimeBackgroundColor() const;
-				virtual Gdiplus::Color GetPropertyBackgroundColor() const;
-				virtual Gdiplus::Color GetLineColor() const;
-				virtual Gdiplus::Color GetTextColor() const;
-				virtual Gdiplus::Color GetActiveTrackColor() const;
-				virtual Gdiplus::Color GetTabButtonBackgroundColor() const;
-				virtual Gdiplus::Color GetHintColor() const;
-				virtual Gdiplus::Color GetFocusColor() const;
+				virtual Area MeasureText(const std::wstring& text, graphics::Font* font) const;
+				virtual graphics::Color GetLinkColor() const;
+				virtual graphics::Color GetBackgroundColor() const;
+				virtual graphics::Color GetVideoBackgroundColor() const;
+				virtual graphics::Color GetEditBackgroundColor() const;
+				virtual graphics::Color GetTimeBackgroundColor() const;
+				virtual graphics::Color GetPropertyBackgroundColor() const;
+				virtual graphics::Color GetLineColor() const;
+				virtual graphics::Color GetTextColor() const;
+				virtual graphics::Color GetActiveTrackColor() const;
+				virtual graphics::Color GetTabButtonBackgroundColor() const;
+				virtual graphics::Color GetHintColor() const;
+				virtual graphics::Color GetFocusColor() const;
 
-				virtual Gdiplus::Color GetActiveStartColor() const;
-				virtual Gdiplus::Color GetActiveEndColor() const;
+				virtual graphics::Color GetActiveStartColor() const;
+				virtual graphics::Color GetActiveEndColor() const;
 
-				virtual Gdiplus::Color GetSplitterStartColor() const;
-				virtual Gdiplus::Color GetSplitterEndColor() const;
+				virtual graphics::Color GetSplitterStartColor() const;
+				virtual graphics::Color GetSplitterEndColor() const;
 
-				virtual Gdiplus::Color GetCurrentPositionColor() const;
-				virtual Gdiplus::Color GetTrackDescriptionTextColor() const;
-				virtual Gdiplus::Color GetFaderColor() const;
+				virtual graphics::Color GetCurrentPositionColor() const;
+				virtual graphics::Color GetTrackDescriptionTextColor() const;
+				virtual graphics::Color GetFaderColor() const;
 
-				virtual Gdiplus::Color GetSliderColorStart(int i) const;
-				virtual Gdiplus::Color GetSliderColorEnd(int i) const;
+				virtual graphics::Color GetSliderColorStart(int i) const;
+				virtual graphics::Color GetSliderColorEnd(int i) const;
 
-				virtual Gdiplus::Color GetTimeSelectionColorEnd() const;
-				virtual Gdiplus::Color GetTimeSelectionColorStart() const;
+				virtual graphics::Color GetTimeSelectionColorEnd() const;
+				virtual graphics::Color GetTimeSelectionColorStart() const;
 
-				virtual Gdiplus::Color GetTabButtonColorStart() const;
-				virtual Gdiplus::Color GetTabButtonColorEnd() const;
+				virtual graphics::Color GetTabButtonColorStart() const;
+				virtual graphics::Color GetTabButtonColorEnd() const;
 
-				virtual Gdiplus::Color GetDisabledOverlayColor() const;
-				virtual Gdiplus::Color GetCommandMarkerColor() const;
+				virtual graphics::Color GetDisabledOverlayColor() const;
+				virtual graphics::Color GetCommandMarkerColor() const;
 
-				virtual Gdiplus::Color GetHighlightColorStart() const;
-				virtual Gdiplus::Color GetHighlightColorEnd() const;
+				virtual graphics::Color GetHighlightColorStart() const;
+				virtual graphics::Color GetHighlightColorEnd() const;
 
-				virtual Gdiplus::Color GetGlassColorStart() const;
-				virtual Gdiplus::Color GetGlassColorEnd() const;
+				virtual graphics::Color GetGlassColorStart() const;
+				virtual graphics::Color GetGlassColorEnd() const;
 
-				virtual Gdiplus::Color GetToolbarColorStart() const;
-				virtual Gdiplus::Color GetToolbarColorEnd() const;
+				virtual graphics::Color GetToolbarColorStart() const;
+				virtual graphics::Color GetToolbarColorEnd() const;
 
 				// ProgressWnd
-				virtual Gdiplus::Color GetProgressBackStart() const;
-				virtual Gdiplus::Color GetProgressBackEnd() const;
-				virtual Gdiplus::Color GetProgressGlassStart() const;
-				virtual Gdiplus::Color GetProgressGlassEnd() const;
-				virtual Gdiplus::Color GetProgressColor() const;
+				virtual graphics::Color GetProgressBackStart() const;
+				virtual graphics::Color GetProgressBackEnd() const;
+				virtual graphics::Color GetProgressGlassStart() const;
+				virtual graphics::Color GetProgressGlassEnd() const;
+				virtual graphics::Color GetProgressColor() const;
 
 				// Fonts
-				virtual Gdiplus::Font* GetGUIFont() const;
-				virtual Gdiplus::Font* GetGUIFontBold() const;
-				virtual Gdiplus::Font* GetLinkFont() const;
-				virtual Gdiplus::Font* GetGUIFontSmall() const;
+				virtual graphics::Font* GetGUIFont() const;
+				virtual graphics::Font* GetGUIFontBold() const;
+				virtual graphics::Font* GetLinkFont() const;
+				virtual graphics::Font* GetGUIFontSmall() const;
 
 				// Cursors
 				virtual HCURSOR GetGrabCursor() const;
 				virtual HCURSOR GetGrabbedCursor() const;
-				virtual Gdiplus::Brush* GetApplicationBackgroundBrush(HWND root, HWND child) const;
+				virtual graphics::Brush* GetApplicationBackgroundBrush(HWND root, HWND child) const;
 				
 				/* This needs a little explanation. This is the 'scale factor' to convert from 'logical pixels' 
 				(which we define as one pixel on a normal, 96 DPI computer screen) to 'device pixels', which is
@@ -124,7 +124,7 @@ namespace tj {
 				// Measures
 				virtual Pixels GetMeasureInPixels(Theme::Measure m) const;
 
-				static Gdiplus::Color ChangeAlpha(Gdiplus::Color col, int a);
+				static graphics::Color ChangeAlpha(graphics::Color col, int a);
 				
 				enum {
 					SliderNormal = 0,
@@ -137,16 +137,16 @@ namespace tj {
 				const static float KDefaultDPI; // One logical pixel equals 1/KDefaultDPI inches
 
 				// utility methods
-				virtual void DrawToolbarBackground(Gdiplus::Graphics& g, const Area& rc);
-				virtual void DrawToolbarBackground(Gdiplus::Graphics& g, float x, float y, float w, float h);
-				virtual void DrawFocusRectangle(Gdiplus::Graphics& g, const Area& rc);
-				virtual void DrawFocusEllipse(Gdiplus::Graphics& g, const Area& rc);
+				virtual void DrawToolbarBackground(graphics::Graphics& g, const Area& rc);
+				virtual void DrawToolbarBackground(graphics::Graphics& g, float x, float y, float w, float h);
+				virtual void DrawFocusRectangle(graphics::Graphics& g, const Area& rc);
+				virtual void DrawFocusEllipse(graphics::Graphics& g, const Area& rc);
 
 			protected:
-				mutable Gdiplus::Font* _font;
-				mutable Gdiplus::Font* _fontBold;
-				mutable Gdiplus::Font* _fontSmall;
-				mutable Gdiplus::Font* _fontLink;
+				mutable graphics::Font* _font;
+				mutable graphics::Font* _fontBold;
+				mutable graphics::Font* _fontSmall;
+				mutable graphics::Font* _fontLink;
 				HCURSOR _grab, _grabbed;
 				float _dpi;
 		};

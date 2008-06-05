@@ -1,6 +1,6 @@
 #include "../../include/tjshared.h"
 using namespace tj::shared;
-using namespace Gdiplus;
+using namespace tj::shared::graphics;
 
 namespace tj {
 	namespace shared {
@@ -10,49 +10,49 @@ namespace tj {
 					BrightTheme(float dpi=1.0f);
 					virtual ~BrightTheme();
 					virtual std::wstring GetName() const;
-					virtual Gdiplus::Color GetBackgroundColor() const;
-					virtual Gdiplus::Color GetTimeBackgroundColor() const;
-					virtual Gdiplus::Color GetPropertyBackgroundColor() const;
-					virtual Gdiplus::Color GetLineColor() const;
-					virtual Gdiplus::Color GetTextColor() const;
-					virtual Gdiplus::Color GetActiveTrackColor() const;
-					virtual Gdiplus::Color GetEditBackgroundColor() const;
+					virtual graphics::Color GetBackgroundColor() const;
+					virtual graphics::Color GetTimeBackgroundColor() const;
+					virtual graphics::Color GetPropertyBackgroundColor() const;
+					virtual graphics::Color GetLineColor() const;
+					virtual graphics::Color GetTextColor() const;
+					virtual graphics::Color GetActiveTrackColor() const;
+					virtual graphics::Color GetEditBackgroundColor() const;
 
-					virtual Gdiplus::Color GetActiveStartColor() const;
-					virtual Gdiplus::Color GetActiveEndColor() const;
-					virtual Gdiplus::Color GetFocusColor() const;
+					virtual graphics::Color GetActiveStartColor() const;
+					virtual graphics::Color GetActiveEndColor() const;
+					virtual graphics::Color GetFocusColor() const;
 
-					virtual Gdiplus::Color GetSplitterStartColor() const;
-					virtual Gdiplus::Color GetSplitterEndColor() const;
-					virtual Gdiplus::Color GetCurrentPositionColor() const;
-					virtual Gdiplus::Color GetTrackDescriptionTextColor() const;
-					virtual Gdiplus::Color GetFaderColor() const;
+					virtual graphics::Color GetSplitterStartColor() const;
+					virtual graphics::Color GetSplitterEndColor() const;
+					virtual graphics::Color GetCurrentPositionColor() const;
+					virtual graphics::Color GetTrackDescriptionTextColor() const;
+					virtual graphics::Color GetFaderColor() const;
 
-					virtual Gdiplus::Color GetTimeSelectionColorEnd() const;
-					virtual Gdiplus::Color GetTimeSelectionColorStart() const;
+					virtual graphics::Color GetTimeSelectionColorEnd() const;
+					virtual graphics::Color GetTimeSelectionColorStart() const;
 
-					virtual Gdiplus::Color GetTabButtonColorStart() const;
-					virtual Gdiplus::Color GetTabButtonColorEnd() const;
+					virtual graphics::Color GetTabButtonColorStart() const;
+					virtual graphics::Color GetTabButtonColorEnd() const;
 
-					virtual Gdiplus::Color GetDisabledOverlayColor() const;
-					virtual Gdiplus::Brush* GetApplicationBackgroundBrush(HWND root, HWND child) const;
+					virtual graphics::Color GetDisabledOverlayColor() const;
+					virtual graphics::Brush* GetApplicationBackgroundBrush(HWND root, HWND child) const;
 
-					virtual Gdiplus::Color GetHighlightColorStart() const;
-					virtual Gdiplus::Color GetHighlightColorEnd() const;
+					virtual graphics::Color GetHighlightColorStart() const;
+					virtual graphics::Color GetHighlightColorEnd() const;
 
 					
-					virtual Gdiplus::Color GetGlassColorStart() const;
-					virtual Gdiplus::Color GetGlassColorEnd() const;
+					virtual graphics::Color GetGlassColorStart() const;
+					virtual graphics::Color GetGlassColorEnd() const;
 
-					virtual Gdiplus::Color GetToolbarColorStart() const;
-					virtual Gdiplus::Color GetToolbarColorEnd() const;
+					virtual graphics::Color GetToolbarColorStart() const;
+					virtual graphics::Color GetToolbarColorEnd() const;
 
 					// ProgressWnd
-					virtual Gdiplus::Color GetProgressBackStart() const;
-					virtual Gdiplus::Color GetProgressBackEnd() const;
-					virtual Gdiplus::Color GetProgressGlassStart() const;
-					virtual Gdiplus::Color GetProgressGlassEnd() const;
-					virtual Gdiplus::Color GetProgressColor() const;
+					virtual graphics::Color GetProgressBackStart() const;
+					virtual graphics::Color GetProgressBackEnd() const;
+					virtual graphics::Color GetProgressGlassStart() const;
+					virtual graphics::Color GetProgressGlassEnd() const;
+					virtual graphics::Color GetProgressColor() const;
 			};
 
 			class VistaTheme: public Theme {
@@ -72,97 +72,97 @@ namespace tj {
 						}
 					}
 
-					virtual Gdiplus::Color GetBackgroundColor() const {
+					virtual graphics::Color GetBackgroundColor() const {
 						return Color(255,255,255);
 					}
 
-					virtual Gdiplus::Color GetTabButtonBackgroundColor() const {
+					virtual graphics::Color GetTabButtonBackgroundColor() const {
 						return Color(130,255,255,255);
 					}
 
-					virtual Gdiplus::Color GetTimeBackgroundColor() const {
+					virtual graphics::Color GetTimeBackgroundColor() const {
 						return Color(241,251,254);
 					}
 
-					virtual Gdiplus::Color GetPropertyBackgroundColor() const {
+					virtual graphics::Color GetPropertyBackgroundColor() const {
 						return GetTimeBackgroundColor();
 					}
 
-					virtual Gdiplus::Color GetLineColor() const {
+					virtual graphics::Color GetLineColor() const {
 						return GetActiveEndColor();
 					}
 
-					virtual Gdiplus::Color GetTextColor() const {
+					virtual graphics::Color GetTextColor() const {
 						return Color(0,0,0);
 					}
 
-					virtual Gdiplus::Color GetActiveTrackColor() const {
+					virtual graphics::Color GetActiveTrackColor() const {
 						return GetBackgroundColor();
 					}
 
-					virtual Gdiplus::Color GetEditBackgroundColor() const {
+					virtual graphics::Color GetEditBackgroundColor() const {
 						return Color(255,255,255);
 					}
 
-					virtual Gdiplus::Color GetActiveStartColor() const {
+					virtual graphics::Color GetActiveStartColor() const {
 						//return Color(242,251,254);
 						return Color(200,145,175,194);
 					}
 
-					virtual Gdiplus::Color GetActiveEndColor() const {
+					virtual graphics::Color GetActiveEndColor() const {
 						return Color(130,158,175);
 					}
 
-					virtual Gdiplus::Color GetFocusColor() const {
+					virtual graphics::Color GetFocusColor() const {
 						return Color::DarkBlue;
 					}
 
-					virtual Gdiplus::Color GetSplitterStartColor() const {
+					virtual graphics::Color GetSplitterStartColor() const {
 						return Color(255,255,255);
 					}
 
-					virtual Gdiplus::Color GetSplitterEndColor() const {
+					virtual graphics::Color GetSplitterEndColor() const {
 						return Color(255,255,255);
 					}
 
-					virtual Gdiplus::Color GetCurrentPositionColor() const {
+					virtual graphics::Color GetCurrentPositionColor() const {
 						return Color(0,0,0);
 					}
 
-					virtual Gdiplus::Color GetTrackDescriptionTextColor() const {
+					virtual graphics::Color GetTrackDescriptionTextColor() const {
 						return Color(0,0,0);
 					}
 
-					virtual Gdiplus::Color GetFaderColor() const {
+					virtual graphics::Color GetFaderColor() const {
 						return Color(0,0,0);
 					}
 
-					virtual Gdiplus::Color GetTimeSelectionColorEnd() const {
+					virtual graphics::Color GetTimeSelectionColorEnd() const {
 						return Color(100,0,0,100);
 					}
 
-					virtual Gdiplus::Color GetTimeSelectionColorStart() const {
+					virtual graphics::Color GetTimeSelectionColorStart() const {
 						return Color(50, 0, 0, 100);
 					}
 
-					virtual Gdiplus::Color GetTabButtonColorStart() const {
+					virtual graphics::Color GetTabButtonColorStart() const {
 						return Color(0,0,0,0);
 					}
 
-					virtual Gdiplus::Color GetTabButtonColorEnd() const {
+					virtual graphics::Color GetTabButtonColorEnd() const {
 						return Color(0,0,0,0);
 					}
 
-					virtual Gdiplus::Color GetDisabledOverlayColor() const {
+					virtual graphics::Color GetDisabledOverlayColor() const {
 						return Color(200,255,255,255);
 					}
 
-					virtual Gdiplus::Brush* GetApplicationBackgroundBrush(HWND root, HWND child) const {
+					virtual graphics::Brush* GetApplicationBackgroundBrush(HWND root, HWND child) const {
 						RECT rootrc, childrc;
 						GetWindowRect(root, &rootrc);
 						GetWindowRect(child, &childrc);
 
-						Gdiplus::LinearGradientBrush* lbr = new Gdiplus::LinearGradientBrush(PointF(0.0f, -float(childrc.top-rootrc.top)), PointF(0.0f,float(rootrc.bottom-rootrc.top)), Color(242,251,254), GetActiveEndColor());
+						graphics::LinearGradientBrush* lbr = new graphics::LinearGradientBrush(PointF(0.0f, -float(childrc.top-rootrc.top)), PointF(0.0f,float(rootrc.bottom-rootrc.top)), Color(242,251,254), GetActiveEndColor());
 						lbr->SetWrapMode(WrapModeClamp);
 						REAL factors[3] = {1.0f, 0.0f, 0.0f};
 						REAL positions[3] = {0.0f, 0.25f ,1.0f};
@@ -171,19 +171,19 @@ namespace tj {
 						return lbr;
 					}
 
-					virtual Gdiplus::Color GetHighlightColorStart() const {
+					virtual graphics::Color GetHighlightColorStart() const {
 						return Color(255, 145,175,194);
 					}
 
-					virtual Gdiplus::Color GetHighlightColorEnd() const {
+					virtual graphics::Color GetHighlightColorEnd() const {
 						return Color(100, 145,175,194);
 					}
 
-					virtual Gdiplus::Color GetToolbarColorStart() const {
+					virtual graphics::Color GetToolbarColorStart() const {
 						return Color(24,106,119);
 					}
 
-					virtual Gdiplus::Color GetToolbarColorEnd() const {
+					virtual graphics::Color GetToolbarColorEnd() const {
 						return Color(87,164,171);
 					}
 
@@ -270,11 +270,11 @@ Color BrightTheme::GetFocusColor() const {
 	return Color(200, 0,0,255);
 }
 
-Gdiplus::Color BrightTheme::GetTimeSelectionColorEnd() const {
+graphics::Color BrightTheme::GetTimeSelectionColorEnd() const {
 	return Color(100,0,0,100);
 }
 
-Gdiplus::Color BrightTheme::GetTimeSelectionColorStart() const {
+graphics::Color BrightTheme::GetTimeSelectionColorStart() const {
 	return Color(50, 0, 0, 100);
 }
 
@@ -349,7 +349,7 @@ Brush* BrightTheme::GetApplicationBackgroundBrush(HWND root, HWND child) const {
 	GetWindowRect(root, &rootrc);
 	GetWindowRect(child, &childrc);
 
-	Gdiplus::LinearGradientBrush* lbr = new Gdiplus::LinearGradientBrush(PointF(0.0f, -float(childrc.top-rootrc.top)), PointF(0.0f,float(rootrc.bottom-rootrc.top)), Color(255,255,255), Color(204,204,204));
+	graphics::LinearGradientBrush* lbr = new graphics::LinearGradientBrush(PointF(0.0f, -float(childrc.top-rootrc.top)), PointF(0.0f,float(rootrc.bottom-rootrc.top)), Color(255,255,255), Color(204,204,204));
 	lbr->SetWrapMode(WrapModeClamp);
 	REAL factors[3] = {1.0f, 0.0f, 0.0f};
 	REAL positions[3] = {0.0f, 0.25f ,1.0f};

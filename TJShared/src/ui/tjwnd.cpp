@@ -4,7 +4,7 @@
 #define ISVKKEYDOWN(vk_code) ((GetAsyncKeyState(vk_code) & 0x8000))
 
 using namespace tj::shared;
-using namespace Gdiplus;
+using namespace tj::shared::graphics;
 
 bool Wnd::_classesRegistered = false;
 LRESULT CALLBACK PropertyEditWndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
@@ -14,9 +14,9 @@ LRESULT CALLBACK PropertyLabelWndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 
 /* GDI+ Init */
 GraphicsInit::GraphicsInit() {
-	Gdiplus::GdiplusStartupInput gdiplusStartupInput;
+	graphics::GdiplusStartupInput gdiplusStartupInput;
 	ULONG_PTR gdiplusToken;
-	Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
+	graphics::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
 
 	INITCOMMONCONTROLSEX sex;
 	sex.dwSize = sizeof(INITCOMMONCONTROLSEX);
@@ -470,7 +470,7 @@ LRESULT ColorWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	return Wnd::Message(msg,wp,lp);
 }
 
-void ColorWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
+void ColorWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	SolidBrush br(Color(_r, _g, _b));
 	g.FillRectangle(&br, GetClientArea());
 }

@@ -1,6 +1,6 @@
 #include "../../include/tjshared.h"
 using namespace tj::shared;
-using namespace Gdiplus;
+using namespace tj::shared::graphics;
 
 Placement::Placement(Type t, const std::wstring& container) {
 	_type = t;
@@ -223,5 +223,5 @@ void FloatingPane::Layout() {
 }
 
 
-void FloatingPane::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
+void FloatingPane::Paint(graphics::Graphics& g, ref<Theme> theme) {
 }

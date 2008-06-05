@@ -1,5 +1,5 @@
 #include "../../include/tjshared.h"
-using namespace Gdiplus;
+using namespace tj::shared::graphics;
 using namespace tj::shared;
 
 #include <atlbase.h>
@@ -195,7 +195,7 @@ void BrowserWnd::Navigate(const std::wstring& url) {
 	}
 }
 
-void BrowserWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
+void BrowserWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	//if(_hidden) {
 		Area rc = GetClientArea();
 		SolidBrush br(Color(0,0,0));
@@ -243,7 +243,7 @@ void BrowserToolbarWnd::OnCommand(int c) {
 	}
 }
 
-void BrowserToolbarWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
+void BrowserToolbarWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	ToolbarWnd::Paint(g, theme);
 }
 

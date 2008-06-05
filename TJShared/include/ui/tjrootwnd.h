@@ -74,7 +74,7 @@ namespace tj {
 				void FullRepaint(); // use after switching theme
 				virtual void Layout();
 				virtual Area GetClientArea() const;
-				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme);
+				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
 				virtual void OnSize(const Area& ns);
 
 				virtual void SetShowStatusBar(bool s);

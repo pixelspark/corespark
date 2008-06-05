@@ -14,9 +14,9 @@ using namespace tj::shared;
 BasicClient::BasicClient(Role r, const Timestamp& last, const std::wstring& ip, const std::wstring& addressing, const InstanceID& instance):
 	_lastSeen(last),
 	_role(r),
-	_ip(ip),
 	_addressing(addressing),
 	_instance(instance) {
+		SetIP(ip);
 }
 
 BasicClient::~BasicClient() {
@@ -30,6 +30,10 @@ void BasicClient::SetFeatures(Features fs) {
 	_features = fs;
 }
 
+const Networking::MACAddress& BasicClient::GetMACAddress() const {
+	return _mac;
+}
+
 void BasicClient::SetLastSeen(const Timestamp& ls) {
 	_lastSeen = ls;
 }
@@ -37,11 +41,13 @@ void BasicClient::SetLastSeen(const Timestamp& ls) {
 void BasicClient::Load(TiXmlElement* you) {
 	_hostName = LoadAttributeSmall<std::wstring>(you, "hostname", _hostName);
 	_addressing = LoadAttributeSmall<std::wstring>(you, "address", _addressing);
+	_mac = Networking::MACAddress(LoadAttributeSmall<std::wstring>(you, "mac", L""));
 }
 
 void BasicClient::Save(TiXmlElement* me) {
 	SaveAttributeSmall(me, "hostname", _hostName);
 	SaveAttributeSmall(me, "address", _addressing);
+	SaveAttributeSmall(me, "mac", _mac.ToString());
 }
 
 std::wstring BasicClient::GetHostName(const std::wstring& ip) {
@@ -109,6 +115,7 @@ void BasicClient::SetInstanceID(const InstanceID& id) {
 
 void BasicClient::SetIP(const std::wstring& ip) {
 	_ip = ip;
+	Networking::GetMACAddress(ip, _mac);
 }
 
 Role BasicClient::GetRole() const {

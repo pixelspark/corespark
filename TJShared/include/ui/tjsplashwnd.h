@@ -7,11 +7,11 @@ namespace tj {
 			public:
 				SplashWnd(std::wstring path, Pixels w, Pixels h);
 				virtual ~SplashWnd();
-				virtual void Paint(Gdiplus::Graphics& g, ref<Theme> theme);
+				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
 				virtual void Layout();
 
 			protected:
-				Gdiplus::Image* _image;
+				graphics::Image* _image;
 				ref<ProgressWnd> _progress;
 		};
 

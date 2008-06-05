@@ -1,5 +1,5 @@
 #include "../../include/tjshared.h"
-using namespace Gdiplus;
+using namespace tj::shared::graphics;
 using namespace tj::shared;
 
 ChildWnd::ChildWnd(const wchar_t* title, bool wantDoubleClick, bool useDB): Wnd(title, 0L, wantDoubleClick?TJ_DEFAULT_CLASS_NAME:(L"TjWndClassNdbl"), useDB) {
@@ -50,7 +50,7 @@ void CheckboxWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 	}
 }
 
-void CheckboxWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
+void CheckboxWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	SolidBrush back(theme->GetBackgroundColor());
 	Area rc = GetClientArea();
 	g.FillRectangle(&back, rc);

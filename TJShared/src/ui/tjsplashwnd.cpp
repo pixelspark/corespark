@@ -1,5 +1,5 @@
 #include "../../include/tjshared.h"
-using namespace Gdiplus;
+using namespace tj::shared::graphics;
 using namespace tj::shared;
 
 SplashWnd::SplashWnd(std::wstring path, Pixels w, Pixels h) {
@@ -34,7 +34,7 @@ SplashWnd::~SplashWnd() {
 	delete _image;
 }
 
-void SplashWnd::Paint(Gdiplus::Graphics& g, ref<Theme> theme) {
+void SplashWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	Area rc = GetClientArea();
 	
 	g.DrawImage(_image, (RectF)rc);
