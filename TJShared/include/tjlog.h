@@ -21,6 +21,7 @@ namespace tj {
 				static void SetWriteToFile(bool f);
 				static std::wstring GetContents();
 				static strong<EventLogger> GetEventLogger();
+				static void Stop();
 
 			protected:
 				static LogThread _logger;

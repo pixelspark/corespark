@@ -144,5 +144,10 @@ std::wstring Log::GetContents() {
 	return _logger.GetContents();
 }
 
+void Log::Stop() {
+	PostThreadMessage(_logger.GetID(), WM_QUIT, 0, 0);
+	_logger.WaitForCompletion();
+}
+
 EventLogger::~EventLogger() {
 }

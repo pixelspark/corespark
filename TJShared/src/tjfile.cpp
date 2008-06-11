@@ -28,10 +28,18 @@ Bytes File::GetDirectorySize(const std::wstring& dirPath) {
 	totalSize.QuadPart = 0;
 
 	do {
-		LARGE_INTEGER size;
-		size.LowPart = fd.nFileSizeLow;
-		size.HighPart = fd.nFileSizeHigh;
-		totalSize.QuadPart += size.QuadPart;
+		if((fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)!=0 && fd.cFileName[0]!=L'.') {
+			// calculate directory size
+			std::wstring subDirPath = dirPath + fd.cFileName + L"\\";
+			Bytes dirSize = GetDirectorySize(subDirPath);
+			totalSize.QuadPart += dirSize;
+		}
+		else {
+			LARGE_INTEGER size;
+			size.LowPart = fd.nFileSizeLow;
+			size.HighPart = fd.nFileSizeHigh;
+			totalSize.QuadPart += size.QuadPart;
+		}
 	} 
 	while(FindNextFile(search, &fd));
 
