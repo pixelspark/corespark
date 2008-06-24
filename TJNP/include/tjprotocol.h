@@ -66,6 +66,8 @@ namespace tj {
 			FeatureBackupPower = 16,
 			FeaturePlugin = 32,
 			FeatureEventLogger = 64,
+			FeaturePrimaryMaster = 128,
+			FeatureAutomaticFailover = 256,
 		};
 
 		typedef unsigned int Features;
@@ -91,6 +93,9 @@ namespace tj {
 			ActionSetPatch = 14,		// Sent by server to client to set a patch
 			ActionResetAll = 15,		// Sent by server to client to clear all patches and addressing (usually when loading a new show)
 			ActionInput = 16,			// Sent by client to server when it has received input; [PatchIdentifier patch] [ChannelID cid] [SubChannelID scid] [float value]
+			ActionPromoted = 17,		// Sent by a master when it asserts that it is the primary master
+			ActionDemoted = 18,			// Sent by a master to notify failover masters that they can take over the network
+			ActionAnnounceReply = 19,	// Announce reply
 		};
 
 		class Packet {

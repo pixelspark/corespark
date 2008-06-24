@@ -22,8 +22,11 @@ namespace tj {
 				Socket(int port, const char* address, tj::shared::ref<Node> main);
 				virtual ~Socket();
 			
-				void SendAnnounce(Role r, const std::wstring& address, Features feats);
+				void SendAnnounce(Role r, const std::wstring& address, Features feats, tj::shared::strong<Transaction> ti);
+				void SendAnnounceReply(Role r, const std::wstring& address, Features feats, TransactionIdentifier ti);
 				void SendLeave();
+				void SendDemoted();
+				void SendPromoted();
 				void SendResourcePush(Channel c, const std::wstring& rid);
 				void SendResourceFind(const std::wstring& ident);
 				void SendResourceAdvertise(Channel c, const std::wstring& rid, const std::wstring& url, unsigned short port);

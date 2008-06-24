@@ -8,7 +8,7 @@ namespace tj {
 	namespace np {
 		class NP_EXPORTED Transaction: public virtual tj::shared::Object {
 			public:
-				Transaction(tj::shared::Time out = 30000);
+				Transaction(tj::shared::Time out = 5000);
 				virtual ~Transaction();
 				virtual bool IsExpired() const;
 				virtual void OnReceive(int instance, in_addr from, const PacketHeader& header, tj::shared::ref<tj::shared::Code> packet) = 0;

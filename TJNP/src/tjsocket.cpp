@@ -183,6 +183,14 @@ void Socket::Receive() {
 	}
 }
 
+void Socket::SendDemoted() {
+	ThreadLock lock(&_lock);
+
+	ref<Message> stream = GC::Hold(new Message(true));
+	stream->GetHeader()->_action = ActionDemoted;
+	Send(stream);
+}
+
 void Socket::SendError(Features fs, ExceptionType type, const std::wstring& msg) {
 	ThreadLock lock(&_lock);
 
@@ -194,14 +202,46 @@ void Socket::SendError(Features fs, ExceptionType type, const std::wstring& msg)
 	Send(stream);
 }
 
-void Socket::SendAnnounce(Role r, const std::wstring& address, Features feats) {
+void Socket::SendAnnounce(Role r, const std::wstring& address, Features feats, strong<Transaction> ti) {
+	ThreadLock lock(&_lock);
+
+	ref<Message> stream = GC::Hold(new Message(true));
+	stream->GetHeader()->_action = ActionAnnounce;
+	stream->Add(r);
+	stream->Add(feats);
+	
+	// Since announce replies can either be handled by the default transaction (_network) or a separate transaction,
+	// choose here.
+	if(ref<Transaction>(ti)==ref<Transaction>(ref<Node>(_network))) {
+		stream->Add<TransactionIdentifier>(0);
+	}
+	else {
+		++_transactionCounter;
+		_transactions[_transactionCounter] = ti;
+		stream->Add<TransactionIdentifier>(_transactionCounter);
+	}
+
+	stream->Add<std::wstring>(address);
+	Send(stream);
+}
+
+void Socket::SendAnnounceReply(Role r, const std::wstring& address, Features feats, TransactionIdentifier ti) {
 	ThreadLock lock(&_lock);
 
 	ref<Message> stream = GC::Hold(new Message(true));
 	stream->Add(r);
 	stream->Add(feats);
 	stream->Add<std::wstring>(address);
-	stream->GetHeader()->_action = ActionAnnounce;
+	stream->GetHeader()->_action = ActionAnnounceReply;
+	stream->GetHeader()->_transaction = ti;
+	Send(stream);
+}
+
+void Socket::SendPromoted() {
+	ThreadLock lock(&_lock);
+
+	ref<Message> stream = GC::Hold(new Message(true));
+	stream->GetHeader()->_action = ActionPromoted;
 	Send(stream);
 }
 
