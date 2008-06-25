@@ -14,6 +14,10 @@ ScriptMathType::~ScriptMathType() {
 }
 
 ref<Scriptable> ScriptMathType::Execute(Command c, ref<ParameterList> p) {
+	if(c==L"class") {
+		return tj::shared::GC::Hold(new ScriptString(Wcs(typeid(ScriptMathType).name())));	
+	}
+
 	if(!_instance) {
 		_instance = GC::Hold(new ScriptMath());
 	}

@@ -117,7 +117,7 @@ ColorPopupWnd::~ColorPopupWnd() {
 }
 
 void ColorPopupWnd::OnCreated() {
-	_brightness->SetListener(this);
+	_brightness->EventChanged.AddListener(ref<Listener<SliderWnd::NotificationChanged> >(this));
 }
 
 CMYKColor::CMYKColor(double c, double m, double y, double k): _c(c), _m(m), _y(y), _k(k) {
@@ -126,7 +126,7 @@ CMYKColor::CMYKColor(double c, double m, double y, double k): _c(c), _m(m), _y(y
 HSVColor::HSVColor(double h, double s, double v): _h(h), _s(s), _v(v) {
 }
 
-void ColorPopupWnd::Notify(Wnd* source, Notification evt) {
+void ColorPopupWnd::Notify(ref<Object> source, const SliderWnd::NotificationChanged& evt) {
 	_val = _brightness->GetValue();
 	Update();
 }
@@ -205,18 +205,11 @@ void ColorPopupWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 	}
 }
 
-void ColorPopupWnd::SetListener(ref<Listener> listener) {
-	_myListener = listener;
-}
-
 void ColorPopupWnd::Update() {
 	_brightness->SetValue(_val,false);
 	_color = ColorSpaces::HSVToRGB(_hue,_sat,_val);
 
-	ref<Listener> listener = _myListener;
-	if(listener) {
-		listener->Notify(dynamic_cast<Wnd*>(this), NotificationChanged);
-	}
+	EventChanged.Fire(this, NotificationChanged());
 	Repaint();
 }
 
@@ -277,8 +270,8 @@ void ColorChooserWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	g.DrawImage(_colorsIcon, iconArea);
 }
 
-void ColorChooserWnd::Notify(Wnd* source, Notification not) {
-	if(not==NotificationChanged && _cpw) {
+void ColorChooserWnd::Notify(ref<Object> source, const ColorPopupWnd::NotificationChanged& data) {
+	if(source==ref<Object>(_cpw)) {
 		*_color = _cpw->GetColor();
 		if(_tcolor!=0) *_tcolor = *_color;
 		Repaint();
@@ -289,7 +282,7 @@ void ColorChooserWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 	if(ev==MouseEventLUp) {
 		if(!_cpw) {
 			_cpw = GC::Hold(new ColorPopupWnd());
-			_cpw->SetListener(this);
+			_cpw->EventChanged.AddListener(ref<Listener<ColorPopupWnd::NotificationChanged> >(this));
 		}
 
 		Area rc = GetClientArea();

@@ -5,18 +5,7 @@ using namespace tj::shared;
 
 const int SliderWnd::KDraggerWidth = 16;
 
-SliderWnd::SliderWnd(const wchar_t* title): ChildWnd(title) {
-	_value = 0.0f;
-	_listener = 0;
-	_displayValue = 0.0f;
-	_flash = false;
-	_oldValue = 0.0f;
-	_mark = -1.0f;
-	_showValue = true;
-	_snapHalf = false;
-	_preciseDrag = false;
-	_color = 0;
-
+SliderWnd::SliderWnd(const wchar_t* title): ChildWnd(title), _value(0.0f), _displayValue(0.0f), _flash(false), _oldValue(0.0f), _mark(-1.0f), _showValue(true), _snapHalf(false), _preciseDrag(false), _color(0) {
 	SetStyle(WS_TABSTOP);
 }
 
@@ -63,9 +52,7 @@ void SliderWnd::SetDisplayValue(float v, bool notify) {
 
 		if(notify) {
 			Repaint();
-			if(_listener!=0) {
-				_listener->Notify(this, NotificationChanged);
-			}
+			EventChanged.Fire(this, NotificationChanged());
 		}
 	}
 }
@@ -82,9 +69,7 @@ void SliderWnd::SetValue(float f, bool notify) {
 		
 		if(notify) {
 			Repaint();
-			if(_listener!=0) {
-				_listener->Notify(this, NotificationChanged);
-			}
+			EventChanged.Fire(this, NotificationChanged());
 		}
 	}
 }
@@ -93,9 +78,7 @@ SliderWnd::~SliderWnd() {
 }
 
 void SliderWnd::Paint(Graphics& g, ref<Theme> theme) {
-	if(_listener!=0) {
-		_listener->Notify(this, NotificationUpdate);
-	}
+	EventUpdate.Fire(this, NotificationUpdate());
 
 	Area rect = GetClientArea();
 
@@ -250,10 +233,6 @@ LRESULT SliderWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 
 void SliderWnd::OnFocus(bool a) {
 	Repaint();
-}
-
-void SliderWnd::SetListener(Listener* listener) {
-	_listener = listener;
 }
 
 void SliderWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {

@@ -446,6 +446,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\include\tjscriptdelegate.h"
+				>
+			</File>
+			<File
 				RelativePath=".\include\tjscriptexception.h"
 				>
 			</File>

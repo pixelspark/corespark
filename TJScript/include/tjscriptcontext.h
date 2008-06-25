@@ -69,32 +69,6 @@ namespace tj {
 				return defaultValue;
 			}
 		}
-
-		class ScriptDelegate: public Scriptable {
-			public:
-				inline ScriptDelegate(tj::shared::ref<CompiledScript> sc, tj::shared::ref<ScriptContext> ctx) {
-					assert(sc);
-					_cs = sc;
-					_context = ctx;
-				}
-
-				virtual ~ScriptDelegate() {
-				}
-
-				inline tj::shared::ref<CompiledScript> GetScript() {
-					return _cs;
-				}
-
-				inline tj::shared::ref<ScriptContext> GetContext() {
-					return _context;
-				}
-
-				virtual tj::shared::ref<Scriptable> Execute(Command c, tj::shared::ref<ParameterList> plist);
-
-			protected:
-				tj::shared::ref<CompiledScript> _cs;
-				tj::shared::ref<ScriptContext> _context;
-		};
 	}
 }
 

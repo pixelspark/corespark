@@ -8,7 +8,6 @@ namespace tj {
 				SliderWnd(const wchar_t* title);
 				virtual ~SliderWnd();
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
-				void SetListener(Listener* listener);
 				float GetValue() const;
 				void SetValue(float f, bool notify=true);
 				virtual void Update();
@@ -20,11 +19,19 @@ namespace tj {
 				void SetSnapToHalf(bool snap);
 				virtual void Fill(LayoutFlags flags, Area& rect, bool direct = true);
 
+				struct NotificationUpdate {
+				};
+
+				struct NotificationChanged {
+				};
+
+				Listenable<NotificationUpdate> EventUpdate;
+				Listenable<NotificationChanged> EventChanged;
+
 			protected:
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
 				virtual void OnFocus(bool focus);
 
-				Listener* _listener;
 				float _value;
 				float _displayValue;
 				bool _flash;

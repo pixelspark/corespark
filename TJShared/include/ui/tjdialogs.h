@@ -3,7 +3,7 @@
 
 namespace tj {
 	namespace shared {
-		class EXPORTED DialogWnd: public TopWnd, public Listener {
+		class EXPORTED DialogWnd: public TopWnd, public Listener<ButtonWnd::NotificationClicked> {
 			public:
 				DialogWnd(const std::wstring& title, const std::wstring& question);
 				virtual ~DialogWnd();
@@ -11,7 +11,7 @@ namespace tj {
 				virtual ref<PropertyGridWnd> GetPropertyGrid();
 				virtual void Layout();
 				virtual bool DoModal(HWND parent);
-				virtual void Notify(Wnd* source, Notification evt);
+				virtual void Notify(ref<Object> source, const ButtonWnd::NotificationClicked& evt);
 
 			protected:
 				virtual void OnSize(const Area& ns);
@@ -26,8 +26,6 @@ namespace tj {
 				ref<PropertyGridWnd> _grid;
 				ref<ButtonWnd> _ok;
 				std::wstring _question;
-				
-
 		};
 
 		class EXPORTED Dialog {

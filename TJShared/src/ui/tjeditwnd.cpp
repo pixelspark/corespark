@@ -6,7 +6,7 @@ using namespace tj::shared::graphics;
 // declared and used in tjui.cpp, but shouldn't be public
 LRESULT CALLBACK WndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 
-EditWnd::EditWnd(): ChildWnd(L"", false, false) {
+EditWnd::EditWnd(): ChildWnd(L"", false, false), _backBrush(0) {
 	SetStyle(WS_CLIPCHILDREN);
 	SetStyleEx(WS_EX_CONTROLPARENT);
 
@@ -15,7 +15,6 @@ EditWnd::EditWnd(): ChildWnd(L"", false, false) {
 	SendMessage(_ctrl, WM_SETFONT, (WPARAM)(HFONT)_font, FALSE);
 	ShowWindow(_ctrl, SW_SHOW);
 	Layout();
-	_backBrush = 0;
 }
 
 EditWnd::~EditWnd() {
@@ -58,10 +57,8 @@ LRESULT EditWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		
 	}
 	else if(msg==WM_COMMAND) {
-		ref<Listener> listener = _listener;
-
-		if(HIWORD(wp)==EN_CHANGE && listener) {
-			listener->Notify(this, NotificationChanged);
+		if(HIWORD(wp)==EN_CHANGE) {
+			EventTextChanged.Fire(this, NotificationTextChanged());
 		}
 		else {
 			HWND parent = ::GetParent(GetWindow());
@@ -71,10 +68,6 @@ LRESULT EditWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		}
 	}
 	return ChildWnd::Message(msg,wp,lp);
-}
-
-void EditWnd::SetListener(ref<Listener> ls) {
-	_listener = ls;
 }
 
 void EditWnd::SetCue(std::wstring cue) {

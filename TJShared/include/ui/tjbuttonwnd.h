@@ -9,12 +9,16 @@ namespace tj {
 				virtual ~ButtonWnd();
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
-				virtual void SetListener(ref<Listener> lf);
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
 				virtual void Fill(LayoutFlags lf, Area& rect, bool direct = true);
 				virtual void SetText(const wchar_t* t);
 				virtual void SetDisabled(bool d);
 				virtual bool IsDisabled() const;
+
+				struct NotificationClicked {
+				};
+
+				Listenable<NotificationClicked> EventClicked;
 				
 			protected:
 				virtual void OnKey(Key k, wchar_t t, bool down, bool isAccelerator);
@@ -22,7 +26,6 @@ namespace tj {
 
 				std::wstring _text;
 				graphics::Bitmap* _image;
-				weak<Listener> _listener;
 				bool _down;
 				bool _disabled;
 		};

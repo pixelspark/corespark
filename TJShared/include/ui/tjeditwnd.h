@@ -13,7 +13,11 @@ namespace tj {
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 				virtual void Layout();
 				virtual void SetText(std::wstring ws);
-				virtual void SetListener(ref<Listener> lw);
+
+				struct NotificationTextChanged {
+				};
+
+				Listenable<NotificationTextChanged> EventTextChanged;
 
 			protected:
 				void UpdateColor();
@@ -21,7 +25,6 @@ namespace tj {
 				HWND _ctrl;
 				graphics::Color _back;
 				HBRUSH _backBrush;
-				weak<Listener> _listener;
 		};
 	}
 }

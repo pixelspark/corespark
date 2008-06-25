@@ -5,21 +5,6 @@ namespace tj {
 	namespace shared {
 		class ColorPopupWnd;
 
-		class EXPORTED ColorChooserWnd: public ChildWnd, public Listener {
-			public:
-				ColorChooserWnd(RGBColor* c, RGBColor* tc);
-				virtual ~ColorChooserWnd();
-				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
-				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
-				virtual void Notify(Wnd* source, Notification n);
-
-			protected:
-				RGBColor* _color;
-				RGBColor* _tcolor;
-				Icon _colorsIcon;
-				ref<ColorPopupWnd> _cpw;
-		};
-
 		/** A color wheel in HSV **/
 		class EXPORTED ColorWheel: public virtual Object {
 			public:
@@ -37,20 +22,24 @@ namespace tj {
 				graphics::Bitmap* _bitmap;
 		};
 		
-		class EXPORTED ColorPopupWnd: public PopupWnd, public Listener {
+		class EXPORTED ColorPopupWnd: public PopupWnd, public Listener<SliderWnd::NotificationChanged> {
 			public:
 				ColorPopupWnd();
 				virtual ~ColorPopupWnd();
 				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
 				virtual void Layout();
-				virtual void Notify(Wnd* source, Notification evt);
+				virtual void Notify(ref<Object> source, const SliderWnd::NotificationChanged& evt);
 				virtual void Update();
-				virtual void SetListener(ref<Listener> ls);
 				virtual RGBColor GetColor() const;
 				virtual HSVColor GetHSVColor() const;
 				virtual void SetColor(double r, double g, double b);
 				virtual void SetColor(const RGBColor& color);
 				virtual void SetColor(const HSVColor& hsv);
+
+				struct NotificationChanged {
+				};
+
+				Listenable<NotificationChanged> EventChanged;
 
 			protected:
 				virtual void OnCreated();
@@ -62,10 +51,24 @@ namespace tj {
 				static RGBColor _favColors[KFavouriteColorCount];
 
 				ref<SliderWnd> _brightness;
-				weak<Listener> _myListener;
 				ColorWheel _wheel;
 				RGBColor _color;
 				float _hue, _sat, _val;
+		};
+
+		class EXPORTED ColorChooserWnd: public ChildWnd, public Listener<ColorPopupWnd::NotificationChanged> {
+			public:
+				ColorChooserWnd(RGBColor* c, RGBColor* tc);
+				virtual ~ColorChooserWnd();
+				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
+				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
+				virtual void Notify(ref<Object> source, const ColorPopupWnd::NotificationChanged& data);
+
+			protected:
+				RGBColor* _color;
+				RGBColor* _tcolor;
+				Icon _colorsIcon;
+				ref<ColorPopupWnd> _cpw;
 		};
 
 		class EXPORTED ColorProperty: public Property {

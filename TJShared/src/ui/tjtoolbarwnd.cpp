@@ -5,12 +5,9 @@ using namespace tj::shared::graphics;
 using namespace tj::shared;
 
 // ToolbarWnd
-ToolbarWnd::ToolbarWnd(): ChildWnd(L""), _tipIcon(Icons::GetIconPath(Icons::IconTip)) {
+ToolbarWnd::ToolbarWnd(): ChildWnd(L""), _tipIcon(Icons::GetIconPath(Icons::IconTip)), _in(false), _idx(-1), _bk(false) {
 	UnsetStyle(WS_TABSTOP);
 	SetWantMouseLeave(true);
-	_in = false;
-	_idx = -1;
-	_bk = false;
 }
 
 ToolbarWnd::~ToolbarWnd() {
@@ -294,11 +291,7 @@ Icon& StateToolbarItem::GetIcon() {
 }
 
 /* SearchToolbarWnd */
-SearchToolbarWnd::SearchToolbarWnd(): _searchIcon(Icons::GetIconPath(Icons::IconSearch)) {
-	_rightMargin = 0;
-	_searchWidth = KDefaultBoxWidth;
-	_searchHeight = KDefaultBoxHeight;
-
+SearchToolbarWnd::SearchToolbarWnd(): _searchIcon(Icons::GetIconPath(Icons::IconSearch)), _rightMargin(0), _searchWidth(KDefaultBoxWidth), _searchHeight(KDefaultBoxHeight) {
 	_edit = GC::Hold(new EditWnd());
 	_edit->SetCue(TL(search_banner));
 	ChildWnd::Add(_edit,true);
@@ -306,7 +299,7 @@ SearchToolbarWnd::SearchToolbarWnd(): _searchIcon(Icons::GetIconPath(Icons::Icon
 }
 
 void SearchToolbarWnd::OnCreated() {
-	_edit->SetListener(this);
+	_edit->EventTextChanged.AddListener(ref<Listener<EditWnd::NotificationTextChanged> >(this));
 }
 
 SearchToolbarWnd::~SearchToolbarWnd() {
@@ -366,8 +359,8 @@ void SearchToolbarWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	}
 }
 
-void SearchToolbarWnd::Notify(Wnd* src, Notification n) {
-	if(src==_edit.GetPointer() && n==NotificationChanged) {
+void SearchToolbarWnd::Notify(ref<Object> src, const EditWnd::NotificationTextChanged& data) {
+	if(src==ref<Object>(_edit)) {
 		OnSearchChange(_edit->GetText());
 	}
 }

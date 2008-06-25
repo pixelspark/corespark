@@ -70,13 +70,13 @@ namespace tj {
 				ref<Wnd> _tip;
 		};
 
-		class EXPORTED SearchToolbarWnd: public ToolbarWnd, public Listener {
+		class EXPORTED SearchToolbarWnd: public ToolbarWnd, public Listener<EditWnd::NotificationTextChanged> {
 			public:
 				SearchToolbarWnd();
 				virtual ~SearchToolbarWnd();
 				virtual void Layout();
 				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
-				virtual void Notify(Wnd* src, Notification n);
+				virtual void Notify(ref<Object> src, const EditWnd::NotificationTextChanged& data);
 
 			protected:
 				virtual void SetSearchBoxRightMargin(Pixels r);

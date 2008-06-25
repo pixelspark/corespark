@@ -30,6 +30,7 @@
 #include "tjscriptscope.h"
 #include "tjscriptparameterlist.h"
 #include "tjscriptobject.h"
+#include "tjscriptdelegate.h"
 #include "types/tjstatictypes.h"
 #include "tjscriptiterator.h"
 

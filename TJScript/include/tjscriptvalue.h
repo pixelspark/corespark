@@ -32,6 +32,9 @@ namespace tj {
 					if(command==L"toString") {
 						return tj::shared::GC::Hold(new ScriptValue<std::wstring>(tj::shared::Stringify(_value)));
 					}
+					else if(command==L"class") {
+						return tj::shared::GC::Hold(new ScriptString(Wcs(typeid(T).name())));
+					}
 					return 0;
 				}
 

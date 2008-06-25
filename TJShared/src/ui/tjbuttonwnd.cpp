@@ -2,11 +2,10 @@
 using namespace tj::shared::graphics;
 using namespace tj::shared;
 
-ButtonWnd::ButtonWnd(const wchar_t* image, const wchar_t* text): ChildWnd(L"", false, true), _disabled(false) {
+ButtonWnd::ButtonWnd(const wchar_t* image, const wchar_t* text): ChildWnd(L"", false, true), _disabled(false), _down(false) {
 	SetWantMouseLeave(true);
 	std::wstring fn = ResourceManager::Instance()->Get(image);
 	_image =  Bitmap::FromFile(fn.c_str(),TRUE);
-	_down = false;
 
 	if(text!=0) {
 		_text = text;
@@ -56,10 +55,7 @@ void ButtonWnd::OnKey(Key k, wchar_t t, bool down, bool isAccelerator) {
 			}
 			else {
 				if(!_disabled) {
-					ref<Listener> listener = _listener;
-					if(listener) {
-						listener->Notify(this, NotificationClick);
-					}
+					EventClicked.Fire(this, NotificationClicked());
 				}
 				_down = false;
 			}
@@ -70,10 +66,6 @@ void ButtonWnd::OnKey(Key k, wchar_t t, bool down, bool isAccelerator) {
 
 void ButtonWnd::OnFocus(bool f) {
 	Repaint();
-}
-
-void ButtonWnd::SetListener(ref<Listener> lr) {
-	_listener = lr;
 }
 
 void ButtonWnd::Paint(Graphics& g, ref<Theme> theme) {
@@ -138,10 +130,7 @@ void ButtonWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 	}
 	else if(ev==MouseEventLUp) {
 		if(!_disabled) {
-			ref<Listener> listener = _listener;
-			if(listener) {
-				listener->Notify(this, NotificationClick);
-			}
+			EventClicked.Fire(this, NotificationClicked());
 		}
 
 		_down = false;

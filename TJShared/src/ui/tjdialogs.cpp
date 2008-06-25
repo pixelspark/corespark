@@ -17,14 +17,12 @@ DialogWnd::~DialogWnd() {
 }
 
 void DialogWnd::OnCreated() {
-	_ok->SetListener(this);
+	_ok->EventClicked.AddListener(ref<Listener<ButtonWnd::NotificationClicked> >(this));
 }
 
-void DialogWnd::Notify(Wnd* source, Notification evt) {
-	if(evt==NotificationClick) {
-		if(source==_ok.GetPointer()) {
-			EndModal(true);
-		}
+void DialogWnd::Notify(ref<Object> source, const ButtonWnd::NotificationClicked& evt) {
+	if(source==ref<Object>(_ok)) {
+		EndModal(true);
 	}
 }
 

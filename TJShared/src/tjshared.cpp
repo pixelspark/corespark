@@ -41,10 +41,6 @@ long Resource::GetResourceCount() {
 	return _resourceCount;
 }
 
-/* Listener */
-Listener::~Listener() {
-}
-
 /* Object */
 void Object::OnCreated() {
 }
