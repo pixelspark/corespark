@@ -9,13 +9,15 @@ namespace tj {
 			public:
 				BrowserToolbarWnd(BrowserWnd* browser);
 				virtual ~BrowserToolbarWnd();
-				virtual void OnCommand(int c);
 				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
 				virtual void SetURL(std::wstring url);
 				virtual void Layout();
-				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 
 			protected:
+				virtual void OnCommand(int c);
+				virtual void OnCommand(ref<ToolbarItem> ti);
+				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
+
 				BrowserWnd* _browser;
 				ref<EditWnd> _url;
 

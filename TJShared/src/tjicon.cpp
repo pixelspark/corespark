@@ -30,3 +30,23 @@ graphics::Image* Icon::GetBitmap() {
 Icon::operator graphics::Image*() {
 	return _bitmap;
 }
+
+void Icon::Paint(graphics::Graphics& g, const Area& rc, bool enabled) {
+	if(enabled) {
+		g.DrawImage(_bitmap, rc);
+	}
+	else {
+		graphics::ColorMatrix cm = {
+			0.299f, 0.299f, 0.299f, 0.0f, 0.0f,
+			0.587f, 0.587f, 0.587f, 0.0f, 0.0f,
+			0.114f, 0.114f, 0.114f, 0.0f, 0.0f,
+			0.0f,	0.0f,	0.0f,	1.0f, 0.0f,
+			0.0f,	0.0f,	0.0f,	0.0f, 1.0f,
+		};
+
+		Gdiplus::ImageAttributes attr;
+		attr.SetColorMatrix(&cm);
+
+		g.DrawImage(_bitmap, rc, 0.0f, 0.0f, (float)_bitmap->GetWidth(), (float)_bitmap->GetHeight(), graphics::UnitPixel, &attr);
+	}
+}

@@ -60,6 +60,64 @@ namespace tj {
 			KeyAlt,
 		};
 
+		class EXPORTED Elements {
+			public:
+				template<class T> static ref<T> GetElementAt(std::vector< ref<T> >& elements, Pixels x, Pixels y) {
+					std::vector< ref<T> >::iterator it = elements.begin();
+					std::vector< ref<T> >::iterator end = elements.end();
+
+					while(it!=end) {
+						ref<T> element = *it;
+						if(element && element.IsCastableTo<Element>()) {
+							ref<Element> elementCasted = element;
+							if(elementCasted && elementCasted->IsShown()) {
+								Area client = elementCasted->GetClientArea();
+								if(client.IsInside(x,y)) {
+									return element;
+								}
+							}
+						}
+						++it;
+					}
+
+					return 0;
+				}
+		};
+
+		class EXPORTED Element: public virtual Object {
+			public:
+				virtual ~Element();
+				virtual Area GetClientArea() const;
+				virtual void Fill(LayoutFlags flags, Area& rect, bool direct = true);
+				virtual void SetSize(Pixels w, Pixels h);
+				virtual void Move(Pixels x, Pixels y, Pixels w, Pixels h);
+				virtual void Show(bool t);
+				virtual bool IsShown() const;
+				virtual void Update();
+
+				virtual void Paint(graphics::Graphics& g, ref<Theme> theme) = 0;
+
+				struct EXPORTED ShowNotification {
+					ShowNotification(bool shown);
+					bool _shown;
+				};
+
+				struct EXPORTED SizeNotification {};
+				struct EXPORTED UpdateNotification {};
+
+				Listenable<ShowNotification> OnShow;
+				Listenable<SizeNotification> OnSize;
+				Listenable<UpdateNotification> OnUpdate;
+
+			protected:
+				Element();
+
+			private:
+				Area _client;
+				bool _shown;
+
+		};
+
 		class EXPORTED Wnd: public virtual Object {
 			friend class FloatingPane;
 

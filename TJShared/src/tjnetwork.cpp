@@ -98,7 +98,6 @@ Networking::MACAddress::MACAddress(const std::wstring& mac) {
 			address.data[a] = 0;
 		}
 	}
-	Log::Write(L"TJShared/Networking/MACAddress", L"Parsed "+mac+L" as "+ToString());
 }
 
 std::wstring Networking::MACAddress::ToString() const {

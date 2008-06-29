@@ -4,7 +4,7 @@
 namespace tj {
 	namespace shared {
 
-		class EXPORTED ToolbarItem {
+		class EXPORTED ToolbarItem: public Element {
 			public:
 				ToolbarItem(int command=0, graphics::Bitmap* bmp=0, std::wstring text=L"", bool separator=false);
 				ToolbarItem(int command, std::wstring icon, std::wstring text=L"", bool separator=false);
@@ -14,12 +14,27 @@ namespace tj {
 				virtual int GetCommand() const;
 				virtual Icon& GetIcon();
 				virtual std::wstring GetText() const;
+				void SetEnabled(bool e);
+				bool IsEnabled() const;
+				void SetActive(bool e);
+				bool IsActive() const;
+				virtual Area GetPreferredSize() const;
+				void SetPreferredSize(Pixels w, Pixels h);
+
+				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
+				virtual void Paint(graphics::Graphics& g, ref<Theme> theme, bool over, bool down);
+
+				static void DrawToolbarButton(graphics::Graphics& g, Icon& icon, const Area& rc, ref<Theme> theme, bool over, bool down, bool separator=false, bool enabled = true);
+				static void DrawToolbarButton(graphics::Graphics& g, const Area& rc, ref<Theme> theme, bool over, bool down, bool separator=false);
 
 			protected:
 				int _command;
 				Icon _icon;
 				bool _separator;
+				bool _enabled;
+				bool _active;
 				std::wstring _text;
+				Pixels _preferredWidth, _preferredHeight;
 		};
 
 		class EXPORTED StateToolbarItem: public ToolbarItem {
@@ -39,13 +54,11 @@ namespace tj {
 			public:
 				ToolbarWnd();
 				virtual ~ToolbarWnd();
-				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
 				virtual void Layout();
-				virtual void Add(ref<ToolbarItem> item);
-				virtual void OnCommand(int c);
+				virtual void Add(ref<ToolbarItem> item, bool alignRight = false);
+				virtual void OnCommand(ref<ToolbarItem> item) = 0;
 				virtual void Fill(LayoutFlags f, Area& r, bool direct = true);
-				virtual Pixels GetTotalButtonWidth() const;
 				virtual void SetBackground(bool t);
 				virtual void SetBackgroundColor(graphics::Color c);
 				virtual bool HasTip() const;
@@ -57,13 +70,16 @@ namespace tj {
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
 				virtual void OnSize(const Area& ns);
 				virtual bool CanShowHints();
-				virtual void DrawToolbarButton(graphics::Graphics& g, Pixels x, Icon& icon, const Area& rc, ref<Theme> theme, bool over, bool down, bool separator=false);
-
+				
 				std::vector< ref<ToolbarItem> > _items;
+				std::vector< ref<ToolbarItem> > _itemsRight;
+				Area _freeArea;
+
 				static const int KIconWidth = 16;
 				static const int KIconHeight = 16;
+
 				bool _in;
-				int _idx;
+				ref<ToolbarItem> _over;
 				bool _bk;
 				graphics::Color _bkColor;
 				Icon _tipIcon;
@@ -83,6 +99,7 @@ namespace tj {
 				virtual void OnSearchChange(const std::wstring& q);
 				virtual void OnCreated();
 				Area GetSearchBoxArea() const;
+				bool IsSearchBoxVisible() const;
 				virtual void SetSearchBoxSize(Pixels w, Pixels h);
 				virtual bool CanShowHints();
 

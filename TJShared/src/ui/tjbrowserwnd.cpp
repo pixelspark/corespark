@@ -217,6 +217,10 @@ BrowserToolbarWnd::BrowserToolbarWnd(BrowserWnd *browser): ToolbarWnd() {
 	Layout();
 }
 
+void BrowserToolbarWnd::OnCommand(ref<ToolbarItem> ti) {
+	OnCommand(ti->GetCommand());
+}
+
 void BrowserToolbarWnd::OnCommand(int c) {
 	if(_browser==0) return;
 
@@ -259,6 +263,7 @@ void BrowserToolbarWnd::Layout() {
 LRESULT BrowserToolbarWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	static Color back;
 	static HBRUSH editBackground = 0;
+
 	if(msg==WM_CTLCOLOREDIT) {
 		ref<Theme> theme = ThemeManager::GetTheme();
 		Color c = theme->GetBackgroundColor();

@@ -5,7 +5,7 @@ using namespace tj::shared::graphics;
 using namespace tj::shared;
 
 // ToolbarWnd
-ToolbarWnd::ToolbarWnd(): ChildWnd(L""), _tipIcon(Icons::GetIconPath(Icons::IconTip)), _in(false), _idx(-1), _bk(false) {
+ToolbarWnd::ToolbarWnd(): ChildWnd(L""), _tipIcon(Icons::GetIconPath(Icons::IconTip)), _in(false), _bk(false) {
 	UnsetStyle(WS_TABSTOP);
 	SetWantMouseLeave(true);
 }
@@ -13,14 +13,60 @@ ToolbarWnd::ToolbarWnd(): ChildWnd(L""), _tipIcon(Icons::GetIconPath(Icons::Icon
 ToolbarWnd::~ToolbarWnd() {
 }
 
-void ToolbarWnd::Add(ref<ToolbarItem> item) {
-	_items.push_back(item);
-}
-
-void ToolbarWnd::OnCommand(int c) {
+void ToolbarWnd::Add(ref<ToolbarItem> item, bool alignRight) {
+	if(alignRight) {
+		_itemsRight.push_back(item);
+	}
+	else {
+		_items.push_back(item);
+	}
+	item->Show(true);
+	Layout();
 }
 
 void ToolbarWnd::Layout() {
+	ref<Theme> theme = ThemeManager::GetTheme();
+	Pixels bs = theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
+	Area rc = GetClientArea();
+
+	// Layout items on the left
+	std::vector< ref<ToolbarItem> >::iterator it = _items.begin();
+	std::vector< ref<ToolbarItem> >::iterator end = _items.end();
+	Pixels x = 0;
+
+	while(it!=end) {
+		ref<ToolbarItem> ti = *it;
+		if(ti && ti->IsShown()) {
+			Area prefSize = ti->GetPreferredSize();
+			ti->Move(x, 0, prefSize.GetWidth(), prefSize.GetHeight());
+			x += prefSize.GetWidth();		
+		}
+		++it;
+	}
+
+	// Layout items on the right
+	std::vector< ref<ToolbarItem> >::iterator rit = _itemsRight.begin();
+	std::vector< ref<ToolbarItem> >::iterator rend = _itemsRight.end();
+	Pixels xr = rc.GetRight();
+	if(HasTip()) xr -= bs;
+
+	while(rit!=rend) {
+		ref<ToolbarItem> ti = *rit;
+		if(ti && ti->IsShown()) {
+			Area prefSize = ti->GetPreferredSize();
+
+			if((xr-prefSize.GetWidth())<=x) {
+				ti->Move(-1000,0,0,0);
+			}
+			else {
+				ti->Move(xr-prefSize.GetWidth(), 0, prefSize.GetWidth(), prefSize.GetHeight());
+				xr -= prefSize.GetWidth();	
+			}
+		}
+		++rit;
+	}
+
+	_freeArea = Area(x+bs, 0, xr-x-bs, rc.GetHeight());
 }
 
 void ToolbarWnd::SetBackground(bool t) {
@@ -43,6 +89,7 @@ bool ToolbarWnd::HasTip() const {
 
 void ToolbarWnd::SetTip(ref<Wnd> tipWindow) {
 	_tip = tipWindow;
+	Layout();
 	Update();
 }
 
@@ -62,27 +109,27 @@ void ToolbarWnd::Fill(LayoutFlags f, Area& r, bool direct) {
 	}
 }
 
-LRESULT ToolbarWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
-	if(msg==WM_TIMER) {
-		Repaint();
-	}
-	return ChildWnd::Message(msg,wp,lp);
-}
-
 Pixels ToolbarWnd::GetButtonX(int command) {
-	ref<Theme> theme = ThemeManager::GetTheme();
-	Pixels bs = theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
+	std::vector< ref<ToolbarItem> >::const_iterator it = _items.begin();
+	std::vector< ref<ToolbarItem> >::const_iterator end = _items.end();
 
-	Pixels left = 0;
-	std::vector< ref<ToolbarItem> >::iterator it = _items.begin();
-	while(it!=_items.end()) {
+	while(it!=end) {
 		ref<ToolbarItem> ti = *it;
-		if(ti && ti->GetCommand()==command) {
-			return left;
+		if(ti && ti->IsShown() && ti->GetCommand()==command) {
+			return ti->GetClientArea().GetX();
 		}
-
-		left += bs;
 		++it;
+	}
+
+	std::vector< ref<ToolbarItem> >::const_iterator rit = _itemsRight.begin();
+	std::vector< ref<ToolbarItem> >::const_iterator rend = _itemsRight.end();
+
+	while(rit!=rend) {
+		ref<ToolbarItem> ti = *rit;
+		if(ti && ti->IsShown() && ti->GetCommand()==command) {
+			return ti->GetClientArea().GetX();
+		}
+		++rit;
 	}
 
 	return 0;
@@ -96,22 +143,25 @@ void ToolbarWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 		_in = true;
 
 		if(!IsKeyDown(KeyMouseLeft)||ev==MouseEventLDown) {
-			_idx = x/bs;
+			_over = Elements::GetElementAt(_items, x, y);
+			if(!_over) {
+				_over = Elements::GetElementAt(_itemsRight, x, y);
+			}
 		}
+
 		// track leave event
 		Repaint();
 	}
 	else if(ev==MouseEventLeave) {
 		_in = false;
-		_idx = -1;
+		_over = 0;
 		Repaint();
 	}
 	else if(ev==MouseEventLUp) {
 		Area rc = GetClientArea();
 
-		if(_idx>=0 && _idx < (int)_items.size()) {
-			ref<ToolbarItem> item = _items.at(_idx);
-			OnCommand(item->GetCommand());
+		if(_over && _over->IsEnabled()) {
+			OnCommand(_over);
 		}
 		else if(x>rc.GetRight()-bs) {
 			// Tip thing
@@ -130,23 +180,13 @@ void ToolbarWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 	}
 }
 
-Pixels ToolbarWnd::GetTotalButtonWidth() const {
-	ref<Theme> theme = ThemeManager::GetTheme();
-	return int(_items.size())*theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
-}
-
 Area ToolbarWnd::GetFreeArea() const {
-	Area rc = GetClientArea();
-	ref<Theme> theme = ThemeManager::GetTheme();
-	Pixels buttonSize = theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
-	rc.Narrow(GetTotalButtonWidth(),0,HasTip()?buttonSize:0,0);
-
-	return rc;
+	return _freeArea;
 }
 
 void ToolbarWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	Area rc = GetClientArea();
-	int buttonSize = theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
+	Pixels buttonSize = theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
 	
 	if(_bk) {
 		LinearGradientBrush lbl(PointF(0.0f, 0.0f), PointF(float(rc.GetWidth()/2)+2.0f,0.0f), theme->GetBackgroundColor(), _bkColor);
@@ -171,29 +211,45 @@ void ToolbarWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	Pen pn(theme->GetActiveEndColor(), 1.0f);
 	g.DrawLine(&pn, PointF(0.0f, float(rc.GetHeight()-1.0f)), PointF(float(rc.GetWidth()), float(rc.GetHeight()-1.0f)));
 
-	// Draw toolbar buttons
+	// Draw toolbar buttons (left)
 	std::vector< ref<ToolbarItem> >::iterator it = _items.begin();
-	Pixels x = 0;
-	int idx = 0;
-	while(it!=_items.end()) {
+	std::vector< ref<ToolbarItem> >::iterator end = _items.end();
+
+	while(it!=end) {
 		ref<ToolbarItem> item = *it;
-		bool over = ((idx==_idx) && _in);
-		DrawToolbarButton(g, x, item->GetIcon(), rc, theme, over, bool(IsKeyDown(KeyMouseLeft)!=0), item->IsSeparator());
-		x += buttonSize;
+		if(item && item->IsShown()) {
+
+			bool over = _in && (_over==item);
+			item->Paint(g, theme, over, IsKeyDown(KeyMouseLeft));
+		}
 		++it;
-		idx++;
+	}
+
+	// Draw toolbar buttons (right)
+	std::vector< ref<ToolbarItem> >::iterator rit = _itemsRight.begin();
+	std::vector< ref<ToolbarItem> >::iterator rend = _itemsRight.end();
+
+	while(rit!=rend) {
+		ref<ToolbarItem> item = *rit;
+		if(item && item->IsShown()) {
+			bool over = _in && (_over==item);
+			item->Paint(g, theme, over, IsKeyDown(KeyMouseLeft));
+		}
+		++rit;
 	}
 
 	// Draw tip window
-	if(HasTip() && (x<(rc.GetWidth()-buttonSize))) {
-		DrawToolbarButton(g, rc.GetWidth()-buttonSize, _tipIcon, rc, theme, _tip->IsShown(), _tip->IsShown(), false);
+	// TODO: make this an element too and determine if it's shown in Layout()
+	if(HasTip()) {
+		Area tiprc = rc;
+		rc.SetX(rc.GetRight()-buttonSize);
+		ToolbarItem::DrawToolbarButton(g, _tipIcon, rc, theme, _tip->IsShown(), _tip->IsShown(), false, true);
 	}
 
 	// draw description text if in & selected
-	if(CanShowHints() && (_in && _idx >=0 && _idx < int(_items.size()))) {
+	if(CanShowHints() && _over) {
 		Pixels lx = int(_items.size())*buttonSize;
-		ref<ToolbarItem> item = _items.at(_idx);
-		std::wstring text = item->GetText();
+		std::wstring text = _over->GetText();
 		SolidBrush br(theme->GetActiveEndColor());
 		StringFormat sf;
 		sf.SetAlignment(StringAlignmentNear);
@@ -202,53 +258,101 @@ void ToolbarWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	}
 }
 
-void ToolbarWnd::DrawToolbarButton(Graphics& g, Pixels x, Icon& icon, const Area& rc, ref<Theme> theme, bool over, bool down, bool separator) {
-	float fx = float(x);
+void ToolbarItem::DrawToolbarButton(graphics::Graphics& g, const Area& rc, ref<Theme> theme, bool over, bool down, bool separator) {
 	Pixels buttonSize = theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
+	Pixels x = rc.GetX();
 
 	if(over) {
+		Area wrapped = rc;
+		wrapped.Narrow(1,1,2,2);
 		if(down) {
 			LinearGradientBrush active(PointF(0.0f, 0.0f), PointF(0.0f, float(rc.GetHeight())), theme->GetHighlightColorStart(), theme->GetHighlightColorEnd());
-			g.FillRectangle(&active, RectF(fx+1.0f, 1.0f, 22.0f, 21.0f));
+			g.FillRectangle(&active, wrapped);
 		}
 		else {
 			LinearGradientBrush active(PointF(0.0f, 0.0f), PointF(0.0f, float(rc.GetHeight())), theme->GetActiveStartColor(), theme->GetActiveEndColor());
-			g.FillRectangle(&active, RectF(fx+1.0f, 1.0f, 22.0f, 21.0f));
+			g.FillRectangle(&active, wrapped);
 		}
 
 		LinearGradientBrush glas(PointF(0.0f,0.0f), PointF(0.0f,float(rc.GetHeight())/2.0f), theme->GetGlassColorStart(), theme->GetGlassColorEnd());
-		g.FillRectangle(&glas, RectF(fx+1.0f, 1.0f, float(buttonSize)-2.0f, float(rc.GetHeight())-3.0f));
+		g.FillRectangle(&glas, wrapped);
 	}
-
-	g.DrawImage(icon, RectF(fx+4.0f, 4.0f, 16.0f, 16.0f));
 
 	if(separator) {
 		Pen pn(theme->GetActiveStartColor());
-		g.DrawLine(&pn, PointF(fx+24.0f, 4.0f), PointF(fx+24.0f, float(rc.GetHeight())-4.0f));
+		g.DrawLine(&pn, PointF((float)rc.GetRight(), 4.0f), PointF((float)rc.GetRight(), float(rc.GetHeight())-4.0f));
+	}
+}
+
+void ToolbarItem::DrawToolbarButton(Graphics& g, Icon& icon, const Area& rc, ref<Theme> theme, bool over, bool down, bool separator, bool enabled) {
+	Pixels buttonSize = theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
+	Pixels x = rc.GetX();
+
+	if(over) {
+		Area wrapped = rc;
+		wrapped.Narrow(1,1,2,2);
+		if(down) {
+			LinearGradientBrush active(PointF(0.0f, 0.0f), PointF(0.0f, float(rc.GetHeight())), theme->GetHighlightColorStart(), theme->GetHighlightColorEnd());
+			g.FillRectangle(&active, wrapped);
+		}
+		else {
+			LinearGradientBrush active(PointF(0.0f, 0.0f), PointF(0.0f, float(rc.GetHeight())), theme->GetActiveStartColor(), theme->GetActiveEndColor());
+			g.FillRectangle(&active, wrapped);
+		}
+
+		LinearGradientBrush glas(PointF(0.0f,0.0f), PointF(0.0f,float(rc.GetHeight())/2.0f), theme->GetGlassColorStart(), theme->GetGlassColorEnd());
+		g.FillRectangle(&glas, wrapped);
+	}
+
+	//g.DrawImage(icon, RectF(fx+4.0f, 4.0f, 16.0f, 16.0f));
+	icon.Paint(g, Area(x+4, 4, 16, 16), enabled);
+
+	if(separator) {
+		Pen pn(theme->GetActiveStartColor());
+		g.DrawLine(&pn, PointF((float)rc.GetRight(), 4.0f), PointF((float)rc.GetRight(), float(rc.GetHeight())-4.0f));
 	}
 }
 
 bool ToolbarWnd::CanShowHints() {
-	Area rc = GetClientArea();
-	return (rc.GetWidth()-GetTotalButtonWidth()) > 100;
+	return GetFreeArea().GetWidth() > 100;
 }
 
 // ToolbarItem
-ToolbarItem::ToolbarItem(int command, graphics::Bitmap* bmp, std::wstring text, bool separator): _icon(bmp) {
+ToolbarItem::ToolbarItem(int command, graphics::Bitmap* bmp, std::wstring text, bool separator): _icon(bmp) , _enabled(true), _active(true) {
 	_separator = separator;
 	_command = command;
 	_text = text;
+	_preferredWidth = -1;
+	_preferredHeight = -1;
 }
 
-ToolbarItem::ToolbarItem(int command, std::wstring rid, std::wstring text, bool separator): _icon(rid) {
+ToolbarItem::ToolbarItem(int command, std::wstring rid, std::wstring text, bool separator): _icon(rid), _enabled(true), _active(true) {
 	_separator = separator;
 	std::wstring path = ResourceManager::Instance()->Get(rid);
 	_command = command;
 	_text = text;
+	_preferredWidth = -1;
+	_preferredHeight = -1;
 }
 
 ToolbarItem::~ToolbarItem() {
 };
+
+void ToolbarItem::SetActive(bool a) {
+	_active = a;
+}
+
+bool ToolbarItem::IsActive() const {
+	return _active && _enabled;
+}
+
+void ToolbarItem::SetEnabled(bool e) {
+	_enabled = e;
+}
+
+bool ToolbarItem::IsEnabled() const {
+	return _enabled;
+}
 
 std::wstring ToolbarItem::GetText() const {
 	return _text;
@@ -268,6 +372,34 @@ Icon& ToolbarItem::GetIcon() {
 
 int ToolbarItem::GetCommand() const {
 	return _command;
+}
+
+void ToolbarItem::Paint(Gdiplus::Graphics &g, tj::shared::ref<Theme> theme) {
+	Paint(g,theme,false, false);
+}
+
+void ToolbarItem::Paint(Gdiplus::Graphics &g, tj::shared::ref<Theme> theme, bool over, bool down) {
+	Area rc = GetClientArea();
+	bool active = IsActive();
+	bool enabled = IsEnabled();
+
+	DrawToolbarButton(g, _icon, rc, theme, enabled && over, enabled && down, _separator, active);
+}
+
+Area ToolbarItem::GetPreferredSize() const {
+	if(_preferredHeight>=0 && _preferredWidth>=0) {
+		return Area(0,0,_preferredWidth, _preferredHeight);
+	}
+	else {
+		ref<Theme> theme = ThemeManager::GetTheme();
+		Pixels bs = theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
+		return Area(0,0,bs,bs);
+	}
+}
+
+void ToolbarItem::SetPreferredSize(Pixels w, Pixels h) {
+	_preferredWidth = w;
+	_preferredHeight = h;
 }
 
 // StateToolbarItem
@@ -309,26 +441,33 @@ void SearchToolbarWnd::OnSearchChange(const std::wstring& q) {
 }
 
 void SearchToolbarWnd::Layout() { // also called by ToolbarWnd::OnSize
+	ToolbarWnd::Layout();
+
 	Area search = GetSearchBoxArea();
 
-	ref<Theme> theme = ThemeManager::GetTheme();
-	Pixels buttonSize = theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
-	if(search.GetLeft()<=GetTotalButtonWidth()+buttonSize) { // +buttonSize is for the search icon
-		// Hide search things, because we overlap with toolbar buttons
-		_edit->Show(false);
-	}
-	else {
+	if(IsSearchBoxVisible()) {
 		_edit->Fill(LayoutFill, search);
 		_edit->Show(true);
 	}
+	else {
+		// Hide search things, because we overlap with toolbar buttons
+		_edit->Show(false);
+	}
+}
 
-	ToolbarWnd::Layout();
+bool SearchToolbarWnd::IsSearchBoxVisible() const {
+	ref<Theme> theme = ThemeManager::GetTheme();
+	Pixels buttonSize = theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
+
+	return GetSearchBoxArea().GetWidth()>=(2*buttonSize);
 }
 
 Area SearchToolbarWnd::GetSearchBoxArea() const {
 	Area rc = GetFreeArea();
+	rc.Narrow(0,0,_rightMargin,0);
 	Pixels margin = (rc.GetHeight()-_searchHeight)/2;
-	Area search(rc.GetRight()-_searchWidth-margin-_rightMargin, rc.GetTop()+margin-1, _searchWidth, _searchHeight);
+	Pixels sw = min(rc.GetWidth()-margin,_searchWidth);
+	Area search(rc.GetRight()-sw-margin, rc.GetTop()+margin-1, sw, _searchHeight);
 	return search;
 }
 
@@ -348,7 +487,7 @@ void SearchToolbarWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	Area search = GetSearchBoxArea();
 
 	// Only paint search box if we do not overlap with the toolbar buttons
-	if(search.GetLeft()>(GetTotalButtonWidth()+theme->GetMeasureInPixels(Theme::MeasureToolbarHeight))) {
+	if(IsSearchBoxVisible()) {
 		search.Widen(1,1,1,1);
 
 		SolidBrush border(theme->GetActiveStartColor());
@@ -367,5 +506,5 @@ void SearchToolbarWnd::Notify(ref<Object> src, const EditWnd::NotificationTextCh
 
 bool SearchToolbarWnd::CanShowHints() {
 	Area rc = GetClientArea();
-	return (rc.GetWidth()-GetTotalButtonWidth()-(GetSearchBoxArea().GetWidth())) > 100;
+	return (GetFreeArea().GetWidth() - GetSearchBoxArea().GetWidth()) > 100;
 }

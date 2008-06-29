@@ -795,6 +795,7 @@ void Wnd::OnSize(const Area& newSize) {
 }
 
 void Wnd::OnTimer(unsigned int id) {
+	Repaint();
 }
 
 void Wnd::OnScroll(ScrollDirection dir) {
@@ -1118,4 +1119,61 @@ LRESULT TopWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 }
 
 void TopWnd::GetMinimumSize(Pixels& w, Pixels& h) {
+}
+
+/** Element **/
+Element::Element() {
+}
+
+Element::~Element() {
+}
+
+Area Element::GetClientArea() const {
+	return _client;
+}
+
+void Element::Fill(LayoutFlags flags, Area& rect, bool direct) {
+	switch(flags) {
+		case LayoutFill:
+		case LayoutTop:
+		case LayoutBottom:
+		case LayoutRight:
+		case LayoutLeft:
+			if(direct) {
+				Move(rect.GetLeft(), rect.GetTop(), rect.GetWidth(), rect.GetHeight());
+			}
+			rect.SetWidth(0);
+			rect.SetHeight(0);
+			break;
+		case LayoutHide:
+		default:
+			Move(0,0,0,0);
+	}
+}
+
+void Element::SetSize(Pixels w, Pixels h) {
+	_client.SetHeight(h);
+	_client.SetWidth(w);
+	OnSize.Fire(this, SizeNotification());
+}
+
+void Element::Move(Pixels x, Pixels y, Pixels w, Pixels h) {
+	_client = Area(x,y,w,h);
+	OnSize.Fire(this, SizeNotification());
+}
+
+void Element::Update() {
+	OnUpdate.Fire(this, UpdateNotification());
+}
+
+void Element::Show(bool t) {
+	_shown = t;
+	OnShow.Fire(this, ShowNotification(t));
+}
+
+bool Element::IsShown() const {
+	return _shown;
+}
+
+Element::ShowNotification::ShowNotification(bool shown): _shown(shown) {
 }

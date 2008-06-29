@@ -18,6 +18,8 @@ namespace tj {
 				inline Object(): _resource(0) {
 				}
 
+				struct EXPORTED Notification {}; // useful for empty notifications; then just use Type::Notification
+
 				// To make it a polymorphic type
 				virtual ~Object() {
 				}

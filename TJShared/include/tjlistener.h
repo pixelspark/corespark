@@ -41,6 +41,13 @@ namespace tj {
 					_listeners.push_back(ref <Listener<NotificationType> >(listener));
 				}
 
+				inline void AddListener(ref< Listener<NotificationType> > listener) {
+					ThreadLock lock(&_lock);
+					if(listener) {
+						_listeners.push_back(ref <Listener<NotificationType> >(listener));
+					}
+				}
+
 			private:
 				CriticalSection _lock;
 				std::vector< weak< Listener<NotificationType> > > _listeners;
