@@ -64,6 +64,7 @@ namespace tj {
 			protected:
 				virtual void EndModal(int r);
 				virtual void OnActivate(bool a);
+				virtual void OnTimer(unsigned int id);
 				int GetItemAt(Pixels y);
 
 				// TODO: move some of these to Theme GetMeasure
@@ -73,6 +74,8 @@ namespace tj {
 
 			private:
 				ContextMenu* _cm;
+				Animation _openAnimation;
+				Animation _closeAnimation;
 				int _result;
 				ModalLoop _loop;
 				Icon _checkedIcon, _radioCheckedIcon;

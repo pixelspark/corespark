@@ -1,4 +1,4 @@
-#include "../include/tjshared.h"
+#include "../include/tjcore.h"
 #include <iphlpapi.h>
 
 using namespace tj::shared;

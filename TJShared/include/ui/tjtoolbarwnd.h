@@ -22,9 +22,9 @@ namespace tj {
 				void SetPreferredSize(Pixels w, Pixels h);
 
 				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
-				virtual void Paint(graphics::Graphics& g, ref<Theme> theme, bool over, bool down);
+				virtual void Paint(graphics::Graphics& g, ref<Theme> theme, bool over, bool down, float backgroundAlpha = 1.0f);
 
-				static void DrawToolbarButton(graphics::Graphics& g, Icon& icon, const Area& rc, ref<Theme> theme, bool over, bool down, bool separator=false, bool enabled = true);
+				static void DrawToolbarButton(graphics::Graphics& g, Icon& icon, const Area& rc, ref<Theme> theme, bool over, bool down, bool separator=false, bool enabled = true, float alpha=1.0f);
 				static void DrawToolbarButton(graphics::Graphics& g, const Area& rc, ref<Theme> theme, bool over, bool down, bool separator=false);
 
 			protected:
@@ -69,6 +69,7 @@ namespace tj {
 				virtual Area GetFreeArea() const; // returns the area which child classes can freely use to paint on
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
 				virtual void OnSize(const Area& ns);
+				virtual void OnTimer(unsigned int id);
 				virtual bool CanShowHints();
 				
 				std::vector< ref<ToolbarItem> > _items;
@@ -84,6 +85,7 @@ namespace tj {
 				graphics::Color _bkColor;
 				Icon _tipIcon;
 				ref<Wnd> _tip;
+				Animation _entryAnimation;
 		};
 
 		class EXPORTED SearchToolbarWnd: public ToolbarWnd, public Listener<EditWnd::NotificationTextChanged> {

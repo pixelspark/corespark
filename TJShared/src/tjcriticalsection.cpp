@@ -1,20 +1,32 @@
-#include "../include/tjshared.h"
+#include "../include/tjcore.h"
 using namespace tj::shared;
 
 CriticalSection::CriticalSection() {
-	InitializeCriticalSectionAndSpinCount(&_cs, 1024);
+	#ifdef _WIN32
+		InitializeCriticalSectionAndSpinCount(&_cs, 1024);
+	#endif
 }
 
 CriticalSection::~CriticalSection() {
-	DeleteCriticalSection(&_cs);
+	#ifdef _WIN32
+		DeleteCriticalSection(&_cs);
+	#endif
 }
 
 void CriticalSection::Enter() {
-	EnterCriticalSection(&_cs);
+	#ifdef _WIN32
+		EnterCriticalSection(&_cs);
+	#else
+		#error CriticalSection::Enter not implemented on this platform
+	#endif
 }
 
 void CriticalSection::Leave() {
-	LeaveCriticalSection(&_cs);
+	#ifdef _WIN32
+		LeaveCriticalSection(&_cs);
+	#else
+		#error CriticalSection::Enter not implemented on this platform
+	#endif
 }
 
 ThreadLock::ThreadLock(CriticalSection *cs): _cs(cs) {

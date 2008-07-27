@@ -15,7 +15,7 @@ FilePropertyWnd::~FilePropertyWnd() {
 void FilePropertyWnd::Paint(Graphics& g, ref<Theme> theme) {
 	Area rc = GetClientArea();
 
-	SolidBrush back(theme->GetBackgroundColor());
+	SolidBrush back(theme->GetColor(Theme::ColorBackground));
 	g.FillRectangle(&back, rc);
 	if(IsMouseOver()) {
 		theme->DrawToolbarBackground(g, 0.0f, 0.0f, float(rc.GetWidth()), float(rc.GetHeight()));
@@ -23,7 +23,7 @@ void FilePropertyWnd::Paint(Graphics& g, ref<Theme> theme) {
 
 	g.DrawImage(_linkIcon, PointF(0.0f, 0.0f));
 
-	SolidBrush tbr(File::Exists(ResourceManager::Instance()->Get(*_path, true))?theme->GetActiveStartColor():theme->GetCommandMarkerColor());
+	SolidBrush tbr(File::Exists(ResourceManager::Instance()->Get(*_path, true))?theme->GetColor(Theme::ColorActiveStart):theme->GetColor(Theme::ColorCommandMarker));
 	Area text = rc;
 	text.Narrow(20,2,0,0);
 	StringFormat sf;
@@ -110,36 +110,22 @@ void FilePropertyWnd::SetFile(const std::wstring& file) {
 }
 
 /* FileProperty */
-FileProperty::FileProperty(std::wstring name, std::wstring* path, const wchar_t* filter): Property(name), _path(path), _filter(filter) {
+FileProperty::FileProperty(const std::wstring& name, std::wstring* path, const wchar_t* filter): Property(name), _path(path), _filter(filter) {
 }
 
 FileProperty::~FileProperty() {
 }
 
-HWND FileProperty::GetWindow() {
-	if(!_pw) {
-		return 0;
-	}
-	return _pw->GetWindow();
-}
-
-std::wstring FileProperty::GetValue() {
-	return *_path;
-}
-
-HWND FileProperty::Create(HWND p) {
+ref<Wnd> FileProperty::GetWindow() {
 	if(!_pw) {
 		_pw = GC::Hold(new FilePropertyWnd(_name, _path, _filter));
-		SetParent(_pw->GetWindow(), p);
-		_pw->SetStyle(WS_CHILD);
 	}
 
-	return _pw->GetWindow();
-}
-
-void FileProperty::Changed() {
+	return _pw;
 }
 
 void FileProperty::Update() {
-	if(_pw) _pw->Update();
+	if(_pw) {
+		_pw->Update();
+	}
 }

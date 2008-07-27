@@ -1,4 +1,5 @@
-#include "../../include/tjshared.h"
+#include "../../include/ui/tjui.h" 
+#include "../../include/properties/tjproperties.h"
 #include <windowsx.h>
 #include <commctrl.h>
 using namespace tj::shared;
@@ -14,13 +15,10 @@ const Pixels PropertyGridWnd::KPropertyMargin = 3;
 /* PropertyGridWnd implementation */
 PropertyGridWnd::PropertyGridWnd(bool withPath): ChildWnd(TL(properties)),
 _expandIcon(Icons::GetIconPath(Icons::IconExpand)), _collapseIcon(Icons::GetIconPath(Icons::IconCollapse)) {
-	ClearThemeCache();
 	_nameWidth = 100;
 	SetStyle(WS_CLIPCHILDREN|WS_CLIPSIBLINGS);
 	SetStyleEx(WS_EX_CONTROLPARENT);
 	SetVerticallyScrollable(true);
-	_editBackground = 0;
-	_editFont = 0;
 	_showHints = true;
 	_isDraggingSplitter = false;
 
@@ -32,21 +30,19 @@ _expandIcon(Icons::GetIconPath(Icons::IconExpand)), _collapseIcon(Icons::GetIcon
 }
 
 PropertyGridWnd::~PropertyGridWnd() {
-	if(_editBackground!=0) DeleteObject(_editBackground);
-	_editBackground = 0;
-
-	if(_editFont!=0) DeleteObject(_editFont);
-	_editFont = 0;
 }
 
 void PropertyGridWnd::FocusFirstProperty() {
 	if(_properties.size()>0) {
 		ref<Property> p = (*_properties.begin());
-		SetFocus(p->GetWindow());
+		ref<Wnd> w = p->GetWindow();
+		if(w) {
+			w->Focus();
+		}
 	}
 }
 
-void PropertyGridWnd::SetNameWidth(int w) {
+void PropertyGridWnd::SetNameWidth(Pixels w) {
 	_nameWidth = w;
 	Repaint();
 }
@@ -57,6 +53,7 @@ void PropertyGridWnd::SetShowHints(bool t) {
 	if(st) {
 		st->SetValue(L"hints.show", _showHints?L"yes":L"no");
 	}
+	Repaint();
 }
 
 bool PropertyGridWnd::GetShowHints() const {
@@ -75,19 +72,10 @@ void PropertyGridWnd::OnSettingsChanged() {
 	}
 }
 
-void PropertyGridWnd::ClearThemeCache() {
-	if(_editBackground!=0) DeleteObject(_editBackground);
-	Color back = ThemeManager::GetTheme()->GetPropertyBackgroundColor();
-	_editBackground = CreateSolidBrush(RGB(back.GetRed(),back.GetGreen(),back.GetBlue()));
-
-	if(_editFont!=0) DeleteObject(_editFont);
-	_editFont = CreateFont(-10, 0, 0, 0, 400, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, DEFAULT_PITCH, TL(ui_font));
-}
-
 void PropertyGridWnd::Paint(Graphics& g, ref<Theme> theme) {
 	Area r = GetClientArea();
 
-	SolidBrush br(theme->GetPropertyBackgroundColor());
+	SolidBrush br(theme->GetColor(Theme::ColorPropertyBackground));
 	g.FillRectangle(&br,-1,-1,r.GetWidth()+1,r.GetHeight()+1);
 
 	Pixels cH = GetPathHeight()-GetVerticalPos();
@@ -113,21 +101,21 @@ void PropertyGridWnd::Paint(Graphics& g, ref<Theme> theme) {
 
 		p->Update();
 		if(isSeparator || !previousCollapsed) {
-			if(GetFocus()==p->GetWindow()) {
-				LinearGradientBrush gbr(graphics::Point(0, cH), graphics::Point(0, cH+p->GetHeight()+10), theme->GetTimeSelectionColorStart(), theme->GetTimeSelectionColorEnd());
+			if(p->GetWindow() && p->GetWindow()->HasFocus()) {
+				LinearGradientBrush gbr(graphics::Point(0, cH), graphics::Point(0, cH+p->GetHeight()+10), theme->GetColor(Theme::ColorTimeSelectionStart), theme->GetColor(Theme::ColorTimeSelectionEnd));
 				g.FillRectangle(&gbr, Rect(1, cH+1, r.GetWidth()-2, p->GetHeight()+(2*KPropertyMargin)-2));
 			}
 
 			if(isSeparator) {
-				LinearGradientBrush gbr(graphics::Point(0, cH), graphics::Point(0, cH+p->GetHeight()+10), theme->GetActiveStartColor(), theme->GetActiveEndColor());
+				LinearGradientBrush gbr(graphics::Point(0, cH), graphics::Point(0, cH+p->GetHeight()+10), theme->GetColor(Theme::ColorActiveStart), theme->GetColor(Theme::ColorActiveEnd));
 				g.FillRectangle(&gbr, Rect(1, cH+1, r.GetWidth()-2, p->GetHeight()+(2*KPropertyMargin)-2));
 
-				SolidBrush dbr(theme->GetDisabledOverlayColor());
+				SolidBrush dbr(theme->GetColor(Theme::ColorDisabledOverlay));
 				g.FillRectangle(&dbr, Rect(1, cH+1, r.GetWidth()-2, p->GetHeight()+(2*KPropertyMargin)-2));
 			}
 
 			std::wstring ws = p->GetName();
-			SolidBrush tb(theme->GetTextColor());
+			SolidBrush tb(theme->GetColor(Theme::ColorText));
 			
 			g.DrawString(ws.c_str(), (int)ws.length(),isSeparator?theme->GetGUIFontBold():theme->GetGUIFont(), PointF(stringLeft+(isSeparator?(KPropertyMargin+16):0), float(cH+5)), &tb);
 			
@@ -240,96 +228,6 @@ void PropertyGridWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 	}
 }
 
-LRESULT PropertyGridWnd::Message(UINT msg, WPARAM wParam, LPARAM lParam) {
-	if(msg==WM_CLOSE) {
-		ShowWindow(GetWindow(),SW_HIDE);
-		return 1;
-	}
-	else if(msg==WM_COMMAND) {
-		if(HIWORD(wParam)==EN_UPDATE||HIWORD(wParam)==BN_CLICKED||HIWORD(wParam)==CBN_SELCHANGE||HIWORD(wParam)==CBN_EDITCHANGE) {
-			HWND he = (HWND)lParam;
-
-			std::vector< ref<Property> >::iterator it = _properties.begin();
-			while(it!=_properties.end()) {
-				ref<Property> prw = (*it);
-				assert(prw!=0);
-
-				if(prw->GetWindow()==he) {
-					prw->Changed();
-					break;
-				}
-				++it;
-			}
-		}
-		else if(HIWORD(wParam)==EN_SETFOCUS) {
-			HWND he = (HWND)lParam;
-
-			if(_showHints) {
-				// Show hint for this property, if there is a hint
-				std::vector< ref<Property> >::iterator it = _properties.begin();
-				while(it!=_properties.end()) {
-					ref<Property> prw = (*it);
-					assert(prw!=0);
-
-					if(prw->GetWindow()==he) {
-						const std::wstring& hint = prw->GetHint();
-			
-						if(hint.length()>0) {
-							std::wstring name = prw->GetName();
-							EDITBALLOONTIP ebt;
-							ebt.cbStruct = sizeof(ebt);
-							ebt.pszTitle = name.c_str();
-							ebt.pszText = hint.c_str();
-							ebt.ttiIcon = TTI_INFO;
-							Edit_ShowBalloonTip(he, &ebt);
-						}
-						break;
-					}
-					++it;
-				}
-			}
-
-			Layout();
-		}
-		
-		if(HIWORD(wParam)==EN_CHANGE || HIWORD(wParam)==BN_CLICKED||HIWORD(wParam)==CBN_SELCHANGE) {
-			Wnd* root = GetRootWindow();
-			if(root!=0) {
-				root->Update();
-			}
-			
-		}
-	}
-	else if(msg==WM_CTLCOLOREDIT) {
-		wchar_t className[100];
-		GetClassName((HWND)lParam, className, 100-1);
-		if(_wcsicmp(className, L"COMBOBOX")!=0) {
-			SetBkMode((HDC)wParam, TRANSPARENT);
-			Color text = ThemeManager::GetTheme()->GetTextColor();
-			SetTextColor((HDC)wParam, RGB(text.GetRed(),text.GetGreen(),text.GetBlue()));
-			return (LRESULT)(HBRUSH)_editBackground;
-		}
-	}
-	else if(msg==WM_CTLCOLORBTN) {
-		SetBkMode((HDC)wParam, TRANSPARENT);
-		return (LRESULT)(HBRUSH)_editBackground;
-	}
-	else if(msg==WM_CTLCOLORSTATIC) {
-		SetBkMode((HDC)wParam, TRANSPARENT);
-		Color text = ThemeManager::GetTheme()->GetTextColor();
-		//Color text(255,0,0);
-		SetTextColor((HDC)wParam, RGB(text.GetRed(),text.GetGreen(),text.GetBlue()));
-		return (LRESULT)(HBRUSH)_editBackground;
-	}
-	else if(msg==WM_ACTIVATE) {
-		OnSize(GetClientArea());
-		Layout();
-		return 0;
-	}
-
-	return ChildWnd::Message(msg,wParam, lParam);
-}
-
 Pixels PropertyGridWnd::GetPathHeight() const {
 	return _path ? KPathHeight : 0;
 }
@@ -356,22 +254,19 @@ void PropertyGridWnd::Layout() {
 				cH += h + 2*KPropertyMargin;
 			}
 			else {
-				HWND vw = pr->GetWindow();
+				ref<Wnd> w = pr->GetWindow();
 
-				if(!previousCollapsed) {
-					SendMessage(vw, WM_SETFONT, (WPARAM)(HFONT)_editFont, FALSE);
-					LONG style = GetWindowLong(vw, GWL_STYLE);
-					style |= WS_CLIPSIBLINGS;
-					
-					// Some nice DPI conversions...
-					SetWindowLong(vw, GWL_STYLE, style);
-					SetWindowPos(vw, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE|SWP_NOSIZE|SWP_NOACTIVATE);
-					SetWindowPos(vw, 0,  int(ceil(_nameWidth*df)), int(ceil((cH+KPropertyMargin)*df)),  int(ceil((rect.GetWidth()-_nameWidth-KPropertyMargin)*df)), int(ceil(h*df)), SWP_NOZORDER);
-					ShowWindow(vw, SW_SHOW);
-					cH += h + 2*KPropertyMargin;
-				}
-				else {
-					ShowWindow(vw, SW_HIDE);
+				if(w) {
+					if(!previousCollapsed) {					
+						// Some nice DPI conversions...
+						//SetWindowPos(vw, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE|SWP_NOSIZE|SWP_NOACTIVATE);
+						w->Move(Pixels(_nameWidth), Pixels(cH+KPropertyMargin), Pixels(rect.GetWidth()-_nameWidth-KPropertyMargin), Pixels(h));
+						cH += h + 2*KPropertyMargin;
+						w->Show(true);
+					}
+					else {
+						w->Show(false);
+					}
 				}
 			}
 		}
@@ -440,8 +335,7 @@ void PropertyGridWnd::Inspect(ref<Inspectable> isp, ref<Path> p) {
 		ref<PropertySet> propset = isp->GetProperties();
 
 		if(propset) {
-			HWND myself = GetWindow();
-			HWND first = 0;
+			ref<Wnd> first;
 
 			// Iterate over properties, create their windows and store the properties on our own list
 			std::vector< ref<Property> >::iterator it = propset->_properties.begin();
@@ -451,10 +345,11 @@ void PropertyGridWnd::Inspect(ref<Inspectable> isp, ref<Path> p) {
 				ref<Property> pr = *it;
 
 				if(pr) {
-					HWND f = pr->Create(myself);
+					ref<Wnd> w = pr->GetWindow();
+					Add(w);
 
-					if(first==0) {
-						first = f;
+					if(!first) {
+						first = w;
 					}
 
 					_properties.push_back(pr);
@@ -468,7 +363,6 @@ void PropertyGridWnd::Inspect(ref<Inspectable> isp, ref<Path> p) {
 		_path->SetPath(p);
 	}
 
-	ClearThemeCache();
 	SetVerticalPos(0);
 	OnSize(GetClientArea());
 }

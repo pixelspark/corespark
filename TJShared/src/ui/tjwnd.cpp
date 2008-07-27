@@ -1,4 +1,4 @@
-#include "../../include/tjshared.h"
+#include "../../include/ui/tjui.h" 
 #include <commctrl.h>
 #include <windowsx.h>
 #define ISVKKEYDOWN(vk_code) ((GetAsyncKeyState(vk_code) & 0x8000))
@@ -177,7 +177,7 @@ void Wnd::SetFullScreen(bool fs) {
 		}
 		SetWindowPos(_wnd,0,0,0,800,600,SWP_NOZORDER);
 		UpdateWindow(_wnd);
-		Repaint();
+		//Repaint();
 	}
 
 	CloseHandle(mon);
@@ -211,7 +211,7 @@ void Wnd::SetFullScreen(bool fs, int d) {
 		}
 		SetWindowPos(_wnd,0,0,0,800,600,SWP_NOZORDER);
 		UpdateWindow(_wnd);
-		Repaint();
+		//Repaint();
 	}
 	_fullScreen = fs;
 }
@@ -488,7 +488,7 @@ LRESULT Wnd::PreMessage(UINT msg, WPARAM wp, LPARAM lp) {
 	}
 	else if(msg==WM_PAINT) {
 		int style = GetWindowLong(_wnd, GWL_STYLE);
-		if((style&WS_VISIBLE)==0) {
+		if((style & WS_VISIBLE) == 0) {
 			return 0;
 		}
 
@@ -508,19 +508,18 @@ LRESULT Wnd::PreMessage(UINT msg, WPARAM wp, LPARAM lp) {
 		else {
 			RECT cw;
 			GetClientRect(_wnd, &cw);
+
 			if(_buffer==0 || int(_buffer->GetWidth()) < int(cw.right-cw.left) || int(_buffer->GetHeight()) < int(cw.bottom-cw.top)) {
 				delete _buffer;
 				_buffer = 0;
 				_buffer = new Bitmap(cw.right-cw.left+100, cw.bottom-cw.top+100, &org); // +100 for buffer
 			}
 
-			{
-				Graphics buffered(_buffer);
-				GraphicsContainer container = buffered.BeginContainer();
-				buffered.ScaleTransform(dpiScale, dpiScale);
-				Paint(buffered, theme);
-				buffered.EndContainer(container);
-			}
+			Graphics buffered(_buffer);
+			GraphicsContainer container = buffered.BeginContainer();
+			buffered.ScaleTransform(dpiScale, dpiScale);
+			Paint(buffered, theme);
+			buffered.EndContainer(container);
 			org.DrawImage(_buffer,0,0);
 		}
 
@@ -748,8 +747,26 @@ LRESULT Wnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		TranslateKeyCodes((int)wp, key, ch);
 		OnKey(key, ch, msg==WM_KEYDOWN, (msg==WM_SYSKEYUP || msg==WM_SYSKEYDOWN));
 	}
+	else if(msg==WM_COPY) {
+		OnCopy();
+	}
+	else if(msg==WM_PASTE) {
+		OnPaste();
+	}
+	else if(msg==WM_CUT) {
+		OnCut();
+	}
 
 	return DefWindowProc(_wnd, msg, wp, lp);
+}
+
+void Wnd::OnCopy() {
+}
+
+void Wnd::OnPaste() {
+}
+
+void Wnd::OnCut() {
 }
 
 void Wnd::TranslateKeyCodes(int vk, Key& key, wchar_t& ch) {
@@ -994,8 +1011,8 @@ LRESULT CALLBACK PropertyLabelWndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) 
 		RECT rc;
 		GetClientRect(wnd, &rc);
 
-		SolidBrush backBrush(theme->GetPropertyBackgroundColor());
-		SolidBrush textBrush(theme->GetTextColor());
+		SolidBrush backBrush(theme->GetColor(Theme::ColorPropertyBackground));
+		SolidBrush textBrush(theme->GetColor(Theme::ColorText));
 
 		int n = GetWindowTextLength(wnd);
 		wchar_t* str = new wchar_t[n+2];

@@ -1,4 +1,4 @@
-#include "../include/tjshared.h"
+#include "../include/tjcore.h"
 #include <shlwapi.h>
 #include <commctrl.h>
 using namespace tj::shared;
@@ -43,6 +43,7 @@ void ResourceManager::SetListener(ref<ResourceListener> l) {
 /* This method created a relative resource path ('rid') from a full, absolute path
 using the search paths */
 std::wstring ResourceManager::GetRelative(std::wstring path) {
+	ZoneEntry ze(Zones::LocalFileInfoZone);
 	std::vector< std::wstring >::const_reverse_iterator it = _paths.rbegin();
 	wchar_t relativePath[MAX_PATH+3];
 	while(it!=_paths.rend()) {
@@ -57,6 +58,8 @@ std::wstring ResourceManager::GetRelative(std::wstring path) {
 }
 
 std::wstring ResourceManager::Get(const std::wstring& ident, bool silent) {
+	ZoneEntry ze(Zones::LocalFileInfoZone);
+
 	// If the path starts with a protocol identifier such as http://, just return the URL
 	if(ident.substr(0,7)==L"http://") {
 		return ident;

@@ -133,7 +133,7 @@ void ColorPopupWnd::Notify(ref<Object> source, const SliderWnd::NotificationChan
 
 void ColorPopupWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	Area rc = GetClientArea();
-	SolidBrush back(theme->GetBackgroundColor());
+	SolidBrush back(theme->GetColor(Theme::ColorBackground));
 	g.FillRectangle(&back, rc);
 
 	_wheel.Paint(g,theme,KWheelMargin, KWheelMargin);
@@ -167,13 +167,13 @@ void ColorPopupWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 
 	StringFormat sf;
 	sf.SetAlignment(StringAlignmentNear);
-	SolidBrush textBr(theme->GetTextColor());
+	SolidBrush textBr(theme->GetColor(Theme::ColorText));
 	g.DrawString(rgb.c_str(), (int)rgb.length(), theme->GetGUIFont(), Area(textLeft, textTop, rc.GetWidth()-textLeft-KWheelMargin, 24), &sf, &textBr);
 	g.DrawString(cms.c_str(), (int)cms.length(), theme->GetGUIFont(), Area(textLeft, textTop+24, rc.GetWidth()-textLeft-KWheelMargin, 24), &sf, &textBr);
 
 	// Draw border
 	rc.Narrow(0,0,1,1);
-	SolidBrush border(theme->GetActiveStartColor());
+	SolidBrush border(theme->GetColor(Theme::ColorActiveStart));
 	Pen pn(&border, 1.0f);
 	g.DrawRectangle(&pn, rc);
 }
@@ -259,7 +259,7 @@ ColorChooserWnd::~ColorChooserWnd() {
 
 void ColorChooserWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	Area rc = GetClientArea();
-	SolidBrush bbr(theme->GetBackgroundColor());
+	SolidBrush bbr(theme->GetColor(Theme::ColorBackground));
 	g.FillRectangle(&bbr, rc);
 
 	rc.Narrow(1,1,1,1);
@@ -276,6 +276,10 @@ void ColorChooserWnd::Notify(ref<Object> source, const ColorPopupWnd::Notificati
 		if(_tcolor!=0) *_tcolor = *_color;
 		Repaint();
 	}
+}
+
+void ColorChooserWnd::OnSize(const Area& ns) {
+	Repaint();
 }
 
 void ColorChooserWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
@@ -320,25 +324,12 @@ ColorProperty::ColorProperty(const std::wstring& name, RGBColor* color, RGBColor
 ColorProperty::~ColorProperty() {
 }
 
-void ColorProperty::Changed() {
-}
-
-HWND ColorProperty::Create(HWND parent) {
+ref<Wnd> ColorProperty::GetWindow() {
 	if(!_wnd) {
 		_wnd = GC::Hold(new ColorChooserWnd(_color, _tcolor));
-		SetParent(_wnd->GetWindow(), parent);
-		_wnd->SetStyle(WS_CHILD);
 	}
-	
-	return _wnd->GetWindow();
-}
 
-std::wstring ColorProperty::GetValue() {
-	return L"";
-}
-
-HWND ColorProperty::GetWindow() {
-	return _wnd->GetWindow();
+	return _wnd;
 }
 
 void ColorProperty::Update() {

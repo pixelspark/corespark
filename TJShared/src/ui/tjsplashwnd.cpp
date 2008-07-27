@@ -1,4 +1,4 @@
-#include "../../include/tjshared.h"
+#include "../../include/ui/tjui.h" 
 using namespace tj::shared::graphics;
 using namespace tj::shared;
 

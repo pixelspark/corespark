@@ -1,4 +1,4 @@
-#include "../../include/tjshared.h"
+#include "../../include/ui/tjui.h" 
 using namespace tj::shared;
 using namespace tj::shared::graphics;
 
@@ -104,6 +104,8 @@ void ContextMenu::AddSeparator(const std::wstring& title) {
 ContextPopupWnd::ContextPopupWnd(ContextMenu* cm, HWND parent): PopupWnd(parent,false), _cm(cm), _result(-1), _mouseOver(-1), _mouseDown(-1), _checkedIcon(Icons::GetIconPath(Icons::IconChecked)), _radioCheckedIcon(Icons::GetIconPath(Icons::IconRadioChecked)) {
 	SetWantMouseLeave(true);
 	SetVerticallyScrollable(true);
+	_openAnimation.SetLength(Time(400));
+	_closeAnimation.SetLength(Time(400));
 }
 
 ContextPopupWnd::~ContextPopupWnd() {
@@ -122,6 +124,8 @@ int ContextPopupWnd::DoModal(ref<Wnd> parent, Pixels x, Pixels y) {
 	SetVerticalScrollInfo(Range<int>(0,int(_cm->_items.size())*KItemHeight), itemsShown*KItemHeight + 1);
 	SetVerticalPos(0);
 
+	StartTimer(Time(50), 1);
+	_openAnimation.Start();
 	PopupAt(x,y,parent);
 
 	// Start modality
@@ -137,8 +141,15 @@ int ContextPopupWnd::DoModal(ref<Wnd> parent, Pixels x, Pixels y) {
 }
 
 void ContextPopupWnd::EndModal(int r) {
-	_result = r;
-	_loop.End(ModalLoop::ResultSucceeded);
+	if(Animation::IsAnimationsEnabled() && _result == -1) {
+		_result = r;
+		_closeAnimation.Start();
+		StartTimer(Time(50), 2);
+	}
+	else {
+		_result = r;
+		_loop.End(ModalLoop::ResultSucceeded);
+	}
 }
 
 int ContextPopupWnd::GetItemAt(Pixels y) {
@@ -147,21 +158,23 @@ int ContextPopupWnd::GetItemAt(Pixels y) {
 
 void ContextPopupWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 	if(ev==MouseEventMove || ev==MouseEventLDown) {
-		int idx = GetItemAt(y);
-		if(idx>=0 && idx<int(_cm->_items.size())) {
-			_mouseOver = idx;
-			if(ev==MouseEventLDown) {
-				_mouseDown = idx;
+		if(!_closeAnimation.IsAnimating()) {
+			int idx = GetItemAt(y);
+			if(idx>=0 && idx<int(_cm->_items.size())) {
+				_mouseOver = idx;
+				if(ev==MouseEventLDown) {
+					_mouseDown = idx;
+				}
+				else {
+					_mouseDown = -1;
+				}
 			}
 			else {
+				_mouseOver = -1;
 				_mouseDown = -1;
 			}
+			Repaint();
 		}
-		else {
-			_mouseOver = -1;
-			_mouseDown = -1;
-		}
-		Repaint();
 	}
 	else if(ev==MouseEventLUp) {
 		int idx = GetItemAt(y);
@@ -174,8 +187,10 @@ void ContextPopupWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 		}
 	}
 	else if(ev==MouseEventLeave) {
-		_mouseOver = -1;
-		Repaint();
+		if(!_closeAnimation.IsAnimating()) {
+			_mouseOver = -1;
+			Repaint();
+		}
 	}
 	PopupWnd::OnMouse(ev,x,y);
 }
@@ -230,20 +245,23 @@ void ContextPopupWnd::OnKey(Key k, wchar_t ch, bool down, bool accelerator) {
 
 void ContextPopupWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	Area rc = GetClientArea();
-	SolidBrush back(theme->GetBackgroundColor());
+	SolidBrush back(theme->GetColor(Theme::ColorBackground));
 	g.FillRectangle(&back, rc);
 
 	Pixels y = -GetVerticalPos();
 
-	SolidBrush text(theme->GetTextColor());
-	SolidBrush header(theme->GetActiveStartColor());
-	SolidBrush link(theme->GetLinkColor());
-	SolidBrush disabled(theme->GetDisabledOverlayColor());
-	SolidBrush colorSeparator(theme->GetActiveEndColor());
+	// Get us some colors
+	SolidBrush text(theme->GetColor(Theme::ColorText));
+	SolidBrush header(theme->GetColor(Theme::ColorActiveStart));
+	SolidBrush link(theme->GetColor(Theme::ColorLink));
+	SolidBrush disabled(theme->GetColor(Theme::ColorDisabledOverlay));
+	SolidBrush closing(Theme::ChangeAlpha(theme->GetColor(Theme::ColorDisabledOverlay),_closeAnimation.GetFraction()));
+	SolidBrush colorSeparator(theme->GetColor(Theme::ColorActiveEnd));
 	Pen separator(&colorSeparator, 1.0f);
-	LinearGradientBrush selected(PointF(0.0f, float(y)), PointF(0.0f, float(y+KItemHeight)), theme->GetTimeSelectionColorStart(), theme->GetTimeSelectionColorEnd());
-	LinearGradientBrush down(PointF(0.0f, float(y)), PointF(0.0f, float(y+KItemHeight)), theme->GetTimeSelectionColorEnd(), theme->GetTimeSelectionColorStart());
+	LinearGradientBrush selected(PointF(0.0f, float(y)), PointF(0.0f, float(y+KItemHeight)), theme->GetColor(Theme::ColorTimeSelectionStart), theme->GetColor(Theme::ColorTimeSelectionEnd));
+	LinearGradientBrush down(PointF(0.0f, float(y)), PointF(0.0f, float(y+KItemHeight)), theme->GetColor(Theme::ColorTimeSelectionEnd), theme->GetColor(Theme::ColorTimeSelectionStart));
 	
+	// Set up string format
 	StringFormat sf;
 	sf.SetAlignment(StringAlignmentNear);
 	sf.SetLineAlignment(StringAlignmentCenter);
@@ -303,15 +321,20 @@ void ContextPopupWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 				iconArea.SetWidth(16);
 				iconArea.SetHeight(16);
 				if(item->HasIcon()) {
-					g.DrawImage(item->GetIcon()->GetBitmap(), iconArea);
+					item->GetIcon()->Paint(g, iconArea, !item->IsDisabled(), _openAnimation.GetFraction());
 				}
 				else {
-					g.DrawImage((item->_checked == MenuItem::Checked)?_checkedIcon:_radioCheckedIcon, iconArea);
+					Icon& icon = (item->_checked == MenuItem::Checked)?_checkedIcon:_radioCheckedIcon;
+					icon.Paint(g, iconArea, !item->IsDisabled(), _openAnimation.GetFraction());
 				}
 			}
 
 			if(item->IsDisabled()) {
 				g.FillRectangle(&disabled, current);
+			}
+
+			if(_closeAnimation.IsAnimating() && _result != item->_command) {
+				g.FillRectangle(&closing, current);
 			}
 		}
 
@@ -322,9 +345,21 @@ void ContextPopupWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 
 	// Draw border
 	rc.Narrow(0,0,1,1);
-	SolidBrush border(theme->GetActiveStartColor());
+	SolidBrush border(theme->GetColor(Theme::ColorActiveStart));
 	Pen pn(&border, 1.0f);
 	g.DrawRectangle(&pn, rc);
+}
+
+void ContextPopupWnd::OnTimer(unsigned int id) {
+	if(!_closeAnimation.IsAnimating() && _result!=-1) {
+		StopTimer(2);
+		EndModal(_result);
+	}
+	
+	if(!_openAnimation.IsAnimating()) {
+		StopTimer(1);
+	}
+	Repaint();
 }
 
 /** MenuItem */

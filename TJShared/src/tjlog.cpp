@@ -1,4 +1,5 @@
-#include "../include/tjshared.h"
+#include "../include/tjcore.h"
+#include "../include/ui/tjui.h"
 using namespace tj::shared;
 
 CriticalSection Log::_lock;
@@ -116,6 +117,10 @@ strong<EventLogger> Log::GetEventLogger() {
 }
 
 void Log::Write(const std::wstring& source, const std::wstring& message) {
+	if(!Zones::LogZone.CanEnter()) {
+		return; // cannot log
+	}
+
 	ThreadLock lock(&_lock);
 	OutputDebugString(message.c_str());
 	OutputDebugString(L"\r\n");
@@ -140,6 +145,7 @@ void Log::Show(bool t) {
 }
 
 std::wstring Log::GetContents() {
+	ZoneEntry ze(Zones::LogZone);
 	ThreadLock lock(&_lock);
 	return _logger.GetContents();
 }

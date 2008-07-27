@@ -5,12 +5,9 @@ namespace tj {
 	namespace shared {
 		class EXPORTED PropertySeparator: public Property {
 			public:
-				PropertySeparator(std::wstring group, bool collapsed = false);
+				PropertySeparator(const std::wstring& group, bool collapsed = false);
 				virtual ~PropertySeparator();
-				virtual std::wstring GetValue();
-				virtual HWND GetWindow();
-				virtual HWND Create(HWND parent);
-				virtual void Changed();
+				virtual ref<Wnd> GetWindow();
 				virtual void Update();
 				virtual int GetHeight();
 				virtual void SetCollapsed(bool c);

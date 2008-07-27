@@ -3,24 +3,14 @@
 
 namespace tj {
 	namespace shared {
-		class EXPORTED TextProperty: public virtual Object, public Property {
+		class EXPORTED TextProperty: public GenericProperty<std::wstring> {
 			public:
-				TextProperty(std::wstring name, std::wstring* value, Pixels height = 100);
+				TextProperty(const std::wstring& name, std::wstring* value, Pixels height = 100);
 				virtual ~TextProperty();
-				virtual std::wstring GetValue();
-				virtual HWND GetWindow();
-				virtual HWND Create(HWND parent);
-				
-				// Called when the value in the edit window has changed (EN_CHANGED)
-				virtual void Changed();
-				
-				// Called when a repaint is about to begin and the value in the window needs to be updated
-				virtual void Update();
+				virtual ref<Wnd> GetWindow();
 				virtual Pixels GetHeight();
 
 			protected:
-				std::wstring* _value;
-				HWND _wnd;
 				Pixels _height;
 		};
 	}

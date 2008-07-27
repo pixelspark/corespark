@@ -1,4 +1,4 @@
-#include "../include/tjshared.h"
+#include "../include/tjcore.h"
 #include <shlwapi.h>
 #include <shlobj.h>
 using namespace tj::shared;

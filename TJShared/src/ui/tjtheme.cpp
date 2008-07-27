@@ -1,4 +1,4 @@
-#include "../../include/tjshared.h"
+#include "../../include/ui/tjui.h" 
 #include "../../resource.h"
 using namespace tj::shared::graphics;
 using namespace tj::shared;
@@ -22,10 +22,6 @@ Theme::~Theme() {
 	delete _fontLink;
 	DestroyCursor(_grab);
 	DestroyCursor(_grabbed);
-}
-
-graphics::Color Theme::GetLinkColor() const {
-	return Color(0,0,255);
 }
 
 const wchar_t* Icons::_paths[Icons::_IconLast] = {
@@ -89,25 +85,45 @@ void Theme::DrawToolbarBackground(graphics::Graphics& g, float x, float y, float
 }
 
 void Theme::DrawToolbarBackground(graphics::Graphics& g, const Area& rc) {
-	SolidBrush zwart(GetBackgroundColor());
+	SolidBrush zwart(GetColor(ColorBackground));
 	g.FillRectangle(&zwart, rc);
 
 	PointF origin(float(rc.GetLeft()), float(rc.GetTop()));
 	PointF bottom(float(rc.GetLeft()), float(rc.GetBottom()));
-	LinearGradientBrush br(origin, bottom, GetToolbarColorStart(), GetToolbarColorEnd());
-	SolidBrush dbr(GetDisabledOverlayColor());
+	LinearGradientBrush br(origin, bottom, GetColor(ColorToolbarStart), GetColor(ColorToolbarEnd));
+	SolidBrush dbr(GetColor(ColorDisabledOverlay));
 	g.FillRectangle(&br, rc);
 	g.FillRectangle(&dbr, rc);
 
-	LinearGradientBrush glas(origin, PointF(float(rc.GetLeft()),rc.GetTop()+float(rc.GetHeight())/2.0f), GetGlassColorStart(), GetGlassColorEnd());
+	LinearGradientBrush glas(origin, PointF(float(rc.GetLeft()),rc.GetTop()+float(rc.GetHeight())/2.0f), GetColor(ColorGlassStart), GetColor(ColorGlassEnd));
 	g.FillRectangle(&glas, RectF(float(rc.GetLeft()), float(rc.GetTop()), float(rc.GetWidth()), float(rc.GetHeight())/2.0f));
 }
 
-graphics::Color Theme::GetFocusColor() const {
-	return Color::LightBlue;
+void Theme::DrawInsetRectangle(graphics::Graphics& g, const Area& rc) {
+	SolidBrush shadowed(GetColor(ColorShadowed));
+	g.FillRectangle(&shadowed, rc);
+
+	Area highlight = rc;
+	Pixels halfWidth = highlight.GetWidth()/4;
+	highlight.Widen(halfWidth,highlight.GetHeight()*2,halfWidth,0);
+
+	Region oldClip;
+	g.GetClip(&oldClip);
+	g.SetClip(rc, CombineModeUnion);
+	DrawHighlightEllipse(g, highlight, 0.61f);
+	g.SetClip(&oldClip);
+
+	Pixels shadowSize = GetMeasureInPixels(MeasureShadowSize);
+	Area shadow = rc;
+	shadow.SetHeight(shadowSize);
+	LinearGradientBrush shadowBrush(PointF(0.0f, (float)shadow.GetTop()-1.0f), PointF(0.0f, (float)shadow.GetBottom()), GetColor(ColorShadow), ChangeAlpha(GetColor(ColorShadow), 0));
+	g.FillRectangle(&shadowBrush, shadow);
+
+	Pen shadowLine(GetColor(ColorShadowed), 1.0f);
+	g.DrawLine(&shadowLine, rc.GetLeft(), rc.GetTop(), rc.GetRight(), rc.GetTop());
 }
 
-void Theme::DrawFocusRectangle(graphics::Graphics& g, const Area& c) {
+void Theme::DrawFocusRectangle(graphics::Graphics& g, const Area& c, float alpha) {
 	static REAL blendPositions[3] = {0.0f, 0.2f, 1.0f};
 	static REAL blendFactors[3] = {1.0f, 0.0f, 0.0f};
 	static const Pixels KFocusRectangleWidth = 6;
@@ -118,7 +134,7 @@ void Theme::DrawFocusRectangle(graphics::Graphics& g, const Area& c) {
 	rc.Widen(KFocusRectangleWidth,KFocusRectangleWidth,KFocusRectangleWidth,KFocusRectangleWidth);
 	path.AddRectangle(rc);
 	PathGradientBrush gbrush(&path);
-	gbrush.SetCenterColor(GetFocusColor());
+	gbrush.SetCenterColor(ChangeAlpha(GetColor(ColorFocus), int(alpha*255.0f)));
 	int KNumSurroundColors = 1;
 	gbrush.SetSurroundColors(KSurroundColors, &KNumSurroundColors);
 
@@ -131,7 +147,7 @@ void Theme::DrawFocusRectangle(graphics::Graphics& g, const Area& c) {
 	g.DrawRectangle(&focusPen, rc);
 }
 
-void Theme::DrawFocusEllipse(graphics::Graphics& g, const Area& c) {
+void Theme::DrawFocusEllipse(graphics::Graphics& g, const Area& c, float alpha) {
 	static REAL blendPositions[3] = {0.0f, 0.2f, 1.0f};
 	static REAL blendFactors[3] = {1.0f, 0.0f, 0.0f};
 	static const Pixels KFocusRectangleWidth = 3;
@@ -142,7 +158,7 @@ void Theme::DrawFocusEllipse(graphics::Graphics& g, const Area& c) {
 	rc.Widen(KFocusRectangleWidth,KFocusRectangleWidth,KFocusRectangleWidth,KFocusRectangleWidth);
 	path.AddEllipse(rc);
 	PathGradientBrush gbrush(&path);
-	gbrush.SetCenterColor(GetFocusColor());
+	gbrush.SetCenterColor(ChangeAlpha(GetColor(ColorFocus), int(alpha*255.0f)));
 	int KNumSurroundColors = 1;
 	gbrush.SetSurroundColors(KSurroundColors, &KNumSurroundColors);
 
@@ -155,7 +171,23 @@ void Theme::DrawFocusEllipse(graphics::Graphics& g, const Area& c) {
 	g.DrawEllipse(&focusPen, rc);
 }
 
-int Theme::GetMeasureInPixels(Measure m) const {
+void Theme::DrawHighlightEllipse(graphics::Graphics& g, const Area& c, float alpha) {
+	static REAL blendPositions[2] = {0.0f, 1.0f};
+	static REAL blendFactors[2] = {1.0f, 0.0f};
+	static Color KSurroundColors[1] = { Color::Transparent };
+
+	Area rc = c;
+	GraphicsPath path;
+	path.AddEllipse(rc);
+	PathGradientBrush gbrush(&path);
+	gbrush.SetCenterColor(Color(int(alpha*255.0f), 255, 255, 255));
+	int KNumSurroundColors = 1;
+	gbrush.SetSurroundColors(KSurroundColors, &KNumSurroundColors);
+	
+	g.FillEllipse(&gbrush, rc);
+}
+
+Pixels Theme::GetMeasureInPixels(Measure m) const {
 	switch(m) {
 		case MeasureToolbarHeight:
 		case MeasureListHeaderHeight:
@@ -163,6 +195,12 @@ int Theme::GetMeasureInPixels(Measure m) const {
 
 		case MeasureListItemHeight:
 			return 19;
+
+		case MeasurePropertyHeight:
+			return 17;
+
+		case MeasureShadowSize:
+			return 5;
 
 		case MeasureMaximumSnappingDistance:
 			return 2;
@@ -179,7 +217,11 @@ HCURSOR Theme::GetGrabbedCursor() const {
 	return _grabbed;
 }
 
-graphics::Color Theme::ChangeAlpha(graphics::Color col, int a) {
+graphics::Color Theme::ChangeAlpha(const graphics::Color& col, float a) {
+	return graphics::Color(BYTE(a*255.0f), col.GetR(), col.GetG(), col.GetB());
+}
+
+graphics::Color Theme::ChangeAlpha(const graphics::Color& col, int a) {
 	return graphics::Color(a, col.GetR(), col.GetG(), col.GetB());
 }
 
@@ -222,109 +264,115 @@ std::wstring Theme::GetName() const {
 	}
 }
 
-Color Theme::GetBackgroundColor() const {
-	return Color(0,0,0);
+graphics::Color Theme::GetColor(const ColorIdentifier& ci) const {
+	switch(ci) {
+		case ColorBackground:
+		case ColorTabButtonBackground:
+		case ColorEditBackground:
+		case ColorPropertyBackground:
+		case ColorVideoBackground:
+			return Color(0,0,0);
+
+		case ColorTimeBackground:
+			return Color(15,15,15);
+
+		case ColorLine:
+			return Color(50,50,50);
+
+		case ColorLink:
+			return Color(0,0,255);
+
+		case ColorFocus:
+			return Color::LightBlue;
+
+		case ColorShadow:
+			return Color(200,0,0,0);
+
+		case ColorShadowed:
+			return Color(255/3, 255, 255, 255);
+
+		case ColorText:
+			return Color(255,255,255);
+
+		case ColorActiveTrack:
+			return Color(25,25,25);
+
+		case ColorActiveStart:
+		case ColorHint:
+		case ColorToolbarStart:
+			return Color(230,130,130,130);
+
+		case ColorActiveEnd:
+		case ColorToolbarEnd:
+			return Color(230,90,90,90);
+
+		case ColorHighlightStart:
+			return Color(255,127,75,0);
+
+		case ColorHighlightEnd:
+			return Color(255,255,150,0);
+
+		case ColorCommandMarker:
+			return Color(255,0,0);
+
+		case ColorSplitterStart:
+			return Color(0,0,0);
+
+		case ColorSplitterEnd:
+			return Color(0,0,0);
+
+		case ColorGlassStart:
+			return Color(0,255,255,255);
+
+		case ColorGlassEnd:
+			return Color(15,255,255,255);
+
+		case ColorCurrentPosition:
+			return Color(255,255,255);
+
+		case ColorDescriptionText:
+			return Color(120,120,120);
+
+		case ColorTimeSelectionEnd:
+			return Color(100,100,50, 0);
+
+		case ColorTimeSelectionStart:
+			return Color(100,200,100, 0);
+
+		case ColorDisabledOverlay:
+			return Color(200,0,0,0);
+
+		case ColorFader:
+			return Color(255,255,255);
+
+		case ColorTabButtonStart:
+			return Color(100,110,110,110);
+
+		case ColorTabButtonEnd:
+			return Color(100,70,70,70);
+
+		case ColorProgressBackgroundStart:
+			return Color(201,201,201);
+
+		case ColorProgressBackgroundEnd:
+			return Color(255,255,255);
+
+		case ColorProgressGlassStart:
+			return Color(211,255,255,255);
+
+		case ColorProgressGlassEnd:
+			return Color(43,255,255,255);
+
+		case ColorProgress:
+			return Color(0,211,40);
+
+		case ColorNone:
+		default:
+			return Color(0,0,0,0);
+	}
 }
 
-Color Theme::GetTabButtonBackgroundColor() const {
-	return GetBackgroundColor();
-}
-
-Color Theme::GetEditBackgroundColor() const {
-	return GetBackgroundColor();
-}
-
-Color Theme::GetTimeBackgroundColor() const {
-	return Color(15,15,15);
-}
-
-Color Theme::GetPropertyBackgroundColor() const {
-	return Color(0,0,0);
-}
-
-Color Theme::GetLineColor() const {
-	return Color(50,50,50);
-}
-
-Color Theme::GetHintColor() const {
-	return GetActiveStartColor();
-}
-
-Color Theme::GetTextColor() const {
-	return Color(255,255,255);
-}
-
-Color Theme::GetActiveTrackColor() const {
-	return Color(25,25,25);
-}
-
-Color Theme::GetActiveStartColor() const {
-	//return Color(255, 110,110,110);
-	return Color(230,130,130,130);
-}
-
-Color Theme::GetCommandMarkerColor() const {
-	return Color(255,0,0);
-}
-
-Color Theme::GetActiveEndColor() const {
-	return Color(230, 90,90,90); // 255,70,70,70
-}
-
-Color Theme::GetHighlightColorStart() const {
-	return Color(255, 127, 75, 0);
-}
-
-Color Theme::GetVideoBackgroundColor() const {
-	return Color(0,0,0);
-}
-
-Color Theme::GetHighlightColorEnd() const {
-	
-	return Color(255, 255,150,0);
-}
-
-Color Theme::GetSplitterStartColor() const {
-	return Color(0,0,0);
-}
-
-Color Theme::GetSplitterEndColor() const {
-	return Color(0,0,0);
-}
-
-Color Theme::GetToolbarColorStart() const {
-	return GetActiveStartColor();
-}
-
-Color Theme::GetToolbarColorEnd() const {
-	return GetActiveEndColor();
-}
-
-Color Theme::GetGlassColorStart() const {
-	return Color(0,255,255,255);
-}
-
-Color Theme::GetGlassColorEnd() const {
-	return Color(15,255,255,255);
-}
-
-Color Theme::GetCurrentPositionColor() const {
-	return Color(255,255,255);
-}
-
-Color Theme::GetTrackDescriptionTextColor() const {
-	return Color(120,120,120);
-}
-
-graphics::Color Theme::GetTimeSelectionColorEnd() const {
-	return Color(100,100,50, 0); //Color(50,255,255,255);
-}
-
-graphics::Color Theme::GetTimeSelectionColorStart() const {
-	return Color(100,200,100, 0); //Color(0, 255, 255, 255);
-}
-
-Color Theme::GetSliderColorStart(int i) const {
+Color Theme::GetSliderColorStart(const SliderType& i) const {
 	switch(i) {
 		case SliderMaster:
 			return Color(255, 200,25,25);
@@ -339,11 +387,11 @@ Color Theme::GetSliderColorStart(int i) const {
 			return Color(200, 200, 60);
 
 		default:
-			return GetActiveStartColor();
+			return GetColor(ColorActiveStart);
 	}
 }
 
-Color Theme::GetSliderColorEnd(int i) const {
+Color Theme::GetSliderColorEnd(const SliderType& i) const {
 	switch(i) {
 		case SliderMaster:
 			return Color(150, 200,25,25);
@@ -358,24 +406,8 @@ Color Theme::GetSliderColorEnd(int i) const {
 			return Color(150, 150, 60);
 
 		default:
-			return GetActiveEndColor();
+			return GetColor(ColorActiveEnd);
 	}
-}
-
-Color Theme::GetFaderColor() const {
-	return Color(255,255,255);
-}
-
-Color Theme::GetDisabledOverlayColor() const {
-	return Color(200,0,0,0);
-}
-
-Color Theme::GetTabButtonColorStart() const {
-	return Color(100,110,110,110);
-}
-
-Color Theme::GetTabButtonColorEnd() const {
-	return Color(100,70,70,70);
 }
 
 Brush* Theme::GetApplicationBackgroundBrush(HWND root, HWND child) const {
@@ -390,24 +422,4 @@ Brush* Theme::GetApplicationBackgroundBrush(HWND root, HWND child) const {
 	lbr->SetBlend(factors,positions, 3);
 
 	return lbr;
-}
-
-Color Theme::GetProgressBackStart() const {
-	return Color(201,201,201);
-}
-
-Color Theme::GetProgressBackEnd() const {
-	return Color(255,255,255);
-}
-
-Color Theme::GetProgressGlassStart() const {
-	return Color(211,255,255,255);
-}
-
-Color Theme::GetProgressGlassEnd() const {
-	return Color(43,255,255,255);
-}
-
-Color Theme::GetProgressColor() const {
-	return Color(0,211,40);
 }

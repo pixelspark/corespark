@@ -46,22 +46,22 @@ namespace tj {
 
 					inline bool AddReference(bool first = false) {
 						if(!first && _referenceCount==0) return false;
-						InterlockedIncrement(&_referenceCount);
+						_InterlockedIncrement(&_referenceCount);
 						return true;
 					}
 
 					inline long DeleteReference() {
-						long old = InterlockedDecrement(&_referenceCount);
+						long old = _InterlockedDecrement(&_referenceCount);
 						if(old==0 && !IsWeaklyReferenced()) delete this;
 						return old;
 					}
 
 					inline void AddWeakReference() {
-						InterlockedIncrement(&_weakReferenceCount);
+						_InterlockedIncrement(&_weakReferenceCount);
 					}
 
 					inline void DeleteWeakReference() {
-						long old = InterlockedDecrement(&_weakReferenceCount);
+						long old = _InterlockedDecrement(&_weakReferenceCount);
 						if(old==0 && !IsReferenced()) {
 							delete this;	
 						}

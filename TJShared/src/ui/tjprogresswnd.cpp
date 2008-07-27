@@ -1,4 +1,4 @@
-#include "../../include/tjshared.h"
+#include "../../include/ui/tjui.h" 
 
 using namespace tj::shared::graphics;
 using namespace tj::shared;
@@ -28,15 +28,15 @@ void ProgressWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	float v = fabs(_value);
 	
 	Area rc = GetClientArea();	
-	LinearGradientBrush back(PointF(0.0f, 0.0f), PointF(0.0f, float(rc.GetHeight())), theme->GetProgressBackStart(), theme->GetProgressBackEnd());
+	LinearGradientBrush back(PointF(0.0f, 0.0f), PointF(0.0f, float(rc.GetHeight())), theme->GetColor(Theme::ColorProgressBackgroundStart), theme->GetColor(Theme::ColorProgressBackgroundEnd));
 	g.FillRectangle(&back, rc);
 
-	Pen border(theme->GetActiveStartColor(), 1.0f);
+	Pen border(theme->GetColor(Theme::ColorActiveStart), 1.0f);
 	rc.Narrow(0,0,1,1);
 	g.DrawRectangle(&border, rc);
 
 	// draw block
-	Color progress = theme->GetProgressColor();
+	Color progress = theme->GetColor(Theme::ColorProgress);
 	Color green(Color(255,progress.GetR(),progress.GetG(),progress.GetB()));
 	Color trans(Color(0,progress.GetR(),progress.GetG(),progress.GetB()));
 	int center = int(v * float(rc.GetWidth()));
@@ -55,7 +55,7 @@ void ProgressWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	}
 
 	// draw glass look
-	LinearGradientBrush glass(PointF(0.0f, 0.0f), PointF(0.0f, 12), theme->GetProgressGlassStart(), theme->GetProgressGlassEnd());
+	LinearGradientBrush glass(PointF(0.0f, 0.0f), PointF(0.0f, 12), theme->GetColor(Theme::ColorProgressGlassStart), theme->GetColor(Theme::ColorProgressGlassEnd));
 	g.FillRectangle(&glass, RectF(1.0f, 1.0f, float(rc.GetWidth()-2), 10.0f));
 }
 

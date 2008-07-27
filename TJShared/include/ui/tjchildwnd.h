@@ -26,15 +26,23 @@ namespace tj {
 				virtual ~CheckboxWnd();
 				virtual bool IsChecked() const;
 				virtual void SetChecked(bool t);
-				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
+				virtual void SetReadOnly(bool r);
+				virtual bool IsReadOnly() const;
 				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
+
+			protected:
+				virtual void OnTimer(unsigned int id);
 				virtual void OnSize(const Area& ns);
 				virtual void OnFocus(bool f);
 				virtual void OnKey(Key k, wchar_t ch, bool down, bool isAccelerator);
+				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
 
-			protected:
-				bool _checked;
 				Icon _checkedIcon;
+				Animation _checkAnimation;
+
+			private:
+				bool _checked;
+				bool _readOnly;
 		};
 	}
 }

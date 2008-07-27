@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="9,00"
 	Name="TJShared"
 	ProjectGUID="{74D222D8-DAE6-4EB2-BC62-8F6927E275A4}"
 	RootNamespace="TJShared"
 	Keyword="Win32Proj"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -63,6 +64,8 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -82,9 +85,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -121,7 +121,7 @@
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
 				WholeProgramOptimization="true"
-				PreprocessorDefinitions="WIN32;_WINDOWS;_USRDLL;TJSHARED_EXPORTS;NDEBUG"
+				PreprocessorDefinitions="WIN32;_WINDOWS;_USRDLL;TJSHARED_EXPORTS;NDEBUG;TJ_NO_ATL"
 				StringPooling="true"
 				MinimalRebuild="true"
 				RuntimeLibrary="2"
@@ -143,7 +143,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="gdiplus.lib comctl32.lib strmiids.lib quartz.lib iphlpapi.lib ../libraries/tinyxml.lib comsupp.lib ws2_32.lib"
+				AdditionalDependencies="gdiplus.lib comctl32.lib strmiids.lib quartz.lib iphlpapi.lib ../libraries/tinyxml.lib comsupp.lib ws2_32.lib shlwapi.lib"
 				OutputFile="$(OutDir)\..\..\Release\tjshared.dll"
 				GenerateManifest="true"
 				GenerateDebugInformation="true"
@@ -154,6 +154,8 @@
 				OptimizeForWindows98="1"
 				LinkTimeCodeGeneration="1"
 				SetChecksum="true"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				SupportUnloadOfDelayLoadedDLL="false"
 				TargetMachine="1"
 			/>
@@ -176,9 +178,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -245,6 +244,8 @@
 				OptimizeForWindows98="1"
 				LinkTimeCodeGeneration="1"
 				SetChecksum="true"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				SupportUnloadOfDelayLoadedDLL="false"
 				TargetMachine="1"
 			/>
@@ -267,9 +268,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -336,6 +334,8 @@
 				OptimizeForWindows98="1"
 				LinkTimeCodeGeneration="1"
 				SetChecksum="true"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				SupportUnloadOfDelayLoadedDLL="false"
 				TargetMachine="1"
 			/>
@@ -360,9 +360,6 @@
 				Name="VCAppVerifierTool"
 			/>
 			<Tool
-				Name="VCWebDeploymentTool"
-			/>
-			<Tool
 				Name="VCPostBuildEventTool"
 			/>
 		</Configuration>
@@ -378,6 +375,14 @@
 			<Filter
 				Name="ui"
 				>
+				<File
+					RelativePath=".\src\ui\tjanimation.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ui\tjappcore.cpp"
+					>
+				</File>
 				<File
 					RelativePath=".\src\ui\tjbrowserwnd.cpp"
 					>
@@ -411,7 +416,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\tjicon.cpp"
+					RelativePath=".\src\ui\tjicon.cpp"
 					>
 				</File>
 				<File
@@ -735,10 +740,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\tjshared.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\src\tjtea.cpp"
 					>
 				</File>
@@ -758,6 +759,10 @@
 					RelativePath=".\src\tjvector.cpp"
 					>
 				</File>
+				<File
+					RelativePath=".\src\tjzone.cpp"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter
@@ -772,6 +777,14 @@
 			<Filter
 				Name="ui"
 				>
+				<File
+					RelativePath=".\include\ui\tjanimation.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\ui\tjappcore.h"
+					>
+				</File>
 				<File
 					RelativePath=".\include\ui\tjbrowserwnd.h"
 					>
@@ -901,6 +914,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\include\properties\tjgenericproperty.h"
+					>
+				</File>
+				<File
 					RelativePath=".\include\properties\tjlistproperty.h"
 					>
 				</File>
@@ -938,6 +955,10 @@
 				</File>
 				<File
 					RelativePath=".\include\tjany.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\tjappcore.h"
 					>
 				</File>
 				<File
@@ -1025,14 +1046,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\include\tjpch.h"
-					>
-				</File>
-				<File
-					RelativePath=".\include\tjplatform.h"
-					>
-				</File>
-				<File
 					RelativePath=".\include\tjrange.h"
 					>
 				</File>
@@ -1078,6 +1091,22 @@
 				</File>
 				<File
 					RelativePath=".\include\tjvector.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\tjzone.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="internal"
+				>
+				<File
+					RelativePath=".\include\internal\tjpch.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\internal\tjplatform.h"
 					>
 				</File>
 			</Filter>

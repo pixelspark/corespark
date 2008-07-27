@@ -61,10 +61,12 @@ namespace tj {
 				ColorChooserWnd(RGBColor* c, RGBColor* tc);
 				virtual ~ColorChooserWnd();
 				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
-				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
 				virtual void Notify(ref<Object> source, const ColorPopupWnd::NotificationChanged& data);
 
 			protected:
+				virtual void OnSize(const Area& ns);
+				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
+
 				RGBColor* _color;
 				RGBColor* _tcolor;
 				Icon _colorsIcon;
@@ -73,12 +75,9 @@ namespace tj {
 
 		class EXPORTED ColorProperty: public Property {
 			public:
-				ColorProperty(const std::wstring& name, RGBColor* color, RGBColor* tooColor);
+				ColorProperty(const std::wstring& name, RGBColor* color, RGBColor* tooColor = 0);
 				virtual ~ColorProperty();
-				virtual HWND GetWindow();
-				virtual std::wstring GetValue();
-				virtual HWND Create(HWND parent);
-				virtual void Changed();
+				virtual ref<Wnd> GetWindow();
 				virtual void Update();
 
 			protected:

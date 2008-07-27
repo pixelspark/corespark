@@ -39,6 +39,7 @@ namespace tj {
 				virtual void OnKey(Key k, wchar_t t, bool down, bool isAccelerator);
 				virtual void OnFocus(bool focus);
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
+				virtual void OnTimer(unsigned int id);
 
 				void SetDraggingPane(ref<Pane> pane);
 				void DoAddMenu(Pixels x, Pixels y);
@@ -56,7 +57,9 @@ namespace tj {
 				Icon _addIcon;
 				bool _detachAttachAllowed;
 				bool _childStyle;
+				bool _in;
 				std::wstring _id;
+				Animation _entryAnimation;
 
 				const static int TearOffLimit = 15;
 				enum {defaultHeaderHeight = 24};

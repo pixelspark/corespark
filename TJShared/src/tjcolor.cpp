@@ -1,4 +1,5 @@
-#include "../include/tjshared.h"
+#include "../include/tjcore.h"
+#include "../include/properties/tjproperties.h"
 using namespace tj::shared;
 using namespace tj::shared::graphics;
 

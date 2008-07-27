@@ -7,8 +7,8 @@ namespace tj {
 			public:
 				TEAEncrypter();
 				virtual ~TEAEncrypter();
-				std::string Encrypt(std::string src, std::string key);
-				std::string Decrypt(std::string src, std::string key);
+				std::string Encrypt(const std::string& src, const std::string& key);
+				std::string Decrypt(const std::string& src, const std::string& key);
 		};
 	}
 }

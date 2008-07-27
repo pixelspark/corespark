@@ -15,9 +15,6 @@ namespace tj {
 				ListWnd();
 				virtual ~ListWnd();
 				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
-				virtual void OnSize(const Area& ns);
-				virtual void OnScroll(ScrollDirection dir);
-				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 				virtual void SetSelectedRow(int r);
 				virtual int GetSelectedRow() const;
 
@@ -36,37 +33,68 @@ namespace tj {
 				virtual void SetShowHeader(bool t);
 
 			protected:
-				// implemented by child
+				// to be implemented by child
 				virtual int GetItemCount() = 0;
 				virtual void PaintItem(int id, graphics::Graphics& g, Area& row) = 0;
 				virtual Pixels GetItemHeight();
 				virtual void OnClickItem(int id, int col, Pixels x, Pixels y);
 				virtual void OnRightClickItem(int id, int col);
 				virtual void OnDoubleClickItem(int id, int col);
-				virtual void OnFocus(bool f);
 				virtual void OnColumnSizeChanged();
+				
 				virtual void OnSettingsChanged();
+				virtual void OnFocus(bool f);
 				virtual void OnContextMenu(Pixels x, Pixels y);
 				virtual void DoContextMenu(Pixels x, Pixels y);
+				virtual void OnSize(const Area& ns);
+				virtual void OnKey(Key k, wchar_t t, bool down, bool isAccel);
+				virtual void OnScroll(ScrollDirection dir);
+				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
+				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
 
-				// other stuff
+				// other handy stuff
 				void DrawCellText(graphics::Graphics& g, graphics::StringFormat* sf, graphics::SolidBrush* br, graphics::Font* font, int col, Area row, const std::wstring& str);
 				void DrawCellDownArrow(graphics::Graphics& g, int col, const Area& row);
 				void DrawCellIcon(graphics::Graphics& g, int col, Area row, Icon& icon);
 
-				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
 				int GetRowIDByHeight(int h);
 				virtual Area GetRowArea(int rid);
 				virtual Pixels GetHeaderHeight() const;
 				const static float KMinimumColumnWidth;
-			
-			private:
+
+			protected:
 				std::map<int,Column> _cols;	
+
+			private:
 				std::wstring _emptyText;
 				int _draggingCol;
 				int _dragStartX;
 				int _selected;
 				bool _showHeader;
+		};
+
+		class EXPORTED EditableListWnd: public ListWnd {
+			public:
+				EditableListWnd();
+				virtual ~EditableListWnd();
+				virtual void SetSelectedRowAndEdit(int r);
+				virtual void SetSelectedRow(int r);
+				virtual void EndEditing();
+				virtual void Layout();
+
+				// To be implemented by child; returns 0 when item is not editable
+				virtual ref<Property> GetPropertyForItem(int id, int col) = 0;
+				virtual void OnEditingStarted(int row);
+				virtual void OnEditingDone(int row);
+
+			protected:
+				virtual void OnColumnSizeChanged();
+				bool IsEditing() const;
+				int GetEditingRow() const;
+
+			private:
+				int _rowEditing;
+				std::map< int, ref<Property> > _editorProperties;
 		};
 	}
 }

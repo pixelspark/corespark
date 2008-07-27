@@ -8,6 +8,7 @@ namespace tj {
 				static std::wstring GetDirectory(const std::wstring& pathToFile);
 				static bool Exists(const std::wstring& path);
 				static Bytes GetDirectorySize(const std::wstring& dirPath);
+				static std::wstring GetExtension(const std::wstring& pathToFile);
 		};
 	}
 }

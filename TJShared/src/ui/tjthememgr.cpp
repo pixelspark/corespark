@@ -1,4 +1,4 @@
-#include "../../include/tjshared.h"
+#include "../../include/ui/tjui.h" 
 #include <windowsx.h>
 using namespace tj::shared;
 
@@ -6,6 +6,14 @@ std::vector< ref<Theme> > ThemeManager::_themes;
 ref<Theme> ThemeManager::_theme;
 bool ThemeManager::_friendlyTime = false;
 ref<SettingsStorage> ThemeManager::_layoutSettings;
+Listenable<ThemeManager::ThemeChangeNotification> ThemeManager::EventThemeChanged;
+
+ThemeManager::ThemeChangeNotification::ThemeChangeNotification(ref<Theme> n): _newTheme(n) {
+}
+
+ref<Theme> ThemeManager::ThemeChangeNotification::GetNewTheme() {
+	return _newTheme;
+}
 
 ref<Theme> ThemeManager::GetTheme() {
 	return _theme;
@@ -63,14 +71,17 @@ void ThemeManager::ListThemes(std::vector< ref<Theme> >& lst) {
 
 void ThemeManager::SelectTheme(ref<Theme> th) {
 	_theme = th;
+	EventThemeChanged.Fire(0L, ThemeChangeNotification(th));
 }
 
 void ThemeManager::SelectTheme(int n) {
 	try {
 		_theme = _themes.at(n);
+		EventThemeChanged.Fire(0L, ThemeChangeNotification(_theme));
 	}
 	catch(...) {
 		// n out of range
+		Throw(L"Tried to select a non-existant theme", ExceptionTypeError);
 	}
 }
 

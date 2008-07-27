@@ -1,4 +1,4 @@
-#include "../include/tjshared.h"
+#include "../include/tjcore.h"
 using namespace tj::shared;
 
 volatile long Thread::_count = 0;
@@ -7,13 +7,13 @@ volatile long Thread::_count = 0;
 #define MS_VC_EXCEPTION 0x406D1388
 
 typedef struct tagTHREADNAME_INFO {
-   DWORD dwType; // Must be 0x1000.
-   LPCSTR szName; // Pointer to name (in user addr space).
-   DWORD dwThreadID; // Thread ID (-1=caller thread).
-   DWORD dwFlags; // Reserved for future use, must be zero.
+	DWORD dwType; // Must be 0x1000.
+	LPCSTR szName; // Pointer to name (in user addr space).
+	DWORD dwThreadID; // Thread ID (-1=caller thread).
+	DWORD dwFlags; // Reserved for future use, must be zero.
 } THREADNAME_INFO;
 
-void SetThreadName( DWORD dwThreadID, LPCSTR szThreadName) {
+void SetThreadName(DWORD dwThreadID, LPCSTR szThreadName) {
    THREADNAME_INFO info;
    info.dwType = 0x1000;
    info.szName = szThreadName;
@@ -21,7 +21,7 @@ void SetThreadName( DWORD dwThreadID, LPCSTR szThreadName) {
    info.dwFlags = 0;
 
    __try {
-      RaiseException( MS_VC_EXCEPTION, 0, sizeof(info)/sizeof(DWORD), (DWORD*)&info );
+      RaiseException(MS_VC_EXCEPTION, 0, sizeof(info)/sizeof(DWORD), (DWORD*)&info );
    }
    __except(EXCEPTION_CONTINUE_EXECUTION) {
    }
@@ -106,4 +106,88 @@ int Thread::GetID() const {
 }
 
 void Thread::Run() {
+}
+
+/* Semaphore; Windows implementation */
+#ifdef _WIN32
+	Semaphore::Semaphore() {
+		_sema = CreateSemaphore(NULL, 0, LONG_MAX, 0);
+	}
+
+	Semaphore::~Semaphore() {
+		CloseHandle(_sema);
+	}
+
+	void Semaphore::Release(int n) {
+		ReleaseSemaphore(_sema, n, NULL);
+	}
+
+	bool Semaphore::Wait() {
+		return WaitForSingleObject(_sema, INFINITE) == WAIT_OBJECT_0;
+	}
+
+	HANDLE Semaphore::GetHandle() {
+		return _sema;
+	}
+#endif
+
+/* Event; Windows implementation */
+#ifdef _WIN32
+	Event::Event() {
+		_event = CreateEvent(NULL, TRUE, FALSE, NULL);
+	}
+
+	Event::~Event() {
+		CloseHandle(_event);
+	}
+
+	void Event::Signal() {
+		SetEvent(_event);
+	}
+
+	void Event::Pulse() {
+		PulseEvent(_event);
+	}
+
+	void Event::Reset() {
+		ResetEvent(_event);
+	}
+
+	HANDLE Event::GetHandle() {
+		return _event;
+	}
+
+	void Event::Wait(int ms) {
+		WaitForSingleObject(_event, ms);
+	}
+#endif
+
+/* ThreadLocal; Windows implementation uses TLS */
+#ifdef _WIN32
+	ThreadLocal::ThreadLocal() {
+		_tls = TlsAlloc();
+		if(_tls==TLS_OUT_OF_INDEXES) {
+			Throw(L"Cannot create thread-local storage", ExceptionTypeSevere);
+		}
+	}
+
+	ThreadLocal::~ThreadLocal() {
+		TlsFree(_tls);
+	}
+
+	int ThreadLocal::GetValue() const {
+		return (int)(__int64)TlsGetValue(_tls);
+	}
+
+	void ThreadLocal::SetValue(int v) {
+		TlsSetValue(_tls, (void*)(__int64)v);
+	}
+#endif
+
+ThreadLocal::operator int() const {
+	return GetValue();
+}
+
+void ThreadLocal::operator=(int r) {
+	SetValue(r);
 }

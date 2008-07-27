@@ -89,41 +89,21 @@ namespace tj {
 }
 
 /* VectorProperty */
-VectorProperty::VectorProperty(std::wstring name, Vector* vec): Property(name), _vec(vec) {
-	_wnd = 0;
+VectorProperty::VectorProperty(const std::wstring& name, Vector* vec): Property(name), _vec(vec) {
 }
 
 VectorProperty::~VectorProperty() {
-	if(GetWindow()!=0) {
-		delete _wnd;
-	}
 }
 
-std::wstring VectorProperty::GetValue() {
-	return _vec->ToString();
-}
-
-HWND VectorProperty::GetWindow() {
-	if(_wnd==0) {
-		return 0;
-	}
-	return _wnd->GetWindow();
-}
-
-HWND VectorProperty::Create(HWND parent) {
-	if(_wnd==0) {
+ref<Wnd> VectorProperty::GetWindow() {
+	if(!_wnd) {
 		_wnd = new VectorPropertyWnd(_vec);
-		SetParent(_wnd->GetWindow(), parent);
-		_wnd->SetStyle(WS_CHILD);
 	}
-	return _wnd->GetWindow();
-}
-
-void VectorProperty::Changed() {
+	return _wnd;
 }
 
 void VectorProperty::Update() {
-	if(_wnd!=0) {
+	if(_wnd) {
 		_wnd->Update();
 	}
 }

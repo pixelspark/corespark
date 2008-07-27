@@ -14,6 +14,16 @@ namespace tj {
 				static void ListThemes(std::vector< ref<Theme> >& lst);
 				static int GetThemeId();
 
+				struct ThemeChangeNotification {
+					public:
+						ThemeChangeNotification(ref<Theme> newTheme);
+						ref<Theme> GetNewTheme();
+
+					private:
+						ref<Theme> _newTheme;
+				};
+				static Listenable<ThemeChangeNotification> EventThemeChanged;
+
 				// friendly time
 				static bool IsFriendlyTime();
 				static void SetFriendlyTime(bool t);

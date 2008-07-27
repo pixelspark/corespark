@@ -1,6 +1,6 @@
 #ifndef _TJWND_H
 #define _TJWND_H
-#include "../tjplatform.h"
+#include "../internal/tjplatform.h"
 
 namespace tj {
 	namespace shared {
@@ -169,14 +169,12 @@ namespace tj {
 				bool IsMouseOver();
 
 				HWND GetWindow();
-				virtual std::wstring GetTabTitle() const;		// return an empty string if you don't want to override Pane's title
+				virtual std::wstring GetTabTitle() const;	// return an empty string if you don't want to override Pane's title
 				virtual ref<Icon> GetTabIcon() const;		// should return 0 when you don't want to override the tab icon set in Pane
 				virtual void Focus();
-				bool HasFocus(bool childrenToo = false) const;
+				virtual bool HasFocus(bool childrenToo = false) const;
 				static bool IsKeyDown(Key k);
 				virtual void BringToFront();
-
-				/* Drag & Drop - Sleur & Pleur */
 				void SetDropTarget(bool d);
 
 				/* Settings API */
@@ -199,6 +197,9 @@ namespace tj {
 				virtual void OnTimer(unsigned int id);
 				virtual void OnKey(Key k, wchar_t t, bool down, bool isAccelerator);
 				virtual void OnContextMenu(Pixels x, Pixels y);
+				virtual void OnCopy();
+				virtual void OnPaste();
+				virtual void OnCut();
 
 				// Timer
 				virtual void StartTimer(Time interval, unsigned int id);
@@ -209,18 +210,20 @@ namespace tj {
 			
 			private:
 				static void RegisterClasses();
+
+				HWND _wnd;
 				graphics::Bitmap* _buffer;
 				bool _doubleBuffered;
+				bool _fullScreen;
+				bool _wantsMouseLeave;
 				int _horizontalPos;
 				int _verticalPos;
 				int _horizontalPageSize;
 				int _verticalPageSize;
-				static bool _classesRegistered;
 				long _oldStyle, _oldStyleEx;
-				HWND _wnd;
-				bool _fullScreen;
-				bool _wantsMouseLeave;
 				ref<Settings> _settings;
+
+				static bool _classesRegistered;
 		};
 
 		class EXPORTED TopWnd: public Wnd {

@@ -1,4 +1,4 @@
-#include "../../include/tjshared.h"
+#include "../../include/ui/tjui.h" 
 #include <commctrl.h>
 using namespace tj::shared;
 

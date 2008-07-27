@@ -5,6 +5,18 @@ namespace tj {
 	namespace shared {
 		typedef long long Bytes; // This is equivalent to __int64 on MSVC++
 
+		class EXPORTED Bool {
+			public:
+				static const wchar_t* KTrue;
+				static const wchar_t* KFalse;
+		};
+
+		class EXPORTED Clipboard {
+			public:
+				static void SetClipboardText(const std::wstring& text);
+				static bool GetClipboardText(std::wstring& text);
+		};
+
 		class EXPORTED Util {
 			public:
 				static float RandomFloat();
@@ -78,7 +90,7 @@ namespace tj {
 			return Mbs(x);
 		}
 
-		template<typename T> inline T StringTo(std::wstring s, const T& def) {
+		template<typename T> inline T StringTo(const std::wstring& s, const T& def) {
 			std::wistringstream i(s);
 			T x;
 			if (!(i >> x)) {
@@ -89,7 +101,7 @@ namespace tj {
 		}
 
 
-		template<typename T> inline T StringTo(std::string s, const T& def) {
+		template<typename T> inline T StringTo(const std::string& s, const T& def) {
 			std::istringstream i(s);
 			T x;
 			if (!(i >> x)) {
@@ -137,7 +149,7 @@ namespace tj {
 			}
 		}
 
-		template<> EXPORTED bool StringTo(std::wstring s, const bool& def);
+		template<> EXPORTED bool StringTo(const std::wstring& s, const bool& def);
 		template<> EXPORTED std::wstring Stringify(const bool& x);
 		template<> EXPORTED std::wstring Stringify(const int& x);
 	}

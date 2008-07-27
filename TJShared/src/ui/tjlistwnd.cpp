@@ -1,4 +1,4 @@
-#include "../../include/tjshared.h"
+#include "../../include/ui/tjui.h" 
 #include <windowsx.h>
 using namespace tj::shared::graphics;
 using namespace tj::shared;
@@ -125,11 +125,11 @@ void ListWnd::Paint(graphics::Graphics &g, ref<Theme> theme) {
 	Area area = GetClientArea();
 	Pixels headHeight = GetHeaderHeight();
 
-	SolidBrush back(theme->GetBackgroundColor());
-	SolidBrush disabled(theme->GetDisabledOverlayColor());
+	SolidBrush back(theme->GetColor(Theme::ColorBackground));
+	SolidBrush disabled(theme->GetColor(Theme::ColorDisabledOverlay));
 	g.FillRectangle(&back, area);
-	Pen border(theme->GetActiveStartColor(), 1.0f);
-	Pen lineBorder(theme->GetActiveEndColor(), 1.0f);
+	Pen border(theme->GetColor(Theme::ColorActiveStart), 1.0f);
+	Pen lineBorder(theme->GetColor(Theme::ColorActiveEnd), 1.0f);
 	bool hasFocus = HasFocus(true);
 
 	int n = GetItemCount();
@@ -137,8 +137,8 @@ void ListWnd::Paint(graphics::Graphics &g, ref<Theme> theme) {
 		// draw items, if they fit
 		int h = -int(GetVerticalPos());
 		Pixels itemHeight = GetItemHeight();
-		SolidBrush colorEven(theme->GetTimeBackgroundColor());
-		LinearGradientBrush colorSelected(PointF(0.0f, float(h+headHeight)), PointF(0.0f, float(h+headHeight+itemHeight)), theme->GetTimeSelectionColorStart(), theme->GetTimeSelectionColorEnd());
+		SolidBrush colorEven(theme->GetColor(Theme::ColorTimeBackground));
+		LinearGradientBrush colorSelected(PointF(0.0f, float(h+headHeight)), PointF(0.0f, float(h+headHeight+itemHeight)), theme->GetColor(Theme::ColorTimeSelectionStart), theme->GetColor(Theme::ColorTimeSelectionEnd));
 
 		for(int a=0;a<n;a++) {
 			if(h>area.GetHeight()) {
@@ -166,7 +166,7 @@ void ListWnd::Paint(graphics::Graphics &g, ref<Theme> theme) {
 		// draw the 'empty text'
 		StringFormat sf;
 		sf.SetAlignment(StringAlignmentCenter);
-		SolidBrush descBrush(theme->GetHintColor());
+		SolidBrush descBrush(theme->GetColor(Theme::ColorHint));
 		Area emptyTextArea = area;
 		emptyTextArea.Narrow(0,int(headHeight*1.5f),0,0);
 		g.DrawString(_emptyText.c_str(), (int)_emptyText.length(), theme->GetGUIFont(), emptyTextArea, &sf, &descBrush);
@@ -181,9 +181,9 @@ void ListWnd::Paint(graphics::Graphics &g, ref<Theme> theme) {
 		sf.SetAlignment(StringAlignmentNear);
 		sf.SetLineAlignment(StringAlignmentCenter);
 		sf.SetTrimming(StringTrimmingEllipsisCharacter);
-		//SolidBrush colBr(theme->GetTextColor());
-		LinearGradientBrush colBr(PointF(0.0f, 4.0f), PointF(0.0f, float(headHeight-8)), theme->GetActiveStartColor(), theme->GetActiveEndColor());
-		Pen separator(theme->GetActiveEndColor());
+		//SolidBrush colBr(theme->GetColor(Theme::ColorText));
+		LinearGradientBrush colBr(PointF(0.0f, 4.0f), PointF(0.0f, float(headHeight-8)), theme->GetColor(Theme::ColorActiveStart), theme->GetColor(Theme::ColorActiveEnd));
+		Pen separator(theme->GetColor(Theme::ColorActiveEnd));
 
 		float x = float(area.GetLeft());
 		std::map<int,Column>::iterator it = _cols.begin();
@@ -237,10 +237,12 @@ void ListWnd::OnSize(const Area& ns) {
 	SetVerticalScrollInfo(Range<int>(0, h), ns.GetHeight());
 
 	// update size/scrolls
+	Layout();
 	Repaint();
 }
 
 void ListWnd::OnScroll(ScrollDirection dir) {
+	Layout();
 	Repaint();
 }
 
@@ -262,6 +264,15 @@ void ListWnd::SetColumnWidth(int id, float w) {
 void ListWnd::OnColumnSizeChanged() {
 }
 
+void ListWnd::OnKey(Key k, wchar_t t, bool down, bool isAccelerator) {
+	if(k==KeyUp && down && _selected>0) {
+		SetSelectedRow(_selected-1);
+	}
+	else if(k==KeyDown && down && _selected<(GetItemCount()-1)) {
+		SetSelectedRow(_selected+1);
+	}
+}
+
 LRESULT ListWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	if(msg==WM_MOUSEWHEEL) {
 		int delta = GET_WHEEL_DELTA_WPARAM(wp);
@@ -277,16 +288,6 @@ LRESULT ListWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 			}
 		}
 		OnScroll(ScrollDirectionVertical);
-	}
-	else if(msg==WM_KEYDOWN) {
-		if(LOWORD(wp)==VK_UP && _selected>0) {
-			_selected--;
-			Repaint();
-		}
-		else if(LOWORD(wp)==VK_DOWN && _selected<(GetItemCount()-1)) {
-			_selected++;
-			Repaint();
-		}
 	}
 	return ChildWnd::Message(msg,wp,lp);
 }
@@ -460,4 +461,102 @@ ListWnd::Column::Column(std::wstring title) {
 	_title = title;
 	_width = 0.2f;
 	_visible = true;
+}
+
+// EditableListWnd
+EditableListWnd::EditableListWnd(): _rowEditing(-1) {
+}
+
+EditableListWnd::~EditableListWnd() {
+}
+
+void EditableListWnd::OnColumnSizeChanged() {
+	Layout();
+	ListWnd::OnColumnSizeChanged();
+}
+
+bool EditableListWnd::IsEditing() const {
+	return _rowEditing >= 0;
+}
+
+int EditableListWnd::GetEditingRow() const {
+	return IsEditing() ? _rowEditing: -1;
+}
+
+void EditableListWnd::OnEditingStarted(int r) {
+}
+
+void EditableListWnd::OnEditingDone(int r) {
+}
+
+void EditableListWnd::SetSelectedRow(int r) {
+	if(IsEditing() && r!=_rowEditing) {
+		EndEditing();
+	}
+	ListWnd::SetSelectedRow(r);
+}
+
+void EditableListWnd::Layout() {
+	if(IsEditing()) {
+		ref<Theme> theme = ThemeManager::GetTheme();
+		Area row = GetRowArea(_rowEditing);
+
+		std::map< int, ref<Property> >::iterator it = _editorProperties.begin();
+		while(it!=_editorProperties.end()) {
+			ref<Property> p = it->second;
+			if(p) {
+				ref<Wnd> w = p->GetWindow();
+				if(w) {
+					Area realRow = row;
+					realRow.Widen(0,0,0,1);
+					realRow.SetX(Pixels(GetColumnX(it->first)*row.GetWidth()));
+					realRow.SetWidth(Pixels(GetColumnWidth(it->first)*row.GetWidth()));
+
+					if(IsColumnVisible(it->first)) {
+						w->Move(realRow.GetX(), realRow.GetY(), realRow.GetWidth(), realRow.GetHeight());
+						w->Show(true);
+					}
+					else {
+						w->Show(false);
+					}
+				}
+			}
+			++it;
+		}
+	}
+	ListWnd::Layout();
+}
+
+void EditableListWnd::EndEditing() {
+	if(IsEditing()) {
+		OnEditingDone(_rowEditing);
+		_editorProperties.clear();
+		_rowEditing = -1;
+		Layout();
+		Repaint();
+	}
+}
+
+void EditableListWnd::SetSelectedRowAndEdit(int r) {
+	if(IsEditing()) {
+		EndEditing();
+	}
+
+	if(r>=0 && r<GetItemCount()) {
+		std::map< int, ListWnd::Column >::const_iterator it = _cols.begin();
+		while(it!=_cols.end()) {
+			ref<Property> pr = GetPropertyForItem(r, it->first);
+			if(pr) {
+				_editorProperties[it->first] = pr;
+				Add(pr->GetWindow());
+			}
+			++it;
+		}
+
+		_rowEditing = r;
+		Layout();
+		SetSelectedRow(r);
+		OnEditingStarted(r);
+		Repaint();
+	}
 }

@@ -1,4 +1,4 @@
-#include "../../include/tjshared.h"
+#include "../../include/ui/tjui.h" 
 #include <windowsx.h> 
 using namespace tj::shared;
 using namespace tj::shared::graphics;
@@ -66,12 +66,9 @@ void RootWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	if(IsStatusBarShown()) {
 		Area wrc = Wnd::GetClientArea();
 		Area rc(wrc.GetLeft(), wrc.GetBottom()-KStatusBarHeight, wrc.GetWidth(), KStatusBarHeight);
-		SolidBrush back(theme->GetBackgroundColor());
+		SolidBrush back(theme->GetColor(Theme::ColorBackground));
 		g.FillRectangle(&back, rc);
-
-		/*LinearGradientBrush lbr(PointF(0.0f, (float)rc.GetTop()-2.0f), PointF(0.0f, (float)rc.GetBottom()+2.0f), Theme::ChangeAlpha(theme->GetActiveEndColor(),127), theme->GetBackgroundColor());
-		g.FillRectangle(&lbr, rc);*/
-		theme->DrawToolbarBackground(g, rc);
+		theme->DrawInsetRectangle(g, rc);
 
 		WINDOWPLACEMENT wp;
 		wp.length = sizeof(wp);

@@ -2,6 +2,7 @@
 using namespace tj::shared;
 using namespace tj::script;
 
+#ifndef TJ_NO_SPIRIT
 #pragma warning(push)
 #pragma warning(disable: 4800 4503) // small thingy in Spirit header file, decorated names too long
 #pragma inline_depth(255)
@@ -597,3 +598,15 @@ ScriptWriteInt::ScriptWriteInt(const ScriptGrammar* gram, int i) {
 ScriptWriteString::ScriptWriteString(const ScriptGrammar *gram) {
 	_stack = gram->_stack;
 }
+
+#endif
+
+#ifdef TJ_NO_SPIRIT
+ref<CompiledScript> ScriptContext::Compile(std::wstring source) {
+	Throw(L"TJScript was not built with the parser; cannot compile script!", ExceptionTypeError);
+}
+
+ref<CompiledScript> ScriptContext::CompileFile(std::wstring fn) {
+	Throw(L"TJScript was not built with the parser; cannot compile script file!", ExceptionTypeError);
+}
+#endif

@@ -1,5 +1,4 @@
-#include "../../include/tjshared.h"
-#include "../../include/tjplatform.h"
+#include "../../include/ui/tjui.h" 
 #include <windowsx.h> 
 using namespace tj::shared::graphics;
 using namespace tj::shared;
@@ -16,10 +15,21 @@ TabWnd::TabWnd(ref<WindowManager> root, const std::wstring& id): ChildWnd(L"TabW
 	_detachAttachAllowed = true;
 	_childStyle = false;
 	_id = id;
+	_in = false;
+	_entryAnimation.SetLength(Time(250));
+	_entryAnimation.SetReversed(true);
+	_entryAnimation.Start();
 	Layout();
 }
 
 TabWnd::~TabWnd() {
+}
+
+void TabWnd::OnTimer(unsigned int id) {
+	if(!_entryAnimation.IsAnimating()) {
+		StopTimer(id);
+	}
+	Repaint();
 }
 
 void TabWnd::SetDetachAttachAllowed(bool allow) {
@@ -79,8 +89,8 @@ void TabWnd::Paint(Graphics& g, ref<Theme> theme) {
 		if(_childStyle) {
 			Area backrc = rect;
 			backrc.SetHeight(_headerHeight);
-			SolidBrush white(theme->GetBackgroundColor());
-			LinearGradientBrush bbr(PointF(0.0f, 0.0f), PointF(0.0f, float(_headerHeight)), theme->ChangeAlpha(theme->GetActiveEndColor(), 50), theme->ChangeAlpha(theme->GetActiveEndColor(), 0));
+			SolidBrush white(theme->GetColor(Theme::ColorBackground));
+			LinearGradientBrush bbr(PointF(0.0f, 0.0f), PointF(0.0f, float(_headerHeight)), theme->ChangeAlpha(theme->GetColor(Theme::ColorActiveEnd), 50), theme->ChangeAlpha(theme->GetColor(Theme::ColorActiveEnd), 0));
 			g.FillRectangle(&white, backrc);
 			g.FillRectangle(&bbr, backrc);
 		}
@@ -100,16 +110,17 @@ void TabWnd::Paint(Graphics& g, ref<Theme> theme) {
 		if(root) {
 			ref<TabWnd> dt =  root->GetDragTarget();
 			if(dt && dt.GetPointer()==this) {
-				LinearGradientBrush br(PointF(0.0f, 0.0f), PointF(0.0f,float(_headerHeight)), theme->GetHighlightColorStart(), theme->GetHighlightColorEnd());
+				LinearGradientBrush br(PointF(0.0f, 0.0f), PointF(0.0f,float(_headerHeight)), theme->GetColor(Theme::ColorHighlightStart), theme->GetColor(Theme::ColorHighlightEnd));
 				g.FillRectangle(&br, Rect(rect.GetLeft()+1, rect.GetTop(), rect.GetRight(), _headerHeight));
 			}
 		}
 		
-		Pen border(theme->GetActiveEndColor(), 1.0f);
+		Pen border(theme->GetColor(Theme::ColorActiveEnd), 1.0f);
 		g.DrawRectangle(&border, RectF(0, float(_headerHeight)-1, float(rect.GetWidth())-1, float(rect.GetHeight()-_headerHeight)));
 
 		std::vector< ref<Pane> >::iterator it = _panes.begin();
-		SolidBrush textBrush = theme->GetTextColor();
+		SolidBrush textBrush = theme->GetColor(Theme::ColorText);
+		SolidBrush inactiveTextBrush = Theme::ChangeAlpha(theme->GetColor(Theme::ColorText), int(127.0f + 127.0f * _entryAnimation.GetFraction()));
 		int left = -offset;
 		int idx = 0;
 
@@ -127,14 +138,14 @@ void TabWnd::Paint(Graphics& g, ref<Theme> theme) {
 			// border
 			if(pane==_current) {
 				if(!_childStyle) {
-					LinearGradientBrush lbr(PointF(0.0f, (float)scrollerHeight), PointF(0.0f, float(_headerHeight)), theme->GetActiveEndColor(), theme->GetActiveEndColor());
+					LinearGradientBrush lbr(PointF(0.0f, (float)scrollerHeight), PointF(0.0f, float(_headerHeight)), theme->GetColor(Theme::ColorActiveEnd), theme->GetColor(Theme::ColorActiveEnd));
 					g.FillRectangle(&lbr, RectF(float(left), scrollerHeight+2.0f, float(bound.Width+2+(pane->HasIcon()?KIconWidth:0)), float(_headerHeight-scrollerHeight)));
-					SolidBrush backBrush(theme->GetTabButtonBackgroundColor());
+					SolidBrush backBrush(theme->GetColor(Theme::ColorTabButtonBackground));
 					g.FillRectangle(&backBrush, RectF(float(left+1.0f), scrollerHeight+3.0f, float(bound.Width+(pane->HasIcon()?KIconWidth:0)), float(_headerHeight-scrollerHeight)));
 				}
 				else {
-					LinearGradientBrush lbr(PointF(0.0f, (float)scrollerHeight), PointF(0.0f, float(_headerHeight-2-scrollerHeight)), theme->ChangeAlpha(theme->GetActiveEndColor(), 0), theme->GetActiveEndColor());
-					LinearGradientBrush bbr(PointF(0.0f, (float)scrollerHeight), PointF(0.0f, float(_headerHeight-2-scrollerHeight)), theme->ChangeAlpha(theme->GetActiveEndColor(), 0), theme->ChangeAlpha(theme->GetActiveEndColor(), 127));
+					LinearGradientBrush lbr(PointF(0.0f, (float)scrollerHeight), PointF(0.0f, float(_headerHeight-2-scrollerHeight)), theme->ChangeAlpha(theme->GetColor(Theme::ColorActiveEnd), 0), theme->GetColor(Theme::ColorActiveEnd));
+					LinearGradientBrush bbr(PointF(0.0f, (float)scrollerHeight), PointF(0.0f, float(_headerHeight-2-scrollerHeight)), theme->ChangeAlpha(theme->GetColor(Theme::ColorActiveEnd), 0), theme->ChangeAlpha(theme->GetColor(Theme::ColorActiveEnd), 127));
 					Pen pn(&lbr, 1.0f);
 					
 					g.DrawRectangle(&pn, RectF(float(left), (float)scrollerHeight, float(bound.Width+2+(pane->HasIcon()?KIconWidth:0)), float(_headerHeight-3-scrollerHeight)));
@@ -144,14 +155,14 @@ void TabWnd::Paint(Graphics& g, ref<Theme> theme) {
 			
 			// gradient achter actieve tab of dragging tab (niet border)
 			if((pane==_current && pane!=_dragging) || pane==_dragging) {
-				Color start = theme->GetTabButtonColorStart();
-				Color end = theme->GetTabButtonColorEnd();
+				Color start = theme->GetColor(Theme::ColorTabButtonStart);
+				Color end = theme->GetColor(Theme::ColorTabButtonEnd);
 
 				if(!_childStyle) {
 					LinearGradientBrush lbr(PointF(0.0f, 0.0f), PointF(0.0f, float(_headerHeight)), start, end);
 					g.FillRectangle(&lbr, RectF(float(left), scrollerHeight+2.0f, float(bound.Width+2+(pane->HasIcon()?KIconWidth:0)), float(_headerHeight-2-scrollerHeight)));
 				
-					LinearGradientBrush gbr(PointF(0.0f, 0.0f), PointF(0.0f, float(_headerHeight)/2.0f), theme->GetGlassColorStart(), theme->GetGlassColorEnd());
+					LinearGradientBrush gbr(PointF(0.0f, 0.0f), PointF(0.0f, float(_headerHeight)/2.0f), theme->GetColor(Theme::ColorGlassStart), theme->GetColor(Theme::ColorGlassEnd));
 					g.FillRectangle(&gbr, RectF(float(left), scrollerHeight+2.0f, float(bound.Width+2+(pane->HasIcon()?KIconWidth:0)), float(_headerHeight/2.0f-2-scrollerHeight)));
 				}
 			}
@@ -159,11 +170,10 @@ void TabWnd::Paint(Graphics& g, ref<Theme> theme) {
 			if(pane->HasIcon()) {
 				ref<Icon> icon = pane->GetIcon();
 				if(icon) {
-					g.DrawImage(icon->GetBitmap(),RectF(float(left)+4.0f, scrollerHeight+4.0f, (float)KRealIconWidth, (float)KRealIconWidth));
-			
+					icon->Paint(g, Area(left+4, scrollerHeight+4, KRealIconWidth, KRealIconWidth), 0.5f+(_entryAnimation.GetFraction()/2.0f));
 				}
 			}
-			g.DrawString(title.c_str(), (INT)title.length(), theme->GetGUIFontBold(), PointF(float(left+1+(pane->HasIcon()?KIconWidth:0)), scrollerHeight+4.0f), &textBrush);
+			g.DrawString(title.c_str(), (INT)title.length(), theme->GetGUIFontBold(), PointF(float(left+1+(pane->HasIcon()?KIconWidth:0)), scrollerHeight+4.0f), (pane==_current) ? &textBrush : &inactiveTextBrush);
 
 			left += int(bound.Width) + 4 + (pane->HasIcon()?KIconWidth:0);
 			++it;
@@ -174,14 +184,15 @@ void TabWnd::Paint(Graphics& g, ref<Theme> theme) {
 			Pixels buttonsLeft = rect.GetWidth()-2*_headerHeight;
 
 			if(!(left<(rect.GetWidth()-2*_headerHeight))) {
-				//LinearGradientBrush disabled(PointF(float(buttonsLeft), 0.0f), PointF(rect.GetWidth(), 0.0f), Color(0,255,255,255),theme->GetDisabledOverlayColor());
+				//LinearGradientBrush disabled(PointF(float(buttonsLeft), 0.0f), PointF(rect.GetWidth(), 0.0f), Color(0,255,255,255),theme->GetColor(Theme::ColorDisabledOverlay));
 				HWND root = GetAncestor(GetWindow(), GA_ROOT);
 				graphics::Brush* abr = theme->GetApplicationBackgroundBrush(root, GetWindow());
 
 				g.FillRectangle(abr, RectF((float)buttonsLeft, 0.0f, float(rect.GetWidth()-buttonsLeft), float(_headerHeight)-1.0f));
 			}
-			g.DrawImage(_addIcon, RectF(float(buttonsLeft), 0.0f, float(_headerHeight-2), float(_headerHeight-2)));
-			g.DrawImage(_closeIcon, RectF(float(rect.GetWidth()-_headerHeight), 0.0f, float(_headerHeight-2), float(_headerHeight-2)));
+
+			_addIcon.Paint(g, Area(buttonsLeft, 0, _headerHeight-2, _headerHeight-2), 0.5f + (_entryAnimation.GetFraction()/2.0f));
+			_closeIcon.Paint(g, Area(rect.GetWidth()-_headerHeight, 0, _headerHeight-2, _headerHeight-2), 0.5f + (_entryAnimation.GetFraction()/2.0f));
 		}
 
 		// Draw scroller
@@ -189,7 +200,7 @@ void TabWnd::Paint(Graphics& g, ref<Theme> theme) {
 			Pixels w = rect.GetWidth() - 3*KIconWidth;
 			Pixels scrollerWidth = Pixels((float(w)/float(totalTabsWidth))*w);
 			Pixels scrollerOffset = Pixels((float(_offset)/float(totalTabsWidth))*w);
-			LinearGradientBrush scrollerBrush(PointF(0.0f, (float)rect.GetTop()), PointF(0.0f, float(rect.GetTop()+scrollerHeight)), theme->GetActiveStartColor(), theme->GetActiveEndColor());
+			LinearGradientBrush scrollerBrush(PointF(0.0f, (float)rect.GetTop()), PointF(0.0f, float(rect.GetTop()+scrollerHeight)), theme->GetColor(Theme::ColorActiveStart), theme->GetColor(Theme::ColorActiveEnd));
 			g.FillRectangle(&scrollerBrush, Area(rect.GetLeft()+scrollerOffset, rect.GetTop()+1, scrollerWidth, KScrollerHeight-1));
 		}
 	}
@@ -477,7 +488,21 @@ void TabWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 	else if(ev==MouseEventRUp) {
 		ReleaseCapture();
 	}
+	else if(ev==MouseEventLeave) {
+		_in = false;
+		_entryAnimation.SetReversed(true);
+		_entryAnimation.Start();
+		StartTimer(Time(50), 1);
+	}
 	else if(ev==MouseEventMove) {
+		if(!_in) {
+			_in = true;
+			_entryAnimation.SetReversed(false);
+			_entryAnimation.Start();
+			SetWantMouseLeave(true);
+			StartTimer(Time(50), 1);
+		}
+
 		if(IsKeyDown(KeyMouseRight)) {
 			int dx = x-_dragStartX;
 

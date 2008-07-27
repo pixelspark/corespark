@@ -45,70 +45,81 @@ namespace tj {
 				virtual std::wstring GetName() const;
 
 				enum Measure {
-					MeasureToolbarHeight = 1,
+					MeasureNone = 0,
+					MeasureToolbarHeight,
 					MeasureListItemHeight,
 					MeasureListHeaderHeight,
 					MeasureMaximumSnappingDistance,
+					MeasureShadowSize,
+					MeasurePropertyHeight,
+					_MeasureLast,
+				};
+
+				enum SliderType {
+					SliderNormal = 0,
+					SliderSubmix,
+					SliderMaster,
+					SliderMacro,
+					SliderAlpha,
+				};
+
+				enum ColorIdentifier {
+					ColorNone = 0,
+
+					ColorActiveEnd,
+					ColorActiveStart,
+					ColorActiveTrack,
+					ColorBackground,
+					ColorCommandMarker,
+					ColorCurrentPosition,
+					ColorDescriptionText,
+					ColorDisabledOverlay,
+					ColorEditBackground,
+					ColorFader,
+					ColorFocus,
+					ColorGlassStart,
+					ColorGlassEnd,
+					ColorHighlightStart,
+					ColorHighlightEnd,
+					ColorHint,
+					ColorLink,
+					ColorLine,
+					ColorProgress,
+					ColorProgressBackgroundEnd,
+					ColorProgressBackgroundStart,
+					ColorProgressGlassEnd,
+					ColorProgressGlassStart,
+					ColorPropertyBackground,
+					ColorShadow,
+					ColorShadowed,
+					ColorSplitterEnd,
+					ColorSplitterStart,
+					ColorTabButtonBackground,
+					ColorTabButtonEnd,
+					ColorTabButtonStart,
+					ColorText,
+					ColorTimeBackground,
+					ColorTimeSelectionEnd,
+					ColorTimeSelectionStart,
+					ColorToolbarEnd,
+					ColorToolbarStart,
+					ColorVideoBackground,
+					_ColorLast,
 				};
 
 				// Colors
-				virtual Area MeasureText(const std::wstring& text, graphics::Font* font) const;
-				virtual graphics::Color GetLinkColor() const;
-				virtual graphics::Color GetBackgroundColor() const;
-				virtual graphics::Color GetVideoBackgroundColor() const;
-				virtual graphics::Color GetEditBackgroundColor() const;
-				virtual graphics::Color GetTimeBackgroundColor() const;
-				virtual graphics::Color GetPropertyBackgroundColor() const;
-				virtual graphics::Color GetLineColor() const;
-				virtual graphics::Color GetTextColor() const;
-				virtual graphics::Color GetActiveTrackColor() const;
-				virtual graphics::Color GetTabButtonBackgroundColor() const;
-				virtual graphics::Color GetHintColor() const;
-				virtual graphics::Color GetFocusColor() const;
+				virtual graphics::Color GetColor(const ColorIdentifier& ci) const;
+				static graphics::Color ChangeAlpha(const graphics::Color& col, int a);
+				static graphics::Color ChangeAlpha(const graphics::Color& col, float a);
+				virtual graphics::Color GetSliderColorStart(const SliderType& i) const;
+				virtual graphics::Color GetSliderColorEnd(const SliderType& i) const;
 
-				virtual graphics::Color GetActiveStartColor() const;
-				virtual graphics::Color GetActiveEndColor() const;
-
-				virtual graphics::Color GetSplitterStartColor() const;
-				virtual graphics::Color GetSplitterEndColor() const;
-
-				virtual graphics::Color GetCurrentPositionColor() const;
-				virtual graphics::Color GetTrackDescriptionTextColor() const;
-				virtual graphics::Color GetFaderColor() const;
-
-				virtual graphics::Color GetSliderColorStart(int i) const;
-				virtual graphics::Color GetSliderColorEnd(int i) const;
-
-				virtual graphics::Color GetTimeSelectionColorEnd() const;
-				virtual graphics::Color GetTimeSelectionColorStart() const;
-
-				virtual graphics::Color GetTabButtonColorStart() const;
-				virtual graphics::Color GetTabButtonColorEnd() const;
-
-				virtual graphics::Color GetDisabledOverlayColor() const;
-				virtual graphics::Color GetCommandMarkerColor() const;
-
-				virtual graphics::Color GetHighlightColorStart() const;
-				virtual graphics::Color GetHighlightColorEnd() const;
-
-				virtual graphics::Color GetGlassColorStart() const;
-				virtual graphics::Color GetGlassColorEnd() const;
-
-				virtual graphics::Color GetToolbarColorStart() const;
-				virtual graphics::Color GetToolbarColorEnd() const;
-
-				// ProgressWnd
-				virtual graphics::Color GetProgressBackStart() const;
-				virtual graphics::Color GetProgressBackEnd() const;
-				virtual graphics::Color GetProgressGlassStart() const;
-				virtual graphics::Color GetProgressGlassEnd() const;
-				virtual graphics::Color GetProgressColor() const;
-
-				// Fonts
+				// Fonts & text
 				virtual graphics::Font* GetGUIFont() const;
 				virtual graphics::Font* GetGUIFontBold() const;
 				virtual graphics::Font* GetLinkFont() const;
 				virtual graphics::Font* GetGUIFontSmall() const;
+				virtual Area MeasureText(const std::wstring& text, graphics::Font* font) const;
 
 				// Cursors
 				virtual HCURSOR GetGrabCursor() const;
@@ -120,27 +131,18 @@ namespace tj {
 				what you use to paint in Windows. So when you're on a 96 DPI screen, this returns 1.0f. When you're
 				on 120 dpi, this returns 1.25f. */
 				virtual float GetDPIScaleFactor() const;
+				const static float KDefaultDPI; // One logical pixel equals 1/KDefaultDPI inches
 
 				// Measures
 				virtual Pixels GetMeasureInPixels(Theme::Measure m) const;
-
-				static graphics::Color ChangeAlpha(graphics::Color col, int a);
 				
-				enum {
-					SliderNormal = 0,
-					SliderSubmix,
-					SliderMaster,
-					SliderMacro,
-					SliderAlpha,
-				};
-
-				const static float KDefaultDPI; // One logical pixel equals 1/KDefaultDPI inches
-
 				// utility methods
+				virtual void DrawInsetRectangle(graphics::Graphics& g, const Area& rc);
 				virtual void DrawToolbarBackground(graphics::Graphics& g, const Area& rc);
 				virtual void DrawToolbarBackground(graphics::Graphics& g, float x, float y, float w, float h);
-				virtual void DrawFocusRectangle(graphics::Graphics& g, const Area& rc);
-				virtual void DrawFocusEllipse(graphics::Graphics& g, const Area& rc);
+				virtual void DrawFocusRectangle(graphics::Graphics& g, const Area& rc, float alpha = 1.0f);
+				virtual void DrawFocusEllipse(graphics::Graphics& g, const Area& rc, float alpha = 1.0f);
+				virtual void DrawHighlightEllipse(graphics::Graphics& g, const Area& c, float alpha = 1.0f);
 
 			protected:
 				mutable graphics::Font* _font;

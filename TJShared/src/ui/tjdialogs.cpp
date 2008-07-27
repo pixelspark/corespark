@@ -1,4 +1,4 @@
-#include "../../include/tjshared.h"
+#include "../../include/ui/tjui.h" 
 using namespace tj::shared;
 using namespace tj::shared::graphics;
 
@@ -85,16 +85,19 @@ void DialogWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	buttons.Narrow(0,buttons.GetHeight()-KHeaderHeight, 0, 0);
 
 	// Header
-	SolidBrush disabled(theme->GetDisabledOverlayColor());
-	LinearGradientBrush headerBrush(PointF(0.0f, 0.0f), PointF(0.0f, float(KHeaderHeight)), theme->GetActiveStartColor(), theme->GetActiveEndColor());
+	SolidBrush disabled(theme->GetColor(Theme::ColorDisabledOverlay));
+	LinearGradientBrush headerBrush(PointF(0.0f, 0.0f), PointF(0.0f, float(KHeaderHeight)), theme->GetColor(Theme::ColorActiveStart), theme->GetColor(Theme::ColorActiveEnd));
 	g.FillRectangle(&headerBrush, header);
 	g.FillRectangle(&disabled, header);
-	SolidBrush tbr(theme->GetTextColor());
+	SolidBrush tbr(theme->GetColor(Theme::ColorText));
 	StringFormat sf;
 	sf.SetAlignment(StringAlignmentNear);
 	g.DrawString(_question.c_str(), (int)_question.length(), theme->GetGUIFont(), PointF(3.0f, 4.0f), &sf, &tbr);
 
-	theme->DrawToolbarBackground(g, buttons);
+	// Footer shadow
+	SolidBrush backBr(theme->GetColor(Theme::ColorBackground));
+	g.FillRectangle(&backBr, buttons);
+	theme->DrawInsetRectangle(g, buttons);
 }
 
 void DialogWnd::OnSize(const Area& ns) {

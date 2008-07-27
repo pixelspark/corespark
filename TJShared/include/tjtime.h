@@ -143,6 +143,21 @@ namespace tj {
 
 				std::wstring Format() const;
 
+				inline static const Time& Earliest(const Time& a, const Time& b) {
+					if(a==Time(-1)) {
+						return b;
+					}
+					else if(b==Time(-1)) {
+						return a;
+					}
+					else if(a<b) {
+						return a;
+					}
+					else {
+						return b;
+					}
+				}
+
 			protected:
 				int _time;
 		};

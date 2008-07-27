@@ -30,11 +30,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrev, LPSTR cmd, int nShow) {
 		dumpFile = dumpFile.substr(1,dumpFile.length()-2);
 	}
 	else {
-		MessageBox(0L, TL(crash_argument_error), TL(crash_title), MB_ICONERROR|MB_OK);
+		Alert::Show(TL(crash_title), TL(crash_argument_error), Alert::TypeError);
 		return 0;
 	}
 
-	bool send = MessageBox(0L, TL(crash_question), TL(crash_title), MB_ICONERROR|MB_YESNO)==IDYES;
+	bool send = Alert::ShowYesNo(TL(crash_question), TL(crash_argument_error), Alert::TypeError);
 	std::wostringstream message;
 
 	if(send) {
@@ -54,7 +54,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrev, LPSTR cmd, int nShow) {
 		}
 
 		std::wstring msg = message.str();
-		MessageBox(0L, msg.c_str(), TL(crash_title), MB_OK);
+		Alert::Show(TL(crash_title), msg, Alert::TypeInfprmation);
 	}
 	
 	return 0;

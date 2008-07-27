@@ -1,4 +1,4 @@
-#include "../../include/tjshared.h"
+#include "../../include/ui/tjui.h" 
 #include <iomanip>
 #include <windowsx.h>
 using namespace tj::shared::graphics;
@@ -8,6 +8,8 @@ using namespace tj::shared;
 ToolbarWnd::ToolbarWnd(): ChildWnd(L""), _tipIcon(Icons::GetIconPath(Icons::IconTip)), _in(false), _bk(false) {
 	UnsetStyle(WS_TABSTOP);
 	SetWantMouseLeave(true);
+	_entryAnimation.SetLength(Time(250));
+	_entryAnimation.SetEase(Animation::EaseQuadratic);
 }
 
 ToolbarWnd::~ToolbarWnd() {
@@ -135,11 +137,23 @@ Pixels ToolbarWnd::GetButtonX(int command) {
 	return 0;
 }
 
+void ToolbarWnd::OnTimer(unsigned int id) {
+	if(!_entryAnimation.IsAnimating()) {
+		StopTimer(id);
+	}
+	Repaint();
+}
+
 void ToolbarWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 	ref<Theme> theme = ThemeManager::GetTheme();
 	Pixels bs = theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
 
 	if(ev==MouseEventMove||ev==MouseEventLDown) {
+		if(!_in) {
+			StartTimer(Time(50), 1);
+			_entryAnimation.SetReversed(false);
+			_entryAnimation.Start();
+		}
 		_in = true;
 
 		if(!IsKeyDown(KeyMouseLeft)||ev==MouseEventLDown) {
@@ -153,8 +167,10 @@ void ToolbarWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 		Repaint();
 	}
 	else if(ev==MouseEventLeave) {
+		_entryAnimation.SetReversed(true);
+		_entryAnimation.Start();
+		StartTimer(Time(50),1);
 		_in = false;
-		_over = 0;
 		Repaint();
 	}
 	else if(ev==MouseEventLUp) {
@@ -189,26 +205,26 @@ void ToolbarWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	Pixels buttonSize = theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
 	
 	if(_bk) {
-		LinearGradientBrush lbl(PointF(0.0f, 0.0f), PointF(float(rc.GetWidth()/2)+2.0f,0.0f), theme->GetBackgroundColor(), _bkColor);
+		LinearGradientBrush lbl(PointF(0.0f, 0.0f), PointF(float(rc.GetWidth()/2)+2.0f,0.0f), theme->GetColor(Theme::ColorBackground), _bkColor);
 		g.FillRectangle(&lbl, RectF(float(rc.GetLeft()), float(rc.GetTop()), float(rc.GetWidth()/2.0f)+2.0f, float(rc.GetHeight())));
 
-		LinearGradientBrush lbr(PointF(float(rc.GetWidth()/2)-1.0f, 0.0f), PointF(float(rc.GetWidth())+1.0f, 0.0f), _bkColor, theme->GetBackgroundColor());
+		LinearGradientBrush lbr(PointF(float(rc.GetWidth()/2)-1.0f, 0.0f), PointF(float(rc.GetWidth())+1.0f, 0.0f), _bkColor, theme->GetColor(Theme::ColorBackground));
 		g.FillRectangle(&lbr, RectF(float(rc.GetLeft()+rc.GetWidth()/2.0f)+1.0f, float(rc.GetTop()), float(rc.GetWidth()/2.0f), float(rc.GetHeight())));
 	}
 	else {
-		SolidBrush zwart(theme->GetBackgroundColor());
+		SolidBrush zwart(theme->GetColor(Theme::ColorBackground));
 		g.FillRectangle(&zwart, rc);
 
-		LinearGradientBrush br(PointF(0.0f, 0.0f), PointF(0.0f, float(rc.GetHeight())), theme->GetToolbarColorStart(), theme->GetToolbarColorEnd());
-		SolidBrush dbr(theme->GetDisabledOverlayColor());
+		LinearGradientBrush br(PointF(0.0f, 0.0f), PointF(0.0f, float(rc.GetHeight())), theme->GetColor(Theme::ColorToolbarStart), theme->GetColor(Theme::ColorToolbarEnd));
+		SolidBrush dbr(theme->GetColor(Theme::ColorDisabledOverlay));
 		g.FillRectangle(&br, rc);
 		g.FillRectangle(&dbr, rc);
 	}
 
-	LinearGradientBrush glas(PointF(0.0f,0.0f), PointF(0.0f,float(rc.GetHeight())/2.0f), theme->GetGlassColorStart(), theme->GetGlassColorEnd());
+	LinearGradientBrush glas(PointF(0.0f,0.0f), PointF(0.0f,float(rc.GetHeight())/2.0f), theme->GetColor(Theme::ColorGlassStart), theme->GetColor(Theme::ColorGlassEnd));
 	g.FillRectangle(&glas, RectF(0.0f, 0.0f, float(rc.GetWidth()), float(rc.GetHeight())/2.0f));
 
-	Pen pn(theme->GetActiveEndColor(), 1.0f);
+	Pen pn(theme->GetColor(Theme::ColorActiveEnd), 1.0f);
 	g.DrawLine(&pn, PointF(0.0f, float(rc.GetHeight()-1.0f)), PointF(float(rc.GetWidth()), float(rc.GetHeight()-1.0f)));
 
 	// Draw toolbar buttons (left)
@@ -218,9 +234,8 @@ void ToolbarWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	while(it!=end) {
 		ref<ToolbarItem> item = *it;
 		if(item && item->IsShown()) {
-
 			bool over = _in && (_over==item);
-			item->Paint(g, theme, over, IsKeyDown(KeyMouseLeft));
+			item->Paint(g, theme, over, IsKeyDown(KeyMouseLeft), _entryAnimation.GetFraction());
 		}
 		++it;
 	}
@@ -232,8 +247,8 @@ void ToolbarWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	while(rit!=rend) {
 		ref<ToolbarItem> item = *rit;
 		if(item && item->IsShown()) {
-			bool over = _in && (_over==item);
-			item->Paint(g, theme, over, IsKeyDown(KeyMouseLeft));
+			bool over = (_in || _entryAnimation.IsAnimating()) && (_over==item);
+			item->Paint(g, theme, over, IsKeyDown(KeyMouseLeft), _entryAnimation.GetFraction());
 		}
 		++rit;
 	}
@@ -250,7 +265,7 @@ void ToolbarWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	if(CanShowHints() && _over) {
 		Pixels lx = int(_items.size())*buttonSize;
 		std::wstring text = _over->GetText();
-		SolidBrush br(theme->GetActiveEndColor());
+		SolidBrush br(Theme::ChangeAlpha(theme->GetColor(Theme::ColorActiveEnd), _entryAnimation.GetFraction()));
 		StringFormat sf;
 		sf.SetAlignment(StringAlignmentNear);
 		sf.SetLineAlignment(StringAlignmentCenter);
@@ -266,25 +281,25 @@ void ToolbarItem::DrawToolbarButton(graphics::Graphics& g, const Area& rc, ref<T
 		Area wrapped = rc;
 		wrapped.Narrow(1,1,2,2);
 		if(down) {
-			LinearGradientBrush active(PointF(0.0f, 0.0f), PointF(0.0f, float(rc.GetHeight())), theme->GetHighlightColorStart(), theme->GetHighlightColorEnd());
+			LinearGradientBrush active(PointF(0.0f, 0.0f), PointF(0.0f, float(rc.GetHeight())), theme->GetColor(Theme::ColorHighlightStart), theme->GetColor(Theme::ColorHighlightEnd));
 			g.FillRectangle(&active, wrapped);
 		}
 		else {
-			LinearGradientBrush active(PointF(0.0f, 0.0f), PointF(0.0f, float(rc.GetHeight())), theme->GetActiveStartColor(), theme->GetActiveEndColor());
+			LinearGradientBrush active(PointF(0.0f, 0.0f), PointF(0.0f, float(rc.GetHeight())), theme->GetColor(Theme::ColorActiveStart), theme->GetColor(Theme::ColorActiveEnd));
 			g.FillRectangle(&active, wrapped);
 		}
 
-		LinearGradientBrush glas(PointF(0.0f,0.0f), PointF(0.0f,float(rc.GetHeight())/2.0f), theme->GetGlassColorStart(), theme->GetGlassColorEnd());
+		LinearGradientBrush glas(PointF(0.0f,0.0f), PointF(0.0f,float(rc.GetHeight())/2.0f), theme->GetColor(Theme::ColorGlassStart), theme->GetColor(Theme::ColorGlassEnd));
 		g.FillRectangle(&glas, wrapped);
 	}
 
 	if(separator) {
-		Pen pn(theme->GetActiveStartColor());
+		Pen pn(theme->GetColor(Theme::ColorActiveStart));
 		g.DrawLine(&pn, PointF((float)rc.GetRight(), 4.0f), PointF((float)rc.GetRight(), float(rc.GetHeight())-4.0f));
 	}
 }
 
-void ToolbarItem::DrawToolbarButton(Graphics& g, Icon& icon, const Area& rc, ref<Theme> theme, bool over, bool down, bool separator, bool enabled) {
+void ToolbarItem::DrawToolbarButton(Graphics& g, Icon& icon, const Area& rc, ref<Theme> theme, bool over, bool down, bool separator, bool enabled, float alpha) {
 	Pixels buttonSize = theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
 	Pixels x = rc.GetX();
 
@@ -292,23 +307,25 @@ void ToolbarItem::DrawToolbarButton(Graphics& g, Icon& icon, const Area& rc, ref
 		Area wrapped = rc;
 		wrapped.Narrow(1,1,2,2);
 		if(down) {
-			LinearGradientBrush active(PointF(0.0f, 0.0f), PointF(0.0f, float(rc.GetHeight())), theme->GetHighlightColorStart(), theme->GetHighlightColorEnd());
+			LinearGradientBrush active(PointF(0.0f, 0.0f), PointF(0.0f, float(rc.GetHeight())), theme->GetColor(Theme::ColorHighlightStart), theme->GetColor(Theme::ColorHighlightEnd));
 			g.FillRectangle(&active, wrapped);
 		}
 		else {
-			LinearGradientBrush active(PointF(0.0f, 0.0f), PointF(0.0f, float(rc.GetHeight())), theme->GetActiveStartColor(), theme->GetActiveEndColor());
+			LinearGradientBrush active(PointF(0.0f, 0.0f), PointF(0.0f, float(rc.GetHeight())), Theme::ChangeAlpha(theme->GetColor(Theme::ColorActiveStart),int(alpha*255.0f)), Theme::ChangeAlpha(theme->GetColor(Theme::ColorActiveEnd), int(alpha*255.0f)));
 			g.FillRectangle(&active, wrapped);
 		}
 
-		LinearGradientBrush glas(PointF(0.0f,0.0f), PointF(0.0f,float(rc.GetHeight())/2.0f), theme->GetGlassColorStart(), theme->GetGlassColorEnd());
+		theme->DrawHighlightEllipse(g, rc, down ? 1.0f : 0.5f);
+
+		LinearGradientBrush glas(PointF(0.0f,0.0f), PointF(0.0f,float(rc.GetHeight())/2.0f), theme->GetColor(Theme::ColorGlassStart), theme->GetColor(Theme::ColorGlassEnd));
 		g.FillRectangle(&glas, wrapped);
 	}
 
 	//g.DrawImage(icon, RectF(fx+4.0f, 4.0f, 16.0f, 16.0f));
-	icon.Paint(g, Area(x+4, 4, 16, 16), enabled);
+	icon.Paint(g, Area(x+3, 4, 16, 16), enabled);
 
 	if(separator) {
-		Pen pn(theme->GetActiveStartColor());
+		Pen pn(theme->GetColor(Theme::ColorActiveStart));
 		g.DrawLine(&pn, PointF((float)rc.GetRight(), 4.0f), PointF((float)rc.GetRight(), float(rc.GetHeight())-4.0f));
 	}
 }
@@ -378,12 +395,12 @@ void ToolbarItem::Paint(Gdiplus::Graphics &g, tj::shared::ref<Theme> theme) {
 	Paint(g,theme,false, false);
 }
 
-void ToolbarItem::Paint(Gdiplus::Graphics &g, tj::shared::ref<Theme> theme, bool over, bool down) {
+void ToolbarItem::Paint(Gdiplus::Graphics &g, tj::shared::ref<Theme> theme, bool over, bool down, float alpha) {
 	Area rc = GetClientArea();
 	bool active = IsActive();
 	bool enabled = IsEnabled();
 
-	DrawToolbarButton(g, _icon, rc, theme, enabled && over, enabled && down, _separator, active);
+	DrawToolbarButton(g, _icon, rc, theme, enabled && over, enabled && down, _separator, active, alpha);
 }
 
 Area ToolbarItem::GetPreferredSize() const {
@@ -490,7 +507,7 @@ void SearchToolbarWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	if(IsSearchBoxVisible()) {
 		search.Widen(1,1,1,1);
 
-		SolidBrush border(theme->GetActiveStartColor());
+		SolidBrush border(theme->GetColor(Theme::ColorActiveStart));
 		Pen borderPen(&border,1.0f);
 		g.DrawRectangle(&borderPen, search);
 

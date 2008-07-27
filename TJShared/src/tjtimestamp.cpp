@@ -1,4 +1,4 @@
-#include "../include/tjshared.h"
+#include "../include/tjcore.h"
 using namespace tj::shared;
 
 Timestamp::Timestamp(const Timestamp& t) {

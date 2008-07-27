@@ -1,10 +1,21 @@
-#include "../include/tjshared.h"
+#include "../include/tjcore.h"
 #include <math.h>
 #include <iomanip>
 using namespace tj::shared;
 
+const wchar_t* Bool::KTrue = L"yes";
+const wchar_t* Bool::KFalse = L"no";
+
 float Util::RandomFloat() { 
-	return rand()/(float)RAND_MAX;
+	#ifdef _CRT_RAND_S
+		unsigned int pr = 0;
+		if(rand_s(&pr)!=0) {
+			Throw(L"Rand_s failed", ExceptionTypeError);
+		}
+		return float(pr)/float(UINT_MAX);
+	#else
+		return rand()/(float)RAND_MAX;
+	#endif
 }
 
 /* rand() returns a number between 0 and RAND_MAX, which is guaranteed to be at least
@@ -16,7 +27,15 @@ The rand()&0x7FFF make sure that this also works correctly on systems with a RAN
 0x7FFF (we just cut the remaining bits off)
 */
 int Util::RandomInt() {
-	return (rand() & 0x7FFF) | ((rand() & 0x7FFF) << 15);
+	#ifdef _CRT_RAND_S
+		unsigned int pr = 0;
+		if(rand_s(&pr)!=0) {
+			Throw(L"Rand_s failed", ExceptionTypeError);
+		}
+		return (int)(pr >> 1);
+	#else
+		return (rand() & 0x7FFF) | ((rand() & 0x7FFF) << 15);
+	#endif
 }
 
 char* Util::CopyString(const char* str) {
@@ -67,15 +86,15 @@ std::wstring& Util::StringToLower(std::wstring& r) {
 
 namespace tj {
 	namespace shared {
-		template<> bool StringTo(std::wstring s, const bool& def) {
+		template<> bool StringTo(const std::wstring& s, const bool& def) {
 			std::wstring ln = s;
 			std::transform(ln.begin(), ln.end(), ln.begin(), tolower);
-			return def?(ln!=std::wstring(Language::Get(L"no"))):(ln==std::wstring(Language::Get(L"yes")));
+			return def ? (ln!=Bool::KFalse) : (ln==Bool::KTrue);
 		}
 
 		template<> std::wstring Stringify(const bool& x) {
 			std::wostringstream o;
-			o << x?Language::Get(L"yes"):Language::Get(L"no");
+			o << x ? Bool::KTrue : Bool::KFalse;
 			return o.str();
 		}
 
@@ -161,3 +180,50 @@ namespace tj {
 		}
 	}
 }
+
+// Clipboard (Windows implementation)
+#ifdef _WIN32
+	void Clipboard::SetClipboardText(const std::wstring& text) {
+		ZoneEntry ze(Zones::ClipboardZone);
+		EmptyClipboard();
+
+		HGLOBAL mem = GlobalAlloc(GMEM_MOVEABLE, sizeof(wchar_t)*(text.length()+1));
+		if(mem) {
+			wchar_t* textBuf = (wchar_t*)GlobalLock(mem);
+			if(textBuf!=0) {
+				memcpy(textBuf, text.c_str(), sizeof(wchar_t)*(text.length()+1));
+				GlobalUnlock(mem);
+			}
+
+			SetClipboardData(CF_UNICODETEXT, mem);
+			CloseClipboard();
+
+			// We must not free the object until CloseClipboard is called.
+			if(mem!=0) {
+				GlobalFree(mem);
+			}
+		}
+	}
+
+	bool Clipboard::GetClipboardText(std::wstring& text) {
+		ZoneEntry ze(Zones::ClipboardZone);
+
+		if(OpenClipboard(NULL)) {
+			HANDLE handle = GetClipboardData(CF_UNICODETEXT);
+			if(handle!=0) {
+				wchar_t* textPointer = (wchar_t*)GlobalLock(handle);
+				if(textPointer!=0) {
+					text = std::wstring(textPointer);
+					GlobalUnlock(handle);
+				}
+				else {
+					CloseClipboard();
+					return false;
+				}
+			}
+			CloseClipboard();
+			return true;
+		}
+		return false;
+	}
+#endif

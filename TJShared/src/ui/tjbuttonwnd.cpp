@@ -1,4 +1,4 @@
-#include "../../include/tjshared.h"
+#include "../../include/ui/tjui.h" 
 using namespace tj::shared::graphics;
 using namespace tj::shared;
 
@@ -76,20 +76,20 @@ void ButtonWnd::Paint(Graphics& g, ref<Theme> theme) {
 	static const Pixels KImgWidth = 16;
 
 	// Fill background
-	LinearGradientBrush backGradient(PointF(0.0f, 0.0f), PointF(0.0f, (float)rc.GetHeight()), theme->GetActiveStartColor(), theme->GetActiveEndColor());
-	LinearGradientBrush shadowGradient(PointF(0.0f, (float)rc.GetHeight()/2), PointF(0.0f, 0.0f), Color(0,0,0,0), Color(50,0,0,0));
+	LinearGradientBrush backGradient(PointF(0.0f, 0.0f), PointF(0.0f, (float)rc.GetHeight()), theme->GetColor(Theme::ColorActiveStart), theme->GetColor(Theme::ColorActiveEnd));
+	LinearGradientBrush shadowGradient(PointF(0.0f, (float)rc.GetHeight()-1), PointF(0.0f, 0.0f), Color(0,0,0,0), Color(50,0,0,0));
 	LinearGradientBrush highlightGradient(PointF(0.0f, (float)rc.GetHeight()/2), PointF(0.0f, 0.0f), Color(0,255,255,255), Color(50,255,255,255));
-	SolidBrush disabledBrush(theme->GetDisabledOverlayColor());
+	SolidBrush disabledBrush(theme->GetColor(Theme::ColorDisabledOverlay));
 
 	g.FillRectangle(&backGradient, rc);
 	Area shadowRC = rc;
 	shadowRC.Narrow(0,0,0,rc.GetHeight()/2);
+	g.FillRectangle(&disabledBrush, rc);
 
 	if(_down) {
-		g.FillRectangle(&shadowGradient, shadowRC);
+		g.FillRectangle(&shadowGradient, rc);
 	}
 	else {
-		g.FillRectangle(&disabledBrush, rc);
 		g.FillRectangle(&highlightGradient, shadowRC);
 	}
 	
@@ -97,24 +97,34 @@ void ButtonWnd::Paint(Graphics& g, ref<Theme> theme) {
 	Pixels margin = (rc.GetHeight()-KImgHeight)/2;
 	
 	if(_image!=0) {
-		g.DrawImage(_image, Area(rc.GetLeft()+margin, rc.GetTop()+margin, KImgWidth, KImgHeight));
+		Area iconArea(rc.GetLeft()+margin, rc.GetTop()+margin, KImgWidth, KImgHeight);
+		theme->DrawHighlightEllipse(g, iconArea);
+		g.DrawImage(_image, iconArea);
 	}
 	
 	// Draw border
-	SolidBrush border(theme->GetActiveEndColor());
+	SolidBrush border(theme->GetColor(Theme::ColorActiveEnd));
 	rc.Narrow(0,0,1,1);
 	Pen borderPen(&border,1.0f);
 	g.DrawRectangle(&borderPen, rc);
 
+	// Draw second border
+	SolidBrush secondBorder(theme->GetColor(Theme::ColorTimeBackground));
+	rc.Narrow(0,0,1,1);
+	Pen secondBorderPen(&secondBorder, 1.0f);
+	g.DrawRectangle(&secondBorderPen, rc);
+
 	// Draw text
 	Font* fnt = theme->GetGUIFontBold();
-	SolidBrush textBrush(theme->GetTextColor());
+	SolidBrush textBrush(theme->GetColor(Theme::ColorText));
+	SolidBrush shadowBrush(theme->GetColor(Theme::ColorBackground));
 	StringFormat sf;
 	sf.SetLineAlignment(StringAlignmentNear);
 	sf.SetLineAlignment(StringAlignmentCenter);
 	sf.SetTrimming(StringTrimmingEllipsisPath);
 	sf.SetFormatFlags(StringFormatFlagsLineLimit);
 
+	g.DrawString(_text.c_str(), (unsigned int)_text.length(), fnt,RectF(float(rc.GetLeft()+margin+KImgWidth+margin)+1.0f, (float)rc.GetTop()+1.0f, (float)rc.GetRight(), (float)rc.GetBottom()), &sf, &shadowBrush);
 	g.DrawString(_text.c_str(), (unsigned int)_text.length(), fnt,RectF(float(rc.GetLeft()+margin+KImgWidth+margin), (float)rc.GetTop(), (float)rc.GetRight(), (float)rc.GetBottom()), &sf, &textBrush);
 
 	if(_disabled) {
@@ -171,7 +181,7 @@ StateButtonWnd::~StateButtonWnd() {
 void StateButtonWnd::Paint(Graphics& g, ref<Theme> theme) {
 	Area rc = GetClientArea();
 
-	SolidBrush backBr(IsMouseOver()?theme->GetActiveEndColor():theme->GetTimeBackgroundColor());
+	SolidBrush backBr(IsMouseOver()?theme->GetColor(Theme::ColorActiveEnd):theme->GetColor(Theme::ColorTimeBackground));
 	g.FillRectangle(&backBr, rc);
 	
 	// Choose and draw icon

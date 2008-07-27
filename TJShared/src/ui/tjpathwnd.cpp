@@ -1,4 +1,4 @@
-#include "../../include/tjshared.h"
+#include "../../include/ui/tjui.h" 
 #include <windowsx.h>
 using namespace tj::shared;
 using namespace tj::shared::graphics;
@@ -127,24 +127,24 @@ ref<Crumb> PathWnd::GetCrumbAt(int x, int* left) {
 void PathWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	Area rc = GetClientArea();
 	
-	SolidBrush zwart(theme->GetBackgroundColor());
+	SolidBrush zwart(theme->GetColor(Theme::ColorBackground));
 	g.FillRectangle(&zwart, rc);
 
-	LinearGradientBrush br(PointF(0.0f, 0.0f), PointF(0.0f, float(rc.GetHeight())), theme->GetToolbarColorStart(), theme->GetToolbarColorEnd());
-	SolidBrush dbr(theme->GetDisabledOverlayColor());
+	LinearGradientBrush br(PointF(0.0f, 0.0f), PointF(0.0f, float(rc.GetHeight())), theme->GetColor(Theme::ColorToolbarStart), theme->GetColor(Theme::ColorToolbarEnd));
+	SolidBrush dbr(theme->GetColor(Theme::ColorDisabledOverlay));
 	g.FillRectangle(&br, rc);
 	g.FillRectangle(&dbr, rc);
 
-	LinearGradientBrush glas(PointF(0.0f,0.0f), PointF(0.0f,float(rc.GetHeight())/2.0f), theme->GetGlassColorStart(), theme->GetGlassColorEnd());
+	LinearGradientBrush glas(PointF(0.0f,0.0f), PointF(0.0f,float(rc.GetHeight())/2.0f), theme->GetColor(Theme::ColorGlassStart), theme->GetColor(Theme::ColorGlassEnd));
 	g.FillRectangle(&glas, RectF(0.0f, 0.0f, float(rc.GetWidth()), float(rc.GetHeight())/2.0f));
 
-	Pen pn(theme->GetActiveEndColor(), 1.0f);
+	Pen pn(theme->GetColor(Theme::ColorActiveEnd), 1.0f);
 	g.DrawLine(&pn, PointF(0.0f, float(rc.GetHeight()-1.0f)), PointF(float(rc.GetWidth()), float(rc.GetHeight()-1.0f)));
 	
 	// knopjes!
 	if(_path) {
-		SolidBrush tbr(theme->GetActiveEndColor());
-		SolidBrush atbr(theme->GetTextColor());
+		SolidBrush tbr(theme->GetColor(Theme::ColorActiveEnd));
+		SolidBrush atbr(theme->GetColor(Theme::ColorText));
 
 		std::vector< ref<Crumb> >::iterator it = _path->_crumbs.begin();
 		int rx = 1;
@@ -165,11 +165,11 @@ void PathWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 
 			// active item draws differently
 			if(it+1 == _path->_crumbs.end()) {
-				LinearGradientBrush lbr(PointF(0.0f, 0.0f), PointF(0.0f, float(rc.GetHeight())), theme->GetActiveStartColor(), theme->GetActiveEndColor());
+				LinearGradientBrush lbr(PointF(0.0f, 0.0f), PointF(0.0f, float(rc.GetHeight())), theme->GetColor(Theme::ColorActiveStart), theme->GetColor(Theme::ColorActiveEnd));
 				g.FillRectangle(&lbr,RectF(float(rx), 1.0f, float(textrc.Width+KMarginLeft+KMarginRight+KIconWidth), float(rc.GetHeight()-3)));
 				
 				if(_over!=crumb) {
-					SolidBrush dbr(theme->GetDisabledOverlayColor());
+					SolidBrush dbr(theme->GetColor(Theme::ColorDisabledOverlay));
 					g.FillRectangle(&dbr,RectF(float(rx), 1.0f, float(textrc.Width+KMarginLeft+KMarginRight+KIconWidth), float(rc.GetHeight()-3)));
 				}
 				
@@ -177,7 +177,7 @@ void PathWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 			}
 			else { 
 				if(_over==crumb) {
-					LinearGradientBrush lbr(PointF(0.0f, 0.0f), PointF(0.0f, float(rc.GetHeight())), theme->GetActiveStartColor(), theme->GetActiveEndColor());
+					LinearGradientBrush lbr(PointF(0.0f, 0.0f), PointF(0.0f, float(rc.GetHeight())), theme->GetColor(Theme::ColorActiveStart), theme->GetColor(Theme::ColorActiveEnd));
 					g.FillRectangle(&lbr,RectF(float(rx), 1.0f, float(textrc.Width+KMarginLeft+KMarginRight+KIconWidth), float(rc.GetHeight()-3)));
 					g.DrawString(text.c_str(), int(text.length()), theme->GetGUIFont(), rtext, &sf, &atbr);
 				}

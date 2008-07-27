@@ -19,7 +19,7 @@ namespace tj {
 				virtual void EndModal(bool result);
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 
-				static const Pixels KHeaderHeight = 24;
+				static const Pixels KHeaderHeight = 30;
 				
 			private:
 				ModalLoop _loop;

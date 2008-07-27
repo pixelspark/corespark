@@ -1,4 +1,4 @@
-#include "../../include/tjshared.h"
+#include "../../include/ui/tjui.h" 
 using namespace tj::shared;
 using namespace tj::shared::graphics;
 
@@ -46,11 +46,11 @@ int NotificationWnd::GetIndex() {
 void NotificationWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	Area rect = GetClientArea();
 	
-	SolidBrush r(theme->GetBackgroundColor());
+	SolidBrush r(theme->GetColor(Theme::ColorBackground));
 	rect.Narrow(0,0,1,1);
 	g.FillRectangle(&r, rect);
 
-	LinearGradientBrush lbr(PointF(0.0f, 0.0f), PointF(0.0f, float(rect.GetHeight())), theme->GetActiveStartColor(), theme->GetActiveEndColor());
+	LinearGradientBrush lbr(PointF(0.0f, 0.0f), PointF(0.0f, float(rect.GetHeight())), theme->GetColor(Theme::ColorActiveStart), theme->GetColor(Theme::ColorActiveEnd));
 	Pen lbp(&lbr, 1.0f);
 	g.DrawRectangle(&lbp, rect);
 
@@ -59,7 +59,7 @@ void NotificationWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	StringFormat sf;
 	sf.SetLineAlignment(StringAlignmentCenter);
 	
-	SolidBrush textBrush(theme->GetTextColor());
+	SolidBrush textBrush(theme->GetColor(Theme::ColorText));
 	g.DrawString(_text.c_str(), (unsigned int)_text.length(), theme->GetGUIFontBold(), stringRect, &sf, &textBrush);
 
 	g.DrawImage(_icon, RectF(4.0f, 4.0f, 22.0f, 22.0f));

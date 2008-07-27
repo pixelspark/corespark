@@ -1,4 +1,4 @@
-#include "../include/tjshared.h"
+#include "../include/tjcore.h"
 using namespace tj::shared;
 
 Action::Action(const std::wstring& name, UndoSupport sup): _name(name), _sup(sup) {

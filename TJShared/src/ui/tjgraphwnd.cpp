@@ -1,4 +1,4 @@
-#include "../../include/tjshared.h"
+#include "../../include/ui/tjui.h" 
 using namespace tj::shared;
 using namespace tj::shared::graphics;
 
@@ -211,10 +211,10 @@ std::pair<Pixels,Pixels> GraphWnd::GetEdge(const Area& from, const Area& to) {
 void GraphWnd::Paint(Graphics& g, ref<Theme> theme) {
 	Area rc = GetClientArea();
 
-	SolidBrush backBrush(theme->GetBackgroundColor());
+	SolidBrush backBrush(theme->GetColor(Theme::ColorBackground));
 	g.FillRectangle(&backBrush, rc);
 	g.SetSmoothingMode(SmoothingModeHighQuality);
-	SolidBrush textBrush(theme->GetTextColor());
+	SolidBrush textBrush(theme->GetColor(Theme::ColorText));
 
 	std::vector< ref<GraphItem> >::iterator it = _items.begin();
 	while(it!=_items.end()) {
@@ -226,10 +226,10 @@ void GraphWnd::Paint(Graphics& g, ref<Theme> theme) {
 			}
 
 			// Draw arrows
-			Pen arrowOut(theme->GetLineColor(), 2.0f);
-			Pen arrowIn(theme->GetLineColor(), 2.0f);
-			Pen normal(theme->GetLineColor(), 1.0f);
-			Pen outLight(theme->GetLineColor(), 1.0f);
+			Pen arrowOut(theme->GetColor(Theme::ColorLine), 2.0f);
+			Pen arrowIn(theme->GetColor(Theme::ColorLine), 2.0f);
+			Pen normal(theme->GetColor(Theme::ColorLine), 1.0f);
+			Pen outLight(theme->GetColor(Theme::ColorLine), 1.0f);
 			AdjustableArrowCap aac(5.0f, 5.0f);
 			arrowOut.SetCustomEndCap(&aac);
 			arrowIn.SetCustomStartCap(&aac);
@@ -400,7 +400,7 @@ void SimpleGraphItem::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	g.FillRectangle(&brush, _area);
 	g.DrawRectangle(&border, _area);
 	
-	SolidBrush textBrush(theme->GetTextColor());
+	SolidBrush textBrush(theme->GetColor(Theme::ColorText));
 	StringFormat sf;
 	sf.SetAlignment(StringAlignmentCenter);
 	sf.SetLineAlignment(StringAlignmentCenter);

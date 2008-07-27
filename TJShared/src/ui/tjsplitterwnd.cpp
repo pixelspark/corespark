@@ -1,4 +1,4 @@
-#include "../../include/tjshared.h"
+#include "../../include/ui/tjui.h" 
 #include <math.h>
 #include <windowsx.h>
 using namespace tj::shared::graphics;
@@ -227,15 +227,15 @@ void SplitterWnd::Paint(Graphics& g, ref<Theme> theme) {
 			start = PointF(0.0f, float(bar.GetBottom()));
 		}
 
-		LinearGradientBrush lbr(start, end, theme->GetProgressBackStart(), theme->GetProgressBackEnd());
-		SolidBrush back(theme->GetBackgroundColor());
-		SolidBrush disabled(theme->GetDisabledOverlayColor());
+		LinearGradientBrush lbr(start, end, theme->GetColor(Theme::ColorProgressBackgroundStart), theme->GetColor(Theme::ColorProgressBackgroundEnd));
+		SolidBrush back(theme->GetColor(Theme::ColorBackground));
+		SolidBrush disabled(theme->GetColor(Theme::ColorDisabledOverlay));
 		g.FillRectangle(&back, bar);
 		g.FillRectangle(&lbr,bar);
 		//g.FillRectangle(&disabled,bar);
 
 		// Draw a border
-		Pen borderPen(theme->GetActiveEndColor(), 1.0f);
+		Pen borderPen(theme->GetColor(Theme::ColorActiveEnd), 1.0f);
 		if(_orientation==OrientationVertical) {
 			// to the left of the bar
 			g.DrawLine(&borderPen, float(bar.GetLeft()), float(bar.GetTop()), float(bar.GetLeft()), float(bar.GetBottom()));
@@ -257,7 +257,7 @@ void SplitterWnd::Paint(Graphics& g, ref<Theme> theme) {
 			icon = _a->GetTabIcon();
 		}
 
-		SolidBrush tbr(theme->GetActiveStartColor());
+		SolidBrush tbr(theme->GetColor(Theme::ColorActiveStart));
 		StringFormat sf;
 		sf.SetAlignment(StringAlignmentNear);
 

@@ -30,13 +30,13 @@ namespace tj {
 						virtual void Paint(graphics::Graphics& g, ref<Theme> theme) {
 							// Draw background
 							Area rc = GetClientArea();
-							graphics::SolidBrush back(theme->GetBackgroundColor());
+							graphics::SolidBrush back(theme->GetColor(Theme::ColorBackground));
 							g.FillRectangle(&back, rc);
 							if(IsMouseOver()) {
 								theme->DrawToolbarBackground(g, 0.0f, 0.0f, float(rc.GetWidth()), float(rc.GetHeight()));
 							}
 
-							graphics::SolidBrush borderBrush(theme->GetActiveStartColor());
+							graphics::SolidBrush borderBrush(theme->GetColor(Theme::ColorActiveStart));
 							Area borderArea = rc;
 							borderArea.Narrow(0,0,1,1);
 							graphics::Pen borderPen(&borderBrush, 1.0f);
@@ -44,12 +44,12 @@ namespace tj {
 							
 							Area buttonArea(rc.GetRight()-16, rc.GetTop(), 16,rc.GetHeight());
 
-							graphics::LinearGradientBrush buttonBr(graphics::PointF(0.0f, float(rc.GetTop()-1)), graphics::PointF(0.0f, float(rc.GetBottom()+1)), theme->GetActiveStartColor(), theme->GetActiveEndColor());
+							graphics::LinearGradientBrush buttonBr(graphics::PointF(0.0f, float(rc.GetTop()-1)), graphics::PointF(0.0f, float(rc.GetBottom()+1)), theme->GetColor(Theme::ColorActiveStart), theme->GetColor(Theme::ColorActiveEnd));
 							g.FillRectangle(&buttonBr, buttonArea);
 
 							if(!IsMouseOver()) {
 								buttonArea.Narrow(1,1,1,1);
-								graphics::SolidBrush disabledBr(theme->GetDisabledOverlayColor());
+								graphics::SolidBrush disabledBr(theme->GetColor(Theme::ColorDisabledOverlay));
 								g.FillRectangle(&disabledBr, buttonArea);
 							}
 
@@ -58,7 +58,7 @@ namespace tj {
 							g.DrawImage(_arrowIcon, iconArea);
 
 							// Text parameters
-							graphics::SolidBrush tbr(theme->GetTextColor());
+							graphics::SolidBrush tbr(theme->GetColor(Theme::ColorText));
 							Area text = rc;
 							text.Narrow(2,2,0,0);
 							graphics::StringFormat sf;
@@ -163,29 +163,18 @@ namespace tj {
 					_options.push_back(it);
 				}
 			
-				virtual HWND Create(HWND parent) {
+				virtual void Update() {
+					if(_pw) {
+						_pw->Update();
+					}
+				}
+
+				virtual ref<Wnd> GetWindow() {
 					if(!_pw) {
 						_pw = GC::Hold(new PropertyWnd(*this));
 					}
-					::SetParent(_pw->GetWindow(), parent);
-					return _pw->GetWindow();
-				}
 
-				virtual void Changed() {
-					_pw->Update();
-				}
-
-				virtual void Update() {
-					_pw->Update();
-				}
-
-				virtual std::wstring GetValue() {
-					assert(_value!=0);
-					return Stringify(*_value);
-				}
-
-				virtual HWND GetWindow() {
-					return _pw->GetWindow();
+					return _pw;
 				}
 
 			protected:

@@ -1,193 +1,50 @@
-#include "../include/tjshared.h"
+#include "../include/tjcore.h"
 using namespace tj::shared;
+using namespace tj::shared::intern;
 
-ref<Core> Core::_instance;
+volatile long Resource::_resourceCount = 0L;
 
-RunnableApplication::~RunnableApplication() {
-}
-
-void RunnableApplication::AddCommandHistory(ref<Action> action) {
-	if(_undo.size()>=KUndoMemory) {
-		_undo.pop_front();
+/* GC */
+void GC::Log(const char* tp, bool allocate) {
+	if(allocate) {
+		OutputDebugStringA("A ");
 	}
-
-	_undo.push_back(action);
-}
-
-Runnable::~Runnable() {
-}
-
-strong<Core> Core::Instance() {
-	if(!_instance) {
-		_instance = GC::Hold(new Core());
+	else {
+		OutputDebugStringA("D ");
 	}
-
-	return _instance;
+	OutputDebugStringA(tp);
+	OutputDebugStringA("\r\n");
 }
 
-void Core::Quit() {
-	PostQuitMessage(0);
+/* Endpoint */
+Endpoint::EndpointType Endpoint::GetType() const {
+	return EndpointTypeThreaded;
 }
 
-void Core::AddAction(ref<Runnable> rm, bool wait) {
-	{
-		ThreadLock lck(&_actionLock);
-		_actions.push_back(rm);
-	}
-	_actionsProcessedEvent.Reset();
-	_actionEvent.Signal();
-
-	if(wait) {
-		_actionsProcessedEvent.Wait();
-	}
+Endpoint::~Endpoint() {
 }
 
-void Core::Run(RunnableApplication* app, ref<Arguments> args) {
-	_app = app;
-
-    while(true) {
-		DWORD result; 
-		MSG msg; 
-
-		while(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) { 
-			// pending queued actions will not be executed after WM_QUIT
-			if(msg.message==WM_QUIT) { 
-				return;
-			}
-
-			_app->Message(msg);
-		}
-
-		HANDLE handles[1] = { _actionEvent.GetHandle() };
-		result = MsgWaitForMultipleObjects(1, handles, FALSE, 1000, QS_ALLINPUT|QS_ALLPOSTMESSAGE); 
-
-		// The result tells us the type of event we have.
-		if(result==(WAIT_OBJECT_0 + 1)) {
-			// New messages have arrived
-			continue;
-		} 
-		else if(result==WAIT_ABANDONED) {
-			continue;
-		}
-		else { 
-			// process actions
-			ProcessActions();
-			_actionsProcessedEvent.Signal();
-		}
-    }
-
-	_app = 0;
+std::wstring Endpoint::GetName() const {
+	return TL(endpoint_unknown);
 }
 
-void Core::ProcessActions() {
-	std::vector< ref<Runnable> > runnables;
-
-	// Copy all current runnables to a separate list so other actions can be added by the runnables
-	// (without causing a lockup)
-	{
-		ThreadLock lock(&_actionLock);
-		std::vector< ref<Runnable> >::iterator it = _actions.begin();
-		while(it!=_actions.end()) {
-			ref<Runnable> rn = *it;
-			if(rn) {
-				runnables.push_back(rn);
-			}
-			++it;
-		}
-		_actions.clear();
-		_actionEvent.Reset();
-	}
-	
-	std::vector< ref<Runnable> >::iterator it = runnables.begin();
-	while(it!=runnables.end()) {
-		ref<Runnable> runnable = *it;
-		try {
-			runnable->Run();
-		}
-		catch(Exception& e) {
-			if(e.GetType()!=ExceptionTypeMessage) {
-				std::wstring msg = e.ToString();
-				
-				Log::Write(L"TJShow/Core", std::wstring(L"Exception occurred in GUI thread runnable: ")+msg);
-			}
-		}
-		catch(...) {
-			Log::Write(L"TJShared/Core", L"Unknown exception occurred in GUI thread runnable");
-		}
-		++it;
-	}
+/* Resource */
+Resource::Resource(): _referenceCount(0), _weakReferenceCount(0) {
+	InterlockedIncrement(&_resourceCount);
 }
 
-RunnableApplication* Core::GetApplicationPointer() {
-	return _app;
+Resource::~Resource() {
+	InterlockedDecrement(&_resourceCount);
 }
 
-Core::Core() {
-	_app = 0;
-	_init = new GraphicsInit();
+long Resource::GetResourceCount() {
+	return _resourceCount;
 }
 
-Core::~Core() {
-	delete _init;
+/* Object */
+void Object::OnCreated() {
 }
 
-/* ModalLoop */
-ModalLoop::ModalLoop(): _running(false), _result(ResultUnknown) {
-}
-
-ModalLoop::~ModalLoop() {
-}
-
-ModalLoop::Result ModalLoop::Enter(HWND m, bool isDialog) {
-	if(!_running) {
-		_result = ResultUnknown;
-		ReplyMessage(0);
-		MSG msg;
-		_running = true;
-
-		while(GetMessage(&msg,0,0,0) && _running) {
-			TranslateMessage(&msg);
-
-			if(msg.message==WM_KEYDOWN && LOWORD(msg.wParam)==VK_ESCAPE) {
-				// End modal loop
-				End(ResultCancelled);
-			}
-			else if(!isDialog && ((msg.message==WM_KEYUP || msg.message==WM_KEYDOWN) && (msg.wParam==VK_SPACE || msg.wParam==VK_DOWN || msg.wParam==VK_UP))) {
-				// Context menus do not take focus (since they do not activate), hence direct all key messages
-				// it needs to the window from here.
-				msg.hwnd = m;
-				DispatchMessage(&msg);
-			}
-			else if(!isDialog && msg.message==WM_ACTIVATE && msg.wParam==WA_INACTIVE) {
-				if(!IsChild(m,msg.hwnd)) {
-					End(ResultCancelled);
-				}
-				else {
-					DispatchMessage(&msg);
-				}
-			}
-			else if(!isDialog && (msg.message==WM_LBUTTONDOWN || msg.message==WM_RBUTTONDOWN ||msg.message==WM_NCLBUTTONDOWN || msg.message==WM_NCRBUTTONDOWN) && msg.hwnd != m) {
-				if(!IsChild(m,msg.hwnd)) {
-					End(ResultCancelled);
-				}
-				else {
-					DispatchMessage(&msg);
-				}
-			}
-			else {
-				DispatchMessage(&msg);
-			}
-		}
-
-		return _result;
-	}
-
-	return ResultUnknown;
-}
-
-void ModalLoop::End(Result r) {
-	if(_running) {
-		_result = r;
-		_running = false;
-	}
+/* Serializable */
+Serializable::~Serializable() {
 }

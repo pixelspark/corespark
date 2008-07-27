@@ -34,8 +34,9 @@ std::wstring Property::GetName() {
 	return _name;
 }
 
-int Property::GetHeight() {
-	return 17;
+Pixels Property::GetHeight() {
+	ref<Theme> theme = ThemeManager::GetTheme();
+	return theme->GetMeasureInPixels(Theme::MeasurePropertyHeight);
 }
 
 const std::wstring& Property::GetHint() const {
@@ -59,74 +60,6 @@ bool Property::IsExpanded() {
 }
 
 Inspectable::~Inspectable() {
-}
-
-HWND GenericProperty<Time>::Create(HWND parent) {
-	if(GetWindow()!=0) return GetWindow();
-	_wnd = ::CreateWindowEx(WS_EX_CLIENTEDGE, TJ_PROPERTY_EDIT_TIME_CLASS_NAME, Stringify(*_value).c_str(), ES_AUTOHSCROLL|WS_CHILD, 0, 0, 100, 100, parent, (HMENU)0, GetModuleHandle(NULL), 0);
-	if(_wnd==0) {
-		Throw(L"Property window creation failed", ExceptionTypeError);
-	}
-	return GetWindow();
-}
-
-void GenericProperty<Time>::Changed() {
-	int l = GetWindowTextLength(_wnd);
-	wchar_t* cp = new wchar_t[l+2];
-	GetWindowText(_wnd, cp, l+1);
-	std::wstring value(cp);
-	delete[] cp;
-
-	Time timeVal;
-	std::wistringstream wis(value);
-	wis >> timeVal;
-
-	if(*_value!=timeVal) {
-		(*_value) = timeVal;
-		if(_alsoSet!=0) {
-			(*_alsoSet) = timeVal;
-		}
-	}
-}
-
-void GenericProperty<Time>::Update() {
-	std::wstring val = _value->Format();
-	SetWindowText(_wnd, val.c_str());
-}
-
-// for numeric edit stuff, spinner boxes and lots of other candy
-HWND GenericProperty<unsigned int>::Create(HWND parent) {
-	if(_wnd!=0) return _wnd;
-	_wnd = ::CreateWindowEx(WS_EX_CLIENTEDGE, TJ_PROPERTY_EDIT_NUMERIC_CLASS_NAME, Stringify(*_value).c_str(), WS_TABSTOP|WS_CHILD|ES_AUTOHSCROLL, 0, 0, 100, 100, parent, (HMENU)0, GetModuleHandle(NULL), 0);
-	if(_wnd==0) {
-		Throw(L"Property window creation failed", ExceptionTypeError);
-	}
-	return _wnd;
-}
-
-HWND GenericProperty<int>::Create(HWND parent) {
-	if(_wnd!=0) return _wnd;
-	_wnd = ::CreateWindowEx(WS_EX_CLIENTEDGE, TJ_PROPERTY_EDIT_NUMERIC_CLASS_NAME, Stringify(*_value).c_str(), WS_TABSTOP|WS_CHILD|ES_AUTOHSCROLL, 0, 0, 100, 100, parent, (HMENU)0, GetModuleHandle(NULL), 0);
-	if(_wnd==0) {
-		Throw(L"Property window creation failed", ExceptionTypeError);
-	}
-	return _wnd;
-}
-
-void GenericProperty<std::wstring>::Changed() {
-	int l = GetWindowTextLength(_wnd);
-	wchar_t* cp = new wchar_t[l+2];
-	GetWindowText(_wnd, cp, l+1);
-	
-	std::wstring value(cp);
-	delete[] cp;
-
-	if(*_value!=value) {
-		(*_value) = value;
-		if(_alsoSet!=0) {
-			(*_alsoSet) = value;
-		}
-	}
 }
 
 class PropertyCheckBoxWnd: public CheckboxWnd {
@@ -156,20 +89,15 @@ class PropertyCheckBoxWnd: public CheckboxWnd {
 		bool* _also;
 };
 
-HWND GenericProperty<bool>::Create(HWND parent) {
-	if(_wnd!=0) return _wnd;
-	_wndHold = GC::Hold(new PropertyCheckBoxWnd(_value, _alsoSet));
-	_wnd = _wndHold->GetWindow();
-	SetParent(_wnd, parent);
+ref<Wnd> GenericProperty<bool>::GetWindow() {
+	if(!_wnd) {
+		_wnd = GC::Hold(new PropertyCheckBoxWnd(_value, _alsoSet));
+	}
 	return _wnd;
 }
 
-void GenericProperty<bool>::Changed() {
-	// Not used, done by PropertyCheckBoxWnd
-}
-
 void GenericProperty<bool>::Update() {
-	ref<CheckboxWnd> cb = _wndHold;
+	ref<CheckboxWnd> cb = _wnd;
 
 	if(cb) {
 		cb->Update();

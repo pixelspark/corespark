@@ -26,12 +26,9 @@ namespace tj {
 
 		class EXPORTED FileProperty: public Property {
 			public:
-				FileProperty(std::wstring name, std::wstring* path, const wchar_t* filter=L"*.*\0\0\0");
+				FileProperty(const std::wstring& name, std::wstring* path, const wchar_t* filter=L"*.*\0\0\0");
 				virtual ~FileProperty();
-				virtual HWND GetWindow();
-				virtual std::wstring GetValue();
-				virtual HWND Create(HWND parent);
-				virtual void Changed();
+				virtual ref<Wnd> GetWindow();
 				virtual void Update();
 
 			protected:

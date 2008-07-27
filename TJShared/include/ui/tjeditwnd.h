@@ -8,11 +8,14 @@ namespace tj {
 				EditWnd();
 				virtual ~EditWnd();
 				virtual std::wstring GetText();
-				void SetCue(std::wstring cue);
 				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
-				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 				virtual void Layout();
 				virtual void SetText(std::wstring ws);
+				virtual void SetReadOnly(bool r);
+				virtual void SetMultiline(bool m);
+				virtual void SetBorder(bool b);
+				void SetCue(const std::wstring& cue);
+				virtual bool HasFocus(bool childrenToo) const;
 
 				struct NotificationTextChanged {
 				};
@@ -20,7 +23,10 @@ namespace tj {
 				Listenable<NotificationTextChanged> EventTextChanged;
 
 			protected:
+				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 				void UpdateColor();
+				virtual void OnFocus(bool f);
+
 				HFONT _font;
 				HWND _ctrl;
 				graphics::Color _back;

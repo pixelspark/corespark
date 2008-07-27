@@ -9,38 +9,61 @@ namespace tj {
 				virtual void Run() = 0;
 		};
 
-		class EXPORTED Event {
+		class EXPORTED ThreadLocal {
 			public:
-				Event() {
-					_event = CreateEvent(NULL, TRUE, FALSE, NULL);
-				}
-
-				~Event() {
-					CloseHandle(_event);
-				}
-
-				void Signal() {
-					SetEvent(_event);
-				}
-
-				void Reset() {
-					ResetEvent(_event);
-				}
-
-				HANDLE GetHandle() {
-					return _event;
-				}
-
-				void Wait(int ms=0) {
-					WaitForSingleObject(_event, ms);
-				}
+				ThreadLocal();
+				~ThreadLocal();
+				int GetValue() const;
+				void SetValue(int v);
+				void operator=(int v);
+				operator int() const;
 
 			protected:
-				HANDLE _event;
+				#ifdef _WIN32
+					DWORD _tls;
+				#endif
+		};
+
+		class EXPORTED Semaphore {
+			public:
+				Semaphore();
+				~Semaphore();
+				void Release(int n = 1);
+				bool Wait();
+
+				#ifdef _WIN32
+					HANDLE GetHandle();
+				#endif
+
+			private:
+				#ifdef _WIN32
+					HANDLE _sema;
+				#endif
+		};
+
+		class EXPORTED Event {
+			public:
+				Event();
+				~Event();
+				void Signal();
+				void Pulse();
+				void Reset();
+				void Wait(int ms=0);
+
+				#ifdef _WIN32
+					HANDLE GetHandle();
+				#endif
+
+			protected:
+				#ifdef _WIN32
+					HANDLE _event;
+				#endif
 		};
 
 		class EXPORTED Thread: public virtual Object {
-			friend DWORD WINAPI ThreadProc(LPVOID);
+			#ifdef _WIN32
+				friend DWORD WINAPI ThreadProc(LPVOID);
+			#endif
 
 			public:
 				Thread();
@@ -54,7 +77,11 @@ namespace tj {
 
 			protected:
 				virtual void Run();
-				HANDLE _thread;
+				
+				#ifdef _WIN32
+					HANDLE _thread;
+				#endif
+				
 				int _id;
 				bool _started;
 				static volatile long _count;
@@ -72,7 +99,9 @@ namespace tj {
 				void Leave();
 
 			private:
-				CRITICAL_SECTION _cs;
+				#ifdef _WIN32
+					CRITICAL_SECTION _cs;
+				#endif
 		};
 
 		class EXPORTED ThreadLock {

@@ -1,4 +1,4 @@
-#include "../../include/tjshared.h"
+#include "../../include/ui/tjui.h" 
 #include <commctrl.h>
 using namespace tj::shared;
 using namespace tj::shared::graphics;
@@ -25,7 +25,7 @@ EditWnd::~EditWnd() {
 
 void EditWnd::UpdateColor() {
 	ref<Theme> theme = ThemeManager::GetTheme();
-	Color nb = theme->GetEditBackgroundColor();
+	Color nb = theme->GetColor(Theme::ColorEditBackground);
 	if(nb.GetValue()!=_back.GetValue()||_backBrush==0) {
 		_back = nb;
 		if(_backBrush!=0) DeleteObject(_backBrush);
@@ -44,6 +44,33 @@ void EditWnd::Layout() {
 	SetWindowPos(_ctrl, 0L, rc.GetLeft(), rc.GetTop(), rc.GetWidth(), rc.GetHeight(), SWP_NOZORDER);
 }
 
+void EditWnd::SetReadOnly(bool r) {
+	SendMessage(_ctrl, EM_SETREADONLY, (WPARAM)(BOOL)r, 0);
+}
+
+void EditWnd::SetMultiline(bool t) {
+	long s = GetWindowLong(_ctrl, GWL_STYLE);
+	if(t) {
+		s |= ES_MULTILINE;
+	}
+	else {
+		s &= (~ES_MULTILINE);
+	}
+	SetWindowLong(_ctrl, GWL_STYLE, s);
+}
+
+void EditWnd::SetBorder(bool t) {
+	long s = GetWindowLong(_ctrl, GWL_EXSTYLE);
+	if(t) {
+		s |= WS_EX_CLIENTEDGE;
+	}
+	else {
+		s &= (~WS_EX_CLIENTEDGE);
+	}
+	SetWindowLong(_ctrl, GWL_EXSTYLE, s);
+	Repaint();
+}
+
 LRESULT EditWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	if(msg==WM_SIZE) {
 		Layout();
@@ -51,7 +78,7 @@ LRESULT EditWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	else if(msg==WM_CTLCOLOREDIT) {
 		UpdateColor();
 		SetBkMode((HDC)wp, TRANSPARENT);
-		Color text = ThemeManager::GetTheme()->GetTextColor();
+		Color text = ThemeManager::GetTheme()->GetColor(Theme::ColorText);
 		SetTextColor((HDC)wp, RGB(text.GetRed(),text.GetGreen(),text.GetBlue()));
 		return (LRESULT)(HBRUSH)_backBrush;
 		
@@ -70,7 +97,17 @@ LRESULT EditWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	return ChildWnd::Message(msg,wp,lp);
 }
 
-void EditWnd::SetCue(std::wstring cue) {
+void EditWnd::OnFocus(bool f) {
+	if(f) {
+		SetFocus(_ctrl);
+	}
+}
+
+bool EditWnd::HasFocus(bool childrenToo) const {
+	return GetFocus() == _ctrl;
+}
+
+void EditWnd::SetCue(const std::wstring& cue) {
 	SendMessage(_ctrl, EM_SETCUEBANNER, 0, (LPARAM)cue.c_str());
 }
 

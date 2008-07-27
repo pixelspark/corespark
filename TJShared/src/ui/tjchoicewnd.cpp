@@ -1,4 +1,4 @@
-#include "../../include/tjshared.h"
+#include "../../include/ui/tjui.h" 
 using namespace tj::shared;
 using namespace tj::shared::graphics;
 
@@ -71,7 +71,7 @@ void ChoiceListWnd::PaintItem(int id, graphics::Graphics &g, tj::shared::Area &r
 		Pixels ih = choice->GetHeight();
 		g.DrawImage(choice->GetImage().GetBitmap(), RectF(row.GetLeft()+2.0f, row.GetTop()+2.0f, float(iw), float(ih)));
 
-		SolidBrush tbr(theme->GetTextColor());
+		SolidBrush tbr(theme->GetColor(Theme::ColorText));
 		const std::wstring& title = choice->GetTitle();
 		StringFormat sf;
 		sf.SetAlignment(StringAlignmentNear);
@@ -116,20 +116,20 @@ void ChoiceWnd::Paint(Graphics& g, ref<Theme> theme) {
 		Area header = rc;
 		header.SetHeight(theme->GetMeasureInPixels(Theme::MeasureToolbarHeight));
 
-		LinearGradientBrush back(PointF(0.0f, 0.0f), PointF(0.0f, (float)header.GetHeight()), theme->GetActiveStartColor(), theme->GetActiveEndColor());
+		LinearGradientBrush back(PointF(0.0f, 0.0f), PointF(0.0f, (float)header.GetHeight()), theme->GetColor(Theme::ColorActiveStart), theme->GetColor(Theme::ColorActiveEnd));
 		g.FillRectangle(&back, header);
 
-		SolidBrush disabled(theme->GetDisabledOverlayColor());
+		SolidBrush disabled(theme->GetColor(Theme::ColorDisabledOverlay));
 		g.FillRectangle(&disabled, header);
 
 		StringFormat sf;
 		sf.SetAlignment(StringAlignmentNear);
-		SolidBrush tbr(theme->GetTextColor());
+		SolidBrush tbr(theme->GetColor(Theme::ColorText));
 		g.DrawString(_title.c_str(), (int)_title.length(), theme->GetGUIFontBold(), PointF(float(header.GetLeft()+2.0f), header.GetTop()+5.0f), &sf, &tbr);
 	}
 
 	rc.Narrow(0,0,1,1);
-	SolidBrush border(theme->GetActiveStartColor());
+	SolidBrush border(theme->GetColor(Theme::ColorActiveStart));
 	Pen pn(&border, 1.0f);
 	g.DrawRectangle(&pn, rc);
 }

@@ -1,7 +1,9 @@
-#include "../include/tjshared.h"
+#include "../include/tjcore.h"
+#include "../include/properties/tjproperties.h"
 using namespace tj::shared;
 
 Language _instance;
+std::vector<std::wstring> Language::_availableLocales;
 
 Language::Language() {
 }
@@ -15,16 +17,114 @@ Language::~Language() {
 	}
 }
 
-void Language::Translate(HWND wnd) {
-	HMENU menu = GetMenu(wnd);
-	if(menu==INVALID_HANDLE_VALUE) {
-		return;
+#ifdef _WIN32
+	void Language::Translate(HWND wnd) {
+		HMENU menu = GetMenu(wnd);
+		if(menu==INVALID_HANDLE_VALUE) {
+			return;
+		}
+
+		Translate(menu);
 	}
 
-	Translate(menu);
+	void Language::Translate(HMENU menu) {
+		int count = GetMenuItemCount(menu);
+		if(count>0) {
+			MENUITEMINFO inf;
+			memset(&inf, 0, sizeof(MENUITEMINFO));
+			for(int a=0;a<count;a++) {
+				inf.fMask = MIIM_STRING;
+				inf.cbSize = sizeof(MENUITEMINFO);
+				inf.dwTypeData = NULL;
+				GetMenuItemInfo(menu, a, TRUE, &inf);
+
+				// allocate string buffer
+				if(inf.fMask & MIIM_STRING) {
+					
+					wchar_t* buffer = new wchar_t[inf.cch+2];
+					inf.cch++;
+					inf.dwTypeData = buffer;
+					GetMenuItemInfo(menu, a, TRUE, &inf);
+					std::wstring text = buffer;
+					delete[] buffer;
+
+					if(text.length()>0 && text.at(0) == L'$') {
+						std::wstring replacement = Get(text.substr(1));
+						inf.dwTypeData = (wchar_t*)replacement.c_str();
+						inf.cch = (UINT)replacement.length();
+						SetMenuItemInfo(menu, a, TRUE, &inf);
+					}
+
+					HMENU sub = GetSubMenu(menu, a);
+					if(sub!=NULL) {
+						Translate(sub);
+					}
+				}
+
+			}
+		}
+	}
+#endif
+
+ref<Property> Language::CreateLanguageProperty(const std::wstring& title, LocaleIdentifier* lang) {
+	assert(lang!=0);
+	ref< GenericListProperty<LocaleIdentifier> > pp = GC::Hold(new GenericListProperty<LocaleIdentifier>(title, lang, 0, *lang));
+
+	std::vector<LocaleIdentifier>::const_iterator it = _availableLocales.begin();
+	while(it!=_availableLocales.end()) {
+		std::wostringstream name;
+		name << *it;
+		std::wstring key = L"locale_"+(*it);
+		if(_instance._strings.find(key)!=_instance._strings.end()) {
+			name << L": " << Language::Get(key);
+		}
+		pp->AddOption(name.str(), *it);
+		++it;
+	}
+
+	return pp;
 }
 
-void Language::LoadDirectory(std::wstring dir) {
+void Language::FindLocales(const std::wstring& dir) {
+	ZoneEntry zea(Zones::LocalFileInfoZone);
+	ZoneEntry zeb(Zones::LocalFileReadZone);
+	ZoneEntry zec(Zones::ModifyLocaleZone);
+
+	WIN32_FIND_DATAW d;
+	ZeroMemory(&d,sizeof(d));
+	std::wstring pathfilter = dir + L"\\*.*";
+	HANDLE hsr = FindFirstFile(pathfilter.c_str(), &d);
+
+	do {
+		if(hsr==INVALID_HANDLE_VALUE) {
+			continue;
+		}
+
+		if(d.cFileName[0]==L'.' || (d.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN)!=0 ||(d.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)==0) {
+			// skip, file is not a directory or it is hidden, or the first character is a '.'
+			// (which indicates the special '.' or '..' directories under Windows and Unix and (under Unix)
+			// hidden files).
+		}
+		else {
+			_availableLocales.push_back(d.cFileName);
+			Log::Write(L"TJShared/Language", L"Locale found: "+std::wstring(d.cFileName));
+		}
+	} 
+	while(FindNextFile(hsr, &d));
+	FindClose(hsr);
+}
+
+void Language::LoadDirectory(const std::wstring& locdir, const LocaleIdentifier& lang) {
+	ZoneEntry zea(Zones::LocalFileInfoZone);
+	ZoneEntry zeb(Zones::LocalFileReadZone);
+	ZoneEntry zec(Zones::ModifyLocaleZone);
+
+	// Find languages
+	Language::FindLocales(locdir);
+
+	// Find .tjs files in the locale dir
+	std::wstring dir = locdir + L'\\' + lang;
+
 	WIN32_FIND_DATAW d;
 	ZeroMemory(&d,sizeof(d));
 
@@ -56,44 +156,6 @@ void Language::LoadDirectory(std::wstring dir) {
 	FindClose(hsr);
 }
 
-void Language::Translate(HMENU menu) {
-	int count = GetMenuItemCount(menu);
-	if(count>0) {
-		MENUITEMINFO inf;
-		memset(&inf, 0, sizeof(MENUITEMINFO));
-		for(int a=0;a<count;a++) {
-			inf.fMask = MIIM_STRING;
-			inf.cbSize = sizeof(MENUITEMINFO);
-			inf.dwTypeData = NULL;
-			GetMenuItemInfo(menu, a, TRUE, &inf);
-
-			// allocate string buffer
-			if(inf.fMask & MIIM_STRING) {
-				
-				wchar_t* buffer = new wchar_t[inf.cch+2];
-				inf.cch++;
-				inf.dwTypeData = buffer;
-				GetMenuItemInfo(menu, a, TRUE, &inf);
-				std::wstring text = buffer;
-				delete[] buffer;
-
-				if(text.length()>0 && text.at(0) == L'$') {
-					std::wstring replacement = Get(text.substr(1));
-					inf.dwTypeData = (wchar_t*)replacement.c_str();
-					inf.cch = (UINT)replacement.length();
-					SetMenuItemInfo(menu, a, TRUE, &inf);
-				}
-
-				HMENU sub = GetSubMenu(menu, a);
-				if(sub!=NULL) {
-					Translate(sub);
-				}
-			}
-
-		}
-	}
-}
-
 template<typename StringType> std::pair<StringType,StringType> Split (const StringType &inString, const StringType &separator) {
 	std::vector<StringType> returnVector;
 	StringType::size_type end = inString.find(separator, 0);
@@ -110,10 +172,14 @@ const wchar_t* Language::Get(const std::wstring& key) {
 }
 
 void Language::Clear() {
+	ZoneEntry zec(Zones::ModifyLocaleZone);
 	_instance._strings.clear();
 }
 
-void Language::Load(std::wstring file) {
+void Language::Load(const std::wstring& file) {
+	ZoneEntry zeb(Zones::LocalFileReadZone);
+	ZoneEntry zec(Zones::ModifyLocaleZone);
+
 	std::wifstream fs(file.c_str());
 	wchar_t line[1024];
 

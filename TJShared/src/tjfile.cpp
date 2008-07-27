@@ -1,5 +1,5 @@
-#include "../include/tjshared.h"
-#include "shlwapi.h"
+#include "../include/tjcore.h"
+#include <shlwapi.h>
 using namespace tj::shared;
 
 std::wstring File::GetDirectory(const std::wstring& pathToFile) {
@@ -10,11 +10,17 @@ std::wstring File::GetDirectory(const std::wstring& pathToFile) {
 	return dir;
 }
 
+std::wstring File::GetExtension(const std::wstring& pathToFile) {
+	return std::wstring(PathFindExtension(pathToFile.c_str()));
+}
+
 bool File::Exists(const std::wstring& st) {
+	ZoneEntry ze(Zones::LocalFileInfoZone);
 	return GetFileAttributes(st.c_str())!=INVALID_FILE_ATTRIBUTES;
 }
 
 Bytes File::GetDirectorySize(const std::wstring& dirPath) {
+	ZoneEntry ze(Zones::LocalFileInfoZone);
 	WIN32_FIND_DATA fd;
 	std::wstring searchPath = dirPath+L"*";
 	HANDLE search = FindFirstFile(searchPath.c_str(), &fd);

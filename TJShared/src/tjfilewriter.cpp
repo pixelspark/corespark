@@ -1,33 +1,36 @@
-#include "../include/tjshared.h"
+#include "../include/tjcore.h"
 using namespace tj::shared;
 
-FileWriter::FileWriter(std::string root): _root(root) {
+FileWriter::FileWriter(const std::string& root) {
+	_document = GC::Hold(new TiXmlDocument());
+	_root = GC::Hold(new TiXmlElement(root));
 	TiXmlDeclaration decl("1.0","UTF-8","no");
-	_document.InsertEndChild(decl);
+	_document->InsertEndChild(decl);
 }
 
 FileWriter::~FileWriter() {
 }
 
-TiXmlDocument* FileWriter::GetDocument() {
-	return &_document;
+ref<TiXmlDocument> FileWriter::GetDocument() {
+	return _document;
 }
 
-TiXmlElement* FileWriter::GetRoot() {
-	return &_root;
+ref<TiXmlElement> FileWriter::GetRoot() {
+	return _root;
 }
 
-void FileWriter::Save(std::string filename) {
-	_document.InsertEndChild(_root);
-	_document.SaveFile(filename.c_str());
+void FileWriter::Save(const std::string& filename) {
+	ZoneEntry ze(Zones::LocalFileWriteZone);
+	_document->InsertEndChild(*(_root.GetPointer()));
+	_document->SaveFile(filename.c_str());
 }
 
 void FileWriter::Add(Serializable* ser) {
-	ser->Save(GetRoot());
+	ser->Save(_root.GetPointer());
 }
 
 void FileWriter::Add(ref<Serializable> ser) {
-	ser->Save(GetRoot());
+	ser->Save(_root.GetPointer());
 }
 
 FileReader::FileReader() {
@@ -37,6 +40,8 @@ FileReader::~FileReader() {
 }
 
 void FileReader::Read(const std::string& filename, ref<Serializable> ser) {
+	ZoneEntry ze(Zones::LocalFileReadZone);
+
 	TiXmlDocument document(filename);
 	if(!document.LoadFile()) Throw(TL(file_load_failed), ExceptionTypeError);
 

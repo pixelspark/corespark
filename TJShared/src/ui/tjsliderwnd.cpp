@@ -1,4 +1,4 @@
-#include "../../include/tjshared.h"
+#include "../../include/ui/tjui.h" 
 #include <windowsx.h>
 using namespace tj::shared::graphics;
 using namespace tj::shared;
@@ -82,17 +82,17 @@ void SliderWnd::Paint(Graphics& g, ref<Theme> theme) {
 
 	Area rect = GetClientArea();
 
-	graphics::Color colorStart = theme->GetSliderColorStart(_color);
-	graphics::Color colorEnd = theme->GetSliderColorEnd(_color);
+	graphics::Color colorStart = theme->GetSliderColorStart((Theme::SliderType)_color);
+	graphics::Color colorEnd = theme->GetSliderColorEnd((Theme::SliderType)_color);
 
 	// background
-	SolidBrush backBrush(theme->GetBackgroundColor());
+	SolidBrush backBrush(theme->GetColor(Theme::ColorBackground));
 	g.FillRectangle(&backBrush,rect);
 
 	// middle rectangle, 6 pixels wide
 	rect.Narrow(0, 5, 0, 25);
 
-	LinearGradientBrush br(PointF(0.0f, float(rect.GetTop()-10)), PointF(0.0f, float(rect.GetHeight()+15)), colorStart, colorEnd);
+	LinearGradientBrush br(PointF((float)rect.GetLeft(), (float)rect.GetTop()), PointF((float)rect.GetRight(), (float)rect.GetTop()), colorStart, colorEnd);
 	Pen pn(&br, 1.0f);
 	const static int squareWidth = 6;
 	int x = rect.GetWidth()/2 - (squareWidth/2);
@@ -100,7 +100,7 @@ void SliderWnd::Paint(Graphics& g, ref<Theme> theme) {
 
 	if(_displayValue>0.0f) {
 		float dvh = (1.0f-_displayValue) * rect.GetHeight();
-		g.FillRectangle(&br,RectF(float(x+2), float(float(rect.GetTop())+dvh), float(squareWidth-3), float(rect.GetHeight())-dvh));
+		g.FillRectangle(&br, RectF(float(x+2), float(float(rect.GetTop())+dvh), float(squareWidth-3), float(rect.GetHeight())-dvh));
 	}
 
 	// markers
@@ -112,7 +112,7 @@ void SliderWnd::Paint(Graphics& g, ref<Theme> theme) {
 
 	if(_mark != _value && _mark <= 1.0f && _mark >= 0.0f) {
 		mx = (rect.GetWidth())/2 - (squareWidth/2);
-		Pen mpn(theme->GetCommandMarkerColor(), 3.0f);
+		Pen mpn(theme->GetColor(Theme::ColorCommandMarker), 3.0f);
 		float mty = float(int(rect.GetBottom()) - int(_mark*rect.GetHeight()));
 		g.DrawLine(&mpn, (REAL)mx, mty, (REAL)mx+squareWidth+1,mty);
 	}
@@ -129,12 +129,17 @@ void SliderWnd::Paint(Graphics& g, ref<Theme> theme) {
 	x = (rect.GetWidth())/2 - KDraggerWidth/2;
 	int y = rect.GetBottom() - int(_value*int(rect.GetHeight()));
 	SolidBrush border(colorEnd);
-	g.FillRectangle(&border, RectF(float(x), float(y), float(KDraggerWidth), 6.0f));
-	g.FillRectangle(&backBrush, RectF(float(x+1), float(y+1), float(KDraggerWidth-2), 4.0f));
+
+	Area dragger(x,y,KDraggerWidth, 6);
+	Area draggerInside = dragger;
+	draggerInside.Narrow(1,1,1,1);
+
+	g.FillRectangle(&border, dragger);
+	g.FillRectangle(&backBrush, draggerInside);
 	
 	if(HasFocus()||_flash) {
 		LinearGradientBrush lbr(PointF(float(x+1), float(y)), PointF(float(x+1), float(y+6)), colorStart, colorEnd );
-		g.FillRectangle(&lbr, RectF(float(x+1), float(y+1), float(KDraggerWidth-2), 4.0f));
+		g.FillRectangle(&lbr, draggerInside);
 	}
 
 	if(_showValue) {
@@ -143,7 +148,7 @@ void SliderWnd::Paint(Graphics& g, ref<Theme> theme) {
 		std::wstring msg = os.str();
 		StringFormat sf;
 		sf.SetAlignment(StringAlignmentCenter);
-		SolidBrush tbr(theme->GetTextColor());
+		SolidBrush tbr(theme->GetColor(Theme::ColorText));
 		g.DrawString(msg.c_str(), (INT)msg.length(), theme->GetGUIFontSmall(), RectF(0.0f, float(rect.GetBottom())+5.0f, float(rect.GetRight()), 11.0f), &sf, &tbr);
 	}
 }

@@ -1,4 +1,4 @@
-#include "../include/tjshared.h"
+#include "../include/tjcore.h"
 #include <cstdlib>
 #include <iostream>
 #include <string>
@@ -201,13 +201,13 @@ TEAEncrypter::TEAEncrypter() {
 TEAEncrypter::~TEAEncrypter() {
 }
 
-std::string TEAEncrypter::Encrypt(std::string src, std::string key) {
+std::string TEAEncrypter::Encrypt(const std::string& src, const std::string& key) {
 	std::string out;
 	encryptMessage(src, out, key);
 	return out;
 }
 
-std::string TEAEncrypter::Decrypt(std::string src, std::string key) {
+std::string TEAEncrypter::Decrypt(const std::string& src, const std::string& key) {
 	std::string out;
 	decryptMessage(src,out,key);
 	return out;
