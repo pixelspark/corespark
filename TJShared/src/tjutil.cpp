@@ -189,28 +189,34 @@ namespace tj {
 #ifdef _WIN32
 	void Clipboard::SetClipboardText(const std::wstring& text) {
 		ZoneEntry ze(Zones::ClipboardZone);
-		EmptyClipboard();
+		if(OpenClipboard(NULL)) {
+			EmptyClipboard();
 
-		HGLOBAL mem = GlobalAlloc(GMEM_MOVEABLE, sizeof(wchar_t)*(text.length()+1));
-		if(mem) {
-			wchar_t* textBuf = (wchar_t*)GlobalLock(mem);
-			if(textBuf!=0) {
-				memcpy(textBuf, text.c_str(), sizeof(wchar_t)*(text.length()+1));
-				GlobalUnlock(mem);
-			}
+			HGLOBAL mem = GlobalAlloc(GMEM_MOVEABLE, sizeof(wchar_t)*(text.length()+1));
+			if(mem) {
+				wchar_t* textBuf = (wchar_t*)GlobalLock(mem);
+				if(textBuf!=0) {
+					memcpy(textBuf, text.c_str(), sizeof(wchar_t)*(text.length()+1));
+					GlobalUnlock(mem);
+				}
 
-			SetClipboardData(CF_UNICODETEXT, mem);
-			CloseClipboard();
+				SetClipboardData(CF_UNICODETEXT, mem);
+				CloseClipboard();
 
-			// We must not free the object until CloseClipboard is called.
-			if(mem!=0) {
-				GlobalFree(mem);
+				// We must not free the object until CloseClipboard is called.
+				if(mem!=0) {
+					GlobalFree(mem);
+				}
 			}
 		}
 	}
 
 	bool Clipboard::GetClipboardText(std::wstring& text) {
 		ZoneEntry ze(Zones::ClipboardZone);
+
+		if(!IsTextAvailable()) {
+			return false;
+		}
 
 		if(OpenClipboard(NULL)) {
 			HANDLE handle = GetClipboardData(CF_UNICODETEXT);
@@ -229,5 +235,122 @@ namespace tj {
 			return true;
 		}
 		return false;
+	}
+
+	unsigned int Clipboard::_formatID = 0;
+	bool Clipboard::_formatInitialized = false;
+	const wchar_t* Clipboard::_formatName = L"application/x-tjshared-object";
+
+	void Clipboard::Initialize() {
+		if(!_formatInitialized) {
+			_formatID = RegisterClipboardFormat(_formatName);
+			_formatInitialized = true;
+		}
+	}
+
+	void Clipboard::SetClipboardObject(ref<Serializable> sr) {
+		ZoneEntry ze(Zones::ClipboardZone);
+		Initialize();
+
+		// Write the object to XML
+		TiXmlDocument doc;
+		TiXmlElement root("object");
+		sr->Save(&root);
+		doc.InsertEndChild(root);
+
+		// Get the XML source code
+		std::ostringstream xos;
+		xos << doc;
+		std::string source = xos.str();
+
+		// Push the source code to the clipboard!
+		if(OpenClipboard(NULL)) {
+			if(!EmptyClipboard()) {
+				Log::Write(L"TJShared/Clipboard", L"Could not empty clipboard!");
+			}
+
+			HGLOBAL mem = GlobalAlloc(GMEM_MOVEABLE, sizeof(char)*(source.length()+1));
+			if(mem) {
+				wchar_t* textBuf = (wchar_t*)GlobalLock(mem);
+				if(textBuf!=0) {
+					memcpy(textBuf, source.c_str(), sizeof(char)*(source.length()+1));
+					GlobalUnlock(mem);
+				}
+
+				SetClipboardData(_formatID, mem);
+				#ifdef _DEBUG
+					SetClipboardData(CF_TEXT, mem);
+				#endif
+
+				CloseClipboard();
+
+				// We must not free the object until CloseClipboard is called.
+				if(mem!=0) {
+					GlobalFree(mem);
+				}
+			}
+			else {
+				Log::Write(L"TJShared/Clipboard", L"GlobalAlloc failed!");
+			}
+		}
+		else {
+			Log::Write(L"TJShared/Clipboard", L"Could not open clipboard!");
+		}
+	}
+
+	std::ostream& operator<< (std::ostream& out, const TiXmlNode& doc) {
+		doc.StreamOut(&out);
+		return out;
+	}
+
+	bool Clipboard::GetClipboardObject(TiXmlDocument& doc) {
+		ZoneEntry ze(Zones::ClipboardZone);
+		Initialize();
+
+		if(IsObjectAvailable() && OpenClipboard(NULL)) {
+			HGLOBAL handle = GetClipboardData(_formatID);
+			if(handle!=0) {
+				char* textPointer = (char*)GlobalLock(handle);
+				if(textPointer!=0) {
+					std::string text(textPointer);
+					GlobalUnlock(handle);
+
+					// Load text as XML
+					doc.Parse(text.c_str());
+					if(!doc.Error()) {
+						CloseClipboard();
+						return true;
+					}
+				}
+			}
+			
+			CloseClipboard();
+		}
+
+		return false;
+	}
+
+	bool Clipboard::GetClipboardObject(ref<Serializable> s) {
+		TiXmlDocument doc;
+		if(GetClipboardObject(doc)) {
+			TiXmlElement* object = doc.FirstChildElement("object");
+			if(object!=0) {
+				s->Load(object);
+				CloseClipboard();
+				return true;
+			}
+		}
+		return false;
+	}
+
+	bool Clipboard::IsTextAvailable() {
+		ZoneEntry ze(Zones::ClipboardZone);
+		return IsClipboardFormatAvailable(CF_UNICODETEXT)==TRUE;
+	}
+
+	bool Clipboard::IsObjectAvailable() {
+		ZoneEntry ze(Zones::ClipboardZone);
+		Initialize();
+		return IsClipboardFormatAvailable(_formatID)==TRUE;
 	}
 #endif

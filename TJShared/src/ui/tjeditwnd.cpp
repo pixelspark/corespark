@@ -13,7 +13,6 @@ EditWnd::EditWnd(): ChildWnd(L"", false, false), _backBrush(0) {
 	_ctrl = CreateWindowEx(0, L"EDIT", L"", WS_CHILD|WS_TABSTOP|ES_AUTOHSCROLL, 0, 0, 10, 10, GetWindow(), 0, GetModuleHandle(NULL), 0);
 	_font = CreateFont(-11, 0, 0, 0, 400, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, DEFAULT_PITCH, TL(ui_font));
 	SendMessage(_ctrl, WM_SETFONT, (WPARAM)(HFONT)_font, FALSE);
-	ShowWindow(_ctrl, SW_SHOW);
 	Layout();
 }
 
@@ -36,6 +35,14 @@ void EditWnd::UpdateColor() {
 
 void EditWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 }
+
+void EditWnd::Show(bool s) {
+	if(s) {
+		ShowWindow(_ctrl, SW_SHOW);
+	}
+	ChildWnd::Show(s);
+}
+
 
 void EditWnd::Layout() {
 	Area rc = GetClientArea();

@@ -105,6 +105,7 @@ void GenericProperty<bool>::Update() {
 	ref<CheckboxWnd> cb = _wnd;
 
 	if(cb) {
+		cb->SetChecked(*_value);
 		cb->Update();
 	}
 }

@@ -4,34 +4,50 @@
 namespace tj {
 	namespace shared {
 		class EXPORTED DialogWnd: public TopWnd, public Listener<ButtonWnd::NotificationClicked> {
-			public:
-				DialogWnd(const std::wstring& title, const std::wstring& question);
+			public:	
+				DialogWnd(const std::wstring& title);
 				virtual ~DialogWnd();
 				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
-				virtual ref<PropertyGridWnd> GetPropertyGrid();
 				virtual void Layout();
-				virtual bool DoModal(HWND parent);
+				virtual Area GetClientArea() const;
+				virtual void OnSize(const Area& ns);
+				virtual void OnCreated();
+				virtual bool DoModal(ref<Wnd> parent);
 				virtual void Notify(ref<Object> source, const ButtonWnd::NotificationClicked& evt);
 
 			protected:
-				virtual void OnSize(const Area& ns);
-				virtual void OnCreated();
-				virtual void EndModal(bool result);
+				virtual void OnAfterShowDialog();
+				virtual Pixels GetHeaderHeight() const;
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
+				virtual void EndModal(bool result);
 
-				static const Pixels KHeaderHeight = 30;
-				
 			private:
 				ModalLoop _loop;
-				ref<PropertyGridWnd> _grid;
 				ref<ButtonWnd> _ok;
+
+		};
+
+		class EXPORTED PropertyDialogWnd: public DialogWnd {
+			public:
+				PropertyDialogWnd(const std::wstring& title, const std::wstring& question);
+				virtual ~PropertyDialogWnd();
+				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
+				virtual ref<PropertyGridWnd> GetPropertyGrid();
+				virtual void Layout();
+		
+			protected:
+				virtual void OnSize(const Area& ns);
+				virtual void OnAfterShowDialog();
+				
+			private:
+				ref<PropertyGridWnd> _grid;
 				std::wstring _question;
 		};
 
 		class EXPORTED Dialog {
 			public:
-				static std::wstring AskForSaveFile(HWND owner, std::wstring title, const wchar_t* filter, std::wstring defExt);
-				static std::wstring AskForOpenFile(HWND owner, std::wstring title, const wchar_t* filter, std::wstring defExt);
+				static std::wstring AskForSaveFile(ref<Wnd> owner, const std::wstring& title, const wchar_t* filter, const std::wstring& defExt);
+				static std::wstring AskForOpenFile(ref<Wnd> owner, const std::wstring& title, const wchar_t* filter, const std::wstring& defExt);
 		};
 	}
 }

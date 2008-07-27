@@ -713,6 +713,18 @@ LRESULT Wnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		OnFocus(false);
 	}
 	else if(msg==WM_KEYDOWN || msg==WM_KEYUP || msg==WM_SYSKEYDOWN || msg==WM_SYSKEYUP) {
+		if(msg==WM_KEYDOWN && IsKeyDown(KeyControl)) {
+			if(wp==L'C'||wp==L'c') {
+				OnCopy();
+			}
+			else if(wp==L'V'||wp==L'v') {
+				OnPaste();
+			}
+			else if(wp==L'X'||wp==L'x') {
+				OnCut();
+			}
+		}
+
 		Key key = KeyNone;
 		wchar_t ch = L'\0';
 		TranslateKeyCodes((int)wp, key, ch);

@@ -189,6 +189,9 @@ void Theme::DrawHighlightEllipse(graphics::Graphics& g, const Area& c, float alp
 
 Pixels Theme::GetMeasureInPixels(Measure m) const {
 	switch(m) {
+		case MeasureDialogHeaderHeight:
+			return 30;
+
 		case MeasureToolbarHeight:
 		case MeasureListHeaderHeight:
 			return 24;

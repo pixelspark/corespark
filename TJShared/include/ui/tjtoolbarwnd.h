@@ -39,15 +39,14 @@ namespace tj {
 
 		class EXPORTED StateToolbarItem: public ToolbarItem {
 			public:
-				StateToolbarItem(int command, std::wstring iconOn, std::wstring iconOff, std::wstring text=L"");
+				StateToolbarItem(int command, const std::wstring& icon, const std::wstring& text = L"");
 				virtual ~StateToolbarItem();
 				virtual void SetState(bool on);
-				virtual Icon& GetIcon();
 				bool IsOn() const;
+				virtual void Paint(graphics::Graphics& g, ref<Theme> theme, bool over, bool down, float backgroundAlpha);
 
 			protected:
 				bool _on;
-				Icon _onIcon;
 		};
 
 		class EXPORTED ToolbarWnd: public ChildWnd {

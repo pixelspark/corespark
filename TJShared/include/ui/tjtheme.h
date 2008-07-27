@@ -52,6 +52,7 @@ namespace tj {
 					MeasureMaximumSnappingDistance,
 					MeasureShadowSize,
 					MeasurePropertyHeight,
+					MeasureDialogHeaderHeight,
 					_MeasureLast,
 				};
 

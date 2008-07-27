@@ -548,7 +548,8 @@ void EditableListWnd::SetSelectedRowAndEdit(int r) {
 			ref<Property> pr = GetPropertyForItem(r, it->first);
 			if(pr) {
 				_editorProperties[it->first] = pr;
-				Add(pr->GetWindow());
+				Add(pr->GetWindow(),false);
+				pr->Update();
 			}
 			++it;
 		}

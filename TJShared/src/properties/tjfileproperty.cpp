@@ -56,7 +56,7 @@ LRESULT FilePropertyWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 
 void FilePropertyWnd::OnMouse(MouseEvent me, Pixels x, Pixels y) {
 	if(me==MouseEventLDown) {
-		SetFile(Dialog::AskForOpenFile(GetWindow(), _name, _filter, L""));
+		SetFile(Dialog::AskForOpenFile(this, _name, _filter, L""));
 	}
 	else if(me==MouseEventMove||me==MouseEventLeave) {
 		Repaint();

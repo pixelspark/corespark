@@ -297,7 +297,7 @@ void ToolbarItem::DrawToolbarButton(graphics::Graphics& g, const Area& rc, ref<T
 
 	if(separator) {
 		Pen pn(theme->GetColor(Theme::ColorActiveStart));
-		g.DrawLine(&pn, PointF((float)rc.GetRight(), 4.0f), PointF((float)rc.GetRight(), float(rc.GetHeight())-4.0f));
+		g.DrawLine(&pn, PointF((float)rc.GetRight()-1.0f, 4.0f), PointF((float)rc.GetRight()-1.0f, float(rc.GetHeight())-4.0f));
 	}
 }
 
@@ -327,7 +327,7 @@ void ToolbarItem::DrawToolbarButton(Graphics& g, Icon& icon, const Area& rc, ref
 
 	if(separator) {
 		Pen pn(theme->GetColor(Theme::ColorActiveStart));
-		g.DrawLine(&pn, PointF((float)rc.GetRight(), 4.0f), PointF((float)rc.GetRight(), float(rc.GetHeight())-4.0f));
+		g.DrawLine(&pn, PointF((float)rc.GetRight()-1.0f, 4.0f), PointF((float)rc.GetRight()-1.0f, float(rc.GetHeight())-4.0f));
 	}
 }
 
@@ -401,7 +401,7 @@ void ToolbarItem::Paint(Gdiplus::Graphics &g, tj::shared::ref<Theme> theme, bool
 	bool active = IsActive();
 	bool enabled = IsEnabled();
 
-	DrawToolbarButton(g, _icon, rc, theme, enabled && over, enabled && down, _separator, active, alpha);
+	DrawToolbarButton(g, GetIcon(), rc, theme, enabled && over, enabled && down, _separator, active, alpha);
 }
 
 Area ToolbarItem::GetPreferredSize() const {
@@ -411,7 +411,7 @@ Area ToolbarItem::GetPreferredSize() const {
 	else {
 		ref<Theme> theme = ThemeManager::GetTheme();
 		Pixels bs = theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
-		return Area(0,0,bs,bs);
+		return Area(0,0,IsSeparator() ? Pixels(bs+1) : bs,bs);
 	}
 }
 
@@ -421,8 +421,7 @@ void ToolbarItem::SetPreferredSize(Pixels w, Pixels h) {
 }
 
 // StateToolbarItem
-StateToolbarItem::StateToolbarItem(int c, std::wstring on, std::wstring off, std::wstring text): ToolbarItem(c, off,text), _onIcon(on) {
-	_on = false;
+StateToolbarItem::StateToolbarItem(int c, const std::wstring& icon, const std::wstring& text): ToolbarItem(c, icon, text), _on(false) {
 }
 
 StateToolbarItem::~StateToolbarItem() {
@@ -436,8 +435,18 @@ bool StateToolbarItem::IsOn() const {
 	return _on;
 }
 
-Icon& StateToolbarItem::GetIcon() {
-	return _on?_onIcon:(ToolbarItem::GetIcon());
+void StateToolbarItem::Paint(graphics::Graphics& g, ref<Theme> theme, bool over, bool down, float backgroundAlpha) {
+	if(_on) {
+		SolidBrush green(theme->GetColor(Theme::ColorProgress));
+		Area rc = GetClientArea();
+		rc.Narrow(1,2, IsSeparator() ? 4 : 3, 3);
+		g.FillRectangle(&green, rc);
+
+		LinearGradientBrush lbr(PointF(0.0f, float(rc.GetTop()-1)), PointF(0.0f, float(rc.GetBottom()+1)), Color::Transparent, theme->GetColor(Theme::ColorDisabledOverlay));
+		g.FillRectangle(&lbr, rc);
+	}
+
+	ToolbarItem::Paint(g,theme,over,down,backgroundAlpha);
 }
 
 /* SearchToolbarWnd */

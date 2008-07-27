@@ -346,7 +346,7 @@ void PropertyGridWnd::Inspect(ref<Inspectable> isp, ref<Path> p) {
 
 				if(pr) {
 					ref<Wnd> w = pr->GetWindow();
-					Add(w);
+					Add(w,false);
 
 					if(!first) {
 						first = w;

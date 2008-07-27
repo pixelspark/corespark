@@ -6,8 +6,8 @@
 #pragma warning(disable: 4251) // about protected members needing dll access
 
 #include "tjexception.h"
-#include "tjutil.h"
 #include "tjreference.h"
+#include "tjutil.h"
 #include "tjobject.h"
 #include "tjiterator.h"
 #include "tjmixed.h"

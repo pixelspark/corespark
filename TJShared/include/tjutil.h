@@ -3,6 +3,7 @@
 
 namespace tj {
 	namespace shared {
+		class Serializable;
 		typedef long long Bytes; // This is equivalent to __int64 on MSVC++
 
 		class EXPORTED Bool {
@@ -15,6 +16,18 @@ namespace tj {
 			public:
 				static void SetClipboardText(const std::wstring& text);
 				static bool GetClipboardText(std::wstring& text);
+				static void SetClipboardObject(ref<Serializable> sr);
+				static bool GetClipboardObject(ref<Serializable> sr);
+				static bool GetClipboardObject(TiXmlDocument& doc);
+				static bool IsTextAvailable();
+				static bool IsObjectAvailable();
+
+			private:
+				static void Initialize();
+
+				static bool _formatInitialized;
+				static unsigned int _formatID;
+				static const wchar_t* _formatName;
 		};
 
 		class EXPORTED Util {
