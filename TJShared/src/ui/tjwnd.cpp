@@ -1,5 +1,6 @@
 #include "../../include/ui/tjui.h" 
 #include <commctrl.h>
+#include <shellapi.h>
 #include <windowsx.h>
 #define ISVKKEYDOWN(vk_code) ((GetAsyncKeyState(vk_code) & 0x8000))
 
@@ -7,10 +8,6 @@ using namespace tj::shared;
 using namespace tj::shared::graphics;
 
 bool Wnd::_classesRegistered = false;
-LRESULT CALLBACK PropertyEditWndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
-LRESULT CALLBACK PropertyEditNumericWndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
-LRESULT CALLBACK PropertyEditTimeWndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
-LRESULT CALLBACK PropertyLabelWndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 
 /* GDI+ Init */
 GraphicsInit::GraphicsInit() {
@@ -311,32 +308,6 @@ void Wnd::RegisterClasses() {
 
 	if(!RegisterClassEx(&wc)) {
 		Throw(L"Could not register class",ExceptionTypeError);
-	}
-
-	GetClassInfoEx(0, L"EDIT", &wc);
-	wc.lpszClassName = TJ_PROPERTY_EDIT_CLASS_NAME;
-	wc.lpfnWndProc = PropertyEditWndProc;
-
-	if(!RegisterClassEx(&wc)) {
-		Throw(L"Could not register class", ExceptionTypeError);
-	}
-
-	wc.lpszClassName = TJ_PROPERTY_EDIT_NUMERIC_CLASS_NAME;
-	wc.lpfnWndProc = PropertyEditNumericWndProc;
-	if(!RegisterClassEx(&wc)) {
-		Throw(L"Could not register class", ExceptionTypeError);
-	}
-
-	wc.lpszClassName = TJ_PROPERTY_EDIT_TIME_CLASS_NAME;
-	wc.lpfnWndProc = PropertyEditTimeWndProc;
-	if(!RegisterClassEx(&wc)) {
-		Throw(L"Could not register class", ExceptionTypeError);
-	}
-
-	wc.lpszClassName = TJ_PROPERTY_LABEL_CLASS_NAME;
-	wc.lpfnWndProc = PropertyLabelWndProc;
-	if(!RegisterClassEx(&wc)) {
-		Throw(L"Could not register class", ExceptionTypeError);
 	}
 
 	_classesRegistered = true;
@@ -932,102 +903,6 @@ void Wnd::OnFocus(bool a) {
 }
 
 void Wnd::OnMouse(MouseEvent me, Pixels x, Pixels y) {
-}
-
-LRESULT CALLBACK PropertyEditNumericWndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) {
-	static int begin_y = -1;
-	static int begin_value = -1;
-
-	if(msg==WM_KEYDOWN) {
-		if(wp==VK_RIGHT||wp==VK_LEFT) {
-			DWORD n = GetWindowTextLength(wnd);
-			wchar_t* buf = new wchar_t[n+2];
-			GetWindowText(wnd, buf, n+1);
-
-			int data = _wtoi(buf);
-			data = data + ((wp==VK_LEFT)?-1:1);
-			
-			std::wostringstream os;
-			os << data;
-			std::wstring getal = os.str();
-			SetWindowText(wnd, getal.c_str());
-			return 0;
-		}
-		if((wp>L'9' || wp < L'0')&&wp!=L'-' &&wp!=L':' && wp!=VK_DELETE && wp!=VK_HOME && wp!=VK_END && wp!=L'\b' && wp!=VK_UP && wp!=VK_DOWN) {
-			return 0; // no alpha-numeric stuff in here please!
-		}
-		else if(wp==VK_DOWN || wp==VK_UP || wp==VK_TAB) {
-			HWND root = GetAncestor(wnd, GA_ROOT);
-			SetFocus(GetNextDlgTabItem(root, wnd, wp==VK_UP));
-		}
-	}
-	else if(msg==WM_CHAR) {
-		if((wp>L'9' || wp < L'0')&&wp!=L'-' && wp!=L':' && wp!=VK_DELETE && wp!=VK_HOME && wp!=VK_END && wp!=L'\b' && wp!=VK_UP && wp!=VK_DOWN) {
-			return 0; // no alpha-numeric stuff in here please!
-		}
-	}
-	else if(msg==WM_MBUTTONDOWN) {
-		SetCapture(wnd);
-		begin_y = GET_Y_LPARAM(lp);
-
-		int n = GetWindowTextLength(wnd);
-		wchar_t* buffer = new wchar_t[n+2];
-		GetWindowText(wnd, buffer, n+1);
-		std::wstring value = buffer;
-		delete[] buffer;
-
-		begin_value = StringTo<int>(value, -1);
-	}
-	else if(msg==WM_MBUTTONUP) {
-		ReleaseCapture();
-		begin_y = begin_value = -1;
-	}
-	else if(msg==WM_MOUSEMOVE && Wnd::IsKeyDown(KeyMouseMiddle)) {
-		if(begin_y>=0) {
-			int dy = begin_y - GET_Y_LPARAM(lp);
-
-			if(begin_value!=-1) {
-				int x = dy*dy;
-				if(dy<0) x = -x;
-				std::wstring newValue = Stringify(begin_value+x);
-				SetWindowText(wnd, newValue.c_str());
-			}
-		}
-	}
-	return PropertyEditWndProc(wnd, msg, wp, lp);
-}
-
-LRESULT CALLBACK PropertyEditTimeWndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) {
-	return PropertyEditWndProc(wnd, msg, wp, lp);
-}
-
-LRESULT CALLBACK PropertyLabelWndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) {
-	if(msg==WM_PAINT) {
-		PAINTSTRUCT ps;
-		BeginPaint(wnd, &ps);
-		Graphics g(ps.hdc);
-
-		ref<Theme> theme = ThemeManager::GetTheme();
-		RECT rc;
-		GetClientRect(wnd, &rc);
-
-		SolidBrush backBrush(theme->GetColor(Theme::ColorPropertyBackground));
-		SolidBrush textBrush(theme->GetColor(Theme::ColorText));
-
-		int n = GetWindowTextLength(wnd);
-		wchar_t* str = new wchar_t[n+2];
-		GetWindowText(wnd, str, n+1);
-
-		RectF rcf((float)rc.left, (float)rc.top, float(rc.right-rc.left), float(rc.bottom-rc.top));
-		g.FillRectangle(&backBrush, rcf);
-		rcf.Y += 3;
-		g.DrawString(str,n, theme->GetGUIFont(),rcf, 0, &textBrush);
-		delete[] str;
-
-		EndPaint(wnd, &ps);
-		return 0;
-	}
-	return DefWindowProc(wnd, msg, wp, lp);
 }
 
 /* Displays */

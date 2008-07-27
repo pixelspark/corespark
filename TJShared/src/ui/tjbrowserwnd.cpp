@@ -2,6 +2,9 @@
 using namespace tj::shared::graphics;
 using namespace tj::shared;
 
+#pragma warning(push)
+#pragma warning(disable: 4251)
+
 #ifndef TJ_NO_ATL
 	#include <atlbase.h>
 	#include <atlwin.h>
@@ -351,3 +354,5 @@ using namespace tj::shared;
 		g.FillRectangle(&br, rc);
 	}
 #endif
+
+#pragma warning(pop)

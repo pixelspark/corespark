@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="8,00"
 	Name="TJCrashReporter"
 	ProjectGUID="{DE31C292-E851-409F-94E6-5AA3D836FCE2}"
 	RootNamespace="TJCrashReporter"

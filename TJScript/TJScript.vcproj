@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="8,00"
 	Name="TJScript"
 	ProjectGUID="{D4EAFD13-7D45-4DA8-A68D-2000FC2FE6BB}"
 	RootNamespace="TJScript"

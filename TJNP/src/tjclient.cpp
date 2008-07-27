@@ -2,11 +2,7 @@
 #include "../../Libraries/tinyxml.h"
 #include <time.h>
 #include <sstream>
-
-#ifdef _WIN32
-	#include <windows.h> 
-	#include <ws2tcpip.h>
-#endif
+#include <ws2tcpip.h>
 
 using namespace tj::np;
 using namespace tj::shared;
@@ -58,7 +54,7 @@ std::wstring BasicClient::GetHostName(const std::wstring& ip) {
 
 	char hostName[255];
 	memset(hostName, 0, sizeof(char)*255);
-	getnameinfo((const sockaddr*)&host, sizeof(host), hostName, sizeof(char)*254, 0, 0, 0);
+	GetNameInfoA((const sockaddr*)&host, sizeof(host), hostName, sizeof(char)*254, 0, 0, 0);
 	return Wcs(std::string(hostName));
 }
 

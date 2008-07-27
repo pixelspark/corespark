@@ -14,12 +14,14 @@ namespace tj {
 				virtual void SetHint(const std::wstring& h);
 				virtual bool IsExpandable() const;
 				virtual void SetExpanded(bool t);
+				
 				virtual bool IsExpanded();
-
 				virtual ref<Wnd> GetWindow() = 0;
 				virtual void Update() = 0;
 				
 			protected:
+				virtual void SetExpandable(bool t);
+
 				bool _expandable;
 				bool _expanded;
 				std::wstring _name;

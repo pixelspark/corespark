@@ -92,6 +92,10 @@ namespace tj {
 			return def ? (ln!=Bool::KFalse) : (ln==Bool::KTrue);
 		}
 
+		template<> std::wstring StringTo(const std::wstring& s, const std::wstring& def) {
+			return s;
+		}
+
 		template<> std::wstring Stringify(const bool& x) {
 			std::wostringstream o;
 			o << x ? Bool::KTrue : Bool::KFalse;

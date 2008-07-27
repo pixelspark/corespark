@@ -2,6 +2,8 @@
 using namespace tj::shared;
 using namespace tj::shared::graphics;
 
+#include <commdlg.h>
+
 DialogWnd::DialogWnd(const std::wstring& title, const std::wstring& question): TopWnd(title.c_str()), _question(question) {
 	SetStyle(WS_POPUPWINDOW|WS_THICKFRAME);
 	_grid = GC::Hold(new PropertyGridWnd(false));

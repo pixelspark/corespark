@@ -273,7 +273,7 @@ void ToolbarWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	}
 }
 
-void ToolbarItem::DrawToolbarButton(graphics::Graphics& g, const Area& rc, ref<Theme> theme, bool over, bool down, bool separator) {
+void ToolbarItem::DrawToolbarButton(graphics::Graphics& g, const Area& rc, ref<Theme> theme, bool over, bool down, bool separator, float alpha) {
 	Pixels buttonSize = theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
 	Pixels x = rc.GetX();
 
@@ -285,9 +285,11 @@ void ToolbarItem::DrawToolbarButton(graphics::Graphics& g, const Area& rc, ref<T
 			g.FillRectangle(&active, wrapped);
 		}
 		else {
-			LinearGradientBrush active(PointF(0.0f, 0.0f), PointF(0.0f, float(rc.GetHeight())), theme->GetColor(Theme::ColorActiveStart), theme->GetColor(Theme::ColorActiveEnd));
+			LinearGradientBrush active(PointF(0.0f, 0.0f), PointF(0.0f, float(rc.GetHeight())), Theme::ChangeAlpha(theme->GetColor(Theme::ColorActiveStart),int(alpha*255.0f)), Theme::ChangeAlpha(theme->GetColor(Theme::ColorActiveEnd), int(alpha*255.0f)));
 			g.FillRectangle(&active, wrapped);
 		}
+
+		theme->DrawHighlightEllipse(g, rc, down ? 1.0f : 0.5f);
 
 		LinearGradientBrush glas(PointF(0.0f,0.0f), PointF(0.0f,float(rc.GetHeight())/2.0f), theme->GetColor(Theme::ColorGlassStart), theme->GetColor(Theme::ColorGlassEnd));
 		g.FillRectangle(&glas, wrapped);
@@ -321,7 +323,6 @@ void ToolbarItem::DrawToolbarButton(Graphics& g, Icon& icon, const Area& rc, ref
 		g.FillRectangle(&glas, wrapped);
 	}
 
-	//g.DrawImage(icon, RectF(fx+4.0f, 4.0f, 16.0f, 16.0f));
 	icon.Paint(g, Area(x+3, 4, 16, 16), enabled);
 
 	if(separator) {

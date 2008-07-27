@@ -1,13 +1,7 @@
 #include "../include/tjnp.h"
-#ifdef _WIN32
-	#include <windows.h>
-#else
-	#error Socket not yet implemented on other platforms than Windows
-#endif
 
 #include <time.h>
 #include <sstream>
-#include <ws2tcpip.h>
 
 using namespace tj::shared;
 using namespace tj::np;

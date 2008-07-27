@@ -170,7 +170,7 @@ void TabWnd::Paint(Graphics& g, ref<Theme> theme) {
 			if(pane->HasIcon()) {
 				ref<Icon> icon = pane->GetIcon();
 				if(icon) {
-					icon->Paint(g, Area(left+4, scrollerHeight+4, KRealIconWidth, KRealIconWidth), 0.5f+(_entryAnimation.GetFraction()/2.0f));
+					icon->Paint(g, Area(left+4, scrollerHeight+4, KRealIconWidth, KRealIconWidth), (pane==_current) ? 1.0f : (0.5f+(_entryAnimation.GetFraction()/2.0f)));
 				}
 			}
 			g.DrawString(title.c_str(), (INT)title.length(), theme->GetGUIFontBold(), PointF(float(left+1+(pane->HasIcon()?KIconWidth:0)), scrollerHeight+4.0f), (pane==_current) ? &textBrush : &inactiveTextBrush);

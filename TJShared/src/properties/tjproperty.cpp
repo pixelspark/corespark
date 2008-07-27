@@ -34,6 +34,11 @@ std::wstring Property::GetName() {
 	return _name;
 }
 
+void Property::SetExpandable(bool t) {
+	_expandable = t;
+	if(!_expandable) _expanded = false;
+}
+
 Pixels Property::GetHeight() {
 	ref<Theme> theme = ThemeManager::GetTheme();
 	return theme->GetMeasureInPixels(Theme::MeasurePropertyHeight);

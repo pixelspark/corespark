@@ -150,6 +150,7 @@ namespace tj {
 		}
 
 		template<> EXPORTED bool StringTo(const std::wstring& s, const bool& def);
+		template<> EXPORTED std::wstring StringTo(const std::wstring& s, const std::wstring& def);
 		template<> EXPORTED std::wstring Stringify(const bool& x);
 		template<> EXPORTED std::wstring Stringify(const int& x);
 	}

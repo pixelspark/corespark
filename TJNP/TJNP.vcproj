@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="8,00"
 	Name="TJNP"
 	ProjectGUID="{C8B29EE9-9A4D-4D41-8830-3A12ED553573}"
 	RootNamespace="TJNP"

@@ -54,7 +54,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrev, LPSTR cmd, int nShow) {
 		}
 
 		std::wstring msg = message.str();
-		Alert::Show(TL(crash_title), msg, Alert::TypeInfprmation);
+		Alert::Show(TL(crash_title), msg, Alert::TypeInformation);
 	}
 	
 	return 0;

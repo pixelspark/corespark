@@ -2,6 +2,11 @@
 using namespace tj::shared;
 using namespace tj::shared::graphics;
 
+#ifdef _WIN32
+	// We provide a way to use the Windows color chooser
+	#include <commdlg.h>
+#endif
+
 /* ColorWheel */
 ColorWheel::ColorWheel() {
 	_bitmap = 0;
@@ -297,22 +302,24 @@ void ColorChooserWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 		_cpw->Show(false);
 	}
 	else if(ev==MouseEventRDown) {
-		COLORREF g_rgbBackground = RGB(BYTE((_color->_r)*255.0), BYTE((_color->_g)*255.0), BYTE((_color->_b)*255.0));
-		COLORREF g_rgbCustom[16] = {0};
+		#ifdef _WIN32	
+			COLORREF g_rgbBackground = RGB(BYTE((_color->_r)*255.0), BYTE((_color->_g)*255.0), BYTE((_color->_b)*255.0));
+			COLORREF g_rgbCustom[16] = {0};
 
-		CHOOSECOLOR cc = {sizeof(CHOOSECOLOR)};
+			CHOOSECOLOR cc = {sizeof(CHOOSECOLOR)};
 
-		cc.Flags = CC_RGBINIT | CC_FULLOPEN | CC_ANYCOLOR;
-		cc.hwndOwner = GetWindow();
-		cc.rgbResult = g_rgbBackground;
-		cc.lpCustColors = g_rgbCustom;
+			cc.Flags = CC_RGBINIT | CC_FULLOPEN | CC_ANYCOLOR;
+			cc.hwndOwner = GetWindow();
+			cc.rgbResult = g_rgbBackground;
+			cc.lpCustColors = g_rgbCustom;
 
-		if(ChooseColor(&cc)) {
-			_color->_r = double(GetRValue(cc.rgbResult))/255.0;
-			_color->_g = double(GetGValue(cc.rgbResult))/255.0;
-			_color->_b = double(GetBValue(cc.rgbResult))/255.0;
-			if(_tcolor!=0) *_tcolor = *_color;
-		}
+			if(ChooseColor(&cc)) {
+				_color->_r = double(GetRValue(cc.rgbResult))/255.0;
+				_color->_g = double(GetGValue(cc.rgbResult))/255.0;
+				_color->_b = double(GetBValue(cc.rgbResult))/255.0;
+				if(_tcolor!=0) *_tcolor = *_color;
+			}
+		#endif
 
 		Repaint();
 	}

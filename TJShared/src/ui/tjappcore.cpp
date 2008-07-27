@@ -226,7 +226,7 @@ bool Alert::ShowYesNo(const std::wstring& title, const std::wstring& text, Alert
 }
 
 Alert::Result Alert::ShowYesNoCancel(const std::wstring& title, const std::wstring& text, AlertType t) {
-	int r = MessageBox(0L, text.c_str(), title.c_str(), MB_YESNO|ConvertAlertType(t));
+	int r = MessageBox(0L, text.c_str(), title.c_str(), MB_YESNOCANCEL|ConvertAlertType(t));
 	switch(r) {
 		case IDYES:
 			return ResultYes;
