@@ -1,5 +1,6 @@
 #include "../include/tjcore.h"
 #include <shlwapi.h>
+#include <shellapi.h>
 using namespace tj::shared;
 
 std::wstring File::GetDirectory(const std::wstring& pathToFile) {
@@ -17,6 +18,34 @@ std::wstring File::GetExtension(const std::wstring& pathToFile) {
 bool File::Exists(const std::wstring& st) {
 	ZoneEntry ze(Zones::LocalFileInfoZone);
 	return GetFileAttributes(st.c_str())!=INVALID_FILE_ATTRIBUTES;
+}
+
+bool File::Move(const std::wstring& from, const std::wstring& to, bool silent) {
+	SHFILEOPSTRUCT op;
+	op.pFrom = from.c_str();
+	op.pTo = to.c_str();
+	op.wFunc = FO_MOVE;
+	op.hwnd = NULL;
+	op.fFlags = FOF_NOCONFIRMATION|FOF_NOCONFIRMMKDIR|(silent ? FOF_SILENT : 0);
+	op.fAnyOperationsAborted = 0;
+	op.hNameMappings = 0;
+	op.lpszProgressTitle = 0L;
+
+	return SHFileOperation(&op) == 0;
+}
+
+bool File::Copy(const std::wstring& from, const std::wstring& to, bool silent) {
+	SHFILEOPSTRUCT op;
+	op.pFrom = from.c_str();
+	op.pTo = to.c_str();
+	op.wFunc = FO_COPY;
+	op.hwnd = NULL;
+	op.fFlags = FOF_NOCONFIRMATION|FOF_NOCONFIRMMKDIR|(silent ? FOF_SILENT : 0);
+	op.fAnyOperationsAborted = 0;
+	op.hNameMappings = 0;
+	op.lpszProgressTitle = 0L;
+
+	return SHFileOperation(&op) == 0;
 }
 
 Bytes File::GetDirectorySize(const std::wstring& dirPath) {
@@ -50,7 +79,5 @@ Bytes File::GetDirectorySize(const std::wstring& dirPath) {
 	while(FindNextFile(search, &fd));
 
 	FindClose(search);
-
-	// TODO: what to do when size exceeds 4GB (largest number in unsigned int)?
 	return (Bytes)totalSize.QuadPart;
 }

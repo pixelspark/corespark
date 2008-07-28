@@ -14,7 +14,7 @@ namespace tj {
 
 			protected:
 				Vector* _vec;
-				VectorPropertyWnd* _wnd;
+				ref<Wnd> _wnd;
 		};
 	}
 }

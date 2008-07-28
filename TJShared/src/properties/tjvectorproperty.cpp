@@ -97,7 +97,7 @@ VectorProperty::~VectorProperty() {
 
 ref<Wnd> VectorProperty::GetWindow() {
 	if(!_wnd) {
-		_wnd = new VectorPropertyWnd(_vec);
+		_wnd = GC::Hold(new VectorPropertyWnd(_vec));
 	}
 	return _wnd;
 }
