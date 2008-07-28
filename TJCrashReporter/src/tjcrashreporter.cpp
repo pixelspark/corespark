@@ -1,5 +1,5 @@
 #include "../TJShared/include/tjshared.h"
-#include <breakpad/src/client/windows/sender/crash_report_sender.h>
+#include <../Libraries/Breakpad/src/client/windows/sender/crash_report_sender.h>
 #include <shlwapi.h> 
 using namespace tj::shared;
 using namespace google_breakpad;
@@ -34,7 +34,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrev, LPSTR cmd, int nShow) {
 		return 0;
 	}
 
-	bool send = Alert::ShowYesNo(TL(crash_question), TL(crash_argument_error), Alert::TypeError);
+	bool send = Alert::ShowYesNo(TL(crash_title), TL(crash_question), Alert::TypeError);
 	std::wostringstream message;
 
 	if(send) {

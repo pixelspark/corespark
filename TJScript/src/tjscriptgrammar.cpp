@@ -4,9 +4,10 @@ using namespace tj::script;
 
 #ifndef TJ_NO_SPIRIT
 #pragma warning(push)
-#pragma warning(disable: 4800 4503) // small thingy in Spirit header file, decorated names too long
+#pragma warning(disable: 4800 4503 4244) // small thingy in Spirit header file, decorated names too long
 #pragma inline_depth(255)
 #pragma inline_recursion(on)
+#undef WIN32_LEAN_AND_MEAN // Defined in file_iterator.ipp
 #include <boost/spirit.hpp>
 #include <boost/spirit/core.hpp>
 #include <stack>

@@ -1,0 +1,57 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>Spirit 1.8.3 with miniboost</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<style type="text/css">
+<!--
+body {
+	font-family: Geneva, Arial, Helvetica, sans-serif;
+}
+.style1 {font-family: "Courier New", Courier, mono}
+-->
+</style>
+</head>
+
+<body>
+<h1 align="left">Spirit 1.8.3 with miniboost</h1>
+<p align="left">This package comes bundled with <strong>miniboost</strong>: a re-packaged minimal subset of boost; just enough to use Spirit.</p>
+<ul>
+  <li>The docs for Spirit are located in the <strong>libs/spirit/doc</strong> subdirectory.</li>
+  <li>The library is under the <strong>boost</strong> subdirectory.</li>
+  <li>The examples are in <strong>libs/spirit/example</strong></li>
+  <li>The test suite is in <strong>libs/spirit/test</strong>.</li>
+  <li>The Spirit homepage is <strong><a href="http://spirit.sourceforge.net/">http://spirit.sourceforge.net/</a></strong></li>
+  <li>Questions, comments, complaints, bug-fixes? Please send them to the Spirit mailing list: <strong>spirit-general@lists.sourceforge.net</strong></li>
+</ul>
+<h2>Running the tests</h2>
+<p>The testsuite can be executed by using the Boost.Build system as described on the Boost pages: <strong><a href="http://www.boost.org">http://www.boost.org</a></strong>. </p>
+<p>For example, using MSVC 7.1:</p>
+<ol><li>Download a prebuilt executable of <a href="http://sourceforge.net/project/showfiles.php?group_id=7586&package_id=72941">bjam.exe</a>. Put it somewhere in your path.</li>
+  <li>With the latest Boost Build, you don't have to configure the tool if you installed VC7.1 in the default location.</li>
+  <li>Change (<span class="style1">CD</span>)  the directory to <strong>libs/spirit/test</strong>.</li>
+  <li>Call bjam:<br>
+    <br>
+    <span class="style1">bjam -sTOOLS=vc-7_1 test</span></li>
+</ol>
+<p><strong>Note:</strong> Some compilers may not be able to compile all of the tests and examples.</p>
+<h2>Using the library</h2>
+<p>There are no libraries to build, Spirit is a header-only library. Simply point your compiler's include path to the spirit directory. The library is under the <strong>boost</strong> subdirectory</p>
+<h2>Building the examples</h2>
+<p>The examples can be built by using the Boost.Build system as described on the Boost pages: <strong><a href="http://www.boost.org">http://www.boost.org</a></strong>.</p>
+<p>For example, using MSVC 7.1, follow the instructions above (Running the tests) <strong>except 6</strong>. CD to <strong>libs/spirit/example</strong> instead. </p>
+<h2>Notes</h2>
+<ul>
+  <li>Some examples might require other boost libraries. If this is the case, you'll have to get them. </li>
+  <li>If you want to build spirit as thread safe, you have to define the BOOST_SPIRIT_THREADSAFE macro. If that's the case, Spirit uses the boost thread library, which is not distributed together with spirit. You will have to add the boost headers to your include path. You will also need to link with the library and your platform threading library. </li>
+  <li>None of the examples are built by default.</li>
+  <li>If an example will require a library that you don't have, it will not be built.</li>
+  <li>Some compilers may not be able to compile all of the tests and examples. </li>
+</ul>
+<h2>Phoenix</h2>
+<p>Phoenix is a stand alone library that comes bundled in this distribution. If you wish to build the examples and run the testsuites for this library, the process is similar to what was outlined above. For example, using MSVC 7.1, follow the instructions above (Running the tests) <strong>except 6</strong>. CD to the appropriate test or example directory instead. </p>
+<p>&nbsp;</p>
+<p></p>
+</body>
+</html>
