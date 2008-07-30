@@ -49,8 +49,14 @@ namespace tj {
 				ref<Wnd> _wnd;
 		};
 
+		// GenericProperty<bool>
 		template<> ref<Wnd> EXPORTED GenericProperty<bool>::GetWindow();
 		template<> void EXPORTED GenericProperty<bool>::Update();
+		
+		// GenericProperty<Time>
+		// The default for Stringify(Time) is to output a number of milliseconds, we want the formatted string
+		// since StringTo<Time> can perfectly handle that.
+		template<> void EXPORTED GenericProperty<Time>::Update();
 	}
 }
 

@@ -393,6 +393,19 @@ void Socket::SendResourceAdvertise(ref<BasicClient> c, const std::wstring& rid, 
 	Send(stream, &addr);
 }
 
+void Socket::SendOutletChange(Channel ch, const std::wstring& outletName, const tj::shared::Any& value) {
+	ThreadLock lock(&_lock);
+	ref<Message> stream = GC::Hold(new Message(true));
+	stream->GetHeader()->_channel = 0;
+	stream->GetHeader()->_action = ActionOutletChange;
+
+	stream->Add<Channel>(ch);
+	stream->Add<short>(value.GetType());
+	stream->Add(value.ToString());
+	stream->Add(outletName);
+	Send(stream);
+}
+
 void Socket::Send(ref<Packet> p) {
 	sockaddr_in addr;
 	addr.sin_family = AF_INET;

@@ -96,6 +96,7 @@ namespace tj {
 			ActionPromoted = 17,		// Sent by a master when it asserts that it is the primary master
 			ActionDemoted = 18,			// Sent by a master to notify failover masters that they can take over the network
 			ActionAnnounceReply = 19,	// Announce reply
+			ActionOutletChange = 20,	// Sent by a client to the master when it wants to change an outlet value (through Talkback) [ChannelID] [wstring outletID] [unsigned int (Any::Type) valueType] [double|bool|int|wstring value]
 		};
 
 		class Packet {

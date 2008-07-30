@@ -94,6 +94,7 @@ class PropertyCheckBoxWnd: public CheckboxWnd {
 		bool* _also;
 };
 
+/** GenericProperty specializations **/
 ref<Wnd> GenericProperty<bool>::GetWindow() {
 	if(!_wnd) {
 		_wnd = GC::Hold(new PropertyCheckBoxWnd(_value, _alsoSet));
@@ -107,5 +108,11 @@ void GenericProperty<bool>::Update() {
 	if(cb) {
 		cb->SetChecked(*_value);
 		cb->Update();
+	}
+}
+
+void GenericProperty<Time>::Update() {
+	if(_wnd) {
+		_wnd->SetText(_value->Format());
 	}
 }
