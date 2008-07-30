@@ -102,11 +102,11 @@ void Zone::Enter() {
 	}
 }
 
-Zone Zones::LocalFileReadZone;
-Zone Zones::LocalFileWriteZone;
-Zone Zones::LocalFileInfoZone;
-Zone Zones::LocalFileAdministrationZone;
-Zone Zones::LogZone;
-Zone Zones::ModifyLocaleZone;
-Zone Zones::ClipboardZone;
-Zone Zones::ShowModalDialogsZone;
+Zone EXPORTED Zones::LocalFileReadZone;
+Zone EXPORTED Zones::LocalFileWriteZone;
+Zone EXPORTED Zones::LocalFileInfoZone;
+Zone EXPORTED Zones::LocalFileAdministrationZone;
+Zone EXPORTED Zones::LogZone;
+Zone EXPORTED Zones::ModifyLocaleZone;
+Zone EXPORTED Zones::ClipboardZone;
+Zone EXPORTED Zones::ShowModalDialogsZone;

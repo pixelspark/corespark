@@ -3,7 +3,7 @@ using namespace tj::shared;
 using namespace tj::script;
 
 template<class T> struct ScriptTypeRegistration {
-	inline ScriptTypeRegistration(std::wstring n) {
+	inline ScriptTypeRegistration(const std::wstring& n) {
 		ScriptContext::AddStaticType(n, GC::Hold(new T()));
 	}
 };

@@ -254,6 +254,9 @@ namespace tj {
 
 		// Write the object to XML
 		TiXmlDocument doc;
+		TiXmlComment comment;
+		comment.SetValue("TJ XML clipboard object");
+		doc.InsertEndChild(comment);
 		TiXmlElement root("object");
 		sr->Save(&root);
 		doc.InsertEndChild(root);
@@ -278,9 +281,7 @@ namespace tj {
 				}
 
 				SetClipboardData(_formatID, mem);
-				#ifdef _DEBUG
-					SetClipboardData(CF_TEXT, mem);
-				#endif
+				SetClipboardData(CF_TEXT, mem);
 
 				CloseClipboard();
 
