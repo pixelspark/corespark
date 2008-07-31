@@ -5,14 +5,13 @@ namespace tj {
 	namespace shared {
 		class EXPORTED EditWnd: public ChildWnd {
 			public:
-				EditWnd();
+				EditWnd(bool multiLine=false);
 				virtual ~EditWnd();
 				virtual std::wstring GetText();
 				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
 				virtual void Layout();
 				virtual void SetText(std::wstring ws);
 				virtual void SetReadOnly(bool r);
-				virtual void SetMultiline(bool m);
 				virtual void SetBorder(bool b);
 				void SetCue(const std::wstring& cue);
 				virtual bool HasFocus(bool childrenToo) const;

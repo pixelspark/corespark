@@ -6,11 +6,16 @@ using namespace tj::shared::graphics;
 // declared and used in tjui.cpp, but shouldn't be public
 LRESULT CALLBACK WndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 
-EditWnd::EditWnd(): ChildWnd(L"", false, false), _backBrush(0) {
+EditWnd::EditWnd(bool multiline): ChildWnd(L"", false, false), _backBrush(0) {
 	SetStyle(WS_CLIPCHILDREN);
 	SetStyleEx(WS_EX_CONTROLPARENT);
 
-	_ctrl = CreateWindowEx(0, L"EDIT", L"", WS_CHILD|WS_TABSTOP|ES_AUTOHSCROLL, 0, 0, 10, 10, GetWindow(), 0, GetModuleHandle(NULL), 0);
+	long flags = WS_CHILD|WS_TABSTOP|ES_AUTOHSCROLL;
+	if(multiline) {
+		flags |= ES_MULTILINE|ES_WANTRETURN|ES_AUTOVSCROLL|WS_VSCROLL;
+	}
+
+	_ctrl = CreateWindowEx(0, L"EDIT", L"", flags, 0, 0, 10, 10, GetWindow(), 0, GetModuleHandle(NULL), 0);
 	_font = CreateFont(-11, 0, 0, 0, 400, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, DEFAULT_PITCH, TL(ui_font));
 	SendMessage(_ctrl, WM_SETFONT, (WPARAM)(HFONT)_font, FALSE);
 	Layout();
@@ -53,17 +58,6 @@ void EditWnd::Layout() {
 
 void EditWnd::SetReadOnly(bool r) {
 	SendMessage(_ctrl, EM_SETREADONLY, (WPARAM)(BOOL)r, 0);
-}
-
-void EditWnd::SetMultiline(bool t) {
-	long s = GetWindowLong(_ctrl, GWL_STYLE);
-	if(t) {
-		s |= ES_MULTILINE;
-	}
-	else {
-		s &= (~ES_MULTILINE);
-	}
-	SetWindowLong(_ctrl, GWL_STYLE, s);
 }
 
 void EditWnd::SetBorder(bool t) {

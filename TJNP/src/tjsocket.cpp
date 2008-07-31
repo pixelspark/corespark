@@ -402,7 +402,8 @@ void Socket::SendOutletChange(Channel ch, const std::wstring& outletName, const 
 	stream->Add<Channel>(ch);
 	stream->Add<short>(value.GetType());
 	stream->Add(value.ToString());
-	stream->Add(outletName);
+	Hash hash;
+	stream->Add<OutletHash>(hash.Calculate(outletName));
 	Send(stream);
 }
 
@@ -518,10 +519,11 @@ void NetworkInitializer::Initialize() {
 }
 
 NetworkInitializer::~NetworkInitializer() {
-	if(_data!=0) {
+	// This causes crash? WSAShutdown is not needed (it doesn't exist) anyway.,..
+	/*if(_data!=0) {
 		delete _data;
 		_data = 0;
-	}
+	}*/
 }
 
 #pragma pack(pop)

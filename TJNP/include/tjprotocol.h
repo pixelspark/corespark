@@ -10,6 +10,7 @@ namespace tj {
 		typedef unsigned short Channel;
 		typedef unsigned int PluginHash;
 		typedef int InstanceID;
+		typedef unsigned int OutletHash;
 		typedef unsigned int TransactionIdentifier;
 
 		// For device management & patching

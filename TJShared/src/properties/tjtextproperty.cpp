@@ -5,17 +5,10 @@ using namespace tj::shared::graphics;
 TextProperty::TextProperty(const std::wstring& name, std::wstring* value, Pixels height): GenericProperty<std::wstring>(name, value, 0, L"") {
 	_height = height;
 	SetExpandable(true);
+	SetMultiline(true);
 }
 
 TextProperty::~TextProperty() {
-}
-
-ref<Wnd> TextProperty::GetWindow() {
-	ref<EditWnd> ew = GenericProperty<std::wstring>::GetWindow();
-	if(ew) {
-		ew->SetMultiline(true);
-	}
-	return _wnd;
 }
 
 Pixels TextProperty::GetHeight() {

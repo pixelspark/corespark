@@ -7,7 +7,6 @@ namespace tj {
 			public:
 				TextProperty(const std::wstring& name, std::wstring* value, Pixels height = 100);
 				virtual ~TextProperty();
-				virtual ref<Wnd> GetWindow();
 				virtual Pixels GetHeight();
 
 			protected:

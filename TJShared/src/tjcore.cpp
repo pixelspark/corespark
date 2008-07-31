@@ -7,13 +7,14 @@ volatile long Resource::_resourceCount = 0L;
 /* GC */
 void GC::Log(const char* tp, bool allocate) {
 	if(allocate) {
-		OutputDebugStringA("A ");
+		OutputDebugString(L"A ");
 	}
 	else {
-		OutputDebugStringA("D ");
+		OutputDebugString(L"D ");
 	}
+
 	OutputDebugStringA(tp);
-	OutputDebugStringA("\r\n");
+	OutputDebugString(L"r\n");
 }
 
 /* Endpoint */

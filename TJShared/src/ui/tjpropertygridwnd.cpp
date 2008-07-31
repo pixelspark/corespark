@@ -237,6 +237,8 @@ void PropertyGridWnd::Layout() {
 
 	if(_path) {
 		_path->Move(0,0,rect.GetWidth(), KPathHeight);
+		// Make it topmost
+		SetWindowPos(_path->GetWindow(), HWND_TOP, 0,0, 0, 0, SWP_NOSIZE|SWP_NOMOVE|SWP_NOACTIVATE);
 	}
 
 	float df = ThemeManager::GetTheme()->GetDPIScaleFactor();

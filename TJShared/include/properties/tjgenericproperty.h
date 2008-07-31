@@ -5,7 +5,7 @@ namespace tj {
 	namespace shared {
 		template<typename T> class GenericProperty: public Property, public Listener<EditWnd::NotificationTextChanged> {
 			public:
-				GenericProperty(const std::wstring& name, T* value, T* alsoSet, T defaultValue): Property(name), _value(value), _alsoSet(alsoSet), _defaultValue(defaultValue) {
+				GenericProperty(const std::wstring& name, T* value, T* alsoSet, T defaultValue): Property(name), _multiLine(false), _value(value), _alsoSet(alsoSet), _defaultValue(defaultValue) {
 					if(value==0) Throw(L"Property value pointer cannot be null", ExceptionTypeWarning);
 				}
 
@@ -26,7 +26,7 @@ namespace tj {
 
 				virtual ref<Wnd> GetWindow() {
 					if(!_wnd) {
-						ref<EditWnd> ew = GC::Hold(new EditWnd());
+						ref<EditWnd> ew = GC::Hold(new EditWnd(_multiLine));
 						ew->EventTextChanged.AddListener(this);
 						ew->SetBorder(true);
 						ew->SetCue(Stringify(_defaultValue));
@@ -43,10 +43,15 @@ namespace tj {
 				}
 
 			protected:
+				virtual void SetMultiline(bool t) {
+					_multiLine = t;
+				}
+
 				T* _value;
 				T* _alsoSet;
 				T _defaultValue;
 				ref<Wnd> _wnd;
+				bool _multiLine;
 		};
 
 		// GenericProperty<bool>
