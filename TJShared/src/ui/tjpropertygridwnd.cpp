@@ -14,13 +14,12 @@ const Pixels PropertyGridWnd::KPropertyMargin = 3;
 
 /* PropertyGridWnd implementation */
 PropertyGridWnd::PropertyGridWnd(bool withPath): ChildWnd(TL(properties)),
-_expandIcon(Icons::GetIconPath(Icons::IconExpand)), _collapseIcon(Icons::GetIconPath(Icons::IconCollapse)) {
-	_nameWidth = 100;
+_expandIcon(Icons::GetIconPath(Icons::IconExpand)), _collapseIcon(Icons::GetIconPath(Icons::IconCollapse)),
+_nameWidth(100), _isDraggingSplitter(false), _showHints(true) {
 	SetStyle(WS_CLIPCHILDREN|WS_CLIPSIBLINGS);
 	SetStyleEx(WS_EX_CONTROLPARENT);
 	SetVerticallyScrollable(true);
-	_showHints = true;
-	_isDraggingSplitter = false;
+	_tw = GC::Hold(new TooltipWnd(GetWindow()));
 
 	if(withPath) {
 		_path = GC::Hold(new PathWnd(this));
@@ -159,6 +158,7 @@ void PropertyGridWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 	}
 	else if(ev==MouseEventLDown) {
 		Focus();
+		_tw->SetTrackEnabled(false);
 
 		if(x>(_nameWidth-5) && x<(_nameWidth+5)) {
 			_isDraggingSplitter = true;
@@ -195,16 +195,35 @@ void PropertyGridWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 					}
 					else if(!previousCollapsed) {
 						if(y>cH && y<cH+h) {
+							// found; focus this property
+							ref<Wnd> pw = pr->GetWindow();
+							if(pw) {
+								pw->Focus();
+							}
+
+							// Expand/collapse icon
 							if(x>(_nameWidth-21) && x<(_nameWidth-5)) { // expand/collapse icons have this x
-								// found
 								if(pr->IsExpandable()) {
 									pr->SetExpanded(!pr->IsExpanded());
 								}
 								OnSize(GetClientArea()); // So our scrollbar is updated
 								Layout();
-								Repaint();
-								return;
 							}
+							else {
+								// Show the hint, if the property has one and we are allowed to show them
+								if(_showHints) {
+									const std::wstring& hint = pr->GetHint();
+									if(hint.length()>0) {
+										_tw->SetTooltip(hint);
+										_tw->Move(_nameWidth,cH+h+GetPathHeight()+2*KPropertyMargin);
+										_tw->SetTrackEnabled(true);
+
+									}
+								}
+							}
+
+							Repaint();
+							return;
 						}
 						cH += h + 2*KPropertyMargin;
 					}

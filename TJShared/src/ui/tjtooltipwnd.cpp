@@ -22,6 +22,16 @@ TooltipWnd::~TooltipWnd() {
 	DestroyWindow(_wnd);
 }
 
+void TooltipWnd::Move(Pixels x, Pixels y) {
+	ref<Theme> theme = ThemeManager::GetTheme();
+	float df = theme->GetDPIScaleFactor();
+	POINT p;
+	p.x = int(x*df);
+	p.y = int(y*df);
+	ClientToScreen(_owner, &p);
+	SetTrackPosition(p.x, p.y);
+}
+
 void TooltipWnd::SetTrackEnabled(bool t) {
 	TOOLINFO ti;
 	ti.cbSize = sizeof(TOOLINFO);
@@ -44,5 +54,6 @@ void TooltipWnd::SetTooltip(std::wstring text) {
 	ti.lpszText = (wchar_t*)text.c_str();
 
 	GetClientRect(_owner, &ti.rect);
+	SendMessage(_wnd, TTM_SETMAXTIPWIDTH, 0, 300);
 	SendMessage(_wnd, TTM_SETTOOLINFO, 0, (LPARAM)&ti);
 }

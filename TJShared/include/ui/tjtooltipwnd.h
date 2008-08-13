@@ -9,6 +9,7 @@ namespace tj {
 				virtual ~TooltipWnd();
 				virtual void SetTrackEnabled(bool t);
 				virtual void SetTrackPosition(int x, int y);
+				virtual void Move(Pixels x, Pixels y);
 				virtual void SetTooltip(std::wstring text);
 
 			protected:

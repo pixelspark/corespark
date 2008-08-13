@@ -31,6 +31,7 @@ namespace tj {
 				bool _isDraggingSplitter;
 				bool _showHints;
 				Icon _expandIcon, _collapseIcon;
+				ref<TooltipWnd> _tw;
 
 				const static Pixels KPathHeight;
 				const static Pixels KMinimumNameColumnWidth;

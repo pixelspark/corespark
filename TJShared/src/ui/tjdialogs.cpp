@@ -47,7 +47,7 @@ void DialogWnd::Layout() {
 
 bool DialogWnd::DoModal(ref<Wnd> parent) {
 	// Get root window of parent
-	HWND parentNative = parent ? parent->GetWindow() : 0;
+	HWND parentNative = parent ? parent->GetWindow() : GetForegroundWindow();
 	HWND root = GetAncestor(parentNative, GA_ROOT);
 	EnableWindow(root,FALSE);
 

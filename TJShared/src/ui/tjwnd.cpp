@@ -739,6 +739,15 @@ LRESULT Wnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	else if(msg==WM_CUT) {
 		OnCut();
 	}
+	else if(msg==WM_NOTIFY) {
+		// This is necessary to make multiline tooltips in TooltipWnd work (at least, when hosted in a
+		// Wnd-based window). See http://msdn.microsoft.com/en-us/library/ms906591.aspx
+		LPNMHDR nm = (LPNMHDR)lp;
+		if(nm->code==TTN_GETDISPINFO) {
+			SendMessage(nm->hwndFrom, TTM_SETMAXTIPWIDTH, 0, 300);
+			return 0;
+		}
+	}
 
 	return DefWindowProc(_wnd, msg, wp, lp);
 }
