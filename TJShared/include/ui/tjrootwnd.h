@@ -25,7 +25,7 @@ namespace tj {
 				virtual void RemoveOrphanPane(ref<Pane> pane) = 0;
 
 				// Other
-				virtual void RevealWindow(ref<Wnd> wnd, ref<TabWnd> addTo=0) = 0;
+				virtual void RevealWindow(ref<Wnd> wnd, ref<TabWnd> addTo = ref<TabWnd>()) = 0;
 				virtual ref<TabWnd> FindTabWindowAt(int x, int y) = 0;
 				virtual ref<TabWnd> GetTabWindowById(const std::wstring& id) = 0;
 				virtual void SetDragTarget(ref<TabWnd> tw) = 0;
@@ -53,7 +53,7 @@ namespace tj {
 				virtual void RemoveTabWindow(ref<TabWnd> tw);
 				virtual void RemoveTabWindow(TabWnd* tw);
 
-				virtual void RevealWindow(ref<Wnd> wnd, ref<TabWnd> addTo=0);
+				virtual void RevealWindow(ref<Wnd> wnd, ref<TabWnd> addTo = ref<TabWnd>());
 				virtual ref<TabWnd> FindTabWindowAt(int x, int y);
 				virtual ref<TabWnd> GetTabWindowById(const std::wstring& id);
 				virtual void SetDragTarget(ref<TabWnd> tw);

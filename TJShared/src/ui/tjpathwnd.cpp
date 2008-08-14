@@ -19,7 +19,7 @@ ref<Crumb> Path::GetHead() {
 	if(rit!=_crumbs.rend()) {
 		return *rit;
 	}
-	return 0;
+	return null;
 }
 
 void Path::Add(ref<Crumb> r) {
@@ -220,7 +220,7 @@ void PathWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 		Repaint();
 	}
 	else if(ev==MouseEventLeave) {
-		_over = 0;
+		_over = null;
 		Repaint();
 	}
 }
@@ -248,8 +248,8 @@ void PathWnd::DoCrumbMenu(ref<Crumb> crumb, int x) {
 		}
 	}
 
-	int command = cm.DoContextMenu(this, x, rc.GetHeight()-1);
-	ref<Crumb> next = 0;
+	int command = cm.DoContextMenu(ref<Wnd>(this), x, rc.GetHeight()-1);
+	ref<Crumb> next;
 	if(command==1) {
 		next = crumb;
 	}

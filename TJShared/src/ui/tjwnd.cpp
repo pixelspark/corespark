@@ -811,7 +811,7 @@ void Wnd::OnScroll(ScrollDirection dir) {
 }
 
 ref<Icon> Wnd::GetTabIcon() const {
-	return 0;
+	return null;
 }
 
 /* Property edit window */
@@ -1067,21 +1067,21 @@ void Element::Fill(LayoutFlags flags, Area& rect, bool direct) {
 void Element::SetSize(Pixels w, Pixels h) {
 	_client.SetHeight(h);
 	_client.SetWidth(w);
-	OnSize.Fire(this, SizeNotification());
+	OnSize.Fire(ref<Object>(this), SizeNotification());
 }
 
 void Element::Move(Pixels x, Pixels y, Pixels w, Pixels h) {
 	_client = Area(x,y,w,h);
-	OnSize.Fire(this, SizeNotification());
+	OnSize.Fire(ref<Object>(this), SizeNotification());
 }
 
 void Element::Update() {
-	OnUpdate.Fire(this, UpdateNotification());
+	OnUpdate.Fire(ref<Object>(this), UpdateNotification());
 }
 
 void Element::Show(bool t) {
 	_shown = t;
-	OnShow.Fire(this, ShowNotification(t));
+	OnShow.Fire(ref<Object>(this), ShowNotification(t));
 }
 
 bool Element::IsShown() const {

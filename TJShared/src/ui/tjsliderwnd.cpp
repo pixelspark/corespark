@@ -52,7 +52,7 @@ void SliderWnd::SetDisplayValue(float v, bool notify) {
 
 		if(notify) {
 			Repaint();
-			EventChanged.Fire(this, NotificationChanged());
+			EventChanged.Fire(ref<Object>(this), NotificationChanged());
 		}
 	}
 }
@@ -69,7 +69,7 @@ void SliderWnd::SetValue(float f, bool notify) {
 		
 		if(notify) {
 			Repaint();
-			EventChanged.Fire(this, NotificationChanged());
+			EventChanged.Fire(ref<Object>(this), NotificationChanged());
 		}
 	}
 }
@@ -78,7 +78,7 @@ SliderWnd::~SliderWnd() {
 }
 
 void SliderWnd::Paint(Graphics& g, ref<Theme> theme) {
-	EventUpdate.Fire(this, NotificationUpdate());
+	EventUpdate.Fire(ref<Wnd>(this), NotificationUpdate());
 
 	Area rect = GetClientArea();
 

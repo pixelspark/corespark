@@ -222,7 +222,7 @@ ref<TabWnd> RootWnd::GetTabWindowById(const std::wstring& id) {
 		}
 		++it;
 	}
-	return 0;
+	return null;
 }
 
 void RootWnd::AddPane(ref<Pane> p, bool select) {
@@ -329,7 +329,7 @@ ref<TabWnd> RootWnd::FindTabWindowAt(int x, int y) {
 		itt++;
 	}
 
-	return 0;
+	return null;
 }
 
 void RootWnd::SetDragTarget(ref<TabWnd> tw) {

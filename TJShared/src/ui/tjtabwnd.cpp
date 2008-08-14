@@ -53,7 +53,7 @@ ref<Icon> TabWnd::GetTabIcon() const {
 	if(_current) {
 		return _current->GetIcon();
 	}
-	return 0;
+	return null;
 }
 
 void TabWnd::Rename(ref<Wnd> wnd, std::wstring name) {
@@ -263,7 +263,7 @@ ref<Pane> TabWnd::GetPane(int index) {
 		return _panes.at(index);
 	}
 	catch(...) {
-		return 0;
+		return null;
 	}
 }
 
@@ -271,8 +271,8 @@ void TabWnd::RemovePane(ref<Wnd> wnd) {
 	assert(wnd);
 
 	wnd->Show(false);
-	_current = 0;
-	_offset = 0;
+	_current = null;
+	_offset = null;
 	std::vector< ref<Pane> >::iterator it = _panes.begin();
 	while(it!=_panes.end()) {
 		ref<Pane> pane = *it;
@@ -456,7 +456,7 @@ void TabWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 					if(x<left) {
 						if(ev==MouseEventLUp) {
 							SelectPane(idx);
-							_dragging = 0;
+							_dragging = null;
 						}
 						else {
 							SetDraggingPane(pane);
@@ -543,7 +543,7 @@ void TabWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 					}
 				}
 				catch(...) {
-					_dragging = 0;
+					_dragging = null;
 				}
 
 				_dragStartX = x;
@@ -551,7 +551,7 @@ void TabWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 			}
 			else if(dy > TearOffLimit) {
 				Detach(_dragging);
-				_dragging = 0;
+				_dragging = null;
 			}
 			Update();
 		}
@@ -614,7 +614,7 @@ void TabWnd::Detach(ref<Pane> p) {
 	}
 
 	if(p==_current) {
-		_current = 0;
+		_current = null;
 	}
 	ref<WindowManager> root = _root;
 	if(root) {
@@ -712,7 +712,7 @@ void TabWnd::DoAddMenu(Pixels x, Pixels y) {
 			++it;
 		}
 
-		int c = m.DoContextMenu(this, rc.GetRight()-2*_headerHeight, rc.GetTop()+_headerHeight);
+		int c = m.DoContextMenu(ref<Wnd>(this), rc.GetRight()-2*_headerHeight, rc.GetTop()+_headerHeight);
 		if(c>0) {
 			try {
 				if(_current) {
@@ -735,6 +735,6 @@ void TabWnd::DoAddMenu(Pixels x, Pixels y) {
 	}
 	else {
 		m.AddItem(TL(tab_no_orphans), -1, false, false);
-		m.DoContextMenu(this, rc.GetRight()-2*_headerHeight, rc.GetTop()+_headerHeight);
+		m.DoContextMenu(ref<Wnd>(this), rc.GetRight()-2*_headerHeight, rc.GetTop()+_headerHeight);
 	}
 }

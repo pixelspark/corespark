@@ -55,7 +55,7 @@ void ButtonWnd::OnKey(Key k, wchar_t t, bool down, bool isAccelerator) {
 			}
 			else {
 				if(!_disabled) {
-					EventClicked.Fire(this, NotificationClicked());
+					EventClicked.Fire(ref<Object>(this), NotificationClicked());
 				}
 				_down = false;
 			}
@@ -140,7 +140,7 @@ void ButtonWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 	}
 	else if(ev==MouseEventLUp) {
 		if(!_disabled) {
-			EventClicked.Fire(this, NotificationClicked());
+			EventClicked.Fire(ref<Object>(this), NotificationClicked());
 		}
 
 		_down = false;

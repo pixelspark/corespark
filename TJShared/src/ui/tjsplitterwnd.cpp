@@ -247,7 +247,7 @@ void SplitterWnd::Paint(Graphics& g, ref<Theme> theme) {
 
 		// Draw text
 		std::wstring title;
-		ref<Icon> icon = 0;
+		ref<Icon> icon;
 		if(_collapse==CollapseFirst && _b) {
 			title = _b->GetTabTitle();
 			icon = _b->GetTabIcon();

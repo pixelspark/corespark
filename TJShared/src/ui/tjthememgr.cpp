@@ -71,13 +71,13 @@ void ThemeManager::ListThemes(std::vector< ref<Theme> >& lst) {
 
 void ThemeManager::SelectTheme(ref<Theme> th) {
 	_theme = th;
-	EventThemeChanged.Fire(0L, ThemeChangeNotification(th));
+	EventThemeChanged.Fire(null, ThemeChangeNotification(th));
 }
 
 void ThemeManager::SelectTheme(int n) {
 	try {
 		_theme = _themes.at(n);
-		EventThemeChanged.Fire(0L, ThemeChangeNotification(_theme));
+		EventThemeChanged.Fire(null, ThemeChangeNotification(_theme));
 	}
 	catch(...) {
 		// n out of range

@@ -339,9 +339,9 @@ void PropertyGridWnd::Update() {
 
 void PropertyGridWnd::Clear() {
 	_properties.clear();
-	_subject = 0;
+	_subject = null;
 	if(_path) {
-		_path->SetPath(0);
+		_path->SetPath(null);
 	}
 
 	Layout();

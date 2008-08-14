@@ -195,7 +195,7 @@ LRESULT FloatingPane::Message(UINT msg, WPARAM wp, LPARAM lp) {
 			below->Attach(_pane);
 			_root->RemoveFloatingPane(_pane);
 		}
-		_root->SetDragTarget(0);
+		_root->SetDragTarget(null);
 		ReleaseCapture();
 		return 0;
 	}

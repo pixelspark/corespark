@@ -86,7 +86,7 @@ LRESULT EditWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	}
 	else if(msg==WM_COMMAND) {
 		if(HIWORD(wp)==EN_CHANGE) {
-			EventTextChanged.Fire(this, NotificationTextChanged());
+			EventTextChanged.Fire(ref<Object>(this), NotificationTextChanged());
 		}
 		else {
 			HWND parent = ::GetParent(GetWindow());

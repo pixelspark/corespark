@@ -86,6 +86,10 @@ namespace tj {
 
 		class Object;
 
+		enum Null {
+			null = 0,
+		};
+
 		// If _object is null, then resource is considered 0 too and we have a null reference
 		template<typename T> class ref {
 			friend class intern::Resource;
@@ -102,6 +106,14 @@ namespace tj {
 
 			public:			
 				inline ref(): _object(0) {
+				}
+
+				/* This constructor allows assigning and creating references to 'nothing'. Because of the
+				ref(Object*) constructor, the =0 syntax will not work. That is why a separate 'Null' type was
+				created. If you try to use =0 anyway, the compiler will complain about ambiguity, since it cannot
+				choose between converting your '0' to a Null or to a Object*. This is good, since using the ref(Object*)
+				constructor with 0 might cause some trouble anyway. Bottom line: always use =null syntax.*/
+				inline ref(const Null& n): _object(0) {
 				}
 
 				inline ref(const strong<T>& org) {
@@ -124,6 +136,27 @@ namespace tj {
 					}
 				} 
 
+				inline ref(Object* object) {
+					if(object!=0) {
+						/* This exception can be thrown for two reasons:
+						* The object wasn't allocated with GC::Hold
+						* The objects tries to create a ref<T> from its constructor (in that case, _resource isn't set yet) */
+						if(object->_resource==0) {
+							throw BadReferenceException();
+						}
+
+						_object = dynamic_cast<T*>(object);
+						if(_object==0) throw BadCastException();
+						_resource = object->_resource;
+						if(_resource==0) throw BadReferenceException();
+						if(!_resource->IsReferenced()) throw BadReferenceException();
+
+						_resource->AddReference();
+					}
+					else {
+						_object = 0;
+					}
+				}
 
 				inline ref(const ref<T>& org): _object(org._object) {
 					if(_object!=0) {
@@ -158,28 +191,6 @@ namespace tj {
 						else {
 							_object = 0;
 						}
-					}
-				}
-
-				inline ref(Object* object) {
-					if(object!=0) {
-						/* This exception can be thrown for two reasons:
-						* The object wasn't allocated with GC::Hold
-						* The objects tries to create a ref<T> from its constructor (in that case, _resource isn't set yet) */
-						if(object->_resource==0) {
-							throw BadReferenceException();
-						}
-
-						_object = dynamic_cast<T*>(object);
-						if(_object==0) throw BadCastException();
-						_resource = object->_resource;
-						if(_resource==0) throw BadReferenceException();
-						if(!_resource->IsReferenced()) throw BadReferenceException();
-
-						_resource->AddReference();
-					}
-					else {
-						_object = 0;
 					}
 				}
 

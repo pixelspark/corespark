@@ -8,7 +8,7 @@ namespace tj {
 				PropertyGridWnd(bool withPath=true);
 				virtual ~PropertyGridWnd();
 				void Update();
-				void Inspect(ref<Inspectable> isp, ref<Path> p = 0);
+				void Inspect(ref<Inspectable> isp, ref<Path> p = ref<Path>());
 				void Layout();
 				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
 				void Clear();

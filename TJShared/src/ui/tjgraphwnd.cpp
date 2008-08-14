@@ -46,7 +46,7 @@ ref<GraphItem> GraphWnd::GetItemAt(Pixels x, Pixels y) {
 		}
 		++it;
 	}
-	return 0;
+	return null;
 }
 
 void GraphWnd::SaveImage(const std::wstring& path) {
@@ -127,12 +127,12 @@ void GraphWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 		}
 	}
 	else if(ev==MouseEventLUp) {
-		_dragging = 0;
+		_dragging = null;
 	}
 
 	ref<GraphItem> gi = GetItemAt(x,y);
 	if(gi) {
-		gi->OnMouse(ev, x, y, this);
+		gi->OnMouse(ev, x, y, ref<GraphWnd>(this));
 	}
 	else if(ev==MouseEventRDown) {
 		ContextMenu cm;
@@ -149,7 +149,7 @@ void GraphWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 			++it;
 		}
 
-		int r = cm.DoContextMenu(this);
+		int r = cm.DoContextMenu(ref<Wnd>(this));
 		if(r>0 && r<=int(inMenu.size())) {
 			ref<GraphItem> gi = inMenu.at(r-1);
 			if(gi) {
@@ -274,7 +274,7 @@ void GraphWnd::Paint(Graphics& g, ref<Theme> theme) {
 
 void GraphWnd::OnContextMenu(Pixels x, Pixels y) {
 	if(_focus) {
-		_focus->OnContextMenu(x,y, this);
+		_focus->OnContextMenu(x,y, ref<Wnd>(this));
 	}
 }
 
@@ -297,7 +297,7 @@ void GraphWnd::OnKey(Key k, wchar_t key, bool down, bool isAccelerator) {
 			_focus->Hide(true);
 		}
 		else {
-			_focus->OnKey(k,key,down,isAccelerator, this);
+			_focus->OnKey(k,key,down,isAccelerator, ref<Wnd>(this));
 		}
 	}
 

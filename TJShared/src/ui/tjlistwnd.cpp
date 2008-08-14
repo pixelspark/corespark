@@ -409,7 +409,7 @@ void ListWnd::DoContextMenu(Pixels x, Pixels y) {
 		++it;
 	}
 
-	int r = cm.DoContextMenu(this, x, y);
+	int r = cm.DoContextMenu(ref<Wnd>(this), x, y);
 	if(r>0) {
 		SetColumnVisible(r-1, !IsColumnVisible(r-1));
 	}

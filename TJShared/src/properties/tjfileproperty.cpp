@@ -45,7 +45,7 @@ LRESULT FilePropertyWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		}
 		if(HIWORD(wp)==EN_KILLFOCUS) {
 			_edit->Show(false);
-			_edit = 0;
+			_edit = null;
 			Layout();
 		}
 		return 0;
@@ -56,7 +56,7 @@ LRESULT FilePropertyWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 
 void FilePropertyWnd::OnMouse(MouseEvent me, Pixels x, Pixels y) {
 	if(me==MouseEventLDown) {
-		SetFile(Dialog::AskForOpenFile(this, _name, _filter, L""));
+		SetFile(Dialog::AskForOpenFile(ref<Wnd>(this), _name, _filter, L""));
 	}
 	else if(me==MouseEventMove||me==MouseEventLeave) {
 		Repaint();
@@ -66,7 +66,7 @@ void FilePropertyWnd::OnMouse(MouseEvent me, Pixels x, Pixels y) {
 		ContextMenu cm;
 		cm.AddItem(TL(file_property_manual_entry), KCManualEntry, false, _edit!=0);
 
-		int r = cm.DoContextMenu(this);
+		int r = cm.DoContextMenu(ref<Wnd>(this));
 		if(r==KCManualEntry) {
 			if(!_edit) {
 				_edit = GC::Hold(new EditWnd());
@@ -74,7 +74,7 @@ void FilePropertyWnd::OnMouse(MouseEvent me, Pixels x, Pixels y) {
 			}
 			else {
 				_edit->Show(false);
-				_edit = 0;
+				_edit = null;
 			}
 			Update();
 			Layout();
