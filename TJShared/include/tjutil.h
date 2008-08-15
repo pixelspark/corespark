@@ -49,6 +49,18 @@ namespace tj {
 			return k+1;
 		}
 
+		template<typename T> void CleanWeakReferencesList(std::vector< weak<T> >& list) {
+			std::vector< weak<T> >::iterator it = list.begin();
+			while(it!=list.end()) {
+				if(!it->IsValid()) {
+					it = list.erase(it);
+				}
+				else {
+					++it;
+				}
+			}
+		}
+
 		inline std::string Mbs(const std::wstring& ws) {
 			char* buf  = new char[ws.length()+2];
 			wcstombs_s(0, buf, ws.length()+1, ws.c_str(), _TRUNCATE);

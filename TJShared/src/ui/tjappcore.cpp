@@ -214,19 +214,24 @@ int ConvertAlertType(Alert::AlertType t) {
 }
 
 void Alert::Show(const std::wstring& title, const std::wstring& text, AlertType t) {
-	MessageBox(0L, text.c_str(), title.c_str(), MB_OK|ConvertAlertType(t));
+	HWND parent = GetForegroundWindow();
+	MessageBox(parent, text.c_str(), title.c_str(), MB_OK|ConvertAlertType(t));
 }
 
 bool Alert::ShowOKCancel(const std::wstring& title, const std::wstring& text, AlertType t) {
-	return MessageBox(0L, text.c_str(), title.c_str(), MB_OKCANCEL|ConvertAlertType(t)) == IDOK;
+	HWND parent = GetForegroundWindow();
+	return MessageBox(parent, text.c_str(), title.c_str(), MB_OKCANCEL|ConvertAlertType(t)) == IDOK;
 }
 
 bool Alert::ShowYesNo(const std::wstring& title, const std::wstring& text, AlertType t) {
-	return MessageBox(0L, text.c_str(), title.c_str(), MB_YESNO|ConvertAlertType(t)) == IDYES;
+	HWND parent = GetForegroundWindow();
+	return MessageBox(parent, text.c_str(), title.c_str(), MB_YESNO|ConvertAlertType(t)) == IDYES;
 }
 
-Alert::Result Alert::ShowYesNoCancel(const std::wstring& title, const std::wstring& text, AlertType t) {
-	int r = MessageBox(0L, text.c_str(), title.c_str(), MB_YESNOCANCEL|ConvertAlertType(t));
+Alert::Result Alert::ShowYesNoCancel(const std::wstring& title, const std::wstring& text, AlertType t, bool modal) {
+	HWND parent = GetForegroundWindow();
+	int r = MessageBox(parent, text.c_str(), title.c_str(), MB_YESNOCANCEL|ConvertAlertType(t)|(modal?MB_TASKMODAL|MB_APPLMODAL:0));
+
 	switch(r) {
 		case IDYES:
 			return ResultYes;

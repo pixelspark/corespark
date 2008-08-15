@@ -9,7 +9,6 @@ namespace tj {
 				virtual ~DialogWnd();
 				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
 				virtual void Layout();
-				virtual Area GetClientArea() const;
 				virtual void OnSize(const Area& ns);
 				virtual void OnCreated();
 				virtual bool DoModal(ref<Wnd> parent);
@@ -17,7 +16,6 @@ namespace tj {
 
 			protected:
 				virtual void OnAfterShowDialog();
-				virtual Pixels GetHeaderHeight() const;
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 				virtual void EndModal(bool result);
 
@@ -29,15 +27,19 @@ namespace tj {
 
 		class EXPORTED PropertyDialogWnd: public DialogWnd {
 			public:
-				PropertyDialogWnd(const std::wstring& title, const std::wstring& question);
+				PropertyDialogWnd(const std::wstring& title, const std::wstring& question = L"");
 				virtual ~PropertyDialogWnd();
 				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
 				virtual ref<PropertyGridWnd> GetPropertyGrid();
 				virtual void Layout();
+				virtual Area GetClientArea() const;
+				virtual void SetSize(Pixels w, Pixels h);
 		
 			protected:
 				virtual void OnSize(const Area& ns);
 				virtual void OnAfterShowDialog();
+				virtual bool HasQuestion() const;
+				virtual Pixels GetHeaderHeight() const;
 				
 			private:
 				ref<PropertyGridWnd> _grid;

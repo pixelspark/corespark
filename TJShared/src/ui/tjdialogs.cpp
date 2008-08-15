@@ -9,7 +9,7 @@ DialogWnd::DialogWnd(const std::wstring& title): TopWnd(title.c_str()) {
 	SetStyle(WS_POPUPWINDOW|WS_THICKFRAME);
 	_ok = GC::Hold(new ButtonWnd(Icons::GetIconPath(Icons::IconOK).c_str(), TL(ok)));
 	Add(_ok, true);
-	SetSize(640,480);
+	SetSize(400,300);
 }
 
 DialogWnd::~DialogWnd() {
@@ -17,16 +17,6 @@ DialogWnd::~DialogWnd() {
 
 void DialogWnd::OnCreated() {
 	_ok->EventClicked.AddListener(ref<Listener<ButtonWnd::NotificationClicked> >(this));
-}
-
-Area DialogWnd::GetClientArea() const {
-	Area rc = TopWnd::GetClientArea();
-	rc.Narrow(0,0,0,GetHeaderHeight());
-	return rc;
-}
-
-Pixels DialogWnd::GetHeaderHeight() const {
-	return ThemeManager::GetTheme()->GetMeasureInPixels(Theme::MeasureDialogHeaderHeight);
 }
 
 void DialogWnd::Notify(ref<Object> source, const ButtonWnd::NotificationClicked& evt) {
@@ -40,7 +30,7 @@ void DialogWnd::Layout() {
 	static const Pixels KOKButtonHeight = 20;
 
 	Area rc = TopWnd::GetClientArea();
-	Pixels hh = GetHeaderHeight();
+	Pixels hh = ThemeManager::GetTheme()->GetMeasureInPixels(Theme::MeasureDialogHeaderHeight);
 	Pixels margin = (hh-KOKButtonHeight)/2;
 	_ok->Move(rc.GetRight()-KOKButtonWidth-margin, rc.GetBottom()-hh+margin, KOKButtonWidth, KOKButtonHeight);
 }
@@ -94,7 +84,8 @@ LRESULT DialogWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 
 void DialogWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	Area buttons = TopWnd::GetClientArea();
-	buttons.Narrow(0,buttons.GetHeight()-GetHeaderHeight(), 0, 0);
+	Pixels hh = ThemeManager::GetTheme()->GetMeasureInPixels(Theme::MeasureDialogHeaderHeight);
+	buttons.Narrow(0,buttons.GetHeight()-hh, 0, 0);
 
 	// Footer shadow
 	SolidBrush backBr(theme->GetColor(Theme::ColorBackground));
@@ -110,6 +101,25 @@ PropertyDialogWnd::PropertyDialogWnd(const std::wstring& title, const std::wstri
 }
 
 PropertyDialogWnd::~PropertyDialogWnd() {
+}
+
+bool PropertyDialogWnd::HasQuestion() const {
+	return _question.size() > 0;
+}
+
+void PropertyDialogWnd::SetSize(Pixels w, Pixels h) {
+	if(_grid) _grid->SetNameWidth(Pixels(w*0.383f));
+	DialogWnd::SetSize(w,h);
+}
+
+Area PropertyDialogWnd::GetClientArea() const {
+	Area rc = TopWnd::GetClientArea();
+	rc.Narrow(0,0,0,GetHeaderHeight());
+	return rc;
+}
+
+Pixels PropertyDialogWnd::GetHeaderHeight() const {
+	return HasQuestion() ? ThemeManager::GetTheme()->GetMeasureInPixels(Theme::MeasureDialogHeaderHeight) : 0;
 }
 
 void PropertyDialogWnd::Layout() {
@@ -129,15 +139,18 @@ void PropertyDialogWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	header.SetHeight(GetHeaderHeight());
 
 	// Header
+	SolidBrush back(theme->GetColor(Theme::ColorBackground));
+	g.FillRectangle(&back, header);
+
 	SolidBrush disabled(theme->GetColor(Theme::ColorDisabledOverlay));
 	LinearGradientBrush headerBrush(PointF(0.0f, 0.0f), PointF(0.0f, float(GetHeaderHeight())), theme->GetColor(Theme::ColorActiveStart), theme->GetColor(Theme::ColorActiveEnd));
 	g.FillRectangle(&headerBrush, header);
-	g.FillRectangle(&disabled, header);
 	SolidBrush tbr(theme->GetColor(Theme::ColorText));
+	//SolidBrush stbr(theme->GetColor(Theme::ColorShadow));
 	StringFormat sf;
 	sf.SetAlignment(StringAlignmentNear);
-	g.DrawString(_question.c_str(), (int)_question.length(), theme->GetGUIFont(), PointF(3.0f, 4.0f), &sf, &tbr);
-
+	//g.DrawString(_question.c_str(), (int)_question.length(), theme->GetGUIFontBold(), PointF(5.0f, 7.0f), &sf, &stbr);
+	g.DrawString(_question.c_str(), (int)_question.length(), theme->GetGUIFontBold(), PointF(4.0f, 6.0f), &sf, &tbr);
 	DialogWnd::Paint(g,theme);
 }
 
