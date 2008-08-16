@@ -109,7 +109,7 @@ void Theme::DrawInsetRectangle(graphics::Graphics& g, const Area& rc) {
 
 	Region oldClip;
 	g.GetClip(&oldClip);
-	g.SetClip(rc, CombineModeUnion);
+	g.SetClip(rc, CombineModeIntersect);
 	DrawHighlightEllipse(g, highlight, 0.61f);
 	g.SetClip(&oldClip);
 
@@ -169,6 +169,23 @@ void Theme::DrawFocusEllipse(graphics::Graphics& g, const Area& c, float alpha) 
 	rc.Narrow(KFocusRectangleWidth,KFocusRectangleWidth,KFocusRectangleWidth,KFocusRectangleWidth);
 	Pen focusPen(&gbrush, 3.0f);
 	g.DrawEllipse(&focusPen, rc);
+}
+
+void Theme::DrawMessageBar(graphics::Graphics& g, const Area& header) {
+	SolidBrush back(GetColor(Theme::ColorBackground));
+	g.FillRectangle(&back, header);
+
+	LinearGradientBrush headerBrush(PointF(0.0f, 0.0f), PointF(0.0f, float(header.GetHeight())), GetColor(Theme::ColorActiveStart), GetColor(Theme::ColorActiveEnd));
+	g.FillRectangle(&headerBrush, header);
+
+	Area ellipse = header;
+	ellipse.Widen(0,0,0,ellipse.GetHeight());
+	DrawHighlightEllipse(g, ellipse, 0.5f);
+
+	Area glass = header;
+	glass.Narrow(0,0,0,2);
+	LinearGradientBrush glassHeaderBrush(PointF(0.0f, 0.0f), PointF(0.0f, float(header.GetHeight())), GetColor(Theme::ColorGlassStart), GetColor(Theme::ColorGlassEnd));
+	g.FillRectangle(&glassHeaderBrush, glass);
 }
 
 void Theme::DrawHighlightEllipse(graphics::Graphics& g, const Area& c, float alpha) {

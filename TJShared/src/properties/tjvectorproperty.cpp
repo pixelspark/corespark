@@ -7,7 +7,7 @@ namespace tj {
 	namespace shared {
 		class VectorPropertyWnd: public ChildWnd {
 			public:
-				VectorPropertyWnd(Vector* vec): ChildWnd(L"", false, false), _vec(vec) {
+				VectorPropertyWnd(Vector* vec): ChildWnd(L"", false), _vec(vec) {
 					SetStyleEx(WS_EX_CONTROLPARENT);
 					_x = CreateWindowEx(WS_EX_CLIENTEDGE, L"EDIT", L"", WS_CHILD|WS_TABSTOP|ES_AUTOHSCROLL, 0, 0, 0, 0, GetWindow(), (HMENU)1, GetModuleHandle(NULL), 0L);
 					_y = CreateWindowEx(WS_EX_CLIENTEDGE, L"EDIT", L"", WS_CHILD|WS_TABSTOP|ES_AUTOHSCROLL, 0, 0, 0, 0, GetWindow(), (HMENU)2, GetModuleHandle(NULL), 0L);

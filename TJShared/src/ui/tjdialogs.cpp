@@ -139,12 +139,8 @@ void PropertyDialogWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	header.SetHeight(GetHeaderHeight());
 
 	// Header
-	SolidBrush back(theme->GetColor(Theme::ColorBackground));
-	g.FillRectangle(&back, header);
+	theme->DrawMessageBar(g,header);
 
-	SolidBrush disabled(theme->GetColor(Theme::ColorDisabledOverlay));
-	LinearGradientBrush headerBrush(PointF(0.0f, 0.0f), PointF(0.0f, float(GetHeaderHeight())), theme->GetColor(Theme::ColorActiveStart), theme->GetColor(Theme::ColorActiveEnd));
-	g.FillRectangle(&headerBrush, header);
 	SolidBrush tbr(theme->GetColor(Theme::ColorText));
 	//SolidBrush stbr(theme->GetColor(Theme::ColorShadow));
 	StringFormat sf;

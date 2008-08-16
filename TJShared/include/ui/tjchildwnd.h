@@ -5,7 +5,7 @@ namespace tj {
 	namespace shared {
 		class EXPORTED ChildWnd: public Wnd {
 			public:
-				ChildWnd(const wchar_t* title, bool wantDoubleClick=true, bool useDoubleBuffering=true);
+				ChildWnd(const wchar_t* title, bool useDoubleBuffering=true);
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 		};
 

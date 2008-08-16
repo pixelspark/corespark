@@ -5,7 +5,7 @@ using namespace tj::shared;
 
 const float ListWnd::KMinimumColumnWidth = 0.075f;
 
-ListWnd::ListWnd(): ChildWnd(L"", true, true) {
+ListWnd::ListWnd(): ChildWnd(L"") {
 	SetVerticallyScrollable(true);
 	_draggingCol = -1;
 	_dragStartX = 0;

@@ -2,7 +2,7 @@
 using namespace tj::shared::graphics;
 using namespace tj::shared;
 
-ButtonWnd::ButtonWnd(const wchar_t* image, const wchar_t* text): ChildWnd(L"", false, true), _disabled(false), _down(false) {
+ButtonWnd::ButtonWnd(const wchar_t* image, const wchar_t* text): ChildWnd(L""), _disabled(false), _down(false) {
 	SetWantMouseLeave(true);
 	std::wstring fn = ResourceManager::Instance()->Get(image);
 	_image =  Bitmap::FromFile(fn.c_str(),TRUE);

@@ -20,7 +20,7 @@ namespace tj {
 
 				class PropertyWnd: public ChildWnd {
 					public:
-						PropertyWnd(GenericListProperty<T>& prop): ChildWnd(L"", false, true), _prop(prop), _arrowIcon(Icons::GetIconPath(Icons::IconDownArrow)) {
+						PropertyWnd(GenericListProperty<T>& prop): ChildWnd(L""), _prop(prop), _arrowIcon(Icons::GetIconPath(Icons::IconDownArrow)) {
 							SetWantMouseLeave(true);
 						}
 

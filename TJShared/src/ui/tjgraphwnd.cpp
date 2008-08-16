@@ -31,7 +31,7 @@ int GetEncoderClsid(const WCHAR* format, CLSID* pClsid) {
    return -1;  // Failure
 }
 
-GraphWnd::GraphWnd(): ChildWnd(L"", true, true) {
+GraphWnd::GraphWnd(): ChildWnd(L"") {
 }
 
 GraphWnd::~GraphWnd() {

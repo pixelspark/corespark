@@ -6,7 +6,7 @@ using namespace tj::shared::graphics;
 // declared and used in tjui.cpp, but shouldn't be public
 LRESULT CALLBACK WndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 
-EditWnd::EditWnd(bool multiline): ChildWnd(L"", false, false), _backBrush(0) {
+EditWnd::EditWnd(bool multiline): ChildWnd(L"", false), _backBrush(0) {
 	SetStyle(WS_CLIPCHILDREN);
 	SetStyleEx(WS_EX_CONTROLPARENT);
 

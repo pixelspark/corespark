@@ -3,7 +3,7 @@
 using namespace tj::shared::graphics;
 using namespace tj::shared;
 
-TabWnd::TabWnd(ref<WindowManager> root, const std::wstring& id): ChildWnd(L"TabWnd", NULL), 
+TabWnd::TabWnd(ref<WindowManager> root, const std::wstring& id): ChildWnd(L"TabWnd"), 
 	_closeIcon(Icons::GetIconPath(Icons::IconTabClose)),
 	_addIcon(Icons::GetIconPath(Icons::IconTabAdd)),
 	_offset(0) {

@@ -136,10 +136,6 @@ namespace tj {
 				void SetStyleEx(DWORD style);
 				void UnsetStyle(DWORD style);
 				void UnsetStyleEx(DWORD style);
-				
-				virtual void SetFullScreen(bool f);
-				virtual void SetFullScreen(bool f, int display);
-				bool IsFullScreen();
 
 				// Scrolling
 				void SetHorizontallyScrollable(bool s);
@@ -214,13 +210,11 @@ namespace tj {
 				HWND _wnd;
 				graphics::Bitmap* _buffer;
 				bool _doubleBuffered;
-				bool _fullScreen;
 				bool _wantsMouseLeave;
 				int _horizontalPos;
 				int _verticalPos;
 				int _horizontalPageSize;
 				int _verticalPageSize;
-				long _oldStyle, _oldStyleEx;
 				ref<Settings> _settings;
 
 				static bool _classesRegistered;
@@ -234,12 +228,19 @@ namespace tj {
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 				virtual void GetMinimumSize(Pixels& w, Pixels& h);
 
+				// Fullscreen support
+				virtual void SetFullScreen(bool f);
+				virtual void SetFullScreen(bool f, int display);
+				bool IsFullScreen();
+
 			protected:
 				virtual void OnSize(const Area& ns);
 				virtual void OnSettingsChanged();
 
 			private:
 				bool _quitOnClose;
+				bool _fullScreen;
+				long _oldStyle, _oldStyleEx;
 		};
 	}
 }

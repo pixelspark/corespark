@@ -24,22 +24,16 @@ GraphicsInit::GraphicsInit() {
 GraphicsInit::~GraphicsInit() {
 }
 
-Wnd::Wnd(const wchar_t* title, HWND parent, const wchar_t* className, bool usedb, int exStyle): _horizontalPos(0), _verticalPos(0), _horizontalPageSize(1), _verticalPageSize(1), _fullScreen(false), _buffer(0), _doubleBuffered(usedb) {
+Wnd::Wnd(const wchar_t* title, HWND parent, const wchar_t* className, bool usedb, int exStyle): _horizontalPos(0), _verticalPos(0), _horizontalPageSize(1), _verticalPageSize(1), _buffer(0), _doubleBuffered(usedb) {
 	RegisterClasses();
 	_wnd = CreateWindowEx(exStyle, className, title, WS_CLIPCHILDREN|WS_CLIPSIBLINGS, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, parent, (HMENU)0, GetModuleHandle(NULL), (void*)this);
 	if(_wnd==0) Throw(L"Could not create window", ExceptionTypeError);
 
 	UpdateWindow(_wnd);
-	_oldStyle = 0;
-	_oldStyleEx = 0;
 }
 
 void Wnd::SetText(const wchar_t* t) {
 	SetWindowText(_wnd, t);
-}
-
-bool Wnd::IsFullScreen() {
-	return _fullScreen;
 }
 
 bool Wnd::IsKeyDown(Key k) {
@@ -150,67 +144,12 @@ void Wnd::Add(ref<Wnd> child, bool shown) {
 	}
 }
 
-void Wnd::SetFullScreen(bool fs) {
-	if(fs==_fullScreen) return; //already in the desired mode
-	RECT rect;
-	GetWindowRect(_wnd,&rect);
-	HMONITOR mon = MonitorFromRect(&rect, MONITOR_DEFAULTTONEAREST);
-
-	MONITORINFO mi;
-    mi.cbSize = sizeof(mi);
-    GetMonitorInfo(mon, &mi);
-
-	/* TODO hier iets doen met schermgrootte of dualscreen troep */
-	if(fs&&!_fullScreen) {
-		_oldStyle = GetWindowLong(_wnd, GWL_STYLE);
-		_oldStyleEx = GetWindowLong(_wnd, GWL_EXSTYLE);
-		SetWindowLong(_wnd, GWL_STYLE, (_oldStyle & (~WS_OVERLAPPEDWINDOW)) | (WS_VISIBLE|WS_POPUP));
-		SetWindowPos(_wnd,0,mi.rcMonitor.left,mi.rcMonitor.top,mi.rcMonitor.right-mi.rcMonitor.left,mi.rcMonitor.bottom-mi.rcMonitor.top,SWP_NOZORDER);
-	}
-	else if(_fullScreen) {
-		if(_oldStyle!=0) {
-			SetWindowLong(_wnd, GWL_STYLE, _oldStyle);
-			SetWindowLong(_wnd, GWL_EXSTYLE, _oldStyleEx);
-		}
-		SetWindowPos(_wnd,0,0,0,800,600,SWP_NOZORDER);
-		UpdateWindow(_wnd);
-		//Repaint();
-	}
-
-	CloseHandle(mon);
-	_fullScreen = fs;
-}
-
 void Wnd::Focus() {
 	::SetFocus(_wnd);
 }
 
 void Wnd::BringToFront() {
 	::SetForegroundWindow(_wnd);
-}
-
-void Wnd::SetFullScreen(bool fs, int d) {
-	if(fs) {
-		if(!_fullScreen) {
-			_oldStyle = GetWindowLong(_wnd, GWL_STYLE);
-			_oldStyleEx = GetWindowLong(_wnd, GWL_EXSTYLE);
-			SetWindowLong(_wnd, GWL_STYLE, (_oldStyle & (~WS_OVERLAPPEDWINDOW)) | (WS_VISIBLE|WS_POPUP));
-		}
-
-		Displays displays;
-		RECT r = displays.GetDisplayRectangle(d);
-		SetWindowPos(_wnd, 0L, r.left, r.top, r.right-r.left, r.bottom-r.top, SWP_NOZORDER);
-	}
-	else if(_fullScreen) {
-		if(_oldStyle!=0) {
-			SetWindowLong(_wnd, GWL_STYLE, _oldStyle);
-			SetWindowLong(_wnd, GWL_EXSTYLE, _oldStyleEx);
-		}
-		SetWindowPos(_wnd,0,0,0,800,600,SWP_NOZORDER);
-		UpdateWindow(_wnd);
-		//Repaint();
-	}
-	_fullScreen = fs;
 }
 
 void Wnd::Show(bool t) {
@@ -292,20 +231,6 @@ void Wnd::RegisterClasses() {
 
 	wc.style |= CS_DROPSHADOW;
 	wc.lpszClassName = TJ_DROPSHADOW_CLASS_NAME;
-	if(!RegisterClassEx(&wc)) {
-		Throw(L"Could not register class",ExceptionTypeError);
-	}
-
-	wc.lpszClassName = TJ_GL_CLASS_NAME;
-	wc.style = CS_CLASSDC;
-	if(!RegisterClassEx(&wc)) {
-		Throw(L"Could not register class", ExceptionTypeError);
-	}
-	
-	wc.style = CS_HREDRAW|CS_DBLCLKS;
-	wc.lpszClassName = TJ_DEFAULT_NDBL_CLASS_NAME;
-	wc.style = CS_HREDRAW;
-
 	if(!RegisterClassEx(&wc)) {
 		Throw(L"Could not register class",ExceptionTypeError);
 	}
@@ -432,7 +357,7 @@ void Wnd::SetVerticalScrollInfo(Range<int> rng, int pageSize) {
 	SetScrollInfo(_wnd, SB_VERT,&srl,TRUE);
 
 	int pos = GetVerticalPos();
-	if(pos > (pageSize+rng.End()) || pos < rng.Start()) {
+	if(pos > (rng.End()-pageSize) || pos < rng.Start()) {
 		SetVerticalPos(0);
 	}
 }
@@ -958,10 +883,14 @@ RECT Displays::GetDisplayRectangle(int idx) {
 }
 
 /** TopWnd **/
-TopWnd::TopWnd(const wchar_t* title, HWND parent, const wchar_t* className,  bool usedb, int ex): Wnd(title, parent, className, usedb, ex), _quitOnClose(false) {
+TopWnd::TopWnd(const wchar_t* title, HWND parent, const wchar_t* className,  bool usedb, int ex): Wnd(title, parent, className, usedb, ex), _quitOnClose(false), _oldStyle(0), _oldStyleEx(0), _fullScreen(false) {
 }
 
 TopWnd::~TopWnd() {
+}
+
+bool TopWnd::IsFullScreen() {
+	return _fullScreen;
 }
 
 void TopWnd::OnSize(const Area& ns) {
@@ -1032,6 +961,60 @@ LRESULT TopWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 }
 
 void TopWnd::GetMinimumSize(Pixels& w, Pixels& h) {
+}
+
+void TopWnd::SetFullScreen(bool fs) {
+	if(fs==_fullScreen) return; //already in the desired mode
+	HWND wnd = GetWindow();
+	RECT rect;
+	GetWindowRect(wnd, &rect);
+	HMONITOR mon = MonitorFromRect(&rect, MONITOR_DEFAULTTONEAREST);
+
+	MONITORINFO mi;
+    mi.cbSize = sizeof(mi);
+    GetMonitorInfo(mon, &mi);
+
+	if(fs && !_fullScreen) {
+		_oldStyle = GetWindowLong(wnd, GWL_STYLE);
+		_oldStyleEx = GetWindowLong(wnd, GWL_EXSTYLE);
+		SetWindowLong(wnd, GWL_STYLE, (_oldStyle & (~WS_OVERLAPPEDWINDOW)) | (WS_VISIBLE|WS_POPUP));
+		SetWindowPos(wnd,0,mi.rcMonitor.left,mi.rcMonitor.top,mi.rcMonitor.right-mi.rcMonitor.left,mi.rcMonitor.bottom-mi.rcMonitor.top,SWP_NOZORDER);
+	}
+	else if(_fullScreen) {
+		if(_oldStyle!=0) {
+			SetWindowLong(wnd, GWL_STYLE, _oldStyle);
+			SetWindowLong(wnd, GWL_EXSTYLE, _oldStyleEx);
+		}
+		SetWindowPos(wnd,0,0,0,800,600,SWP_NOZORDER);
+		UpdateWindow(wnd);
+	}
+
+	CloseHandle(mon);
+	_fullScreen = fs;
+}
+
+void TopWnd::SetFullScreen(bool fs, int d) {
+	HWND wnd = GetWindow();
+	if(fs) {
+		if(!_fullScreen) {
+			_oldStyle = GetWindowLong(wnd, GWL_STYLE);
+			_oldStyleEx = GetWindowLong(wnd, GWL_EXSTYLE);
+			SetWindowLong(wnd, GWL_STYLE, (_oldStyle & (~WS_OVERLAPPEDWINDOW)) | (WS_VISIBLE|WS_POPUP));
+		}
+
+		Displays displays;
+		RECT r = displays.GetDisplayRectangle(d);
+		SetWindowPos(wnd, 0L, r.left, r.top, r.right-r.left, r.bottom-r.top, SWP_NOZORDER);
+	}
+	else if(_fullScreen) {
+		if(_oldStyle!=0) {
+			SetWindowLong(wnd, GWL_STYLE, _oldStyle);
+			SetWindowLong(wnd, GWL_EXSTYLE, _oldStyleEx);
+		}
+		SetWindowPos(wnd,0,0,0,800,600,SWP_NOZORDER);
+		UpdateWindow(wnd);
+	}
+	_fullScreen = fs;
 }
 
 /** Element **/

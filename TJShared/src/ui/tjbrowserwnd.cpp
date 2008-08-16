@@ -96,7 +96,7 @@ using namespace tj::shared;
 		}
 	}
 
-	BrowserWnd::BrowserWnd(const std::wstring& title): ChildWnd(title.c_str(), true, false) {
+	BrowserWnd::BrowserWnd(const std::wstring& title): ChildWnd(title.c_str(), false) {
 		_Module.Init(ObjectMap, (HINSTANCE)GetModuleHandle(L"tjshared.dll"), &LIBID_ATLLib);
 		_Module.Init(ObjectMap, (HINSTANCE)GetModuleHandle(L"tjshared.dll"), &LIBID_MSHTML);
 		AtlAxWinInit();
@@ -285,8 +285,11 @@ using namespace tj::shared;
 	}
 
 	void BrowserToolbarWnd::Layout() {
-		Area a = GetClientArea();
-		_url->Move(5*24+2, 2, a.GetRight()-5*24-6,20);
+		Area a = GetFreeArea();
+		if(_url) {
+			a.Narrow(2,2,2,2);
+			_url->Move(a.GetLeft(), a.GetTop(), a.GetWidth(), a.GetHeight());
+		}
 		ToolbarWnd::Layout();
 	}
 
@@ -314,7 +317,7 @@ using namespace tj::shared;
 #endif
 
 #ifdef TJ_NO_ATL
-	BrowserWnd::BrowserWnd(const std::wstring& title): ChildWnd(title.c_str(), true, false) {
+	BrowserWnd::BrowserWnd(const std::wstring& title): ChildWnd(title.c_str(), false) {
 	}
 
 	BrowserWnd::~BrowserWnd() {
