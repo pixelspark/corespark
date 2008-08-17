@@ -293,7 +293,7 @@ void GraphWnd::OnKey(Key k, wchar_t key, bool down, bool isAccelerator) {
 		else if(k==KeyDown) {
 			_focus->SetPosition(rc.GetLeft(), rc.GetTop()+10);
 		}
-		else if(k==KeyCharacter && key==VK_DELETE) {
+		else if(k==KeyDelete) {
 			_focus->Hide(true);
 		}
 		else {

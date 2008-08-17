@@ -270,6 +270,8 @@ void ContextPopupWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	sf.SetTabStops(0, 3, tabs);
 
 	int n = 0;
+	Pixels indentSize = Pixels(KItemHeight*0.619f);
+
 	std::vector< ref<MenuItem> >::iterator it = _cm->_items.begin();
 	while(it!=_cm->_items.end()) {
 		ref<MenuItem> item = *it;
@@ -277,8 +279,9 @@ void ContextPopupWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 		current.SetY(y);
 		current.SetHeight(KItemHeight);
 
+		Pixels indentRight = item->GetIndent()*indentSize;
+		current.Narrow(indentRight,0,0,0);
 		Area currentText = current;
-		
 
 		if(item->IsSeparator()) {
 			const std::wstring& title = item->GetTitle();
@@ -363,16 +366,16 @@ void ContextPopupWnd::OnTimer(unsigned int id) {
 }
 
 /** MenuItem */
-MenuItem::MenuItem(): _separator(true), _hilite(false), _link(false), _checked(MenuItem::NotChecked), _command(0), _icon(0) {
+MenuItem::MenuItem(): _separator(true), _hilite(false), _link(false), _checked(MenuItem::NotChecked), _command(0), _icon(0), _indent(0) {
 }
 
-MenuItem::MenuItem(const std::wstring& title, int command, bool highlight, MenuItem::CheckType checked, const std::wstring& icon): _title(title), _command(command), _hilite(highlight), _checked(checked), _separator(false), _icon(0), _link(false) {
+MenuItem::MenuItem(const std::wstring& title, int command, bool highlight, MenuItem::CheckType checked, const std::wstring& icon): _title(title), _command(command), _hilite(highlight), _checked(checked), _separator(false), _icon(0), _link(false), _indent(0) {
 	if(icon.length()>0) {
 		SetIcon(icon);
 	}
 }
 
-MenuItem::MenuItem(const std::wstring& title, int command, bool highlight, MenuItem::CheckType ct, ref<Icon> icon): _title(title), _command(command), _hilite(highlight), _checked(ct), _separator(false), _icon(icon), _link(false) {
+MenuItem::MenuItem(const std::wstring& title, int command, bool highlight, MenuItem::CheckType ct, ref<Icon> icon): _title(title), _command(command), _hilite(highlight), _checked(ct), _separator(false), _icon(icon), _link(false), _indent(0) {
 }
 
 MenuItem::~MenuItem() {
@@ -410,10 +413,22 @@ void MenuItem::SetIcon(const std::wstring& icon) {
 	_icon = GC::Hold(new Icon(icon));
 }
 
+void MenuItem::SetIcon(ref<Icon> icon) {
+	_icon = icon;
+}
+
 void MenuItem::SetTitle(const std::wstring& title) {
 	_title = title;
 }
 
 void MenuItem::SetSeparator(bool s) {
 	_separator = s;
+}
+
+unsigned char MenuItem::GetIndent() const {
+	return _indent;
+}
+
+void MenuItem::SetIndent(unsigned char c) {
+	_indent = c;
 }

@@ -58,6 +58,8 @@ namespace tj {
 			KeyBrowseBack,
 			KeyBrowseForward,
 			KeyAlt,
+			KeyDelete,
+			KeyInsert,
 		};
 
 		class EXPORTED Elements {

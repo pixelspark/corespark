@@ -33,6 +33,7 @@ namespace tj {
 				virtual bool IsDisabled() const;
 				virtual bool HasIcon() const;
 				virtual void SetIcon(const std::wstring& icon);
+				virtual void SetIcon(ref<Icon> icon);
 				virtual bool IsLink() const;
 				virtual void SetLink(bool l);
 				virtual ref<Icon> GetIcon();
@@ -41,6 +42,8 @@ namespace tj {
 				virtual void SetTitle(const std::wstring& title);
 				virtual void SetSeparator(bool s);
 
+				virtual unsigned char GetIndent() const;
+				virtual void SetIndent(unsigned char level);
 
 			protected:
 				std::wstring _title;
@@ -50,6 +53,7 @@ namespace tj {
 				bool _separator;
 				bool _hilite;
 				bool _link;
+				unsigned char _indent;
 		};
 
 		class EXPORTED ContextPopupWnd: public PopupWnd {

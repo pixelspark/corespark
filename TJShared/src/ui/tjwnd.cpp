@@ -71,6 +71,14 @@ bool Wnd::IsKeyDown(Key k) {
 			vk = VK_NEXT;
 			break;
 
+		case KeyDelete:
+			vk = VK_DELETE;
+			break;
+
+		case KeyInsert:
+			vk = VK_INSERT;
+			break;
+
 		case KeyMouseLeft: {
 			bool swap = (GetSystemMetrics(SM_SWAPBUTTON)==TRUE);
 			vk = swap?VK_RBUTTON:VK_LBUTTON;
@@ -716,6 +724,14 @@ void Wnd::TranslateKeyCodes(int vk, Key& key, wchar_t& ch) {
 
 		case VK_MENU:
 			key = KeyAlt;
+			break;
+
+		case VK_INSERT:
+			key = KeyInsert;
+			break;
+
+		case VK_DELETE:
+			key = KeyDelete;
 			break;
 
 		default:
