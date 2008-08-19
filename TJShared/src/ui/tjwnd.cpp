@@ -597,7 +597,7 @@ LRESULT Wnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 			}
 
 			if(_horizontalPos<si.nMin) _horizontalPos = si.nMin;
-			if(_horizontalPos>(si.nMax-int(si.nPage))) _horizontalPos = si.nMax-int(si.nPage);
+			if(_horizontalPos>(si.nMax-int(si.nPage)+1)) _horizontalPos = si.nMax-int(si.nPage);
 			SetScrollPos(_wnd,SB_HORZ, _horizontalPos,TRUE);
 		}
 
@@ -631,7 +631,7 @@ LRESULT Wnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 			}
 
 			if(_verticalPos<si.nMin) _verticalPos = si.nMin;
-			if(_verticalPos>(si.nMax-int(si.nPage))) _verticalPos = si.nMax-int(si.nPage);
+			if(_verticalPos>(si.nMax-int(si.nPage)+1)) _verticalPos = si.nMax-int(si.nPage);
 			SetScrollPos(_wnd,SB_VERT, _verticalPos,TRUE);
 		}
 
