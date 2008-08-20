@@ -66,6 +66,36 @@ void Thread::SetName(const char* t) {
 	SetThreadName(_id, t);
 }
 
+void Thread::SetPriority(Priority p) {
+	// Convert priority to Win32 priority code
+	int prio = THREAD_PRIORITY_NORMAL;
+	switch(p) {
+		case PriorityAboveNormal:
+		case PriorityHigh:
+			prio = THREAD_PRIORITY_ABOVE_NORMAL;
+			break;
+
+		case PriorityIdle:
+			prio = THREAD_PRIORITY_IDLE;
+			break;
+
+		case PriorityBelowNormal:
+		case PriorityLow:
+			prio = THREAD_PRIORITY_BELOW_NORMAL;
+			break;
+
+		case PriorityTimeCritical:
+			prio = THREAD_PRIORITY_TIME_CRITICAL;
+			break;
+
+		default:
+		case PriorityNormal:
+			prio = THREAD_PRIORITY_NORMAL;
+	}
+
+	SetThreadPriority(_thread, prio);
+}
+
 void Thread::Start() {
 	DWORD code = -1;
 	GetExitCodeThread(_thread, &code);

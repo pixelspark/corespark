@@ -10,7 +10,7 @@ namespace tj {
 				virtual std::wstring GetText();
 				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
 				virtual void Layout();
-				virtual void SetText(std::wstring ws);
+				virtual void SetText(const std::wstring& ws);
 				virtual void SetReadOnly(bool r);
 				virtual void SetBorder(bool b);
 				void SetCue(const std::wstring& cue);

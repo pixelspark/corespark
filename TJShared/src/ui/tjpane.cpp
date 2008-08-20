@@ -135,11 +135,11 @@ bool Pane::HasIcon() const {
 	return _icon!=0 || _wnd->GetTabIcon()!=0;
 }
 
-FloatingPane::FloatingPane(RootWnd* rw, ref<Pane> p): Wnd(L"FloatingPane", 0, TJ_DEFAULT_CLASS_NAME, false) {
+FloatingPane::FloatingPane(RootWnd* rw, ref<Pane> p): Wnd(L"", 0, TJ_DEFAULT_CLASS_NAME, false) {
 	assert(p);
 	_pane = p;
 	_root = rw;
-	SetStyleEx(WS_EX_PALETTEWINDOW|WS_EX_CONTROLPARENT);
+	SetStyleEx(WS_EX_CONTROLPARENT);
 	SetStyle(WS_OVERLAPPEDWINDOW|WS_MINIMIZEBOX|WS_MAXIMIZEBOX|WS_SYSMENU|WS_CAPTION);
 
 	// adapt the window to this pane
@@ -150,7 +150,7 @@ FloatingPane::FloatingPane(RootWnd* rw, ref<Pane> p): Wnd(L"FloatingPane", 0, TJ
 	SetParent(paneWnd->GetWindow(), GetWindow());
 
 	// set window title
-	SetWindowText(GetWindow(), p->GetTitle().c_str());
+	SetText(p->GetTitle());
 
 	Layout();
 	paneWnd->Show(true);

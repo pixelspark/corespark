@@ -152,7 +152,7 @@ namespace tj {
 				virtual void Move(Pixels x, Pixels y, Pixels w, Pixels h);
 
 				virtual std::wstring GetText();
-				virtual void SetText(std::wstring text);
+				virtual void SetText(const std::wstring& text);
 				void SetSize(Pixels w, Pixels h);
 				virtual Area GetClientArea() const;
 				Area GetWindowArea();

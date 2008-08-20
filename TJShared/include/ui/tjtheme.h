@@ -29,6 +29,9 @@ namespace tj {
 					IconExceptionNotify,
 					IconExceptionError,
 					IconExceptionFatal,
+					IconCopy,
+					IconCut,
+					IconPaste,
 					_IconLast,
 				};
 
@@ -53,6 +56,7 @@ namespace tj {
 					MeasureShadowSize,
 					MeasurePropertyHeight,
 					MeasureDialogHeaderHeight,
+					MeasureSliderDraggerWidth,
 					_MeasureLast,
 				};
 

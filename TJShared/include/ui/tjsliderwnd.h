@@ -10,9 +10,11 @@ namespace tj {
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 				float GetValue() const;
 				void SetValue(float f, bool notify=true);
-				virtual void Update();
 				void SetDisplayValue(float f, bool notify);
+				float GetDisplayValue() const;
 				void SetMarkValue(float f);
+				float GetMarkValue() const;
+				virtual void Update();
 				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
 				virtual void SetColor(int idx);
 				void SetShowValue(bool show);
@@ -44,7 +46,6 @@ namespace tj {
 				bool _preciseDrag;
 
 				const static int KMinimumWidth = 30;
-				const static int KDraggerWidth;
 		};
 	}
 }

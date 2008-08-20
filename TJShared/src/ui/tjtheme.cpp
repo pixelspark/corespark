@@ -48,6 +48,9 @@ const wchar_t* Icons::_paths[Icons::_IconLast] = {
 	L"icons/shared/errors/notify.png",
 	L"icons/shared/errors/error.png",
 	L"icons/shared/errors/fatal.png",
+	L"icons/shared/copy.png",
+	L"icons/shared/cut.png", 
+	L"icons/shared/paste.png",
 };
 
 std::wstring Icons::GetIconPath(IconIdentifier i) {
@@ -221,6 +224,9 @@ Pixels Theme::GetMeasureInPixels(Measure m) const {
 
 		case MeasureShadowSize:
 			return 5;
+
+		case MeasureSliderDraggerWidth:
+			return 16;
 
 		case MeasureMaximumSnappingDistance:
 			return 2;

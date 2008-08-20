@@ -3,8 +3,6 @@
 using namespace tj::shared::graphics;
 using namespace tj::shared;
 
-const int SliderWnd::KDraggerWidth = 16;
-
 SliderWnd::SliderWnd(const wchar_t* title): ChildWnd(title), _value(0.0f), _displayValue(0.0f), _flash(false), _oldValue(0.0f), _mark(-1.0f), _showValue(true), _snapHalf(false), _preciseDrag(false), _color(0) {
 	SetStyle(WS_TABSTOP);
 }
@@ -19,6 +17,14 @@ void SliderWnd::SetSnapToHalf(bool s) {
 
 float SliderWnd::GetValue() const {
 	return _value;
+}
+
+float SliderWnd::GetMarkValue() const {
+	return _mark;
+}
+
+float SliderWnd::GetDisplayValue() const {
+	return _displayValue;
 }
 
 void SliderWnd::SetColor(int idx) {
@@ -80,6 +86,7 @@ SliderWnd::~SliderWnd() {
 void SliderWnd::Paint(Graphics& g, ref<Theme> theme) {
 	EventUpdate.Fire(ref<Wnd>(this), NotificationUpdate());
 
+	Pixels draggerWidth = theme->GetMeasureInPixels(Theme::MeasureSliderDraggerWidth);
 	Area rect = GetClientArea();
 
 	graphics::Color colorStart = theme->GetSliderColorStart((Theme::SliderType)_color);
@@ -126,11 +133,11 @@ void SliderWnd::Paint(Graphics& g, ref<Theme> theme) {
 	g.DrawLine(&pn, (REAL)mx, mty, (REAL)mx+4,mty);
 
 	// dragger
-	x = (rect.GetWidth())/2 - KDraggerWidth/2;
+	x = (rect.GetWidth())/2 - draggerWidth/2;
 	int y = rect.GetBottom() - int(_value*int(rect.GetHeight()));
 	SolidBrush border(colorEnd);
 
-	Area dragger(x,y,KDraggerWidth, 6);
+	Area dragger(x,y,draggerWidth, 6);
 	Area draggerInside = dragger;
 	draggerInside.Narrow(1,1,1,1);
 

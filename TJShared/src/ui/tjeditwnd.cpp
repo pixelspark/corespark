@@ -112,7 +112,7 @@ void EditWnd::SetCue(const std::wstring& cue) {
 	SendMessage(_ctrl, EM_SETCUEBANNER, 0, (LPARAM)cue.c_str());
 }
 
-void EditWnd::SetText(std::wstring x) {
+void EditWnd::SetText(const std::wstring& x) {
 	SetWindowText(_ctrl, x.c_str());
 }
 

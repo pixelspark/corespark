@@ -66,6 +66,18 @@ namespace tj {
 			#endif
 
 			public:
+
+				enum Priority {
+					PriorityNormal = 0,
+					PriorityIdle,
+					PriorityAboveNormal,
+					PriorityBelowNormal,
+					PriorityHigh,
+					PriorityLow,
+					PriorityTimeCritical,
+				};
+
+			public:
 				Thread();
 				virtual ~Thread();
 				virtual void Terminate();
@@ -74,6 +86,7 @@ namespace tj {
 				int GetID() const;
 				void SetName(const char* name);
 				static long GetThreadCount();
+				virtual void SetPriority(Priority p);
 
 			protected:
 				virtual void Run();

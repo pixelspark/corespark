@@ -784,7 +784,7 @@ std::wstring Wnd::GetText() {
 	return text;
 }
 
-void Wnd::SetText(std::wstring text) {
+void Wnd::SetText(const std::wstring& text) {
 	SetWindowText(_wnd, text.c_str());
 }
 

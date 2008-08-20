@@ -16,6 +16,10 @@ std::wstring File::GetDirectory(const std::wstring& pathToFile) {
 	return dir;
 }
 
+std::wstring File::GetFileName(const std::wstring& pathToFile) {
+	return std::wstring(PathFindFileName(pathToFile.c_str()));
+}
+
 std::wstring File::GetExtension(const std::wstring& pathToFile) {
 	return std::wstring(PathFindExtension(pathToFile.c_str()));
 }
@@ -46,9 +50,14 @@ bool File::Move(const std::wstring& from, const std::wstring& to, bool silent) {
 				CComPtr<IShellItem> fromItem;
 				CComPtr<IShellItem> toItem;
 
-				if(SUCCEEDED(pfnSHCreateItemFromParsingName(to.c_str(), NULL, IID_PPV_ARGS(&toItem))) && SUCCEEDED(pfnSHCreateItemFromParsingName(from.c_str(), NULL, IID_PPV_ARGS(&fromItem)))) {
-					if(SUCCEEDED(op->MoveItem(fromItem, toItem, NULL, NULL))) {
-						return true;
+				std::wstring toFolder = File::GetDirectory(to);
+				std::wstring toFileName = File::GetFileName(to);
+
+				if(SUCCEEDED(pfnSHCreateItemFromParsingName(toFolder.c_str(), NULL, IID_PPV_ARGS(&toItem)))) {
+					if(SUCCEEDED(pfnSHCreateItemFromParsingName(from.c_str(), NULL, IID_PPV_ARGS(&fromItem)))) {
+						if(SUCCEEDED(op->MoveItem(fromItem, toItem, toFileName.c_str(), NULL))) {
+							return true;
+						}
 					}
 				}
 			}
