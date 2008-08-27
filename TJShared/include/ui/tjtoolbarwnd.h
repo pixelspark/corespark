@@ -6,8 +6,8 @@ namespace tj {
 
 		class EXPORTED ToolbarItem: public Element {
 			public:
-				ToolbarItem(int command=0, graphics::Bitmap* bmp=0, std::wstring text=L"", bool separator=false);
-				ToolbarItem(int command, std::wstring icon, std::wstring text=L"", bool separator=false);
+				ToolbarItem(int command=0, graphics::Bitmap* bmp=0, const std::wstring& text = L"", bool separator = false);
+				ToolbarItem(int command, const std::wstring& icon, const std::wstring& text = L"", bool separator = false);
 				~ToolbarItem();
 				bool IsSeparator() const;
 				void SetSeparator(bool s);
@@ -56,6 +56,7 @@ namespace tj {
 				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
 				virtual void Layout();
 				virtual void Add(ref<ToolbarItem> item, bool alignRight = false);
+				virtual void Remove(ref<ToolbarItem> item);
 				virtual void OnCommand(ref<ToolbarItem> item) = 0;
 				virtual void Fill(LayoutFlags f, Area& r, bool direct = true);
 				virtual void SetBackground(bool t);
@@ -82,7 +83,7 @@ namespace tj {
 				ref<ToolbarItem> _over;
 				bool _bk;
 				graphics::Color _bkColor;
-				Icon _tipIcon;
+				ref<ToolbarItem> _tipItem;
 				ref<Wnd> _tip;
 				Animation _entryAnimation;
 		};

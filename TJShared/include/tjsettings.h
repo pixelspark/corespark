@@ -61,6 +61,10 @@ namespace tj {
 					_settings->SetValue(_key, Stringify(_value));
 				}
 
+				bool IsChanged() const {
+					return StringTo<T>(_settings->GetValue(_key), _value)!=_value;
+				}
+
 				ref<Property> CreateProperty(const std::wstring& title, const std::wstring& hint=L"") {
 					ref<Property> p = GC::Hold(new GenericProperty<T>(title, &_value, 0, _value));
 					if(hint.length()>0) {

@@ -5,7 +5,7 @@ using namespace tj::shared::graphics;
 using namespace tj::shared;
 
 // ToolbarWnd
-ToolbarWnd::ToolbarWnd(): ChildWnd(L""), _tipIcon(Icons::GetIconPath(Icons::IconTip)), _in(false), _bk(false) {
+ToolbarWnd::ToolbarWnd(): ChildWnd(L""), _in(false), _bk(false) {
 	UnsetStyle(WS_TABSTOP);
 	SetWantMouseLeave(true);
 	_entryAnimation.SetLength(Time(250));
@@ -24,6 +24,14 @@ void ToolbarWnd::Add(ref<ToolbarItem> item, bool alignRight) {
 	}
 	item->Show(true);
 	Layout();
+	Repaint();
+}
+
+void ToolbarWnd::Remove(ref<ToolbarItem> ti) {
+	std::remove(_itemsRight.begin(), _itemsRight.end(), ti);
+	std::remove(_items.begin(), _items.end(), ti);
+	Layout();
+	Repaint();
 }
 
 void ToolbarWnd::Layout() {
@@ -47,10 +55,9 @@ void ToolbarWnd::Layout() {
 	}
 
 	// Layout items on the right
-	std::vector< ref<ToolbarItem> >::iterator rit = _itemsRight.begin();
-	std::vector< ref<ToolbarItem> >::iterator rend = _itemsRight.end();
+	std::vector< ref<ToolbarItem> >::reverse_iterator rit = _itemsRight.rbegin();
+	std::vector< ref<ToolbarItem> >::reverse_iterator rend = _itemsRight.rend();
 	Pixels xr = rc.GetRight();
-	if(HasTip()) xr -= bs;
 
 	while(rit!=rend) {
 		ref<ToolbarItem> ti = *rit;
@@ -91,6 +98,20 @@ bool ToolbarWnd::HasTip() const {
 
 void ToolbarWnd::SetTip(ref<Wnd> tipWindow) {
 	_tip = tipWindow;
+	
+	if(tipWindow) {
+		if(!_tipItem) {
+			_tipItem = GC::Hold(new ToolbarItem(0,  Icons::GetIconPath(Icons::IconTip), TL(toolbar_tip), false));
+			Add(_tipItem, true);
+		}
+	}
+	else {
+		if(_tipItem) {
+			Remove(_tipItem);
+			_tipItem = 0;
+		}
+	}
+
 	Layout();
 	Update();
 }
@@ -176,21 +197,18 @@ void ToolbarWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 	else if(ev==MouseEventLUp) {
 		Area rc = GetClientArea();
 
-		if(_over && _over->IsEnabled()) {
-			OnCommand(_over);
+		if(HasTip() && _tipItem && _over==_tipItem) {
+			HWND twnd = _tip->GetWindow();
+			POINT pt;
+			pt.x = int((rc.GetRight()-bs)*theme->GetDPIScaleFactor());
+			pt.y = int(rc.GetHeight()*theme->GetDPIScaleFactor());
+			ClientToScreen(GetWindow(), &pt);
+			SetWindowPos(twnd, 0, pt.x, pt.y, 0, 0, SWP_NOZORDER|SWP_NOSIZE);
+			_tip->Show(true);
+			UpdateWindow(GetWindow());
 		}
-		else if(x>rc.GetRight()-bs) {
-			// Tip thing
-			if(HasTip()) {
-				HWND twnd = _tip->GetWindow();
-				POINT pt;
-				pt.x = int((rc.GetRight()-bs)*theme->GetDPIScaleFactor());
-				pt.y = int(rc.GetHeight()*theme->GetDPIScaleFactor());
-				ClientToScreen(GetWindow(), &pt);
-				SetWindowPos(twnd, 0, pt.x, pt.y, 0, 0, SWP_NOZORDER|SWP_NOSIZE);
-				_tip->Show(true);
-				UpdateWindow(GetWindow());
-			}
+		else if(_over && _over->IsEnabled()) {
+			OnCommand(_over);
 		}
 		Repaint();
 	}
@@ -251,14 +269,6 @@ void ToolbarWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 			item->Paint(g, theme, over, IsKeyDown(KeyMouseLeft), _entryAnimation.GetFraction());
 		}
 		++rit;
-	}
-
-	// Draw tip window
-	// TODO: make this an element too and determine if it's shown in Layout()
-	if(HasTip()) {
-		Area tiprc = rc;
-		rc.SetX(rc.GetRight()-buttonSize);
-		ToolbarItem::DrawToolbarButton(g, _tipIcon, rc, theme, _tip->IsShown(), _tip->IsShown(), false, true);
 	}
 
 	// draw description text if in & selected
@@ -323,7 +333,12 @@ void ToolbarItem::DrawToolbarButton(Graphics& g, Icon& icon, const Area& rc, ref
 		g.FillRectangle(&glas, wrapped);
 	}
 
-	icon.Paint(g, Area(x+3, 4, 16, 16), enabled);
+	if(enabled) {
+		icon.Paint(g, Area(x+3, 4, 16, 16), enabled);
+	}
+	else {
+		icon.Paint(g, Area(x+3, 4, 16, 16), enabled, 0.5f);
+	}
 
 	if(separator) {
 		Pen pn(theme->GetColor(Theme::ColorActiveStart));
@@ -336,7 +351,7 @@ bool ToolbarWnd::CanShowHints() {
 }
 
 // ToolbarItem
-ToolbarItem::ToolbarItem(int command, graphics::Bitmap* bmp, std::wstring text, bool separator): _icon(bmp) , _enabled(true), _active(true) {
+ToolbarItem::ToolbarItem(int command, graphics::Bitmap* bmp, const std::wstring& text, bool separator): _icon(bmp) , _enabled(true), _active(true) {
 	_separator = separator;
 	_command = command;
 	_text = text;
@@ -344,7 +359,7 @@ ToolbarItem::ToolbarItem(int command, graphics::Bitmap* bmp, std::wstring text, 
 	_preferredHeight = -1;
 }
 
-ToolbarItem::ToolbarItem(int command, std::wstring rid, std::wstring text, bool separator): _icon(rid), _enabled(true), _active(true) {
+ToolbarItem::ToolbarItem(int command, const std::wstring& rid, const std::wstring& text, bool separator): _icon(rid), _enabled(true), _active(true) {
 	_separator = separator;
 	std::wstring path = ResourceManager::Instance()->Get(rid);
 	_command = command;

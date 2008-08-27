@@ -199,7 +199,7 @@ LRESULT FloatingPane::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		ReleaseCapture();
 		return 0;
 	}
-	else if(msg==WM_NCMOUSEMOVE||msg==WM_MOUSEMOVE||WM_MOVING) {
+	else if(msg==WM_NCMOUSEMOVE||msg==WM_MOUSEMOVE) {
 		if(_dragging) {
 			POINT p;
 			GetCursorPos(&p);

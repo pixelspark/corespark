@@ -38,6 +38,12 @@ namespace tj {
 				tj::shared::CriticalSection _running;
 		};
 
+		template<class T> struct ScriptTypeRegistration {
+			inline ScriptTypeRegistration(const std::wstring& n) {
+				ScriptContext::AddStaticType(n, GC::Hold(new T()));
+			}
+		};
+
 		// Converting to some other type, either the object we want to convert is of the type desired
 		// or we have to use the slow string stuff.
 		template<typename T> T ScriptContext::GetValue(ref<Scriptable> s, T defaultValue) {
