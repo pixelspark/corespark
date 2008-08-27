@@ -25,7 +25,7 @@ namespace tj {
 				virtual void Paint(graphics::Graphics& g, ref<Theme> theme, bool over, bool down, float backgroundAlpha = 1.0f);
 
 				static void DrawToolbarButton(graphics::Graphics& g, Icon& icon, const Area& rc, ref<Theme> theme, bool over, bool down, bool separator=false, bool enabled = true, float alpha=1.0f);
-				static void DrawToolbarButton(graphics::Graphics& g, const Area& rc, ref<Theme> theme, bool over, bool down, bool separator=false, float alpha = 1.0f);
+				static void DrawToolbarButton(graphics::Graphics& g, const Area& rc, ref<Theme> theme, bool over, bool down, bool separator=false, bool enabled = true, float alpha = 1.0f);
 
 			protected:
 				int _command;

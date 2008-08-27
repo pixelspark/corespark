@@ -196,7 +196,7 @@ void ColorPopupWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 		if(x>(KWheelMargin*2+150) && y > KWheelMargin+24 && y < KWheelMargin+24+12) {
 			Area rc = GetClientArea();
 			Pixels width = rc.GetWidth()-3*KWheelMargin-150;
-			int idx = (x-(KWheelMargin*2)-150)/(width/KFavouriteColorCount);
+			int idx = (x-(KWheelMargin*2)-145)/(width/KFavouriteColorCount);
 			if(idx>=0 && idx < KFavouriteColorCount) {
 				RGBColor color = _favColors[idx];
 				HSVColor col = ColorSpaces::RGBToHSV(color._r, color._g, color._b);

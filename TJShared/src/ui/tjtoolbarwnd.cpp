@@ -273,11 +273,11 @@ void ToolbarWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	}
 }
 
-void ToolbarItem::DrawToolbarButton(graphics::Graphics& g, const Area& rc, ref<Theme> theme, bool over, bool down, bool separator, float alpha) {
+void ToolbarItem::DrawToolbarButton(graphics::Graphics& g, const Area& rc, ref<Theme> theme, bool over, bool down, bool separator, bool enabled, float alpha) {
 	Pixels buttonSize = theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
 	Pixels x = rc.GetX();
 
-	if(over) {
+	if(over && enabled) {
 		Area wrapped = rc;
 		wrapped.Narrow(1,1,2,2);
 		if(down) {
@@ -305,7 +305,7 @@ void ToolbarItem::DrawToolbarButton(Graphics& g, Icon& icon, const Area& rc, ref
 	Pixels buttonSize = theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
 	Pixels x = rc.GetX();
 
-	if(over) {
+	if(over && enabled) {
 		Area wrapped = rc;
 		wrapped.Narrow(1,1,2,2);
 		if(down) {
