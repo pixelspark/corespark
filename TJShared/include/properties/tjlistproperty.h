@@ -60,7 +60,7 @@ namespace tj {
 							// Text parameters
 							graphics::SolidBrush tbr(theme->GetColor(Theme::ColorText));
 							Area text = rc;
-							text.Narrow(2,2,0,0);
+							text.Narrow(2,2,16+2,0);
 							graphics::StringFormat sf;
 							sf.SetTrimming(graphics::StringTrimmingEllipsisPath);
 

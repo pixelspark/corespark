@@ -94,7 +94,7 @@ Any Any::operator+(const Any& o) const {
 				return Any(_stringValue + Stringify(o._doubleValue));
 			}
 			else if(o._type==TypeString) {
-				return Any(_stringValue + Stringify(o._stringValue));
+				return Any(_stringValue + o._stringValue);
 			}
 			break;
 	}
@@ -299,6 +299,17 @@ bool Any::operator<(const Any& o) const {
 	return false;
 }
 
+/**
+Conversion table for operator== (* means always false).
+
+		N	I	D	B	S	O
+Null	X	*	*	*	*	*
+Int		*	X	*	*	*	*
+Double	*	*	X	*	*	*
+Bool	*	*	*	X	*	*
+String	*	*	*	*	X	*
+Object	*	*	*	*	*	X
+**/
 bool Any::operator==(const Any& o) const {
 	if(_type!=o._type) {
 		return false;
