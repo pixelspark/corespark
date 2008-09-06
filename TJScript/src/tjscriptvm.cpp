@@ -119,13 +119,13 @@ ref<Scriptable> VM::Execute(ref<ScriptContext> c, ref<CompiledScript> script, re
 	_scope = scope;
 
 	ref<VM> vm = this; // keep us alive
-	ref<Scriptlet> main = script->GetMainScriptlet();
+	strong<Scriptlet> main = script->GetMainScriptlet();
 	_frame = new StackFrame(main,0);
 	int opCode = 0;
 
 	try {
 		while(_frame!=0) {
-			ref<Scriptlet> scriptlet = _frame->_scriptlet;
+			strong<Scriptlet> scriptlet = _frame->_scriptlet;
 
 			if(_frame->_pc>=scriptlet->GetCodeSize()) {
 				// Destroy the scope if this scriptlet created one
@@ -140,6 +140,7 @@ ref<Scriptable> VM::Execute(ref<ScriptContext> c, ref<CompiledScript> script, re
 
 				// If the call stack is not empty, continu execution on the last frame
 				if(_frame!=0) {
+					#ifndef NDEBUG
 					/* This checks if the current stack frame returns with as many items on the stack
 					as when it entered this stack frame (could be +1 for return value, see return code above).
 					
@@ -154,6 +155,7 @@ ref<Scriptable> VM::Execute(ref<ScriptContext> c, ref<CompiledScript> script, re
 						}
 						Log::Write(L"TJScript/VM", L"Pop repair");
 					}
+					#endif
 
 					if(scriptlet->IsFunction()) {
 						_stack.Push(ScriptConstants::Null);
@@ -162,7 +164,10 @@ ref<Scriptable> VM::Execute(ref<ScriptContext> c, ref<CompiledScript> script, re
 			}
 			else {
 				opCode = scriptlet->Get<int>(_frame->_pc);
-				if(opCode>=Ops::_OpLast) Throw(L"Invalid instruction detected", ExceptionTypeError);
+				#ifndef NDEBUG
+					if(opCode>=Ops::_OpLast) Throw(L"Invalid instruction detected", ExceptionTypeError);
+				#endif
+
 				Ops::OpHandler opHandler = Ops::Handlers[opCode];
 				opHandler(this);
 

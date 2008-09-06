@@ -28,9 +28,8 @@ namespace tj {
 				void SendDemoted();
 				void SendPromoted();
 				void SendResourcePush(Channel c, const std::wstring& rid);
-				void SendResourceFind(const std::wstring& ident);
-				void SendResourceAdvertise(Channel c, const std::wstring& rid, const std::wstring& url, unsigned short port);
-				void SendResourceAdvertise(tj::shared::ref<BasicClient> c, const std::wstring& rid, const std::wstring& url, unsigned short port);
+				void SendResourceFind(const std::wstring& ident, tj::shared::ref<Transaction> tr = 0);
+				void SendResourceAdvertise(const std::wstring& rid, const std::wstring& url, unsigned short port, TransactionIdentifier tid = 0);
 				void SendError(Features involved, tj::shared::ExceptionType type, const std::wstring& message);
 				void SendListDevices(InstanceID to, tj::shared::ref<Transaction> ti);
 				void SendListDevicesReply(const DeviceIdentifier& di, const std::wstring& friendly, TransactionIdentifier ti, in_addr to, bool isLast);

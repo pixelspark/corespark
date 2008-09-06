@@ -29,7 +29,7 @@ namespace tj {
 			struct ScriptWriteDouble {
 				ScriptWriteDouble(ScriptGrammar const* gram);
 
-				void operator()(char const* start, char const* end) const {
+				inline void operator()(char const* start, char const* end) const {
 					std::istringstream is;
 					double value;
 					is >> value;
@@ -38,7 +38,7 @@ namespace tj {
 					_stack->Top()->Add<LiteralIdentifier>(li);
 				}
 
-				void operator()(const double& value) const {		
+				inline void operator()(const double& value) const {		
 					LiteralIdentifier li = _stack->Top()->StoreLiteral(GC::Hold(new ScriptDouble(value)));
 					_stack->Top()->Add<LiteralIdentifier>(li);
 				}
@@ -49,7 +49,7 @@ namespace tj {
 			struct ScriptWriteDoubleValue {
 				ScriptWriteDoubleValue(ScriptGrammar const* gram, double val);
 
-				template<typename T> void operator()(T,T) const {	
+				template<typename T> inline void operator()(T,T) const {	
 					LiteralIdentifier li = _stack->Top()->StoreLiteral(GC::Hold(new ScriptDouble(_value)));
 					_stack->Top()->Add<LiteralIdentifier>(li);
 				}
@@ -64,12 +64,12 @@ namespace tj {
 
 				ScriptWriteInt(ScriptGrammar const* gram, int i);
 
-				template<typename T> void operator()(T,T) const {
+				template<typename T> inline void operator()(T,T) const {
 					LiteralIdentifier li = _stack->Top()->StoreLiteral(GC::Hold(new ScriptInt(_value)));
 					_stack->Top()->Add<LiteralIdentifier>(li);
 				}
 
-				template<typename T> void operator()(const T&) const {		
+				template<typename T> inline void operator()(const T&) const {		
 					LiteralIdentifier li = _stack->Top()->StoreLiteral(GC::Hold(new ScripInt(_value)));
 					_stack->Top()->Add<LiteralIdentifier>(li);
 				}
@@ -80,7 +80,7 @@ namespace tj {
 			struct ScriptWriteString {
 				ScriptWriteString(ScriptGrammar const* gram);
 
-				template<typename T> void operator()(const T start, const T end) const {
+				template<typename T> inline void operator()(const T start, const T end) const {
 					std::wstring value(start,end);
 					ReplaceAll(value, L"\\\"", L"\"");
 					ReplaceAll(value, L"\\r", L"\r");
@@ -91,7 +91,7 @@ namespace tj {
 					_stack->Top()->Add<LiteralIdentifier>(li);
 				}
 
-				template<typename T> void operator()(const T v) const {	
+				template<typename T> inline void operator()(const T v) const {	
 					std::wstring value(v);
 					ReplaceAll(value, L"\\\"", L"\"");
 					ReplaceAll(value, L"\\r", L"\r");
@@ -108,14 +108,14 @@ namespace tj {
 			struct ScriptWriteHash {
 				ScriptWriteHash(ScriptGrammar const* gram);
 
-				template<typename T> void operator()(const T start, const T end) const {
+				template<typename T> inline void operator()(const T start, const T end) const {
 					std::wstring value(start,end);
 					
 					Hash h;
 					_stack->Top()->Add<unsigned int>(h.Calculate(value));
 				}
 
-				template<typename T> void operator()(const T v) const {	
+				template<typename T> inline void operator()(const T v) const {	
 					std::wstring value(v);
 
 					Hash h;
@@ -126,15 +126,15 @@ namespace tj {
 			};
 
 			struct ScriptLog {
-				ScriptLog(std::wstring msg) {
+				inline ScriptLog(std::wstring msg) {
 					_msg = msg;
 				}
 
-				void operator()(char const* str, char const* end) const {
+				inline void operator()(char const* str, char const* end) const {
 					Log::Write(L"TJScript/Parser", _msg+L": "+Wcs(std::string(str,end)));
 				}
 
-				template<typename T> void operator()(T x) const {
+				template<typename T> inline void operator()(T x) const {
 					Log::Write(L"TJScript/Parser", _msg);
 				}
 
@@ -143,17 +143,17 @@ namespace tj {
 
 
 			struct ScriptPushScriptlet {
-				ScriptPushScriptlet(ScriptGrammar const* gram, ScriptletType t) {
+				inline ScriptPushScriptlet(ScriptGrammar const* gram, ScriptletType t) {
 					_grammar = gram;
 					_function = t;
 				}
 
-				template<typename T> void operator()(T str, T end) const {
+				template<typename T> inline void operator()(T str, T end) const {
 					ref<Scriptlet> s = _grammar->_script->CreateScriptlet(_function);
 					_grammar->_stack->Push(s,_grammar->_script->GetScriptletIndex(s));
 				}
 
-				template<typename T> void operator()(T val) const {
+				template<typename T> inline void operator()(T val) const {
 					ref<Scriptlet> s = _grammar->_script->CreateScriptlet(_function);
 					_grammar->_stack->Push(s,_grammar->_script->GetScriptletIndex(s));
 				}
@@ -163,11 +163,11 @@ namespace tj {
 			};
 
 			struct ScriptLoadScriptlet {
-				ScriptLoadScriptlet(ScriptGrammar const* g) {
+				inline ScriptLoadScriptlet(ScriptGrammar const* g) {
 					_grammar = g;
 				}
 
-				template<typename T> void operator()(T str, T end) const {
+				template<typename T> inline void operator()(T str, T end) const {
 					int idx = _grammar->_stack->GetCurrentIndex();
 					ref<Scriptlet> dlg = _grammar->_stack->Pop();
 
@@ -179,11 +179,11 @@ namespace tj {
 			};
 
 			struct ScriptIf {
-				ScriptIf(ScriptGrammar const* g) {
+				inline ScriptIf(ScriptGrammar const* g) {
 					_grammar = g;
 				}
 
-				template<typename T> void operator()(T str, T end) const {
+				template<typename T> inline void operator()(T str, T end) const {
 					ref<Scriptlet> s = _grammar->_stack->Pop();
 					int idx = _grammar->_script->GetScriptletIndex(s);
 					ref<Scriptlet> main = _grammar->_stack->Top();
@@ -196,11 +196,11 @@ namespace tj {
 			};
 
 			struct ScriptIterate {
-				ScriptIterate(ScriptGrammar const* grammar) {
+				inline ScriptIterate(ScriptGrammar const* grammar) {
 					_grammar = grammar;
 				}
 
-				template<typename T> void operator()(T str, T end) const {
+				template<typename T> inline void operator()(T str, T end) const {
 					ref<Scriptlet> s = _grammar->_stack->Pop();
 					int idx = _grammar->_script->GetScriptletIndex(s);
 					ref<Scriptlet> main = _grammar->_stack->Top();
@@ -213,7 +213,7 @@ namespace tj {
 			};
 
 			struct ScriptBeginDelegate {
-				ScriptBeginDelegate(ScriptGrammar const* g) {
+				inline ScriptBeginDelegate(ScriptGrammar const* g) {
 					_grammar = g;
 				}
 
@@ -223,7 +223,7 @@ namespace tj {
 			};
 
 			struct ScriptEndDelegate {
-				ScriptEndDelegate(ScriptGrammar const* g) {
+				inline ScriptEndDelegate(ScriptGrammar const* g) {
 					_grammar = g;
 				}
 
@@ -493,16 +493,16 @@ namespace tj {
 
 			// Writes an instruction to the code
 			struct ScriptInstruction {
-				ScriptInstruction(ScriptGrammar const* gram, Ops::Codes op) {
+				inline ScriptInstruction(ScriptGrammar const* gram, Ops::Codes op) {
 					_stack = gram->_stack;
 					_op = op;
 				}
 
-				template<typename T> void operator()(T,T) const {
+				template<typename T> inline void operator()(T,T) const {
 					_stack->Top()->AddInstruction(_op);
 				}
 
-				template<typename Q> void operator()(const Q& value) const {		
+				template<typename Q> inline void operator()(const Q& value) const {		
 					_stack->Top()->AddInstruction(_op);
 				}
 
@@ -511,11 +511,11 @@ namespace tj {
 			};
 
 			struct ScriptStringLiteral {
-				ScriptStringLiteral(ScriptGrammar const* gram) {
+				inline ScriptStringLiteral(ScriptGrammar const* gram) {
 					_stack = gram->_stack;
 				}
 
-				template<typename T> void operator()(const T start,const T end) const {
+				template<typename T> inline void operator()(const T start,const T end) const {
 					_stack->Top()->AddInstruction(Ops::OpPushString);
 					std::wstring value(start,end);
 					ReplaceAll(value, L"\\\"", L"\"");
@@ -527,7 +527,7 @@ namespace tj {
 					_stack->Top()->Add<LiteralIdentifier>(li);
 				}
 
-				template<typename Q> void operator()(const Q v) const {		
+				template<typename Q> inline void operator()(const Q v) const {		
 					_stack->Top()->AddInstruction(Ops::OpPushString);
 					std::wstring value(v);
 					ReplaceAll(value, L"\\\"", L"\"");

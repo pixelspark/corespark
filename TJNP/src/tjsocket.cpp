@@ -341,14 +341,23 @@ void Socket::SendLeave() {
 	Send(p);
 }
 
-void Socket::SendResourceFind(const std::wstring& ident) {
+void Socket::SendResourceFind(const std::wstring& ident, ref<Transaction> ti) {
 	ThreadLock lock(&_lock);
 	ref<Message> stream = GC::Hold(new Message(true));
 	stream->Add(ident);
+
+	if(ti) {
+		++_transactionCounter;
+		_transactions[_transactionCounter] = ti;
+		stream->Add<TransactionIdentifier>(_transactionCounter);
+	}
+	else {
+		stream->Add<TransactionIdentifier>(0);
+	}
+
 	stream->GetHeader()->_action = ActionFindResource;
 	Send(stream);
 }
-
 
 void Socket::SendResourcePush(Channel c, const std::wstring& ident) {
 	ThreadLock lock(&_lock);
@@ -359,38 +368,17 @@ void Socket::SendResourcePush(Channel c, const std::wstring& ident) {
 	Send(stream);
 }
 
-void Socket::SendResourceAdvertise(Channel c, const std::wstring& rid, const std::wstring& url, unsigned short port) {
+void Socket::SendResourceAdvertise(const std::wstring& rid, const std::wstring& url, unsigned short port, TransactionIdentifier tid) {
 	ThreadLock lock(&_lock);
 	ref<Message> stream = GC::Hold(new Message(true));
 
-	stream->GetHeader()->_channel = c;
+	stream->GetHeader()->_channel = 0;
+	stream->GetHeader()->_transaction = tid;
 	stream->GetHeader()->_action = ActionAdvertiseResource;
 	stream->Add(port);
 	stream->Add(rid);
 	stream->Add(url);
 	Send(stream);
-}
-
-void Socket::SendResourceAdvertise(ref<BasicClient> c, const std::wstring& rid, const std::wstring& url, unsigned short port) {
-	ThreadLock lock(&_lock);
-	ref<Message> stream = GC::Hold(new Message(true));
-
-	// Get client address
-	std::string ip = Mbs(c->GetIP());
-	unsigned long  ipl = inet_addr(ip.c_str());
-
-	sockaddr_in addr;
-	addr.sin_family = AF_INET;
-	addr.sin_port = htons((u_short)_port);      
-	addr.sin_addr.s_addr = ipl;
-
-	// TODO: support other servers?
-	stream->GetHeader()->_channel = 0;
-	stream->GetHeader()->_action = ActionAdvertiseResource;
-	stream->Add(port);
-	stream->Add(rid);
-	stream->Add(url);
-	Send(stream, &addr);
 }
 
 void Socket::SendOutletChange(Channel ch, const std::wstring& outletName, const tj::shared::Any& value) {
