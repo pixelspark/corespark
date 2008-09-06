@@ -8,19 +8,14 @@ namespace tj {
 		class ScriptContext;
 
 		struct StackFrame {
-				inline StackFrame(tj::shared::ref<Scriptlet> s, unsigned int pc, bool createdScope=false) {
-					_scriptlet = s;
-					_pc = pc;
-					_stackSize = 0;
-					_createdScope = createdScope;
-					_previous = 0;
+				inline StackFrame(tj::shared::strong<Scriptlet> s, unsigned int pc, bool createdScope=false): _scriptlet(s), _pc(pc), _stackSize(0), _createdScope(createdScope), _previous(0) {
 				}
 
 				~StackFrame() {
 				}
 				
 				unsigned int _pc;
-				tj::shared::ref<Scriptlet> _scriptlet;
+				tj::shared::strong<Scriptlet> _scriptlet;
 				unsigned int _stackSize;
 				bool _createdScope; // True if a scope was created for this frame
 				StackFrame* _previous;
@@ -37,6 +32,7 @@ namespace tj {
 				void Call(tj::shared::ref<Scriptlet> s, tj::shared::ref<ScriptParameterList> sc=0);
 				void Call(int n);
 				void Return(bool takeLastValue);
+				void ReturnFromScriptlet();
 				void Break();
 
 				// Inlines

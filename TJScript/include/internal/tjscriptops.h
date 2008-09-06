@@ -51,6 +51,7 @@ namespace tj {
 					OpAddToArray,			// [array] [scriptable] => [array]
 					OpPushArray,			// [..] => [array]
 					OpType,					// [string] => [type scriptable]
+					OpEndScriptlet,			// Same as OpReturn but doesn't loop until it exits a function up the stack
 					_OpLast,				// Should always be the last op
 				};
 

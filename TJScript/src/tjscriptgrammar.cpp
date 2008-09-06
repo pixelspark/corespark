@@ -170,6 +170,7 @@ namespace tj {
 				template<typename T> inline void operator()(T str, T end) const {
 					int idx = _grammar->_stack->GetCurrentIndex();
 					ref<Scriptlet> dlg = _grammar->_stack->Pop();
+					dlg->AddInstruction(Ops::OpEndScriptlet);
 
 					_grammar->_stack->Top()->AddInstruction(Ops::OpLoadScriptlet);
 					_grammar->_stack->Top()->Add<int>(idx);
@@ -185,6 +186,7 @@ namespace tj {
 
 				template<typename T> inline void operator()(T str, T end) const {
 					ref<Scriptlet> s = _grammar->_stack->Pop();
+					s->AddInstruction(Ops::OpEndScriptlet);
 					int idx = _grammar->_script->GetScriptletIndex(s);
 					ref<Scriptlet> main = _grammar->_stack->Top();
 
@@ -202,6 +204,7 @@ namespace tj {
 
 				template<typename T> inline void operator()(T str, T end) const {
 					ref<Scriptlet> s = _grammar->_stack->Pop();
+					s->AddInstruction(Ops::OpEndScriptlet);
 					int idx = _grammar->_script->GetScriptletIndex(s);
 					ref<Scriptlet> main = _grammar->_stack->Top();
 					
@@ -246,6 +249,10 @@ namespace tj {
 					}
 
 					virtual ~ScriptGrammar() {
+						ref<Scriptlet> main = _stack->Pop();
+						if(main) {
+							main->AddInstruction(Ops::OpReturn);
+						}
 					}
 
 					template <typename ScannerT> struct definition {
@@ -482,7 +489,10 @@ namespace tj {
 				ref<CompiledScript> dlg = _grammar->_script;
 				_grammar->_script = *(_grammar->_delegateStack.rbegin());
 				_grammar->_delegateStack.pop_back();
-				_grammar->_stack->Pop();
+				ref<Scriptlet> delegateMainScriptlet = _grammar->_stack->Pop();
+				if(delegateMainScriptlet) {
+					delegateMainScriptlet->AddInstruction(Ops::OpReturn);
+				}
 				
 				ref<Scriptlet> current = _grammar->_stack->Top();
 				ref<ScriptDelegate> scriptDelegate = GC::Hold(new ScriptDelegate(dlg, _grammar->_context));

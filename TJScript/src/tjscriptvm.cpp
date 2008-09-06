@@ -91,11 +91,27 @@ void VM::Return(bool returnValue) {
 	}
 }
 
+void VM::ReturnFromScriptlet() {
+	if(_frame->_scriptlet->IsFunction()) {
+		throw ScriptException(L"Cannot use OpEndScriptlet to return from a function!");
+	}
+
+	if(_frame->_createdScope) {
+		_scope = _scope->GetPrevious();
+	}
+	
+	StackFrame* old = _frame->_previous;
+	delete _frame;
+	_frame = old;
+}
+
 void VM::Break() {
 	while(true) {
+		#ifndef NDEBUG
 		if(_frame->_scriptlet->IsFunction()) {
 			throw ScriptException(L"Cannot break out of function; please use a return statement!");
 		}
+		#endif
 
 		if(_frame->_createdScope) {
 			_scope = _scope->GetPrevious();
@@ -125,55 +141,23 @@ ref<Scriptable> VM::Execute(ref<ScriptContext> c, ref<CompiledScript> script, re
 
 	try {
 		while(_frame!=0) {
-			strong<Scriptlet> scriptlet = _frame->_scriptlet;
-
-			if(_frame->_pc>=scriptlet->GetCodeSize()) {
-				// Destroy the scope if this scriptlet created one
-				if(scriptlet!=main && _frame->_createdScope) {
-					_scope = _scope->GetPrevious();
-				}
-
-				// pop call frame
-				StackFrame* old = _frame->_previous;
-				delete _frame;
-				_frame = old;
-
-				// If the call stack is not empty, continu execution on the last frame
-				if(_frame!=0) {
-					#ifndef NDEBUG
-					/* This checks if the current stack frame returns with as many items on the stack
-					as when it entered this stack frame (could be +1 for return value, see return code above).
-					
-					TODO: not really necessary anymore, since the parser pops after each
-					statement that leaves something on the stack (or it should anyway...). Maybe
-					create a separate DebugExecute method with debugging and stack-checks like
-					this one. If we want to remove the stackSize field from StackFrame, we should
-					consider creating a separate 'stack count stack' for the debug method. */
-					if(_stack.GetSize()!=_frame->_stackSize) {
-						if(_stack.GetSize()>=_frame->_stackSize) {
-							_stack.Pop(_frame->_stackSize);
-						}
-						Log::Write(L"TJScript/VM", L"Pop repair");
-					}
-					#endif
-
-					if(scriptlet->IsFunction()) {
-						_stack.Push(ScriptConstants::Null);
-					}
-				}
+			#ifndef NDEBUG
+			if(_frame->_pc>=_frame->_scriptlet->GetCodeSize()) {
+				Throw(L"Ran past the end of a scriptlet's end!", ExceptionTypeError);
 			}
-			else {
-				opCode = scriptlet->Get<int>(_frame->_pc);
-				#ifndef NDEBUG
-					if(opCode>=Ops::_OpLast) Throw(L"Invalid instruction detected", ExceptionTypeError);
-				#endif
+			#endif
+			
+			opCode = _frame->_scriptlet->Get<int>(_frame->_pc);
 
-				Ops::OpHandler opHandler = Ops::Handlers[opCode];
-				opHandler(this);
+			#ifndef NDEBUG
+				if(opCode>=Ops::_OpLast) Throw(L"Invalid instruction detected", ExceptionTypeError);
+			#endif
 
-				if(_debug) {
-					Log::Write(L"TJScript/VM/Execute",Ops::Names[opCode]);
-				}
+			Ops::OpHandler opHandler = Ops::Handlers[opCode];
+			opHandler(this);
+
+			if(_debug) {
+				Log::Write(L"TJScript/VM/Execute",Ops::Names[opCode]);
 			}
 		}
 	}
