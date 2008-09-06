@@ -17,6 +17,7 @@ namespace tj {
 				virtual ~Animation();
 				virtual void Start(const Time& length, bool reverse = false, Ease ease = EaseLinear);
 				virtual void Start();
+				virtual void Stop();
 				virtual float GetProgress() const;
 				virtual float GetFraction() const;
 				virtual float GetFraction(Ease e) const;

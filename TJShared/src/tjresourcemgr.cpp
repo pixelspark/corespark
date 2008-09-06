@@ -50,6 +50,11 @@ std::wstring ResourceManager::GetRelative(std::wstring path) {
 		const std::wstring& root = *it;
 		
 		if(PathRelativePathTo(relativePath, root.c_str(), FILE_ATTRIBUTE_DIRECTORY, path.c_str(), FILE_ATTRIBUTE_NORMAL)==TRUE) {
+			// Windows sometimes adds './' in front of relative paths, remove it
+			if(relativePath[0]==L'.' && relativePath[1]==L'\\') {
+				return std::wstring((const wchar_t*)&(relativePath[2]));
+			} 
+
 			return relativePath;
 		}
 		++it;
@@ -80,9 +85,11 @@ std::wstring ResourceManager::Get(const std::wstring& ident, bool silent) {
 		return ident;
 	}
 
-	Log::Write(L"TJShared/ResourceManager", std::wstring(L"Resource not found: ")+ident);
-	if(!silent && _listener) {
-		return _listener->OnResourceNotFound(ident);
+	if(!silent) {
+		Log::Write(L"TJShared/ResourceManager", std::wstring(L"Resource not found: ")+ident);
+		if(_listener) {
+			return _listener->OnResourceNotFound(ident);
+		}
 	}
 
 	return L"";

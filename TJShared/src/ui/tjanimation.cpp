@@ -20,6 +20,10 @@ void Animation::Start(const Time& length, bool rev, Ease ease) {
 	_startTime.Now();
 }
 
+void Animation::Stop() {
+	_length = 0;
+}
+
 float Animation::GetProgress() const {
 	if(_animationsEnabled) {
 		Timestamp now(true);
