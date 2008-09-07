@@ -1,8 +1,7 @@
 #include "../include/tjcore.h"
 using namespace tj::shared;
-using namespace tj::shared::intern;
 
-volatile long Resource::_resourceCount = 0L;
+volatile long intern::Resource::_resourceCount = 0L;
 
 /* GC */
 void GC::Log(const char* tp, bool allocate) {
@@ -30,15 +29,15 @@ std::wstring Endpoint::GetName() const {
 }
 
 /* Resource */
-Resource::Resource(): _referenceCount(0), _weakReferenceCount(0) {
+intern::Resource::Resource(): _referenceCount(0), _weakReferenceCount(0) {
 	InterlockedIncrement(&_resourceCount);
 }
 
-Resource::~Resource() {
+intern::Resource::~Resource() {
 	InterlockedDecrement(&_resourceCount);
 }
 
-long Resource::GetResourceCount() {
+long intern::Resource::GetResourceCount() {
 	return _resourceCount;
 }
 

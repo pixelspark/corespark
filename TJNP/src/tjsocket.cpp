@@ -359,7 +359,7 @@ void Socket::SendResourceFind(const std::wstring& ident, ref<Transaction> ti) {
 	Send(stream);
 }
 
-void Socket::SendResourcePush(Channel c, const std::wstring& ident) {
+void Socket::SendResourcePush(Channel c, const ResourceIdentifier& ident) {
 	ThreadLock lock(&_lock);
 	ref<Message> stream = GC::Hold(new Message(true));
 	stream->GetHeader()->_action = ActionPushResource;
@@ -368,7 +368,7 @@ void Socket::SendResourcePush(Channel c, const std::wstring& ident) {
 	Send(stream);
 }
 
-void Socket::SendResourceAdvertise(const std::wstring& rid, const std::wstring& url, unsigned short port, TransactionIdentifier tid) {
+void Socket::SendResourceAdvertise(const ResourceIdentifier& rid, const std::wstring& url, unsigned short port, TransactionIdentifier tid) {
 	ThreadLock lock(&_lock);
 	ref<Message> stream = GC::Hold(new Message(true));
 

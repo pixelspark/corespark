@@ -6,7 +6,7 @@ const int NotificationWnd::DefaultNotificationHeight = 30;
 const int NotificationWnd::DefaultNotificationMargin = 10;
 const int NotificationWnd::DefaultNotificationTimeout = 5000;
 
-NotificationWnd::NotificationWnd(const std::wstring& text, std::wstring icon, int time, int h, RootWnd* parent) : Wnd(text.c_str(), (parent!=0)?parent->GetWindow():0L, TJ_DROPSHADOW_CLASS_NAME) {
+NotificationWnd::NotificationWnd(const std::wstring& text, const std::wstring& icon, int time, int h, RootWnd* parent) : Wnd(text.c_str(), (parent!=0)?parent->GetWindow():0L, TJ_DROPSHADOW_CLASS_NAME) {
 	assert(parent!=0);
 	SetStyle(WS_POPUP);
 	UnsetStyle(WS_CAPTION|WS_BORDER);

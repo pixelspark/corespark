@@ -3,6 +3,23 @@
 
 namespace tj {
 	namespace shared {
+		namespace intern {
+			struct CaseInsensitiveStringTraits : public std::char_traits<wchar_t> {
+				static bool eq(wchar_t c1, wchar_t c2) { return toupper(c1) == toupper(c2); }
+				static bool ne(wchar_t c1, wchar_t c2) { return toupper(c1) != toupper(c2); }
+				static bool lt(wchar_t c1, wchar_t c2) { return toupper(c1) <  toupper(c2); }
+				static int compare(const wchar_t* s1, const wchar_t* s2, size_t n) { return _memicmp( s1, s2, n ); }
+				static const wchar_t* find(const wchar_t* s, int n, char a) {
+					while( n-- > 0 && toupper(*s) != toupper(a) ) {
+						++s;
+					}
+					return s;
+				}
+			};	
+		}
+
+		typedef std::basic_string<wchar_t, intern::CaseInsensitiveStringTraits> CaseInsensitiveString;	// Case-insensitive string
+		typedef std::wstring String;
 		class Serializable;
 		typedef long long Bytes; // This is equivalent to __int64 on MSVC++
 
