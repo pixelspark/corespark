@@ -5,7 +5,7 @@ namespace tj {
 	namespace shared {
 		class EXPORTED ButtonWnd: public ChildWnd {
 			public:
-				ButtonWnd(const wchar_t* image, const wchar_t* text=0);
+				ButtonWnd(const ResourceIdentifier& iconRid, const std::wstring& text = L"");
 				virtual ~ButtonWnd();
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
@@ -25,7 +25,7 @@ namespace tj {
 				virtual void OnFocus(bool f);
 
 				std::wstring _text;
-				graphics::Bitmap* _image;
+				Icon _icon;
 				bool _down;
 				bool _disabled;
 		};
@@ -33,15 +33,15 @@ namespace tj {
 		class EXPORTED StateButtonWnd: public ButtonWnd {
 			public:
 				enum ButtonState {On, Off, Other};
-				StateButtonWnd(const wchar_t* imageOn, const wchar_t* imageOff, const wchar_t* imageOther);
+				StateButtonWnd(const ResourceIdentifier& imageOn, const ResourceIdentifier& imageOff, const ResourceIdentifier& imageOther);
 				virtual ~StateButtonWnd();
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 				void SetOn(ButtonState o);
 				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
 				
 			protected:
-				graphics::Bitmap* _offImage;
-				graphics::Bitmap* _otherImage;
+				Icon _offIcon;
+				Icon _otherIcon;
 				ButtonState _on;
 		};
 	}

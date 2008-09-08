@@ -359,9 +359,8 @@ ToolbarItem::ToolbarItem(int command, graphics::Bitmap* bmp, const std::wstring&
 	_preferredHeight = -1;
 }
 
-ToolbarItem::ToolbarItem(int command, const std::wstring& rid, const std::wstring& text, bool separator): _icon(rid), _enabled(true), _active(true) {
+ToolbarItem::ToolbarItem(int command, const ResourceIdentifier& icon, const std::wstring& text, bool separator): _icon(icon), _enabled(true), _active(true) {
 	_separator = separator;
-	std::wstring path = ResourceManager::Instance()->Get(rid);
 	_command = command;
 	_text = text;
 	_preferredWidth = -1;

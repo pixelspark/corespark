@@ -9,24 +9,24 @@ namespace tj {
 			friend class PathWnd;
 
 			public:
-				Crumb(std::wstring text, std::wstring icon);
+				Crumb(const std::wstring& text, const ResourceIdentifier& icon);
 				virtual ~Crumb();
 				std::wstring GetText() const;
 				std::wstring GetTextTrimmed() const;
-				graphics::Bitmap* GetIcon();
+				graphics::Image* GetIcon();
 				virtual ref< std::vector< ref<Crumb> > > GetChildren();
 				virtual ref<Inspectable> GetSubject();
 				virtual void SetText(const std::wstring& x);
 
 			protected:
 				std::wstring _text;
-				graphics::Bitmap* _icon;
+				Icon _icon;
 				static const int KMaxTextLength = 15;
 		};
 
 		class EXPORTED BasicCrumb: public Crumb {
 			public:
-				BasicCrumb(std::wstring text, std::wstring icon, ref<Inspectable> subject);
+				BasicCrumb(const std::wstring& text, const ResourceIdentifier& icon, ref<Inspectable> subject);
 				virtual ~BasicCrumb();
 				virtual ref<Inspectable> GetSubject();
 				virtual ref< std::vector< ref<Crumb> > > GetChildren();

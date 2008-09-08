@@ -5,7 +5,7 @@ namespace tj {
 	namespace shared {
 		class EXPORTED NotificationWnd: public Wnd {
 			public:
-				NotificationWnd(const std::wstring& text, const std::wstring& icon, int time, int h, RootWnd* parent);
+				NotificationWnd(const std::wstring& text, const ResourceIdentifier& icon, int time, int h, RootWnd* parent);
 				virtual ~NotificationWnd();
 				virtual void Show(bool t);
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
@@ -19,7 +19,7 @@ namespace tj {
 				
 			protected:
 				std::wstring _text;
-				graphics::Bitmap* _icon;
+				Icon _icon;
 				RootWnd* _root;
 				int _index;
 

@@ -2,18 +2,11 @@
 using namespace tj::shared::graphics;
 using namespace tj::shared;
 
-ButtonWnd::ButtonWnd(const wchar_t* image, const wchar_t* text): ChildWnd(L""), _disabled(false), _down(false) {
+ButtonWnd::ButtonWnd(const ResourceIdentifier& icon, const std::wstring& text): ChildWnd(L""), _disabled(false), _down(false), _icon(icon), _text(text) {
 	SetWantMouseLeave(true);
-	std::wstring fn = ResourceManager::Instance()->Get(image);
-	_image =  Bitmap::FromFile(fn.c_str(),TRUE);
-
-	if(text!=0) {
-		_text = text;
-	}
 }
 
 ButtonWnd::~ButtonWnd() {
-	delete _image;
 }
 
 void ButtonWnd::Fill(LayoutFlags f, Area& r, bool direct) {
@@ -95,12 +88,9 @@ void ButtonWnd::Paint(Graphics& g, ref<Theme> theme) {
 	
 	// Draw icon
 	Pixels margin = (rc.GetHeight()-KImgHeight)/2;
-	
-	if(_image!=0) {
-		Area iconArea(rc.GetLeft()+margin, rc.GetTop()+margin, KImgWidth, KImgHeight);
-		theme->DrawHighlightEllipse(g, iconArea);
-		g.DrawImage(_image, iconArea);
-	}
+	Area iconArea(rc.GetLeft()+margin, rc.GetTop()+margin, KImgWidth, KImgHeight);
+	theme->DrawHighlightEllipse(g, iconArea);
+	_icon.Paint(g, iconArea);
 	
 	// Draw border
 	SolidBrush border(theme->GetColor(Theme::ColorActiveEnd));
@@ -164,18 +154,11 @@ LRESULT ButtonWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 }
 
 /* StateButtonWnd */
-StateButtonWnd::StateButtonWnd( const wchar_t* imageOn, const wchar_t* imageOff, const wchar_t* imageOther):
-ButtonWnd(imageOn) {
-	std::wstring fn = ResourceManager::Instance()->Get(imageOff);
-	_offImage =  Bitmap::FromFile(fn.c_str(),TRUE);
-	fn = ResourceManager::Instance()->Get(imageOn);
-	_otherImage =  Bitmap::FromFile(fn.c_str(),TRUE);
+StateButtonWnd::StateButtonWnd(const ResourceIdentifier& imageOn, const ResourceIdentifier& imageOff, const ResourceIdentifier& imageOther): ButtonWnd(imageOn), _offIcon(imageOff), _otherIcon(imageOther) {
 	_on = Off;
 }
 
 StateButtonWnd::~StateButtonWnd() {
-	delete _offImage;
-	delete _otherImage;
 }
 
 void StateButtonWnd::Paint(Graphics& g, ref<Theme> theme) {
@@ -185,17 +168,17 @@ void StateButtonWnd::Paint(Graphics& g, ref<Theme> theme) {
 	g.FillRectangle(&backBr, rc);
 	
 	// Choose and draw icon
-	Bitmap* img = 0;
+	Icon* img = 0;
 	switch(_on) {
 		case On:
-			img = _image;
+			img = &_icon;
 			break;
 		case Off:
 		default:			
-			img = _offImage;
+			img = &_offIcon;
 			break;
 		case Other:
-			img = _otherImage;
+			img = &_otherIcon;
 	}
 	
 	if(img!=0) {
@@ -204,7 +187,7 @@ void StateButtonWnd::Paint(Graphics& g, ref<Theme> theme) {
 		static const Pixels KImgWidth = 16;
 
 		Pixels margin = (rc.GetHeight()-KImgHeight)/2;
-		g.DrawImage(img, Area(margin,margin,KImgHeight, KImgWidth));
+		img->Paint(g, Area(margin,margin,KImgHeight, KImgWidth));
 	}
 }
 

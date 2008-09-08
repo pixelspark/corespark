@@ -7,148 +7,216 @@ using namespace tj::shared;
 
 ref<ResourceManager> ResourceManager::_instance;
 
+/** ResourceProvider **/
+ResourceProvider::~ResourceProvider() {
+}
+
+bool ResourceProvider::GetPathToLocalResource(const ResourceIdentifier& rid, std::wstring& path) {
+	return false;
+}
+
+/** AbsoluteLocalFileResourceProvider **/
+AbsoluteLocalFileResourceProvider::AbsoluteLocalFileResourceProvider() {
+}
+
+AbsoluteLocalFileResourceProvider::~AbsoluteLocalFileResourceProvider() {
+}
+
+ref<Resource> AbsoluteLocalFileResourceProvider::GetResource(const ResourceIdentifier& rid) {
+	if(!Zones::LocalFileInfoZone.CanEnter()) {
+		return false;
+	}
+
+	ZoneEntry ze(Zones::LocalFileInfoZone);
+	return GC::Hold(new LocalFileResource(rid, rid));
+}
+
+bool AbsoluteLocalFileResourceProvider::GetPathToLocalResource(const ResourceIdentifier& rid, std::wstring& path) {	
+	if(!Zones::LocalFileInfoZone.CanEnter()) {
+		return false;
+	}
+
+	ZoneEntry ze(Zones::LocalFileInfoZone);
+	path = rid;
+	return true;
+}
+
+ResourceIdentifier AbsoluteLocalFileResourceProvider::GetRelative(const std::wstring& path) {
+	if(!Zones::LocalFileInfoZone.CanEnter()) {
+		return false;
+	}
+
+	ZoneEntry ze(Zones::LocalFileInfoZone);
+	return path;
+}
+
+
+/** LocalFileResourceProvider **/
+LocalFileResourceProvider::LocalFileResourceProvider(const std::wstring& searchPath): _searchPath(searchPath) {
+}
+
+LocalFileResourceProvider::~LocalFileResourceProvider() {
+}
+
+ref<Resource> LocalFileResourceProvider::GetResource(const ResourceIdentifier& rid) {
+	if(!Zones::LocalFileInfoZone.CanEnter()) {
+		return false;
+	}
+
+	ZoneEntry ze(Zones::LocalFileInfoZone);
+
+	std::wstring path;
+	if(GetPathToLocalResource(rid, path)) {
+		return GC::Hold(new LocalFileResource(rid, path));
+	}
+	return null;
+}
+
+bool LocalFileResourceProvider::GetPathToLocalResource(const ResourceIdentifier& rid, std::wstring& path) {	
+	if(!Zones::LocalFileInfoZone.CanEnter()) {
+		return false;
+	}
+
+	ZoneEntry ze(Zones::LocalFileInfoZone);
+	std::wstring myPath = _searchPath + File::PathSeparator + rid;
+
+	// check if that file exists
+	if(GetFileAttributes(myPath.c_str())!=INVALID_FILE_ATTRIBUTES) {
+		path = myPath;
+		return true;
+	}
+	return false;
+}
+
+ResourceIdentifier LocalFileResourceProvider::GetRelative(const std::wstring& path) {
+	if(!Zones::LocalFileInfoZone.CanEnter()) {
+		return false;
+	}
+
+	ZoneEntry ze(Zones::LocalFileInfoZone);
+
+	wchar_t relativePath[MAX_PATH+3];
+	if(PathRelativePathTo(relativePath, _searchPath.c_str(), FILE_ATTRIBUTE_DIRECTORY, path.c_str(), FILE_ATTRIBUTE_NORMAL)==TRUE) {
+		// Windows sometimes adds './' in front of relative paths, remove it
+		if(relativePath[0]==L'.' && relativePath[1]==L'\\') {
+			return ResourceIdentifier((const wchar_t*)&(relativePath[2]));
+		} 
+
+		return L"";
+	}
+}
+
 ResourceManager::ResourceManager() {
-	/** Add location of tjshared.dll to the search list **/
-	wchar_t* buf = new wchar_t[MAX_PATH];
-	memset(buf,0,sizeof(wchar_t)*MAX_PATH);
-	GetModuleFileName(GetModuleHandle(NULL), buf, MAX_PATH);
-	PathRemoveFileSpec(buf);
-	_paths.push_back(std::wstring(buf));
 }
 
 ResourceManager::~ResourceManager() {
 }
 
-std::wstring ResourceManager::GetSearchPath() const {
-	std::wostringstream os;
-	std::vector< std::wstring >::const_iterator it = _paths.begin();
-	while(it!=_paths.end()) {
-		const std::wstring& root = *it;
-		os << root << L";";
-		++it;
+void ResourceManager::AddProvider(strong<ResourceProvider> rp, bool upFront) {
+	if(upFront) {
+		_paths.push_front(rp);
 	}
-	return os.str();
+	else {
+		_paths.push_back(rp);
+	}
 }
 
-void ResourceManager::AddSearchPath(const std::wstring& path) {
-	_paths.push_back(path);
+void ResourceManager::RemoveProvider(strong<ResourceProvider> rp) {
+	std::remove(_paths.begin(), _paths.end(), rp);
 }
 
-void ResourceManager::RemoveSearchPath(const std::wstring& path) {
-	std::remove(_paths.begin(), _paths.end(), path);
-}
-
-void ResourceManager::SetListener(ref<ResourceListener> l) {
-	_listener = l;
-}
-
-/* This method created a relative resource path ('rid') from a full, absolute path
-using the search paths */
 ResourceIdentifier ResourceManager::GetRelative(const std::wstring& path) {
 	ZoneEntry ze(Zones::LocalFileInfoZone);
-	std::vector< std::wstring >::const_reverse_iterator it = _paths.rbegin();
-	wchar_t relativePath[MAX_PATH+3];
-	while(it!=_paths.rend()) {
-		const std::wstring& root = *it;
-		
-		if(PathRelativePathTo(relativePath, root.c_str(), FILE_ATTRIBUTE_DIRECTORY, path.c_str(), FILE_ATTRIBUTE_NORMAL)==TRUE) {
-			// Windows sometimes adds './' in front of relative paths, remove it
-			if(relativePath[0]==L'.' && relativePath[1]==L'\\') {
-				return std::wstring((const wchar_t*)&(relativePath[2]));
-			} 
-
-			return relativePath;
-		}
-		++it;
-	}
-	return path;
-}
-
-std::wstring ResourceManager::Get(const ResourceIdentifier& ident, bool silent) {
-	ZoneEntry ze(Zones::LocalFileInfoZone);
-
-	// If the path starts with a protocol identifier such as http://, just return the URL
-	if(ident.substr(0,7)==L"http://") {
-		return ident;
-	}
-
-	std::vector<std::wstring>::iterator it = _paths.begin();
+	
+	std::deque< strong<ResourceProvider> >::iterator it = _paths.begin();
 	while(it!=_paths.end()) {
-		std::wstring path = *it + L"\\"+ident;
-
-		// file exists
-		if(GetFileAttributes(path.c_str())!=INVALID_FILE_ATTRIBUTES) {
-			return path;
+		strong<ResourceProvider> rp = *it;
+		ResourceIdentifier rel = rp->GetRelative(path);
+		if(rel.length()>0) {
+			return rel;
 		}
 		++it;
-	}
-
-	if(GetFileAttributes(ident.c_str())!=INVALID_FILE_ATTRIBUTES) {
-		return ident;
-	}
-
-	if(!silent) {
-		Log::Write(L"TJShared/ResourceManager", std::wstring(L"Resource not found: ")+ident);
-		if(_listener) {
-			return _listener->OnResourceNotFound(ident);
-		}
 	}
 
 	return L"";
 }
 
+ref<Resource> ResourceManager::GetResource(const ResourceIdentifier& ident) {
+	std::deque< strong<ResourceProvider> >::iterator it = _paths.begin();
+	while(it!=_paths.end()) {
+		strong<ResourceProvider> rp = *it;
+		ref<Resource> rs = rp->GetResource(ident);
+		if(rs) {
+			return rs;
+		}
+		++it;
+	}
+
+	Log::Write(L"TJShared/ResourceManager", L"Resource not found: rid="+ident);
+	return null;
+}
+
+bool ResourceManager::GetPathToLocalResource(const ResourceIdentifier& rid, std::wstring& path) {
+	std::deque< strong<ResourceProvider> >::iterator it = _paths.begin();
+
+	while(it!=_paths.end()) {
+		strong<ResourceProvider> rp = *it;
+		
+		if(rp->GetPathToLocalResource(rid, path)) {
+			return true;
+		}
+		++it;
+	}
+
+	Log::Write(L"TJShared/ResourceManager", L"Resource not found locally: rid="+rid);
+	return false;
+}
+
 strong<ResourceManager> ResourceManager::Instance() {
 	if(!_instance) {
 		_instance = GC::Hold(new ResourceManager());
+
+		/** Add location of tjshared.dll as provider **/
+		wchar_t* buf = new wchar_t[MAX_PATH];
+		memset(buf,0,sizeof(wchar_t)*MAX_PATH);
+		GetModuleFileName(GetModuleHandle(NULL), buf, MAX_PATH);
+		PathRemoveFileSpec(buf);
+		_instance->AddProvider(strong<ResourceProvider>(GC::Hold(new LocalFileResourceProvider(buf))));
 	}
 
 	return _instance;
 }
 
-ResourceListener::~ResourceListener() {
-}
-
 /* ResourceBundle */
-ResourceBundle::ResourceBundle(ref<ResourceManager> mgr, const std::wstring& path): _path(path), _mgr(mgr) {
-	assert(_mgr);
-	_mgr->AddSearchPath(_path);
+ResourceBundle::ResourceBundle(strong<ResourceManager> mgr, strong<ResourceProvider> rp, bool upFront): _mgr(mgr), _rp(rp) {
+	_mgr->AddProvider(rp, upFront);
 }
 
 ResourceBundle::~ResourceBundle() {
-	_mgr->RemoveSearchPath(_path);
+	_mgr->RemoveProvider(_rp);
 }
 
 /* Resource */
 Resource::~Resource() {
 }
 
-ref<Resource> Resource::LoadResource(TiXmlElement* serialized) {
-	std::wstring type = LoadAttributeSmall<std::wstring>(serialized, "type", L"local");
-	if(type==L"local") {
-		return GC::Hold(new LocalFileResource(serialized));
-	}
+void Resource::Save(TiXmlElement* el) {
+	SaveAttributeSmall(el, "rid", GetIdentifier());
 }
 
 /** LocalFileResource **/
-LocalFileResource::LocalFileResource(const ResourceIdentifier& rid): _rid(rid), _cachedSize(0) {
-}
-
-LocalFileResource::LocalFileResource(TiXmlElement* e): _cachedSize(0) {
-	assert(e!=0);
-	_rid = LoadAttributeSmall<ResourceIdentifier>(e, "rid",L"");
+LocalFileResource::LocalFileResource(const ResourceIdentifier& rid, const std::wstring& path): _rid(rid), _path(path), _cachedSize(0) {
 }
 
 LocalFileResource::~LocalFileResource() {
 }
 
 void LocalFileResource::Save(TiXmlElement* el) {
-	SaveAttributeSmall(el, "rid", _rid);
-	SaveAttributeSmall<std::wstring>(el, "type", L"local");
+	Resource::Save(el);
 }
 
 bool LocalFileResource::Exists() const {
-	std::wstring rpath = ResourceManager::Instance()->Get(_rid,true);
-	if(GetFileAttributes(rpath.c_str())!=INVALID_FILE_ATTRIBUTES) {
+	if(GetFileAttributes(_path.c_str())!=INVALID_FILE_ATTRIBUTES) {
 		return true;
 	}
 
@@ -156,7 +224,7 @@ bool LocalFileResource::Exists() const {
 }
 
 std::wstring LocalFileResource::GetExtension() const {
-	return std::wstring(PathFindExtension(_rid.c_str()));
+	return std::wstring(PathFindExtension(_path.c_str()));
 }
 
 ResourceIdentifier LocalFileResource::GetIdentifier() const {
@@ -164,12 +232,11 @@ ResourceIdentifier LocalFileResource::GetIdentifier() const {
 }
 
 std::wstring LocalFileResource::GetPath() const {
-	return ResourceManager::Instance()->Get(_rid, true);
+	return _path;
 }
 
 void LocalFileResource::Open() const {
-	std::wstring rpath = ResourceManager::Instance()->Get(_rid,true);
-	ShellExecute(NULL, L"open", rpath.c_str(), L"", L"", SW_SHOW);
+	ShellExecute(NULL, L"open", _path.c_str(), L"", L"", SW_SHOW);
 }
 
 Bytes LocalFileResource::GetSize() {
@@ -177,8 +244,7 @@ Bytes LocalFileResource::GetSize() {
 		return _cachedSize;
 	}
 
-	std::wstring rpath = ResourceManager::Instance()->Get(_rid,true);
-	HANDLE hdl = CreateFile(rpath.c_str(), FILE_READ_ACCESS, FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0L, 0L);
+	HANDLE hdl = CreateFile(_path.c_str(), FILE_READ_ACCESS, FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0L, 0L);
 	LARGE_INTEGER size;
 	GetFileSizeEx(hdl, &size);
 	_cachedSize = size.QuadPart;
@@ -187,8 +253,7 @@ Bytes LocalFileResource::GetSize() {
 }
 
 void LocalFileResource::OpenFolder() const {
-	std::wstring rpath = ResourceManager::Instance()->Get(_rid,true);
-	wchar_t* path = _wcsdup(rpath.c_str());
+	wchar_t* path = _wcsdup(_path.c_str());
 	PathRemoveFileSpec(path);
 	ShellExecute(NULL, L"explore", path, L"", L"", SW_SHOW);
 	delete[] path;

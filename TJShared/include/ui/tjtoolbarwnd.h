@@ -7,7 +7,7 @@ namespace tj {
 		class EXPORTED ToolbarItem: public Element {
 			public:
 				ToolbarItem(int command=0, graphics::Bitmap* bmp=0, const std::wstring& text = L"", bool separator = false);
-				ToolbarItem(int command, const std::wstring& icon, const std::wstring& text = L"", bool separator = false);
+				ToolbarItem(int command, const ResourceIdentifier& icon, const std::wstring& text = L"", bool separator = false);
 				~ToolbarItem();
 				bool IsSeparator() const;
 				void SetSeparator(bool s);

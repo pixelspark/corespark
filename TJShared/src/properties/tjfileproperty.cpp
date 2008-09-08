@@ -3,7 +3,7 @@ using namespace tj::shared;
 using namespace tj::shared::graphics;
 
 /* FilePropertyWnd */
-FilePropertyWnd::FilePropertyWnd(std::wstring name, std::wstring* path, const wchar_t* filter): ChildWnd(L""), _name(name), _filter(filter), _path(path), _linkIcon(Icons::GetIconPath(Icons::IconFile)) {
+FilePropertyWnd::FilePropertyWnd(const std::wstring& name, std::wstring* path, strong<ResourceProvider> rmg, const wchar_t* filter): ChildWnd(L""), _rmg(rmg), _name(name), _filter(filter), _path(path), _linkIcon(Icons::GetIconPath(Icons::IconFile)) {
 	assert(path!=0);
 	SetWantMouseLeave(true);
 	SetDropTarget(true);
@@ -23,7 +23,9 @@ void FilePropertyWnd::Paint(Graphics& g, ref<Theme> theme) {
 
 	g.DrawImage(_linkIcon, PointF(0.0f, 0.0f));
 
-	SolidBrush tbr(File::Exists(ResourceManager::Instance()->Get(*_path, true))?theme->GetColor(Theme::ColorActiveStart):theme->GetColor(Theme::ColorCommandMarker));
+	// TODO fix with new resource system
+	//SolidBrush tbr(File::Exists(ResourceManager::Instance()->Get(*_path, true))?theme->GetColor(Theme::ColorActiveStart):theme->GetColor(Theme::ColorCommandMarker));
+	SolidBrush tbr(theme->GetColor(Theme::ColorActiveStart));
 	Area text = rc;
 	text.Narrow(20,2,0,0);
 	StringFormat sf;
@@ -100,17 +102,12 @@ void FilePropertyWnd::Layout() {
 }
 
 void FilePropertyWnd::SetFile(const std::wstring& file) {
-	*_path = file;
-	ref<ResourceManager> rm = ResourceManager::Instance();
-
-	if(rm) {
-		*_path = rm->GetRelative(*_path);
-	}
+	*_path = _rmg->GetRelative(file);
 	Repaint();
 }
 
 /* FileProperty */
-FileProperty::FileProperty(const std::wstring& name, std::wstring* path, const wchar_t* filter): Property(name), _path(path), _filter(filter) {
+FileProperty::FileProperty(const std::wstring& name, ResourceIdentifier* path, strong<ResourceProvider> rmg, const wchar_t* filter): Property(name), _rmg(rmg), _path(path), _filter(filter) {
 }
 
 FileProperty::~FileProperty() {
@@ -118,7 +115,7 @@ FileProperty::~FileProperty() {
 
 ref<Wnd> FileProperty::GetWindow() {
 	if(!_pw) {
-		_pw = GC::Hold(new FilePropertyWnd(_name, _path, _filter));
+		_pw = GC::Hold(new FilePropertyWnd(_name, _path, _rmg, _filter));
 	}
 
 	return _pw;

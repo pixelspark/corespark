@@ -6,14 +6,12 @@ const int NotificationWnd::DefaultNotificationHeight = 30;
 const int NotificationWnd::DefaultNotificationMargin = 10;
 const int NotificationWnd::DefaultNotificationTimeout = 5000;
 
-NotificationWnd::NotificationWnd(const std::wstring& text, const std::wstring& icon, int time, int h, RootWnd* parent) : Wnd(text.c_str(), (parent!=0)?parent->GetWindow():0L, TJ_DROPSHADOW_CLASS_NAME) {
+NotificationWnd::NotificationWnd(const std::wstring& text, const ResourceIdentifier& icon, int time, int h, RootWnd* parent) : Wnd(text.c_str(), (parent!=0)?parent->GetWindow():0L, TJ_DROPSHADOW_CLASS_NAME), _icon(icon) {
 	assert(parent!=0);
 	SetStyle(WS_POPUP);
 	UnsetStyle(WS_CAPTION|WS_BORDER);
 	_text = text;
 	_index = h;
-	std::wstring fn = ResourceManager::Instance()->Get(icon);
-	_icon = Bitmap::FromFile(fn.c_str());
 	_root = parent;
 
 	if(time==NotificationTimeoutDefault) {
@@ -32,7 +30,6 @@ NotificationWnd::NotificationWnd(const std::wstring& text, const std::wstring& i
 }
 
 NotificationWnd::~NotificationWnd() {
-	delete _icon;
 }
 
 void NotificationWnd::Show(bool t) {

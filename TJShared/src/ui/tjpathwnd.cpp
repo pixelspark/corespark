@@ -27,14 +27,10 @@ void Path::Add(ref<Crumb> r) {
 }
 
 /* Crumb */
-Crumb::Crumb(std::wstring text, std::wstring icon) {
-	_text = text;
-	std::wstring icfn = ResourceManager::Instance()->Get(icon);
-	_icon = Bitmap::FromFile(icfn.c_str(), TRUE);
+Crumb::Crumb(const std::wstring& text, const ResourceIdentifier& icon): _icon(icon), _text(text) {
 }
 
 Crumb::~Crumb() {
-	delete _icon;
 }
 
 ref< std::vector< ref<Crumb> > > Crumb::GetChildren() {
@@ -60,12 +56,12 @@ void Crumb::SetText(const std::wstring& x) {
 	_text = x;
 }
 
-graphics::Bitmap* Crumb::GetIcon() {
-	return _icon;
+graphics::Image* Crumb::GetIcon() {
+	return _icon.GetBitmap();
 }
 
 /* BasicCrumb */
-BasicCrumb::BasicCrumb(std::wstring text, std::wstring icon, ref<Inspectable> subject): Crumb(text,icon) {
+BasicCrumb::BasicCrumb(const std::wstring& text, const ResourceIdentifier& icon, ref<Inspectable> subject): Crumb(text,icon) {
 	_subject = subject;
 }
 
