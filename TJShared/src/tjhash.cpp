@@ -73,3 +73,7 @@ int Hash::Calculate(const std::wstring& s) {
 	delete[] buffer;
 	return hash;
 }
+
+/** Hasheable **/
+Hasheable::~Hasheable() {
+}

@@ -90,6 +90,7 @@ void ToolbarWnd::SetBackgroundColor(graphics::Color c) {
 
 void ToolbarWnd::OnSize(const Area& ns) {
 	Layout();
+	Repaint();
 }
 
 bool ToolbarWnd::HasTip() const {

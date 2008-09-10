@@ -104,8 +104,9 @@ void ContextMenu::AddSeparator(const std::wstring& title) {
 ContextPopupWnd::ContextPopupWnd(ContextMenu* cm, HWND parent): PopupWnd(parent,false), _cm(cm), _result(-1), _mouseOver(-1), _mouseDown(-1), _checkedIcon(Icons::GetIconPath(Icons::IconChecked)), _radioCheckedIcon(Icons::GetIconPath(Icons::IconRadioChecked)) {
 	SetWantMouseLeave(true);
 	SetVerticallyScrollable(true);
-	_openAnimation.SetLength(Time(400));
-	_closeAnimation.SetLength(Time(400));
+	_openAnimation.SetLength(Time(300));
+	_closeAnimation.SetLength(Time(200));
+	_openAnimation.SetEase(Animation::EaseQuadratic);
 }
 
 ContextPopupWnd::~ContextPopupWnd() {

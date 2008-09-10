@@ -9,6 +9,12 @@ namespace tj {
 				virtual ~Hash();
 				int Calculate(const std::wstring& data);
 		};
+
+		class EXPORTED Hasheable {
+			public:
+				virtual ~Hasheable();
+				virtual int GetHash() const = 0;
+		};
 	}
 }
 
