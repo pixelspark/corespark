@@ -39,6 +39,7 @@ namespace tj {
 				virtual void Execute() = 0;
 				virtual bool HasRow() = 0;
 				virtual void Next() = 0;
+				virtual int GetColumnCount() = 0;
 
 				// Getting data
 				virtual int GetInt(int col) = 0;
@@ -46,6 +47,7 @@ namespace tj {
 				virtual __int64 GetInt64(int col) = 0;
 				virtual bool GetBool(int col) = 0;
 				virtual double GetDouble(int col) = 0;
+				virtual tj::shared::Any GetAny(int col) = 0;
 
 		};
 	}

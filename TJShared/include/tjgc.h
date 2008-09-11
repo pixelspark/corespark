@@ -33,8 +33,16 @@ namespace tj {
 				static std::map< void*, std::wstring> _objects;
 		};
 
+		class EXPORTED OutOfMemoryException: public Exception {
+			public:
+				OutOfMemoryException();
+		};
+
 		template<class T> ref<T> GC::Hold(T* x) {
 			intern::Resource* rs = new intern::Resource();
+			if(rs==0) {
+				throw OutOfMemoryException();
+			}
 			SetObjectPointer(x, rs);
 			
 			#ifdef TJSHARED_MEMORY_TRACE

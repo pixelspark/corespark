@@ -22,6 +22,9 @@ Any::Any(const std::wstring& s): _stringValue(s), _type(TypeString) {
 Any::Any(ref<Object> object): _object(object), _type(TypeObject) {
 }
 
+Any::Any(strong<Tuple> tuple): _object(ref<Tuple>(tuple)), _type(TypeTuple) {
+}
+
 Any::Any(Type t): _type(t) {
 	_intValue = 0;
 }
@@ -47,6 +50,10 @@ Any::Any(Type t, const std::wstring& s): _type(t) {
 }
 
 Any::~Any() {
+}
+
+ref<Object> Any::GetContainedObject() {
+	return _object;
 }
 
 /**
@@ -378,6 +385,19 @@ Any Any::Force(Any::Type t) const {
 	else if(t==TypeObject) {
 		return Any(ref<Object>(0));
 	}
+	else if(t==TypeTuple) {
+		if(_type==TypeTuple) {
+			if(_object) {
+				return Any(strong<Tuple>(_object));
+			}
+			return Any(Any::TypeTuple);
+		}
+		else {
+			ref<Tuple> tuple = GC::Hold(new Tuple(1));
+			tuple->Set(0, *this);
+			return Any(strong<Tuple>(tuple));
+		}
+	}
 
 	return Any(); // typically everything with Object
 }
@@ -413,6 +433,9 @@ Any::operator double() const {
 		case TypeInteger:
 			return double(_intValue);
 
+		case TypeDouble:
+			return _doubleValue;
+
 		case TypeString:
 			return StringTo<double>(_stringValue, 0.0);
 
@@ -428,6 +451,9 @@ Any::operator int() const {
 
 		case TypeDouble:
 			return int(_doubleValue);
+
+		case TypeInteger:
+			return _intValue;
 
 		case TypeString:
 			return StringTo<int>(_stringValue, 0);
@@ -456,6 +482,14 @@ std::wstring Any::ToString() const {
 
 		case TypeObject:
 			return L"[object]";
+
+		case TypeTuple:
+			if(_object) {
+				return ref<Tuple>(_object)->ToString();
+			}
+			else {
+				return L"[]";
+			}
 	}
 
 	return L"[undefined]";
@@ -500,31 +534,61 @@ Any::Type Any::GetType() const {
 void Any::Save(TiXmlElement* you) {
 	SaveAttributeSmall<int>(you, "type", (int)_type);
 	SaveAttributeSmall(you, "value", ToString());
+
+	if(_type==TypeTuple && _object) {
+		ref<Tuple> tuple = _object;
+		for(unsigned int a=0;a<tuple->GetLength();a++) {
+			SaveAttributeSmall<unsigned int>(you, "length", tuple->GetLength());
+
+			TiXmlElement element("element");
+			tuple->Get(a).Save(&element);
+			you->InsertEndChild(element);
+		}
+	}
 }
 
 void Any::Load(TiXmlElement* you) {
 	_type = (Type)LoadAttributeSmall<int>(you, "type", (int)_type);
 	std::wstring value = LoadAttributeSmall(you, "value", ToString());
 
-	switch(_type) {
-		case TypeInteger:
-			_intValue = StringTo<int>(value, 0);
-			break;
+	if(_type==TypeTuple) {
+		TiXmlElement* element = you->FirstChildElement("element");
+		unsigned int length = LoadAttributeSmall<unsigned int>(element, "length", 0);
+		ref<Tuple> tuple = GC::Hold(new Tuple(length));
 
-		case TypeDouble:
-			_doubleValue = StringTo<double>(value, 0);
-			break;
 
-		case TypeBool:
-			_boolValue = StringTo<bool>(value,0);
-			break;
+		for(unsigned int a=0; a<length; a++) {
+			if(element==0) {
+				break;
+			}
+			element = element->NextSiblingElement("element");
+			Any val;
+			val.Load(element);
+			tuple->Set(a, val);
+		}
+		_object = tuple;
+	}
+	else {
+		switch(_type) {
+			case TypeInteger:
+				_intValue = StringTo<int>(value, 0);
+				break;
 
-		case TypeString:
-			_stringValue = value;
-			break;
+			case TypeDouble:
+				_doubleValue = StringTo<double>(value, 0);
+				break;
 
-		case TypeObject:
-			break;
+			case TypeBool:
+				_boolValue = StringTo<bool>(value,0);
+				break;
+
+			case TypeString:
+				_stringValue = value;
+				break;
+
+			case TypeObject:
+				break;
+		}
 	}
 }
 
@@ -537,6 +601,7 @@ ref<Property> Any::CreateTypeProperty(const std::wstring& name, Type* type) {
 	pt->AddOption(TL(type_string), TypeString);
 	pt->AddOption(TL(type_bool), TypeBool);
 	pt->AddOption(TL(type_object), TypeObject);
+	pt->AddOption(TL(type_tuple), TypeTuple);
 	return pt;
 }
 
@@ -559,7 +624,60 @@ std::wstring Any::GetTypeName(Type t) {
 
 		case TypeObject:
 			return TL(type_object);
+
+		case TypeTuple:
+			return TL(type_tuple);
 	}
 
 	return L"";
+}
+
+/** Tuple **/
+Tuple::Tuple(unsigned int size) : _length(size) {
+	_data = new Any[size];
+	for(unsigned int a=0;a<_length;a++) {
+		_data[a] = Any();
+	}
+}
+
+Tuple::~Tuple() {
+	delete[] _data;
+}
+
+Any& Tuple::Get(unsigned int i) {
+	if(i>=_length) {
+		Throw(L"Tuple index out of range!", ExceptionTypeError);
+	}
+	return _data[i];
+}
+
+const Any& Tuple::Get(unsigned int i) const {
+	if(i>=_length) {
+		Throw(L"Tuple index out of range!", ExceptionTypeError);
+	}
+	return _data[i];
+}
+
+unsigned int Tuple::GetLength() const {
+	return _length;
+}
+
+std::wstring Tuple::ToString() const {
+	std::wostringstream wos;
+	wos << L'[';
+	for(unsigned int a=0;a<_length;a++) {
+		wos << _data[a].ToString();
+		if(a<(_length-1)) {
+			wos << L',' << L' ';
+		}
+	}
+	wos << L']';
+	return wos.str();
+}
+
+void Tuple::Set(unsigned int i, const Any& v) {
+	if(i>=_length) {
+		Throw(L"Tuple index out of range!", ExceptionTypeError);
+	}
+	_data[i] = v;
 }

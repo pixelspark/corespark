@@ -4,6 +4,7 @@
 namespace tj {
 	namespace shared {
 		class Property;
+		class Tuple;
 
 		class EXPORTED Any: public Serializable {
 			public:
@@ -14,6 +15,7 @@ namespace tj {
 					TypeBool = 5,
 					TypeString = 8,
 					TypeObject = 16,
+					TypeTuple = 32,
 				};
 
 				Any();
@@ -21,6 +23,7 @@ namespace tj {
 				Any(bool b);
 				Any(int i);
 				Any(const std::wstring& s);
+				Any(strong<Tuple> tuple);
 				Any(ref<Object> object);
 				Any(Type t, const std::wstring& s);
 				Any(Type t);
@@ -49,6 +52,7 @@ namespace tj {
 
 				std::wstring ToString() const;
 				Type GetType() const;
+				ref<Object> GetContainedObject();
 
 				virtual void Save(TiXmlElement* you);
 				virtual void Load(TiXmlElement* you);
@@ -65,6 +69,21 @@ namespace tj {
 				std::wstring _stringValue;
 				ref<Object> _object;
 				Type _type;
+		};
+
+		class EXPORTED Tuple: public virtual Object {
+			public:
+				Tuple(unsigned int size);
+				virtual ~Tuple();
+				Any& Get(unsigned int i);
+				const Any& Get(unsigned int i) const;
+				unsigned int GetLength() const;
+				void Set(unsigned int i, const Any& a);
+				std::wstring ToString() const;
+
+			protected:
+				Any* _data;
+				unsigned int _length;
 		};
 	}
 }

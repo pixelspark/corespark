@@ -48,3 +48,6 @@ void Object::OnCreated() {
 /* Serializable */
 Serializable::~Serializable() {
 }
+
+OutOfMemoryException::OutOfMemoryException(): Exception(L"Out of memory!", ExceptionTypeError) {
+}
