@@ -739,6 +739,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\tjsecurehash.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\tjsettings.cpp"
 					>
 				</File>

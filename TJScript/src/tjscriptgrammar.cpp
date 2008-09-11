@@ -170,7 +170,13 @@ namespace tj {
 				template<typename T> inline void operator()(T str, T end) const {
 					int idx = _grammar->_stack->GetCurrentIndex();
 					ref<Scriptlet> dlg = _grammar->_stack->Pop();
-					dlg->AddInstruction(Ops::OpEndScriptlet);
+					if(dlg->IsFunction()) {
+						dlg->AddInstruction(Ops::OpPushNull);
+						dlg->AddInstruction(Ops::OpReturnValue);
+					}
+					else {
+						dlg->AddInstruction(Ops::OpEndScriptlet);
+					}
 
 					_grammar->_stack->Top()->AddInstruction(Ops::OpLoadScriptlet);
 					_grammar->_stack->Top()->Add<int>(idx);
