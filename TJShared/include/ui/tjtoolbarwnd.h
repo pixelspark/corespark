@@ -113,6 +113,16 @@ namespace tj {
 				Icon _searchIcon;
 				Pixels _rightMargin, _searchWidth, _searchHeight;
 		};
+
+		class EXPORTED ThrobberToolbarItem: public ToolbarItem {
+			public:
+				ThrobberToolbarItem();
+				virtual ~ThrobberToolbarItem();
+				virtual void Paint(graphics::Graphics& g, ref<Theme> theme, bool over, bool down, float backgroundAlpha = 1.0f);
+
+				Animation Progress;					
+		};
+
 	}
 }
 

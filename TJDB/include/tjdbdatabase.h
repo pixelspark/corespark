@@ -39,7 +39,8 @@ namespace tj {
 				virtual void Execute() = 0;
 				virtual bool HasRow() = 0;
 				virtual void Next() = 0;
-				virtual int GetColumnCount() = 0;
+				virtual unsigned int GetColumnCount() = 0;
+				virtual std::wstring GetColumnName(int col) = 0;
 
 				// Getting data
 				virtual int GetInt(int col) = 0;

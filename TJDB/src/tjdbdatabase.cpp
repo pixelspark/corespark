@@ -57,7 +57,8 @@ namespace tj {
 					virtual void Execute();
 					virtual bool HasRow();
 					virtual void Next();
-					virtual int GetColumnCount();
+					virtual unsigned int GetColumnCount();
+					virtual std::wstring GetColumnName(int col);
 
 					virtual int GetInt(int col);
 					virtual std::wstring GetText(int col);
@@ -209,11 +210,23 @@ void SQLiteQuery::Set(int p, __int64 i) {
 	}
 }
 
-int SQLiteQuery::GetColumnCount() {
+unsigned int SQLiteQuery::GetColumnCount() {
 	if(_hasRow) {
-		return sqlite3_column_count(_st);
+		int rn = sqlite3_column_count(_st);
+		if(rn>0) {
+			return unsigned int(rn);
+		}
+		return 0;
 	}
-	Throw(L"Cannot fetch column count when there is no current row", ExceptionTypeError);
+	return 0; // Query without a result (DELETE, INSERT, etc.)
+}
+
+std::wstring SQLiteQuery::GetColumnName(int col) {
+	const wchar_t* name = reinterpret_cast<const wchar_t*>(sqlite3_column_name16(_st, col));
+	if(name==0) {
+		return L"?";
+	}
+	return name;
 }
 
 void SQLiteQuery::Reset() {

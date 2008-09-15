@@ -550,3 +550,30 @@ bool SearchToolbarWnd::CanShowHints() {
 	Area rc = GetClientArea();
 	return (GetFreeArea().GetWidth() - GetSearchBoxArea().GetWidth()) > 100;
 }
+
+/** ThrobberToolbarItem **/
+ThrobberToolbarItem::ThrobberToolbarItem(): ToolbarItem(0, 0, L"", false) {
+	SetEnabled(false);
+}
+
+ThrobberToolbarItem::~ThrobberToolbarItem() {
+}
+
+void ThrobberToolbarItem::Paint(graphics::Graphics& g, ref<Theme> theme, bool over, bool down, float backgroundAlpha) {
+	Area rc = GetClientArea();
+	DrawToolbarButton(g, rc, theme, over, down, IsSeparator(), IsEnabled(), backgroundAlpha);
+	rc.Narrow(6,5,6,6);
+	g.SetSmoothingMode(SmoothingModeHighQuality);
+
+	if(Progress.IsAnimating()) {
+		SolidBrush progress(theme->GetColor(Theme::ColorProgress));
+		Pen pen(&progress, 2.0f);
+		float a = Progress.GetFraction()*360.0f;
+		g.DrawArc(&pen, rc, a, a+30.0f);
+	}
+	else {
+		SolidBrush progress(theme->GetColor(Theme::ColorActiveStart));
+		Pen pen(&progress, 2.0f);
+		g.DrawEllipse(&pen, rc);
+	}
+}
