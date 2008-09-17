@@ -69,6 +69,7 @@ namespace tj {
 			FeatureEventLogger = 64,
 			FeaturePrimaryMaster = 128,
 			FeatureAutomaticFailover = 256,
+			FeatureTouchScreen = 512,
 		};
 
 		typedef unsigned int Features;

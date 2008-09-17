@@ -36,6 +36,10 @@ namespace tj {
 					}
 				}
 
+				inline bool HasListener() const {
+					return _listeners.size() > 0;
+				}
+
 				inline void AddListener(strong< Listener<NotificationType> > listener) {
 					ThreadLock lock(&_lock);
 					_listeners.push_back(ref <Listener<NotificationType> >(listener));
