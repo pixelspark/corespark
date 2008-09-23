@@ -96,7 +96,7 @@ namespace tj {
 			return w;
 		}
 
-		template<typename StringType> std::vector<StringType> Explode (const StringType &inString, const StringType &separator) {
+		template<typename StringType> std::vector<StringType> Explode(const StringType &inString, const StringType &separator) {
 			std::vector<StringType> returnVector;
 			StringType::size_type start = 0;
 			StringType::size_type end = 0;
@@ -108,6 +108,18 @@ namespace tj {
 
 			returnVector.push_back (inString.substr (start));
 			return returnVector;
+		}
+
+		template<typename StringType> StringType& ReplaceAll(StringType& result, const StringType& replaceWhat, const StringType& replaceWithWhat) {
+			while(true) {
+				size_t pos = result.find(replaceWhat);
+				if(pos==-1) {
+					break;
+				}
+				result.replace(pos, replaceWhat.size(), replaceWithWhat);
+			}
+
+			return result;
 		}
 
 		template<typename T> inline std::wstring Stringify(const T& x) {
