@@ -312,6 +312,7 @@ void ContextPopupWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 				g.FillRectangle(&selected, selection);
 			}
 
+			// Draw item text
 			if(item->IsLink()) {
 				g.DrawString(item->GetTitle().c_str(), (int)item->GetTitle().length(), theme->GetLinkFont(), currentText, &sf, &link);
 			}
@@ -319,6 +320,7 @@ void ContextPopupWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 				g.DrawString(item->GetTitle().c_str(), (int)item->GetTitle().length(), item->_hilite?theme->GetGUIFontBold():theme->GetGUIFont(), currentText, &sf, &text);
 			}
 
+			// Draw item icon or check mark
 			if(item->HasIcon() || item->_checked!=MenuItem::NotChecked) {
 				Area iconArea = current;
 				iconArea.Narrow(3,1,1,1);
@@ -331,6 +333,25 @@ void ContextPopupWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 					Icon& icon = (item->_checked == MenuItem::Checked)?_checkedIcon:_radioCheckedIcon;
 					icon.Paint(g, iconArea, !item->IsDisabled(), _openAnimation.GetFraction());
 				}
+			}
+
+			// Draw hotkey label
+			if(item->HasHotkey()) {
+				StringFormat hsf;
+				hsf.SetLineAlignment(StringAlignmentCenter);
+				hsf.SetAlignment(StringAlignmentFar);
+
+				const std::wstring& hk = item->GetHotkey();
+				RectF hbb;
+				g.MeasureString(hk.c_str(), (int)hk.length(), theme->GetGUIFontSmall(), PointF(float(current.GetTop()), float(current.GetRight())), &hsf, &hbb);
+
+				Pixels w = Pixels(hbb.Width) + 6;
+				Area hotkeyLabel(current.GetRight()-w, current.GetTop(), w, current.GetHeight());
+				hotkeyLabel.Narrow(2,2,2,3);
+				hotkeyLabel.Translate(-2, 0);
+
+				SolidBrush htbr(theme->GetColor(/*** n==_mouseOver ? Theme::ColorBackground : ***/ Theme::ColorActiveEnd));
+				g.DrawString(hk.c_str(), (int)hk.length(), theme->GetGUIFontSmall(), hotkeyLabel, &hsf, &htbr);
 			}
 
 			if(item->IsDisabled()) {
@@ -370,7 +391,7 @@ void ContextPopupWnd::OnTimer(unsigned int id) {
 MenuItem::MenuItem(): _separator(true), _hilite(false), _link(false), _checked(MenuItem::NotChecked), _command(0), _icon(0), _indent(0) {
 }
 
-MenuItem::MenuItem(const std::wstring& title, int command, bool highlight, MenuItem::CheckType checked, const std::wstring& icon): _title(title), _command(command), _hilite(highlight), _checked(checked), _separator(false), _icon(0), _link(false), _indent(0) {
+MenuItem::MenuItem(const std::wstring& title, int command, bool highlight, MenuItem::CheckType checked, const std::wstring& icon, const std::wstring& hotkey): _title(title), _command(command), _hilite(highlight), _checked(checked), _separator(false), _icon(0), _link(false), _indent(0), _hotkey(hotkey) {
 	if(icon.length()>0) {
 		SetIcon(icon);
 	}
@@ -407,7 +428,11 @@ ref<Icon> MenuItem::GetIcon() {
 }
 
 bool MenuItem::HasIcon() const {
-	return _icon!=0;
+	return _icon!=null;
+}
+
+bool MenuItem::HasHotkey() const {
+	return _hotkey.length()>0;
 }
 
 void MenuItem::SetIcon(const std::wstring& icon) {
@@ -432,4 +457,12 @@ unsigned char MenuItem::GetIndent() const {
 
 void MenuItem::SetIndent(unsigned char c) {
 	_indent = c;
+}
+
+void MenuItem::SetHotkey(const std::wstring& hk) {
+	_hotkey = hk;
+}
+
+const std::wstring& MenuItem::GetHotkey() const {
+	return _hotkey;
 }

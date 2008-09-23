@@ -39,6 +39,7 @@ namespace tj {
 				virtual void Update() {
 					if(_wnd) {
 						_wnd->SetText(Stringify(*_value));
+						_wnd->Repaint();
 					}
 				}
 

@@ -524,6 +524,14 @@ void SearchToolbarWnd::SetSearchBoxSize(Pixels w, Pixels h) {
 	Layout();
 }
 
+void SearchToolbarWnd::SetSearchBoxHint(const std::wstring& txt) {
+	_edit->SetCue(txt);
+}
+
+void SearchToolbarWnd::SetSearchBoxText(const std::wstring& txt) {
+	_edit->SetText(txt);
+}
+
 void SearchToolbarWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	ToolbarWnd::Paint(g,theme);
 	Area search = GetSearchBoxArea();

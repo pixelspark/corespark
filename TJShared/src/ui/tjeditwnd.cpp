@@ -78,15 +78,22 @@ LRESULT EditWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	}
 	else if(msg==WM_CTLCOLOREDIT) {
 		UpdateColor();
-		SetBkMode((HDC)wp, TRANSPARENT);
+		/// SetBkMode(TRANSPARENT) doesn't seem to work with multiline edit controls
+		///SetBkMode((HDC)wp, TRANSPARENT);
+
+		Color back = ThemeManager::GetTheme()->GetColor(Theme::ColorBackground);
+		SetBkColor((HDC)wp, RGB(back.GetRed(), back.GetGreen(), back.GetBlue()));
+
 		Color text = ThemeManager::GetTheme()->GetColor(Theme::ColorText);
 		SetTextColor((HDC)wp, RGB(text.GetRed(),text.GetGreen(),text.GetBlue()));
+		
 		return (LRESULT)(HBRUSH)_backBrush;
 		
 	}
 	else if(msg==WM_COMMAND) {
 		if(HIWORD(wp)==EN_CHANGE) {
 			EventTextChanged.Fire(ref<Object>(this), NotificationTextChanged());
+			UpdateWindow(_ctrl);
 		}
 		else {
 			HWND parent = ::GetParent(GetWindow());

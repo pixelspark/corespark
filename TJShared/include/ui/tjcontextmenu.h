@@ -25,7 +25,7 @@ namespace tj {
 				};
 
 				MenuItem(); // separator
-				MenuItem(const std::wstring& title, int command, bool highlight = false, CheckType checked = NotChecked, const std::wstring& icon = L"");
+				MenuItem(const std::wstring& title, int command, bool highlight = false, CheckType checked = NotChecked, const std::wstring& icon = L"", const std::wstring& hotkey = L"");
 				MenuItem(const std::wstring& title, int command, bool highlight, CheckType checked, ref<Icon> icon);
 				
 				virtual ~MenuItem();
@@ -34,6 +34,9 @@ namespace tj {
 				virtual bool HasIcon() const;
 				virtual void SetIcon(const std::wstring& icon);
 				virtual void SetIcon(ref<Icon> icon);
+				virtual void SetHotkey(const std::wstring& hk);
+				virtual const std::wstring& GetHotkey() const;
+				virtual bool HasHotkey() const;
 				virtual bool IsLink() const;
 				virtual void SetLink(bool l);
 				virtual ref<Icon> GetIcon();
@@ -47,6 +50,7 @@ namespace tj {
 
 			protected:
 				std::wstring _title;
+				std::wstring _hotkey;
 				int _command;
 				CheckType _checked;
 				ref<Icon> _icon;

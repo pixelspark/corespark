@@ -103,6 +103,8 @@ namespace tj {
 				Area GetSearchBoxArea() const;
 				bool IsSearchBoxVisible() const;
 				virtual void SetSearchBoxSize(Pixels w, Pixels h);
+				virtual void SetSearchBoxHint(const std::wstring& txt);
+				virtual void SetSearchBoxText(const std::wstring& txt);
 				virtual bool CanShowHints();
 
 			private:

@@ -38,6 +38,8 @@ Icon::operator graphics::Image*() {
 
 // alpha
 void Icon::Paint(graphics::Graphics& g, const Area& rc, float alpha) {
+	if(_bitmap==0) return;
+
 	// Set up color matrix
 	ColorMatrix cm = {
 		1.0f,   0.0f,   0.0f, 0.0f, 0.0f,
@@ -55,6 +57,8 @@ void Icon::Paint(graphics::Graphics& g, const Area& rc, float alpha) {
 
 // disabled + alpha
 void Icon::Paint(graphics::Graphics& g, const Area& rc, bool enabled, float alpha) {
+	if(_bitmap==0) return;
+
 	if(enabled) {
 		Paint(g, rc, alpha);
 	}
@@ -76,6 +80,8 @@ void Icon::Paint(graphics::Graphics& g, const Area& rc, bool enabled, float alph
 
 // Disabled or normal
 void Icon::Paint(graphics::Graphics& g, const Area& rc, bool enabled) {
+	if(_bitmap==0) return;
+
 	if(enabled) {
 		g.DrawImage(_bitmap, rc);
 	}
