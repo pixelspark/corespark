@@ -14,7 +14,7 @@ namespace tj {
 
 			public:
 				Message(PacketAction ac, TransactionIdentifier ti = 0);
-				Message(bool toPlugin, const Group& group, const Channel& channel, const PluginHash& ph);
+				Message(bool toPlugin, const GroupID& group, const Channel& channel, const PluginHash& ph);
 				virtual ~Message();
 				bool IsSent() const;
 

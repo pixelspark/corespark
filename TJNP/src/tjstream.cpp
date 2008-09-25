@@ -14,7 +14,7 @@ Message::Message(PacketAction ac, TransactionIdentifier ti): _writer(GC::Hold(ne
 	_header = (PacketHeader*)_writer->_buffer;
 }
 
-Message::Message(bool toPlugin, const Group& gid, const Channel& cid, const PluginHash& plh): _writer(GC::Hold(new CodeWriter())), _sent(false) {
+Message::Message(bool toPlugin, const GroupID& gid, const Channel& cid, const PluginHash& plh): _writer(GC::Hold(new CodeWriter())), _sent(false) {
 	// Construct packet header
 	PacketHeader ph;
 	ph._action = toPlugin ? ActionUpdatePlugin : ActionUpdate;

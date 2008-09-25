@@ -7,7 +7,7 @@ namespace tj {
 		#pragma pack(push,1)
 
 		// General protocol types
-		typedef unsigned short Group;
+		typedef unsigned short GroupID;
 		typedef unsigned short Channel;
 		typedef unsigned int PluginHash;
 		typedef int InstanceID;
@@ -28,7 +28,7 @@ namespace tj {
 
 			char _version[3]; // 'T' 'P' '3'
 			unsigned char _action;
-			Group _group;
+			GroupID _group;
 			Channel _channel;
 			PluginHash _plugin;
 			TransactionIdentifier _transaction;

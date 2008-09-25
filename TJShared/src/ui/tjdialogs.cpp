@@ -59,12 +59,13 @@ bool DialogWnd::DoModal(ref<Wnd> parent) {
 	Show(true);
 	OnAfterShowDialog();
 	ModalLoop::Result result = _loop.Enter(GetWindow(),true);
-	Show(false);
 
 	if(parent) {
 		EnableWindow(root, TRUE);
-		SetForegroundWindow(root);
+		//SetForegroundWindow(parent->GetWindow());
 	}
+
+	Show(false);
 	return result == ModalLoop::ResultSucceeded;
 }
 
