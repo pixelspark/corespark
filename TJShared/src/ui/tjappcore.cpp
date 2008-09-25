@@ -145,7 +145,7 @@ ModalLoop::Result ModalLoop::Enter(HWND m, bool isDialog) {
 		MSG msg;
 		_running = true;
 
-		while(GetMessage(&msg,0,0,0) && _running) {
+		while(_running && GetMessage(&msg,0,0,0)) {
 			TranslateMessage(&msg);
 
 			if(msg.message==WM_KEYDOWN && LOWORD(msg.wParam)==VK_ESCAPE) {
@@ -177,6 +177,8 @@ ModalLoop::Result ModalLoop::Enter(HWND m, bool isDialog) {
 			else {
 				DispatchMessage(&msg);
 			}
+
+			if(!_running) break;
 		}
 
 		return _result;

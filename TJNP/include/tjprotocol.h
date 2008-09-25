@@ -7,6 +7,7 @@ namespace tj {
 		#pragma pack(push,1)
 
 		// General protocol types
+		typedef unsigned short Group;
 		typedef unsigned short Channel;
 		typedef unsigned int PluginHash;
 		typedef int InstanceID;
@@ -25,13 +26,14 @@ namespace tj {
 		struct PacketHeader {
 			PacketHeader();
 
-			char _version[4]; // 'T' 'N' 'P' '3'
+			char _version[3]; // 'T' 'P' '3'
 			unsigned char _action;
+			Group _group;
 			Channel _channel;
 			PluginHash _plugin;
 			TransactionIdentifier _transaction;
 			InstanceID _from;
-			unsigned short _size;
+			unsigned int _size;
 		};
 
 		/** A RunMode specifies in which way a track is played **/

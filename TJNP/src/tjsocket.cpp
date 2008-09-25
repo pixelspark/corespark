@@ -143,7 +143,7 @@ void Socket::Receive() {
 		ph = *((PacketHeader*)_recieveBuffer);
 		
 		// Check if this actually is a TNP3 packet
-		if(ph._version[0]!='T' || ph._version[1] != 'N' || ph._version[2]!='P' || ph._version[3]!='3') {
+		if(ph._version[0]!='T' || ph._version[1] != 'P' || ph._version[2]!='3') {
 			Log::Write(L"TJNP/Socket", L"Received invalid packets from the network; maybe network link is broken or other applications are running on this port");
 			return;
 		}
@@ -180,27 +180,24 @@ void Socket::Receive() {
 void Socket::SendDemoted() {
 	ThreadLock lock(&_lock);
 
-	ref<Message> stream = GC::Hold(new Message(true));
-	stream->GetHeader()->_action = ActionDemoted;
+	ref<Message> stream = GC::Hold(new Message(ActionDemoted));
 	Send(stream);
 }
 
 void Socket::SendError(Features fs, ExceptionType type, const std::wstring& msg) {
 	ThreadLock lock(&_lock);
 
-	ref<Message> stream = GC::Hold(new Message(true));
+	ref<Message> stream = GC::Hold(new Message(ActionReportError));
 	stream->Add(fs);
 	stream->Add(type);
 	stream->Add<std::wstring>(msg);
-	stream->GetHeader()->_action = ActionReportError;
 	Send(stream);
 }
 
 void Socket::SendAnnounce(Role r, const std::wstring& address, Features feats, strong<Transaction> ti) {
 	ThreadLock lock(&_lock);
 
-	ref<Message> stream = GC::Hold(new Message(true));
-	stream->GetHeader()->_action = ActionAnnounce;
+	ref<Message> stream = GC::Hold(new Message(ActionAnnounce));
 	stream->Add(r);
 	stream->Add(feats);
 	
@@ -222,36 +219,31 @@ void Socket::SendAnnounce(Role r, const std::wstring& address, Features feats, s
 void Socket::SendAnnounceReply(Role r, const std::wstring& address, Features feats, TransactionIdentifier ti) {
 	ThreadLock lock(&_lock);
 
-	ref<Message> stream = GC::Hold(new Message(true));
+	ref<Message> stream = GC::Hold(new Message(ActionAnnounceReply,ti));
 	stream->Add(r);
 	stream->Add(feats);
 	stream->Add<std::wstring>(address);
-	stream->GetHeader()->_action = ActionAnnounceReply;
-	stream->GetHeader()->_transaction = ti;
 	Send(stream);
 }
 
 void Socket::SendPromoted() {
 	ThreadLock lock(&_lock);
 
-	ref<Message> stream = GC::Hold(new Message(true));
-	stream->GetHeader()->_action = ActionPromoted;
+	ref<Message> stream = GC::Hold(new Message(ActionPromoted));
 	Send(stream);
 }
 
 void Socket::SendResetAll() {
 	ThreadLock lock(&_lock);
 
-	ref<Message> stream = GC::Hold(new Message(true));
-	stream->GetHeader()->_action = ActionResetAll;
+	ref<Message> stream = GC::Hold(new Message(ActionResetAll));
 	Send(stream);
 }
 
 void Socket::SendSetPatch(ref<BasicClient> c, const PatchIdentifier& pi, const DeviceIdentifier& di) {
 	ThreadLock lock(&_lock);
 
-	ref<Message> stream = GC::Hold(new Message(true));
-	stream->GetHeader()->_action = ActionSetPatch;
+	ref<Message> stream = GC::Hold(new Message(ActionSetPatch));
 	stream->Add<InstanceID>(c->GetInstanceID());
 	stream->Add<PatchIdentifier>(pi);
 	stream->Add<DeviceIdentifier>(di);
@@ -261,41 +253,35 @@ void Socket::SendSetPatch(ref<BasicClient> c, const PatchIdentifier& pi, const D
 void Socket::SendListPatchesReply(const PatchIdentifier& pi, const DeviceIdentifier& di, TransactionIdentifier ti, in_addr to, bool isLast) {
 	ThreadLock lock(&_lock);
 
-	ref<Message> stream = GC::Hold(new Message(true));
+	ref<Message> stream = GC::Hold(new Message(ActionListPatchesReply, ti));
 	stream->Add<PatchIdentifier>(pi);
 	stream->Add<DeviceIdentifier>(di);
 	stream->Add<bool>(isLast);
-	stream->GetHeader()->_action = ActionListPatchesReply;
-	stream->GetHeader()->_transaction = ti;
 	Send(stream);
 }
 
 void Socket::SendListDevicesReply(const DeviceIdentifier& di, const std::wstring& friendly, TransactionIdentifier ti, in_addr to, bool isLast) {
 	ThreadLock lock(&_lock);
 
-	ref<Message> stream = GC::Hold(new Message(true));
+	ref<Message> stream = GC::Hold(new Message(ActionListDevicesReply, ti));
 	stream->Add<DeviceIdentifier>(di);
 	stream->Add<std::wstring>(friendly);
 	stream->Add<bool>(isLast);
-	stream->GetHeader()->_action = ActionListDevicesReply;
-	stream->GetHeader()->_transaction = ti;
 	Send(stream);
 }
 
 void Socket::SendSetClientAddress(ref<BasicClient> client, std::wstring na) {
 	ThreadLock lock(&_lock);
-	ref<Message> stream = GC::Hold(new Message(true));
+	ref<Message> stream = GC::Hold(new Message(ActionSetAddress));
 	stream->Add(client->GetInstanceID());
 	stream->Add<std::wstring>(na);
-	stream->GetHeader()->_action = ActionSetAddress;
 	Send(stream);
 }
 
 void Socket::SendInput(const PatchIdentifier& patch, const ChannelID& cid, const SubChannelID& scid, float value) {
 	ThreadLock lock(&_lock);
 
-	ref<Message> stream = GC::Hold(new Message(true));
-	stream->GetHeader()->_action = ActionInput;
+	ref<Message> stream = GC::Hold(new Message(ActionInput));
 	stream->Add(patch);
 	stream->Add(cid);
 	stream->Add(scid);
@@ -310,10 +296,9 @@ void Socket::SendListDevices(InstanceID to, ref<Transaction> ti) {
 		++_transactionCounter;
 		_transactions[_transactionCounter] = ti;
 
-		ref<Message> msg = GC::Hold(new Message(true));
+		ref<Message> msg = GC::Hold(new Message(ActionListDevices));
 		msg->Add<InstanceID>(to);
 		msg->Add<TransactionIdentifier>(_transactionCounter);
-		msg->GetHeader()->_action = ActionListDevices;
 		Send(msg);
 	}
 }
@@ -325,10 +310,9 @@ void Socket::SendListPatches(InstanceID to, ref<Transaction> ti) {
 		++_transactionCounter;
 		_transactions[_transactionCounter] = ti;
 
-		ref<Message> msg = GC::Hold(new Message(true));
+		ref<Message> msg = GC::Hold(new Message(ActionListPatches));
 		msg->Add<InstanceID>(to);
 		msg->Add<TransactionIdentifier>(_transactionCounter);
-		msg->GetHeader()->_action = ActionListPatches;
 		Send(msg);
 	}
 }
@@ -343,7 +327,7 @@ void Socket::SendLeave() {
 
 void Socket::SendResourceFind(const std::wstring& ident, ref<Transaction> ti) {
 	ThreadLock lock(&_lock);
-	ref<Message> stream = GC::Hold(new Message(true));
+	ref<Message> stream = GC::Hold(new Message(ActionFindResource));
 	stream->Add(ident);
 
 	if(ti) {
@@ -354,15 +338,13 @@ void Socket::SendResourceFind(const std::wstring& ident, ref<Transaction> ti) {
 	else {
 		stream->Add<TransactionIdentifier>(0);
 	}
-
-	stream->GetHeader()->_action = ActionFindResource;
 	Send(stream);
 }
 
+/// TODO FIXME: client group push instead of per-channel push?
 void Socket::SendResourcePush(Channel c, const ResourceIdentifier& ident) {
 	ThreadLock lock(&_lock);
-	ref<Message> stream = GC::Hold(new Message(true));
-	stream->GetHeader()->_action = ActionPushResource;
+	ref<Message> stream = GC::Hold(new Message(ActionPushResource));
 	stream->GetHeader()->_channel = c;
 	stream->Add(ident);
 	Send(stream);
@@ -370,11 +352,7 @@ void Socket::SendResourcePush(Channel c, const ResourceIdentifier& ident) {
 
 void Socket::SendResourceAdvertise(const ResourceIdentifier& rid, const std::wstring& url, unsigned short port, TransactionIdentifier tid) {
 	ThreadLock lock(&_lock);
-	ref<Message> stream = GC::Hold(new Message(true));
-
-	stream->GetHeader()->_channel = 0;
-	stream->GetHeader()->_transaction = tid;
-	stream->GetHeader()->_action = ActionAdvertiseResource;
+	ref<Message> stream = GC::Hold(new Message(ActionAdvertiseResource, tid));
 	stream->Add(port);
 	stream->Add(rid);
 	stream->Add(url);
@@ -383,10 +361,7 @@ void Socket::SendResourceAdvertise(const ResourceIdentifier& rid, const std::wst
 
 void Socket::SendOutletChange(Channel ch, const std::wstring& outletName, const tj::shared::Any& value) {
 	ThreadLock lock(&_lock);
-	ref<Message> stream = GC::Hold(new Message(true));
-	stream->GetHeader()->_channel = 0;
-	stream->GetHeader()->_action = ActionOutletChange;
-
+	ref<Message> stream = GC::Hold(new Message(ActionOutletChange));
 	stream->Add<Channel>(ch);
 	stream->Add<short>(value.GetType());
 	stream->Add(value.ToString());
@@ -395,7 +370,7 @@ void Socket::SendOutletChange(Channel ch, const std::wstring& outletName, const 
 	Send(stream);
 }
 
-void Socket::Send(ref<Packet> p) {
+void Socket::Send(strong<Packet> p) {
 	sockaddr_in addr;
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons((u_short)_port);      
@@ -405,7 +380,7 @@ void Socket::Send(ref<Packet> p) {
 	Send(p, &addr);
 }
 
-void Socket::Send(ref<Packet> p, const sockaddr_in* address) {
+void Socket::Send(strong<Packet> p, const sockaddr_in* address) {
 	ThreadLock lock(&_lock);
 	ref<Node> nw = _network;
 	if(!nw) return;
@@ -429,7 +404,7 @@ void Socket::Send(ref<Packet> p, const sockaddr_in* address) {
 	}
 }
 
-void Socket::Send(ref<Message> s) {
+void Socket::Send(strong<Message> s) {
 	sockaddr_in addr;
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons((u_short)_port);      
@@ -439,14 +414,12 @@ void Socket::Send(ref<Message> s) {
 	Send(s,&addr);
 }
 
-void Socket::Send(ref<Message> s, const sockaddr_in* address) {
-	if(!s) return;
+void Socket::Send(strong<Message> s, const sockaddr_in* address) {
 	ref<Node> nw = _network;
 	if(!nw) return;
 	s->GetHeader()->_from = nw->GetInstanceID();
 
 	ThreadLock lock(&_lock);
-
 	unsigned int size = s->GetSize();
 	int ret = sendto(_client,s->GetBuffer(),size, 0,(const sockaddr*)address,sizeof(sockaddr_in));
 
@@ -456,6 +429,7 @@ void Socket::Send(ref<Message> s, const sockaddr_in* address) {
 		Log::Write(L"TJNP/Socket", L"Could not send client-specific message, address was " +Wcs(a));
 	}
 	else {
+		s->SetSent();
 		_bytesSent += (int)size;
 	}
 }

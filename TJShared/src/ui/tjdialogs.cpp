@@ -39,26 +39,32 @@ bool DialogWnd::DoModal(ref<Wnd> parent) {
 	// Get root window of parent
 	HWND parentNative = parent ? parent->GetWindow() : GetForegroundWindow();
 	HWND root = GetAncestor(parentNative, GA_ROOT);
-	EnableWindow(root,FALSE);
+	
+	if(parent) {
+		EnableWindow(root,FALSE);
 
-	/* Center this window */
-	ref<Theme> theme = ThemeManager::GetTheme();
-	float df = theme->GetDPIScaleFactor();
-	Area rc = TopWnd::GetClientArea();
-	int w = int(rc.GetWidth()*df);
-	int h = int(rc.GetHeight()*df);
+		/* Center this window */
+		ref<Theme> theme = ThemeManager::GetTheme();
+		float df = theme->GetDPIScaleFactor();
+		Area rc = TopWnd::GetClientArea();
+		int w = int(rc.GetWidth()*df);
+		int h = int(rc.GetHeight()*df);
 
-	// Get root rectangle
-	RECT rootRect;
-	GetWindowRect(root, &rootRect);
-	SetWindowPos(GetWindow(), 0L, rootRect.left + ((rootRect.right-rootRect.left - w)/2), rootRect.top + ((rootRect.bottom-rootRect.top - h)/2), 0,0, SWP_NOSIZE|SWP_NOZORDER);
+		// Get root rectangle
+		RECT rootRect;
+		GetWindowRect(root, &rootRect);
+		SetWindowPos(GetWindow(), 0L, rootRect.left + ((rootRect.right-rootRect.left - w)/2), rootRect.top + ((rootRect.bottom-rootRect.top - h)/2), 0,0, SWP_NOSIZE|SWP_NOZORDER);
+	}
+
 	Show(true);
 	OnAfterShowDialog();
-
 	ModalLoop::Result result = _loop.Enter(GetWindow(),true);
+	Show(false);
 
-	EnableWindow(root, TRUE);
-	SetForegroundWindow(root);
+	if(parent) {
+		EnableWindow(root, TRUE);
+		SetForegroundWindow(root);
+	}
 	return result == ModalLoop::ResultSucceeded;
 }
 

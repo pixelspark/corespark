@@ -41,8 +41,8 @@ namespace tj {
 				void SendInput(const PatchIdentifier& patch, const ChannelID& cid, const SubChannelID& scid, float value);
 				void SendOutletChange(Channel ch, const std::wstring& outletName, const tj::shared::Any& value);
 
-				void Send(tj::shared::ref<Message> s);
-				void Send(tj::shared::ref<Packet> p);
+				void Send(tj::shared::strong<Message> s);
+				void Send(tj::shared::strong<Packet> p);
 				int GetPort() const;
 				std::wstring GetAddress() const;
 				int GetBytesSent() const;
@@ -54,8 +54,8 @@ namespace tj {
 				void Receive();
 			
 			private:
-				void Send(tj::shared::ref<Message> s, const sockaddr_in* address);
-				void Send(tj::shared::ref<Packet> p, const sockaddr_in* address);
+				void Send(tj::shared::strong<Message> s, const sockaddr_in* address);
+				void Send(tj::shared::strong<Packet> p, const sockaddr_in* address);
 				
 				static NetworkInitializer _initializer;
 

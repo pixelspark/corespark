@@ -2,17 +2,33 @@
 using namespace tj::np;
 using namespace tj::shared;
 
-Message::Message(bool toPlugin) {
-	_header = 0;
-	_writer = CreateWriter();
-	_sent = false;
-	_toPlugin = toPlugin;
+Message::Message(PacketAction ac, TransactionIdentifier ti): _writer(GC::Hold(new CodeWriter())), _sent(false) {
+	// Construct packet header
+	PacketHeader ph;
+	ph._action = ac;
+	ph._channel = 0;
+	ph._group = 0;
+	ph._plugin = 0;
+	ph._transaction = ti;
+	_writer->Add(ph);
+	_header = (PacketHeader*)_writer->_buffer;
+}
+
+Message::Message(bool toPlugin, const Group& gid, const Channel& cid, const PluginHash& plh): _writer(GC::Hold(new CodeWriter())), _sent(false) {
+	// Construct packet header
+	PacketHeader ph;
+	ph._action = toPlugin ? ActionUpdatePlugin : ActionUpdate;
+	ph._channel = cid;
+	ph._group = gid;
+	ph._plugin = plh;
+	_writer->Add(ph);
+	_header = (PacketHeader*)_writer->_buffer;
 }
 
 Message::~Message() {
 }
 
-bool Message::IsSent() {
+bool Message::IsSent() const {
 	return _sent;
 }
 
@@ -20,30 +36,8 @@ void Message::SetSent() {
 	_sent = true;
 }
 
-bool Message::IsSentToPlugin() const {
-	return _toPlugin;
-}
-
-
-ref<CodeWriter> Message::CreateWriter() {
-	ref<CodeWriter> cw = GC::Hold(new CodeWriter());
-	PacketHeader ph;
-	ph._action = ActionUpdate;
-	cw->Add(ph);
-	_header = (PacketHeader*)cw->_buffer;
-	return cw;
-}
-
 PacketHeader* Message::GetHeader() {
 	return _header;
-}
-
-void Message::SetChannel(Channel id) {
-	_header->_channel = id;
-}
-
-void Message::SetPlugin(PluginHash id) {
-	_header->_plugin = id;
 }
 
 unsigned int Message::GetSize() {

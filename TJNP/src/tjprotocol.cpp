@@ -32,11 +32,11 @@ const char* Packet::GetMessage() {
 PacketHeader::PacketHeader() {
 	_action = ActionNothing;
 	_channel = 0;
+	_group = 0;
 	_size = 0;
 	_version[0] = 'T';
-	_version[1] = 'N';
-	_version[2] = 'P';
-	_version[3] = '3';
+	_version[1] = 'P';
+	_version[2] = '3';
 	_transaction = 0;
 	_from = 0;
 	_plugin = 0;

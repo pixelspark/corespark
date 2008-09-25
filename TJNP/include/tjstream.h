@@ -13,9 +13,10 @@ namespace tj {
 			friend class Stream;
 
 			public:
-				Message(bool toPlugin);
+				Message(PacketAction ac, TransactionIdentifier ti = 0);
+				Message(bool toPlugin, const Group& group, const Channel& channel, const PluginHash& ph);
 				virtual ~Message();
-				bool IsSent();
+				bool IsSent() const;
 
 				template<typename T> void Add(const T& x) {
 					if(_sent) return;
@@ -25,28 +26,19 @@ namespace tj {
 					_header->_size += sizeof(T)/sizeof(char);
 				}
 
-				void SetChannel(Channel id);
-				void SetPlugin(PluginHash pt);
 				unsigned int GetSize();
 				PacketHeader* GetHeader();
 				void SetSent();
 
-				/* Messages can either be sent to the stream player or the plugin
-				on the client. Use this to set the target (default is streamplayer for
-				TrackStream, plugin for LiveStream) */
-				inline void SetSendToPlugin(bool p) {
-					_toPlugin = p;
+				inline void SetSendToPlugin(bool t) {
+					_header->_action = (t ? ActionUpdatePlugin : ActionUpdate);
 				}
-
-				bool IsSentToPlugin() const;
 
 			protected:
 				const char* GetBuffer();
-				tj::shared::ref<tj::shared::CodeWriter> CreateWriter();
-				tj::shared::ref<tj::shared::CodeWriter> _writer;
+				tj::shared::strong<tj::shared::CodeWriter> _writer;
 				PacketHeader* _header;
 				bool _sent;
-				bool _toPlugin;
 		};
 
 		template<> inline void Message::Add(const std::wstring& x) {
@@ -68,7 +60,7 @@ namespace tj {
 		class Stream: public virtual tj::shared::Object {
 			public:
 				virtual ~Stream() {}
-				virtual tj::shared::ref<Message> Create() = 0;
+				virtual tj::shared::strong<Message> Create() = 0;
 				virtual void Send(tj::shared::ref<Message> msg) = 0;
 		};
 	}
