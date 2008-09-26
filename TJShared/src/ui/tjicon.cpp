@@ -2,17 +2,16 @@
 using namespace tj::shared;
 using namespace tj::shared::graphics;
 
-Icon::Icon(const ResourceIdentifier& rid) {
-	std::wstring path;
-	if(ResourceManager::Instance()->GetPathToLocalResource(rid, path)) {
-		_bitmap = Image::FromFile(path.c_str(), TRUE);
-	}
-	else {
-		_bitmap = 0;
-	}
+Icon::Icon(const ResourceIdentifier& rid): _bitmap(0) {
+	if(rid!=L"") {
+		std::wstring path;
+		if(ResourceManager::Instance()->GetPathToLocalResource(rid, path)) {
+			_bitmap = Image::FromFile(path.c_str(), TRUE);
+		}
 
-	if(_bitmap==0) {
-		Log::Write(L"TJShared/Icon", L"Could not load Icon: " + rid);
+		if(_bitmap==0) {
+			Log::Write(L"TJShared/Icon", L"Could not load Icon: " + rid);
+		}
 	}
 }
 

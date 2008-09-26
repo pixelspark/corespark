@@ -20,7 +20,7 @@ namespace tj {
 
 				class PropertyWnd: public ChildWnd {
 					public:
-						PropertyWnd(GenericListProperty<T>& prop): ChildWnd(L""), _prop(prop), _arrowIcon(Icons::GetIconPath(Icons::IconDownArrow)) {
+						PropertyWnd(GenericListProperty<T>& prop, const std::wstring& icon): ChildWnd(L""), _icon(icon), _prop(prop), _arrowIcon(Icons::GetIconPath(Icons::IconDownArrow)) {
 							SetWantMouseLeave(true);
 						}
 
@@ -61,6 +61,14 @@ namespace tj {
 							graphics::SolidBrush tbr(theme->GetColor(Theme::ColorText));
 							Area text = rc;
 							text.Narrow(2,2,16+2,0);
+							if(_icon.IsLoaded()) {
+								text.Narrow(18,0,0,0);
+								Area iconArea = rc;
+								iconArea.SetWidth(16);
+								iconArea.SetHeight(16);
+								iconArea.Translate(2,0);
+								_icon.Paint(g, iconArea);
+							}
 							graphics::StringFormat sf;
 							sf.SetTrimming(graphics::StringTrimmingEllipsisPath);
 
@@ -138,9 +146,10 @@ namespace tj {
 					protected:
 						GenericListProperty<T>& _prop;
 						Icon _arrowIcon;
+						Icon _icon;
 				};
 
-				GenericListProperty(std::wstring name, T* value, T* also, T def): Property(name) {
+				GenericListProperty(std::wstring name, T* value, T* also, T def, const std::wstring& icon = L""): Property(name), _icon(icon) {
 					_value = value;
 					_alsoSet = also;
 					_default = def;
@@ -171,7 +180,7 @@ namespace tj {
 
 				virtual ref<Wnd> GetWindow() {
 					if(!_pw) {
-						_pw = GC::Hold(new PropertyWnd(*this));
+						_pw = GC::Hold(new PropertyWnd(*this, _icon));
 					}
 
 					return _pw;
@@ -193,6 +202,7 @@ namespace tj {
 				T* _alsoSet;
 				ref<PropertyWnd> _pw;
 				std::vector<Item> _options;
+				std::wstring _icon;
 		};
 	}
 }
