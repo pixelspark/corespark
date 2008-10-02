@@ -1,6 +1,65 @@
 #include "../include/tjcore.h"
+#include <time.h>
 using namespace tj::shared;
 
+/* Date */
+std::wstring Date::GetFriendlyMonthName(Month m) {
+	static const wchar_t* localeKeys[12] = {L"month_january", L"month_february", L"month_march", 
+											L"month_april", L"month_may", L"month_june", L"month_july",
+											L"month_august", L"month_september", L"month_october",
+											L"month_november", L"month_december" };
+
+	if(m >= 1 && m <= 12) {
+		return Language::Get(localeKeys[m-1]);
+	}
+	return L"";
+}
+
+std::wstring Date::GetFriendlyDayName(DayOfWeek m) {
+	static const wchar_t* localeKeys[7] = {L"day_monday", L"day_tuesday", L"day_wednesday", L"day_thursday", 
+											L"day_friday", L"day_saturday", L"day_sunday"};
+
+	if(m >= 0 && m <= 6) {
+		return Language::Get(localeKeys[m]);
+	}
+	return L"";
+}
+
+Date::Date() {
+	GetLocalTime(&_time);
+}
+
+Date::~Date() {
+}
+
+Month Date::GetMonth() const {
+	return (Month)_time.wMonth;
+}
+
+DayOfWeek Date::GetDayOfWeek() const {
+	return (DayOfWeek)_time.wDayOfWeek;
+}
+
+DayOfMonth Date::GetDayOfMonth() const {
+	return (DayOfMonth)_time.wDay;
+}
+Year Date::GetYear() const {
+	return (Year)_time.wYear;
+}
+
+Seconds Date::GetSeconds() const {
+	return (Seconds)_time.wSecond;
+}
+
+Minutes Date::GetMinutes() const {
+	return (Minutes)_time.wMinute;
+}
+
+Hours Date::GetHours() const {
+	return (Hours)_time.wHour;
+}
+
+/* Timestamp */
 Timestamp::Timestamp(const Timestamp& t) {
 	_time = t._time;
 }

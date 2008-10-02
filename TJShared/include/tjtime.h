@@ -9,6 +9,36 @@ namespace tj {
 			TimeFormatSequential,
 		};
 
+		typedef unsigned char Month; /* 1..12 */
+		typedef unsigned char DayOfWeek; /* 0..6 */
+		typedef unsigned char DayOfMonth; /* 1..31 */
+		typedef unsigned short Year;
+		typedef unsigned char Seconds; /* 0..59 */
+		typedef unsigned char Minutes; /* 0..59 */
+		typedef unsigned char Hours; /* 0..23 */
+
+
+		class EXPORTED Date {
+			public:
+				static std::wstring GetFriendlyMonthName(Month m);
+				static std::wstring GetFriendlyDayName(DayOfWeek d);
+
+				Date();
+				virtual ~Date();
+				Month GetMonth() const;
+				DayOfWeek GetDayOfWeek() const;
+				DayOfMonth GetDayOfMonth() const;
+				Year GetYear() const;
+				Seconds GetSeconds() const;
+				Minutes GetMinutes() const;
+				Hours GetHours() const;
+
+			private:
+				#ifdef _WIN32
+					SYSTEMTIME _time;
+				#endif
+		};
+
 		struct EXPORTED Time {
 			public:
 				inline Time(int time=0) {
