@@ -48,7 +48,6 @@ void EditWnd::Show(bool s) {
 	ChildWnd::Show(s);
 }
 
-
 void EditWnd::Layout() {
 	Area rc = GetClientArea();
 	ref<Theme> theme = ThemeManager::GetTheme();

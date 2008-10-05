@@ -271,6 +271,12 @@ void TabWnd::RemovePane(ref<Wnd> wnd) {
 	assert(wnd);
 
 	wnd->Show(false);
+	if(_current) {
+		ref<Wnd> cw = _current->GetWindow();
+		if(cw) {
+			cw->Show(false);
+		}
+	}
 	_current = null;
 	_offset = null;
 	std::vector< ref<Pane> >::iterator it = _panes.begin();
