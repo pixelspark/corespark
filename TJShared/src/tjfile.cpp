@@ -98,6 +98,18 @@ bool File::Copy(const std::wstring& from, const std::wstring& to, bool silent) {
 	return SHFileOperation(&op) == 0;
 }
 
+Bytes File::GetFileSize(const std::wstring& filePath) {
+	HANDLE file = CreateFile(filePath.c_str(), GENERIC_READ, FILE_SHARE_READ|FILE_SHARE_WRITE, NULL, OPEN_EXISTING, NULL, NULL);
+	if(file!=INVALID_HANDLE_VALUE) {
+		LARGE_INTEGER li;
+		if(GetFileSizeEx(file, &li)==TRUE) {
+			return (Bytes)li.QuadPart;
+		}
+		CloseHandle(file);
+	}
+	return -1;
+}
+
 Bytes File::GetDirectorySize(const std::wstring& dirPath) {
 	ZoneEntry ze(Zones::LocalFileInfoZone);
 	WIN32_FIND_DATA fd;

@@ -55,20 +55,27 @@ std::wstring Util::IPToString(in_addr ip) {
 }
 
 std::wstring Util::GetSizeString(Bytes bytes) {
-	std::wstring x;
+	// A negative size means something is wrong or the size is unknown
+	if(bytes<0) {
+		return L"";
+	}
 
+	std::wstring x;
+	const static Bytes BytesInATeraByte = 1024*1024*1024*1024;
 	const static Bytes BytesInAGigaByte = 1024*1024*1024;
 	const static Bytes BytesInAMegaByte = 1024*1024;
 	const static Bytes BytesInAKiloByte = 1024;
 
-	if(bytes>BytesInAGigaByte) {
+	if(bytes>BytesInATeraByte) {
+		x = Stringify(int(bytes/BytesInATeraByte)) + std::wstring(L" TB");
+	}
+	else if(bytes>BytesInAGigaByte) {
 		x = Stringify(int(bytes/BytesInAGigaByte)) + std::wstring(L" GB");
 	}
 
-	else if(bytes>BytesInAMegaByte) { // 
+	else if(bytes>BytesInAMegaByte) { 
 		x = Stringify(int(bytes/BytesInAMegaByte)) + std::wstring(L" MB");
 	}
-
 	else if(bytes>BytesInAKiloByte) {
 		x = Stringify(int(bytes/BytesInAKiloByte)) + std::wstring(L" kB");
 	}
