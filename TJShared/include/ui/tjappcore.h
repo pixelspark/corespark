@@ -74,7 +74,7 @@ namespace tj {
 
 				static void Show(const std::wstring& title, const std::wstring& text, AlertType t);
 				static bool ShowOKCancel(const std::wstring& title, const std::wstring& text, AlertType t);
-				static bool ShowYesNo(const std::wstring& title, const std::wstring& text, AlertType t);
+				static bool ShowYesNo(const std::wstring& title, const std::wstring& text, AlertType t, bool modal = false);
 				static Result ShowYesNoCancel(const std::wstring& title, const std::wstring& text, AlertType t, bool modal = false);
 		};
 	}

@@ -123,7 +123,7 @@ void RootWnd::RemoveWindow(ref<Wnd> w) {
 	while(ita!=_floatingPanes.end()) {
 		ref<FloatingPane> pane = *ita;
 		if(pane->_pane->GetWindow()==w) {
-			RemoveFloatingPane(pane);
+			RemoveFloatingPane(pane->_pane);
 			break;
 		}
 		ita++;

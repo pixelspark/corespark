@@ -7,6 +7,7 @@ namespace tj {
 		#pragma pack(push,1)
 
 		// General protocol types
+		typedef unsigned int ShowID;
 		typedef unsigned short GroupID;
 		typedef unsigned short Channel;
 		typedef unsigned int PluginHash;

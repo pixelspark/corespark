@@ -1,9 +1,21 @@
 #include "../include/tjcore.h"
 using namespace tj::shared;
 
-FileWriter::FileWriter(const std::string& root) {
-	_document = GC::Hold(new TiXmlDocument());
-	_root = GC::Hold(new TiXmlElement(root));
+
+void XML::GetElementHash(const TiXmlNode* root, SecureHash& sh) {
+	if(root!=0) {
+		const char* text = root->Value();
+		sh.AddData(text, strlen(text));
+
+		const TiXmlNode* node = root->FirstChild();
+		while(node!=0) {
+			GetElementHash(node, sh);
+			node = node->NextSibling();
+		}
+	}
+}
+
+FileWriter::FileWriter(const std::string& root): _root(GC::Hold(new TiXmlElement(root))), _document(GC::Hold(new TiXmlDocument())) {
 	TiXmlDeclaration decl("1.0","UTF-8","no");
 	_document->InsertEndChild(decl);
 }
@@ -11,26 +23,26 @@ FileWriter::FileWriter(const std::string& root) {
 FileWriter::~FileWriter() {
 }
 
-ref<TiXmlDocument> FileWriter::GetDocument() {
+strong<TiXmlDocument> FileWriter::GetDocument() {
 	return _document;
 }
 
-ref<TiXmlElement> FileWriter::GetRoot() {
+strong<TiXmlElement> FileWriter::GetRoot() {
 	return _root;
 }
 
 void FileWriter::Save(const std::string& filename) {
 	ZoneEntry ze(Zones::LocalFileWriteZone);
-	_document->InsertEndChild(*(_root.GetPointer()));
+	_document->InsertEndChild(*(ref<TiXmlElement>(_root).GetPointer()));
 	_document->SaveFile(filename.c_str());
 }
 
 void FileWriter::Add(Serializable* ser) {
-	ser->Save(_root.GetPointer());
+	ser->Save(ref<TiXmlElement>(_root).GetPointer());
 }
 
 void FileWriter::Add(ref<Serializable> ser) {
-	ser->Save(_root.GetPointer());
+	ser->Save(ref<TiXmlElement>(_root).GetPointer());
 }
 
 FileReader::FileReader() {

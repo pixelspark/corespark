@@ -61,7 +61,7 @@ std::wstring Util::GetSizeString(Bytes bytes) {
 	}
 
 	std::wstring x;
-	const static Bytes BytesInATeraByte = 1024*1024*1024*1024;
+	const static Bytes BytesInATeraByte = Bytes(1024*1024*1024)*1024;
 	const static Bytes BytesInAGigaByte = 1024*1024*1024;
 	const static Bytes BytesInAMegaByte = 1024*1024;
 	const static Bytes BytesInAKiloByte = 1024;
