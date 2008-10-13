@@ -126,6 +126,30 @@ void Theme::DrawInsetRectangle(graphics::Graphics& g, const Area& rc) {
 	g.DrawLine(&shadowLine, rc.GetLeft(), rc.GetTop(), rc.GetRight(), rc.GetTop());
 }
 
+void Theme::DrawShadowRectangle(graphics::Graphics& g, const Area& c, float alpha) {
+	static REAL blendPositions[3] = {0.0f, 0.2f, 1.0f};
+	static REAL blendFactors[3] = {1.0f, 0.0f, 0.0f};
+	static const Pixels KFocusRectangleWidth = 6;
+	static Color KSurroundColors[1] = { Color::Transparent };
+
+	Area rc = c;
+	GraphicsPath path;
+	rc.Widen(KFocusRectangleWidth,KFocusRectangleWidth,KFocusRectangleWidth,KFocusRectangleWidth);
+	path.AddRectangle(rc);
+	PathGradientBrush gbrush(&path);
+	gbrush.SetCenterColor(ChangeAlpha(GetColor(ColorShadow), int(alpha*255.0f)));
+	int KNumSurroundColors = 1;
+	gbrush.SetSurroundColors(KSurroundColors, &KNumSurroundColors);
+
+	float fx = max(0.0f, float(rc.GetWidth()-5*KFocusRectangleWidth)/float(rc.GetWidth()));
+	float fy = max(0.0f, float(rc.GetHeight()-5*KFocusRectangleWidth)/float(rc.GetHeight()));
+	gbrush.SetFocusScales(fx,fy);
+	
+	rc.Narrow(KFocusRectangleWidth,KFocusRectangleWidth,KFocusRectangleWidth,KFocusRectangleWidth);
+	Pen focusPen(&gbrush, 3.0f);
+	g.DrawRectangle(&focusPen, rc);
+}
+
 void Theme::DrawFocusRectangle(graphics::Graphics& g, const Area& c, float alpha) {
 	static REAL blendPositions[3] = {0.0f, 0.2f, 1.0f};
 	static REAL blendFactors[3] = {1.0f, 0.0f, 0.0f};

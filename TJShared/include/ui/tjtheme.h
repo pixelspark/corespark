@@ -146,6 +146,7 @@ namespace tj {
 				virtual void DrawToolbarBackground(graphics::Graphics& g, const Area& rc);
 				virtual void DrawToolbarBackground(graphics::Graphics& g, float x, float y, float w, float h);
 				virtual void DrawFocusRectangle(graphics::Graphics& g, const Area& rc, float alpha = 1.0f);
+				virtual void DrawShadowRectangle(graphics::Graphics& g, const Area& rc, float alpha = 1.0f);
 				virtual void DrawFocusEllipse(graphics::Graphics& g, const Area& rc, float alpha = 1.0f);
 				virtual void DrawHighlightEllipse(graphics::Graphics& g, const Area& c, float alpha = 1.0f);
 				virtual void DrawMessageBar(graphics::Graphics& g, const Area& c);
