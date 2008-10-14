@@ -253,32 +253,6 @@ void RootWnd::AddPane(ref<Pane> p, bool select) {
 	}
 }
 
-void RootWnd::AddNotification(const std::wstring& text, std::wstring icon, int time) {
-	int highestIndex = 0;
-	std::vector< ref<NotificationWnd> >::iterator it = _notifications.begin();
-	while(it!=_notifications.end()) {
-		ref<NotificationWnd> wnd = *it;
-		if(wnd) {
-			highestIndex = max(wnd->GetIndex(), highestIndex);
-		}
-		++it;
-	}
-	ref<NotificationWnd> nw = GC::Hold(new NotificationWnd(text,icon,time, highestIndex+1, this));
-	_notifications.push_back(nw);
-}
-
-void RootWnd::RemoveNotification(NotificationWnd* nw) {
-	std::vector< ref<NotificationWnd> >::iterator it = _notifications.begin();
-	while(it!=_notifications.end()) {
-		ref<NotificationWnd> wnd = *it;
-		if(wnd && wnd.GetPointer()==nw) {
-			_notifications.erase(it);
-			return;
-		}
-		++it;
-	}
-}
-
 void RootWnd::RevealWindow(ref<Wnd> wnd, ref<TabWnd> addTo) {
 	assert(wnd);
 
@@ -371,22 +345,5 @@ void RootWnd::RemoveOrphanPane(ref<Pane> pane) {
 			return;
 		}
 		++it;
-	}
-}
-
-/** AddNotificationRunnable */
-AddNotificationRunnable::AddNotificationRunnable(ref<RootWnd> root, const std::wstring& text, std::wstring icon, int time) {
-	_root = root;
-	_text = text;
-	_icon = icon;
-	_time = time;
-}
-
-AddNotificationRunnable::~AddNotificationRunnable() {
-}
-
-void AddNotificationRunnable::Run() {
-	if(_root) {
-		_root->AddNotification(_text, _icon, _time);
 	}
 }

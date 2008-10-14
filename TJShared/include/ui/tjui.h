@@ -30,7 +30,6 @@
 #include "tjrootwnd.h"
 #include "tjbuttonwnd.h"
 #include "tjloggerwnd.h"
-#include "tjnotificationwnd.h"
 #include "tjtabwnd.h"
 #include "tjpathwnd.h"
 #include "tjsplashwnd.h"

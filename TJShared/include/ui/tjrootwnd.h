@@ -3,8 +3,6 @@
 
 namespace tj {
 	namespace shared {
-		class NotificationWnd;
-
 		class EXPORTED WindowManager: public virtual Object {
 			public:
 				virtual ~WindowManager();
@@ -67,10 +65,6 @@ namespace tj {
 				virtual void RenameWindow(ref<Wnd> w, std::wstring name);
 				virtual void AddPane(ref<Pane> p, bool select = false); // add by preferred placement
 
-				/* Notification API */
-				virtual void AddNotification(const std::wstring& message, std::wstring icon, int time=-1);
-				void RemoveNotification(NotificationWnd* nw);
-
 				void FullRepaint(); // use after switching theme
 				virtual void Layout();
 				virtual Area GetClientArea() const;
@@ -87,21 +81,7 @@ namespace tj {
 				std::vector< ref<FloatingPane> > _floatingPanes;
 				std::vector < ref<TabWnd> > _tabWindows;
 				std::vector< ref<Pane> > _orphans;
-				std::vector< ref<NotificationWnd> > _notifications;
 				ref<TabWnd> _dragTarget;
-		};
-
-		class EXPORTED AddNotificationRunnable: public Runnable {
-			public:
-				AddNotificationRunnable(ref<RootWnd> root, const std::wstring& text, std::wstring icon, int time);
-				virtual ~AddNotificationRunnable();
-				virtual void Run();
-
-			protected:
-				ref<RootWnd> _root;
-				std::wstring _text;
-				std::wstring _icon;
-				int _time;
 		};
 	}
 }
