@@ -31,54 +31,10 @@ bool File::Exists(const std::wstring& st) {
 
 bool File::Move(const std::wstring& from, const std::wstring& to, bool silent) {
 	ZoneEntry ze(Zones::LocalFileAdministrationZone);
-
-	// Because SHCreateItemFromParsingName is not available under XP, find it dynamically
-	typedef HRESULT (WINAPI* fnSHCreateItemFromParsingName)(PCWSTR, IBindCtx*, REFIID, void**);
-	fnSHCreateItemFromParsingName pfnSHCreateItemFromParsingName = NULL;
-	HMODULE shellLib = GetModuleHandle(L"shell32");
-	if(shellLib) {
-		// Attempt to get the address of SHCreateItemFromParsingName
-		pfnSHCreateItemFromParsingName = (fnSHCreateItemFromParsingName)GetProcAddress(shellLib, "SHCreateItemFromParsingName");
-		if(pfnSHCreateItemFromParsingName!=0) {
-			/* IFileOperation has replaced SHFileOperation under Vista. Since some file moves (e.g. the TJShow license file
-			move to ProgramData) requires 'elevation' (UAC), we need the IFileOperation to present it. */
-			CComPtr<IFileOperation> op;
-			if(SUCCEEDED(CoCreateInstance(CLSID_FileOperation, NULL, CLSCTX_ALL, IID_IFileOperation, (void**)&op))) {
-				op->SetOperationFlags(FOFX_SHOWELEVATIONPROMPT|FOF_NOCONFIRMATION|FOF_NOCONFIRMMKDIR|(silent ? (FOF_NO_UI|FOF_SILENT) : 0));
-				
-				// Create source/dest shell items
-				CComPtr<IShellItem> fromItem;
-				CComPtr<IShellItem> toItem;
-
-				std::wstring toFolder = File::GetDirectory(to);
-				std::wstring toFileName = File::GetFileName(to);
-
-				if(SUCCEEDED(pfnSHCreateItemFromParsingName(toFolder.c_str(), NULL, IID_PPV_ARGS(&toItem)))) {
-					if(SUCCEEDED(pfnSHCreateItemFromParsingName(from.c_str(), NULL, IID_PPV_ARGS(&fromItem)))) {
-						if(SUCCEEDED(op->MoveItem(fromItem, toItem, toFileName.c_str(), NULL))) {
-							return true;
-						}
-					}
-				}
-			}
-		}
-
-
-	}
-
-	// Fallback to SHFileOperation
-	Log::Write(L"TJShared/File", L"Could not move file using IFileOperation; falling back to SHFileOperation");
-	SHFILEOPSTRUCT shop;
-	shop.pFrom = from.c_str();
-	shop.pTo = to.c_str();
-	shop.wFunc = FO_MOVE;
-	shop.hwnd = NULL;
-	shop.fFlags = FOF_NOCONFIRMATION|FOF_NOCONFIRMMKDIR|(silent ? FOF_SILENT : 0);
-	shop.fAnyOperationsAborted = 0;
-	shop.hNameMappings = 0;
-	shop.lpszProgressTitle = 0L;
-
-	return SHFileOperation(&shop) == 0;
+	// If the target directory doesn't exist, create it
+	std::wstring dir = File::GetDirectory(to);
+	SHCreateDirectory(NULL, dir.c_str());
+	return MoveFile(from.c_str(), to.c_str())==TRUE;
 }
 
 bool File::Copy(const std::wstring& from, const std::wstring& to, bool silent) {
