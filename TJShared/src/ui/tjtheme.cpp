@@ -241,6 +241,7 @@ Pixels Theme::GetMeasureInPixels(Measure m) const {
 			return 24;
 
 		case MeasureListItemHeight:
+		case MeasureMenuItemHeight:
 			return 19;
 
 		case MeasurePropertyHeight:
@@ -254,6 +255,9 @@ Pixels Theme::GetMeasureInPixels(Measure m) const {
 
 		case MeasureMaximumSnappingDistance:
 			return 2;
+
+		case MeasureMinimumContextMenuWidth:
+			return 150;
 	}
 
 	return -1;

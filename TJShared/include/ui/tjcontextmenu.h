@@ -77,8 +77,6 @@ namespace tj {
 
 				// TODO: move some of these to Theme GetMeasure
 				const static unsigned int KMaxItems;
-				const static Pixels KItemHeight;
-				const static Pixels KMinContextMenuWidth;
 
 			private:
 				ContextMenu* _cm;

@@ -51,12 +51,14 @@ namespace tj {
 					MeasureNone = 0,
 					MeasureToolbarHeight,
 					MeasureListItemHeight,
+					MeasureMenuItemHeight,
 					MeasureListHeaderHeight,
 					MeasureMaximumSnappingDistance,
 					MeasureShadowSize,
 					MeasurePropertyHeight,
 					MeasureDialogHeaderHeight,
 					MeasureSliderDraggerWidth,
+					MeasureMinimumContextMenuWidth,
 					_MeasureLast,
 				};
 

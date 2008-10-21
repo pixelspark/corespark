@@ -15,7 +15,7 @@ ref<Theme> ThemeManager::ThemeChangeNotification::GetNewTheme() {
 	return _newTheme;
 }
 
-ref<Theme> ThemeManager::GetTheme() {
+strong<Theme> ThemeManager::GetTheme() {
 	return _theme;
 }
 
@@ -26,7 +26,7 @@ void ThemeManager::AddTheme(ref<Theme> th) {
 	}
 }
 
-ref<SettingsStorage> ThemeManager::GetLayoutSettings() {
+strong<SettingsStorage> ThemeManager::GetLayoutSettings() {
 	if(!_layoutSettings) {
 		_layoutSettings = GC::Hold(new SettingsStorage());
 	}

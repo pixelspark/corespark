@@ -12,8 +12,8 @@ namespace tj {
 				}
 
 				virtual ref<Wnd> GetWindow() {
-					// TODO: GenericReadOnlyProperty<bool> gets a PropertyCheckBoxWnd here,
-					// find a way to make it read-only
+					/* If the window in the underlying property is an EditWnd or CheckboxWnd, we can
+					 make it read-only. TODO: Create a method GenericProperty<T>::SetReadOnly(...) to do this. */
 					ref<Wnd> w = GenericProperty<T>::GetWindow();
 					if(w) {
 						if(w.IsCastableTo<EditWnd>()) {

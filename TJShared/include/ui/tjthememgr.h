@@ -5,8 +5,8 @@ namespace tj {
 	namespace shared {
 		class EXPORTED ThemeManager: public virtual Object {
 			public:
-				static ref<Theme> GetTheme();
-				static ref<SettingsStorage> GetLayoutSettings();
+				static strong<Theme> GetTheme();
+				static strong<SettingsStorage> GetLayoutSettings();
 				static void AddTheme(ref<Theme> thm);
 				static void RemoveTheme(ref<Theme> thm);
 				static void SelectTheme(ref<Theme> thm);

@@ -2,8 +2,6 @@
 using namespace tj::shared;
 using namespace tj::shared::graphics;
 
-const Pixels ContextPopupWnd::KItemHeight = 19;
-const Pixels ContextPopupWnd::KMinContextMenuWidth = 150;
 const unsigned int ContextPopupWnd::KMaxItems = 15;
 
 Menu::~Menu() {
@@ -115,14 +113,15 @@ ContextPopupWnd::~ContextPopupWnd() {
 int ContextPopupWnd::DoModal(ref<Wnd> parent, Pixels x, Pixels y) {
 	ref<Theme> theme = ThemeManager::GetTheme();
 	Area measured = theme->MeasureText(_cm->_longestString, theme->GetGUIFontBold());
-	Pixels width = max(KMinContextMenuWidth, measured.GetWidth()+10)+KItemHeight;
+	Pixels itemHeight = theme->GetMeasureInPixels(Theme::MeasureMenuItemHeight);
+	Pixels width = max(theme->GetMeasureInPixels(Theme::MeasureMinimumContextMenuWidth), measured.GetWidth()+10)+itemHeight;
 
 	// Showtime
 	unsigned int itemsShown = min((unsigned int)_cm->_items.size(), ContextPopupWnd::KMaxItems);
-	SetSize(width, Pixels(int(itemsShown)*KItemHeight));
+	SetSize(width, Pixels(int(itemsShown)*itemHeight));
 	
 	// Set scroll info
-	SetVerticalScrollInfo(Range<int>(0,int(_cm->_items.size())*KItemHeight), itemsShown*KItemHeight + 1);
+	SetVerticalScrollInfo(Range<int>(0,int(_cm->_items.size())*itemHeight), itemsShown*itemHeight + 1);
 	SetVerticalPos(0);
 
 	StartTimer(Time(50), 1);
@@ -154,7 +153,8 @@ void ContextPopupWnd::EndModal(int r) {
 }
 
 int ContextPopupWnd::GetItemAt(Pixels y) {
-	return ((y+GetVerticalPos())/KItemHeight);
+	ref<Theme> theme = ThemeManager::GetTheme();
+	return ((y+GetVerticalPos())/theme->GetMeasureInPixels(Theme::MeasureMenuItemHeight));
 }
 
 void ContextPopupWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
@@ -250,6 +250,7 @@ void ContextPopupWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	g.FillRectangle(&back, rc);
 
 	Pixels y = -GetVerticalPos();
+	Pixels itemHeight = theme->GetMeasureInPixels(Theme::MeasureMenuItemHeight);
 
 	// Get us some colors
 	SolidBrush text(theme->GetColor(Theme::ColorText));
@@ -259,8 +260,8 @@ void ContextPopupWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	SolidBrush closing(Theme::ChangeAlpha(theme->GetColor(Theme::ColorDisabledOverlay),_closeAnimation.GetFraction()));
 	SolidBrush colorSeparator(theme->GetColor(Theme::ColorActiveEnd));
 	Pen separator(&colorSeparator, 1.0f);
-	LinearGradientBrush selected(PointF(0.0f, float(y)), PointF(0.0f, float(y+KItemHeight)), theme->GetColor(Theme::ColorTimeSelectionStart), theme->GetColor(Theme::ColorTimeSelectionEnd));
-	LinearGradientBrush down(PointF(0.0f, float(y)), PointF(0.0f, float(y+KItemHeight)), theme->GetColor(Theme::ColorTimeSelectionEnd), theme->GetColor(Theme::ColorTimeSelectionStart));
+	LinearGradientBrush selected(PointF(0.0f, float(y)), PointF(0.0f, float(y+itemHeight)), theme->GetColor(Theme::ColorTimeSelectionStart), theme->GetColor(Theme::ColorTimeSelectionEnd));
+	LinearGradientBrush down(PointF(0.0f, float(y)), PointF(0.0f, float(y+itemHeight)), theme->GetColor(Theme::ColorTimeSelectionEnd), theme->GetColor(Theme::ColorTimeSelectionStart));
 	
 	// Set up string format
 	StringFormat sf;
@@ -271,14 +272,14 @@ void ContextPopupWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	sf.SetTabStops(0, 3, tabs);
 
 	int n = 0;
-	Pixels indentSize = Pixels(KItemHeight*0.619f);
+	Pixels indentSize = Pixels(itemHeight*0.619f);
 
 	std::vector< ref<MenuItem> >::iterator it = _cm->_items.begin();
 	while(it!=_cm->_items.end()) {
 		ref<MenuItem> item = *it;
 		Area current = rc;
 		current.SetY(y);
-		current.SetHeight(KItemHeight);
+		current.SetHeight(itemHeight);
 
 		Pixels indentRight = item->GetIndent()*indentSize;
 		current.Narrow(indentRight,0,0,0);
@@ -287,19 +288,19 @@ void ContextPopupWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 		if(item->IsSeparator()) {
 			const std::wstring& title = item->GetTitle();
 			if(title.length()>0) {
-				currentText.Narrow(KItemHeight/2,2,2,2);
+				currentText.Narrow(itemHeight/2,2,2,2);
 				g.DrawString(title.c_str(), (int)title.length(), theme->GetGUIFontBold(), currentText, &sf, &header);
 				RectF lr;
 				g.MeasureString(title.c_str(), (int)title.length(), theme->GetGUIFontBold(), currentText, &sf, &lr);
 				current.Narrow((Pixels)lr.Width, 0,0,0);
 			}
 
-			current.Narrow(KItemHeight,0,KItemHeight,0);
+			current.Narrow(itemHeight,0,itemHeight,0);
 			Pixels y = current.GetTop() + (current.GetBottom()-current.GetTop())/2;
 			g.DrawLine(&separator, current.GetLeft(), y, current.GetRight(), y);
 		}
 		else {
-			currentText.Narrow(KItemHeight,2,2,2);
+			currentText.Narrow(itemHeight,2,2,2);
 
 			if(n==_mouseDown) {
 				Area selection = current;
@@ -363,7 +364,7 @@ void ContextPopupWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 			}
 		}
 
-		y += KItemHeight;
+		y += itemHeight;
 		++it;
 		++n;
 	}
