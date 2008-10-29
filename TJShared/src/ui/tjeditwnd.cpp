@@ -104,6 +104,10 @@ LRESULT EditWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	return ChildWnd::Message(msg,wp,lp);
 }
 
+void EditWnd::Focus() {
+	OnFocus(true);
+}
+
 void EditWnd::OnFocus(bool f) {
 	if(f) {
 		SetFocus(_ctrl);

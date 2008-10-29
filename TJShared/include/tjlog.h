@@ -18,14 +18,12 @@ namespace tj {
 			public:
 				static void Write(const std::wstring& source, const std::wstring& message);
 				static void Show(bool s);
-				static void SetWriteToFile(bool f);
 				static std::wstring GetContents();
 				static strong<EventLogger> GetEventLogger();
 				static void Stop();
 
 			protected:
 				static LogThread _logger;
-				static CriticalSection _lock;
 				static bool _writeToFile;
 				static ref<EventLogger> _eventLogger;
 		};

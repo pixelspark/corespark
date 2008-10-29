@@ -14,7 +14,6 @@ namespace tj {
 
 			protected:
 				void* _data;
-				tj::shared::CriticalSection _lock;
 		};
 
 		class NP_EXPORTED Socket {

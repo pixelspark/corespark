@@ -16,6 +16,7 @@ namespace tj {
 				void SetCue(const std::wstring& cue);
 				virtual bool HasFocus(bool childrenToo) const;
 				virtual void Show(bool s);
+				virtual void Focus();
 
 				struct NotificationTextChanged {
 				};

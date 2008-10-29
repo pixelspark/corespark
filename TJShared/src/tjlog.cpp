@@ -2,7 +2,6 @@
 #include "../include/ui/tjui.h"
 using namespace tj::shared;
 
-CriticalSection Log::_lock;
 bool Log::_writeToFile = false;
 
 namespace tj {
@@ -76,40 +75,15 @@ namespace tj {
 		};
 
 		LogThread Log::_logger;
-
-		class FileLogger {
-			protected:
-				FileLogger(std::wstring fileName): _file(fileName.c_str()) {
-				}
-
-				static ref<FileLogger> _instance;
-
-			public:
-				static ref<FileLogger> Instance() {
-					if(!_instance) {
-						_instance = GC::Hold(new FileLogger(L"tjshow.log"));
-					}
-					return _instance;
-				} 
-
-				virtual ~FileLogger() {
-				}
-
-				void Write(const std::wstring& message) {
-					_file << message;
-					_file.flush();
-				}
-
-				std::wofstream _file;
-		};
 	}
 }
 
-ref<FileLogger> FileLogger::_instance;
 ref<EventLogger> Log::_eventLogger;
 
 strong<EventLogger> Log::GetEventLogger() {
-	ThreadLock lock(&_lock);
+	/* This might doubly create a LogEvenLogger, but that's not really bad
+	and otherwise, we would need a static CriticalSection / lock here,
+	which seems to be causing some trouble at exit */
 	if(!_eventLogger) {
 		_eventLogger = GC::Hold(new LogEventLogger());
 	}
@@ -121,23 +95,15 @@ void Log::Write(const std::wstring& source, const std::wstring& message) {
 		return; // cannot log
 	}
 
-	ThreadLock lock(&_lock);
-	OutputDebugString(message.c_str());
-	OutputDebugString(L"\r\n");
-	if(_writeToFile) {
-		ref<FileLogger> file = FileLogger::Instance();
-		file->Write(source + std::wstring(L": ") + message + std::wstring(L"\r\n"));
+	std::wostringstream wos;
+	wos << source << L' ' << GetCurrentThreadId() << L':' << L' ' << message;
+	std::wstring finalMessage = wos.str();
+	_logger.Log(finalMessage);
+
+	if(IsDebuggerPresent()) {
+		OutputDebugString(finalMessage.c_str());
+		OutputDebugString(L"\r\n");
 	}
-
-	std::wstring tid = Stringify(GetCurrentThreadId());
-
-	//if(_logger==0) _logger = new LogThread();
-	_logger.Log(source + L" " + tid + L": " + message);
-}
-
-void Log::SetWriteToFile(bool f) {
-	ThreadLock lock(&_lock);
-	_writeToFile = f;
 }
 
 void Log::Show(bool t) {
@@ -146,7 +112,6 @@ void Log::Show(bool t) {
 
 std::wstring Log::GetContents() {
 	ZoneEntry ze(Zones::LogZone);
-	ThreadLock lock(&_lock);
 	return _logger.GetContents();
 }
 

@@ -21,6 +21,7 @@ void LoggerWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 }
 
 void LoggerWnd::Log(const std::wstring& ws) {
+	// This could be called from any thread; is that safe?
 	ListBox_AddString(_list, ws.c_str());
 }
 

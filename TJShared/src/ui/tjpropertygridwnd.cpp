@@ -157,7 +157,6 @@ void PropertyGridWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 		}
 	}
 	else if(ev==MouseEventLDown) {
-		Focus();
 		_tw->SetTrackEnabled(false);
 
 		if(x>(_nameWidth-5) && x<(_nameWidth+5)) {

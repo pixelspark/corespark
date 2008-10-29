@@ -459,9 +459,7 @@ NetworkInitializer::NetworkInitializer() {
 }
 
 void NetworkInitializer::Initialize() {
-	ThreadLock lock(&_lock);
-
-	if(_data==0) {
+	if(InterlockedExchange((volatile long*)&_data, 1)==0) {
 		_data = (void*)new WSADATA();
 
 		WNDCLASS wc;

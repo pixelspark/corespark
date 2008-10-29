@@ -115,6 +115,8 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				EnableIntrinsicFunctions="true"
+				WholeProgramOptimization="false"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;TJNP_EXPORTS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
