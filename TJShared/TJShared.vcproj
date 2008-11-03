@@ -60,6 +60,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="gdiplus.lib comctl32.lib strmiids.lib quartz.lib iphlpapi.lib ../libraries/tinyxml.lib comsupp.lib ws2_32.lib shlwapi.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -234,7 +235,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="gdiplus.lib comctl32.lib strmiids.lib quartz.lib ../libraries/tinyxml.lib comsupp.lib"
+				AdditionalDependencies="gdiplus.lib comctl32.lib strmiids.lib quartz.lib iphlpapi.lib ../libraries/tinyxml.lib comsupp.lib ws2_32.lib shlwapi.lib"
 				OutputFile="$(OutDir)\..\..\Release\tjshared.dll"
 				GenerateManifest="true"
 				GenerateDebugInformation="true"
@@ -325,7 +326,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="gdiplus.lib comctl32.lib strmiids.lib quartz.lib ../libraries/tinyxml.lib comsupp.lib"
+				AdditionalDependencies="gdiplus.lib comctl32.lib strmiids.lib quartz.lib iphlpapi.lib ../libraries/tinyxml.lib comsupp.lib ws2_32.lib shlwapi.lib"
 				OutputFile="$(OutDir)\..\..\Release\tjshared.dll"
 				GenerateManifest="true"
 				GenerateDebugInformation="true"

@@ -90,7 +90,7 @@ bool LocalFileResourceProvider::GetPathToLocalResource(const ResourceIdentifier&
 
 ResourceIdentifier LocalFileResourceProvider::GetRelative(const std::wstring& path) {
 	if(!Zones::LocalFileInfoZone.CanEnter()) {
-		return false;
+		return L"";
 	}
 
 	ZoneEntry ze(Zones::LocalFileInfoZone);
@@ -101,9 +101,9 @@ ResourceIdentifier LocalFileResourceProvider::GetRelative(const std::wstring& pa
 		if(relativePath[0]==L'.' && relativePath[1]==L'\\') {
 			return ResourceIdentifier((const wchar_t*)&(relativePath[2]));
 		} 
-
-		return L"";
 	}
+
+	return L"";
 }
 
 ResourceManager::ResourceManager() {
