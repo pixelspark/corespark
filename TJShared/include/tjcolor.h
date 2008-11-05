@@ -22,7 +22,7 @@ namespace tj {
 
 			virtual void Save(TiXmlElement* parent);
 			virtual void Load(TiXmlElement* you);
-			operator graphics::Color();
+			operator graphics::Color() const;
 
 			double _r;
 			double _g;

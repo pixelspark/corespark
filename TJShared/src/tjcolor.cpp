@@ -164,7 +164,7 @@ void RGBColor::Load(TiXmlElement* you) {
 	_b = double(LoadAttributeSmall(you, "b", (int)(_b*255.0))) / 255.0;
 }
 
-RGBColor::operator graphics::Color() {
+RGBColor::operator graphics::Color() const {
 	return graphics::Color(BYTE(_r*255.0),BYTE(_g*255.0),BYTE(_b*255.0));
 }
 

@@ -46,6 +46,7 @@ namespace tj {
 				bool _preciseDrag;
 
 				const static int KMinimumWidth = 30;
+				const static int KValueHeight = 25;
 		};
 	}
 }

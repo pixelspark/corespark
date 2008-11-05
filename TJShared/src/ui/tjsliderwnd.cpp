@@ -97,7 +97,7 @@ void SliderWnd::Paint(Graphics& g, ref<Theme> theme) {
 	g.FillRectangle(&backBrush,rect);
 
 	// middle rectangle, 6 pixels wide
-	rect.Narrow(0, 5, 0, 25);
+	rect.Narrow(0, 5, 0, _showValue ? KValueHeight : 10);
 
 	LinearGradientBrush br(PointF((float)rect.GetLeft(), (float)rect.GetTop()), PointF((float)rect.GetRight(), (float)rect.GetTop()), colorStart, colorEnd);
 	Pen pn(&br, 1.0f);
@@ -171,7 +171,7 @@ LRESULT SliderWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		_flash = false;
 	}
 	else if(msg==WM_KEYDOWN) {
-		if(IsKeyDown(KeyControl)) {
+		if(IsKeyDown(KeyShift)) {
 			if(!_flash) {
 				_flash = true;	
 				_oldValue = _value;
@@ -285,7 +285,7 @@ void SliderWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 		if(ev==MouseEventMove ||ev==MouseEventLDown || ev==MouseEventRDown) {
 			if(IsKeyDown(KeyMouseLeft) || IsKeyDown(KeyMouseRight)) {
 				Area rc = GetClientArea();
-				rc.Narrow(0,5, 0, 25);
+				rc.Narrow(0,5, 0, _showValue ? KValueHeight : 10);
 
 				y -= rc.GetTop();
 				float val = float(y)/rc.GetHeight();

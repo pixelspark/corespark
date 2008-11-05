@@ -102,6 +102,7 @@ bool RootWnd::IsOrphanPane(ref<Wnd> w) {
 
 void RootWnd::OnSize(const Area& ns) {
 	Repaint();
+	TopWnd::OnSize(ns);
 }
 
 void RootWnd::RemoveWindow(ref<Wnd> w) {
