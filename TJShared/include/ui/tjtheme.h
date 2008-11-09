@@ -145,8 +145,11 @@ namespace tj {
 				
 				// utility methods
 				virtual void DrawInsetRectangle(graphics::Graphics& g, const Area& rc);
+				virtual void DrawInsetRectangleLight(graphics::Graphics& g, const Area& rc);
 				virtual void DrawToolbarBackground(graphics::Graphics& g, const Area& rc);
+				virtual void DrawToolbarBackground(graphics::Graphics& g, const Area& rc, float alpha);
 				virtual void DrawToolbarBackground(graphics::Graphics& g, float x, float y, float w, float h);
+				virtual void DrawToolbarBackground(graphics::Graphics& g, float x, float y, float w, float h, float alpha);
 				virtual void DrawFocusRectangle(graphics::Graphics& g, const Area& rc, float alpha = 1.0f);
 				virtual void DrawShadowRectangle(graphics::Graphics& g, const Area& rc, float alpha = 1.0f);
 				virtual void DrawFocusEllipse(graphics::Graphics& g, const Area& rc, float alpha = 1.0f);

@@ -83,6 +83,10 @@ float Theme::GetDPIScaleFactor() const {
 	return _dpi;
 }
 
+void Theme::DrawToolbarBackground(graphics::Graphics& g, float x, float y, float w, float h, float alpha) {
+	DrawToolbarBackground(g,Area(Pixels(x),Pixels(y),Pixels(w),Pixels(h)), alpha);
+}
+
 void Theme::DrawToolbarBackground(graphics::Graphics& g, float x, float y, float w, float h) {
 	DrawToolbarBackground(g,Area(Pixels(x),Pixels(y),Pixels(w),Pixels(h)));
 }
@@ -100,6 +104,33 @@ void Theme::DrawToolbarBackground(graphics::Graphics& g, const Area& rc) {
 
 	LinearGradientBrush glas(origin, PointF(float(rc.GetLeft()),rc.GetTop()+float(rc.GetHeight())/2.0f), GetColor(ColorGlassStart), GetColor(ColorGlassEnd));
 	g.FillRectangle(&glas, RectF(float(rc.GetLeft()), float(rc.GetTop()), float(rc.GetWidth()), float(rc.GetHeight())/2.0f));
+}
+
+void Theme::DrawToolbarBackground(graphics::Graphics& g, const Area& rc, float alpha) {
+	int alphaInt = min(255,int(alpha*255.0f));
+	int alphaBack = min(255,int(alpha*0.25f*255.0f));
+	SolidBrush zwart(ChangeAlpha(GetColor(ColorBackground), alphaBack));
+	g.FillRectangle(&zwart, rc);
+
+	PointF origin(float(rc.GetLeft()), float(rc.GetTop()));
+	PointF bottom(float(rc.GetLeft()), float(rc.GetBottom()));
+	LinearGradientBrush br(origin, bottom, ChangeAlpha((ColorToolbarStart), alphaInt), ChangeAlpha(GetColor(ColorToolbarEnd), alphaInt));
+	SolidBrush dbr(GetColor(ColorDisabledOverlay));
+	g.FillRectangle(&br, rc);
+	g.FillRectangle(&dbr, rc);
+
+	LinearGradientBrush glas(origin, PointF(float(rc.GetLeft()),rc.GetTop()+float(rc.GetHeight())/2.0f), GetColor(ColorGlassStart), GetColor(ColorGlassEnd));
+	g.FillRectangle(&glas, RectF(float(rc.GetLeft()), float(rc.GetTop()), float(rc.GetWidth()), float(rc.GetHeight())/2.0f));
+}
+
+void Theme::DrawInsetRectangleLight(graphics::Graphics& g, const Area& rc) {
+	const static Pixels KShadowSize = 5;
+
+	LinearGradientBrush shadowGradientBrush(PointF((float)rc.GetLeft(),(float)rc.GetTop()), PointF(float(rc.GetLeft()+KShadowSize+1), (float)rc.GetTop()), ChangeAlpha(GetColor(ColorShadow),32), ChangeAlpha(GetColor(ColorShadow), 0));
+	g.FillRectangle(&shadowGradientBrush, Area(rc.GetLeft()-2, rc.GetTop(), KShadowSize, rc.GetHeight()));
+
+	LinearGradientBrush shadowGradientBrushHorizontal(PointF((float)rc.GetLeft(),(float)rc.GetTop()), PointF(float(rc.GetLeft()), float(rc.GetTop()+KShadowSize+1)), ChangeAlpha(GetColor(ColorShadow),32), ChangeAlpha(GetColor(ColorShadow), 0));
+	g.FillRectangle(&shadowGradientBrushHorizontal, Area(rc.GetLeft(), rc.GetTop(), rc.GetWidth(), KShadowSize));
 }
 
 void Theme::DrawInsetRectangle(graphics::Graphics& g, const Area& rc) {

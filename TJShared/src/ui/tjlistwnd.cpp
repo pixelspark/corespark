@@ -172,9 +172,14 @@ void ListWnd::Paint(graphics::Graphics &g, ref<Theme> theme) {
 		g.DrawString(_emptyText.c_str(), (int)_emptyText.length(), theme->GetGUIFont(), emptyTextArea, &sf, &descBrush);
 	}
 
+	// Draw shadow
+	Area shadowArea = area;
+	shadowArea.Narrow(0,_showHeader ? headHeight : 0, 0, 0);
+	theme->DrawInsetRectangleLight(g, shadowArea);
+
 	// draw columns
 	if(_showHeader) {
-		theme->DrawToolbarBackground(g, (float)area.GetLeft(), (float)area.GetTop(), (float)area.GetWidth(), (float)headHeight);
+		theme->DrawToolbarBackground(g, (float)area.GetLeft(), (float)area.GetTop(), (float)area.GetWidth(), (float)headHeight, 0.5f);
 		g.DrawLine(&border, 0, headHeight, area.GetWidth(), headHeight);
 
 		StringFormat sf;
