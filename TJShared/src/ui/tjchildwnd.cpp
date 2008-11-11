@@ -10,13 +10,6 @@ ChildWnd::ChildWnd(const wchar_t* title, bool useDB): Wnd(title, 0L, TJ_DEFAULT_
 }
 
 LRESULT ChildWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
-	if(msg==WM_KEYDOWN && wp==VK_TAB) {
-		HWND focused = GetFocus();
-		HWND owner = GetAncestor(GetWindow(), GA_ROOT);
-		HWND next = GetNextDlgTabItem(owner, focused, FALSE);
-		SetFocus(next);
-	}
-
 	return Wnd::Message(msg,wp,lp);
 }
 
@@ -73,18 +66,16 @@ void CheckboxWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	bool down = IsKeyDown(KeyMouseLeft);
 
 	Pixels margin = (rc.GetHeight()-16)/2;
-	LinearGradientBrush lbr(PointF(0.0f, (float)margin), PointF(0.0f, float(margin+17)), theme->GetColor(Theme::ColorActiveStart), theme->GetColor(Theme::ColorActiveEnd));
-	Pen borderPen(&lbr, HasFocus()?2.0f:1.0f);
+	LinearGradientBrush lbr(PointF(0.0f, (float)rc.GetTop()), PointF(0.0f, (float)rc.GetBottom()), theme->GetColor(Theme::ColorActiveStart), theme->GetColor(Theme::ColorActiveEnd));
+	Pen borderPen(&lbr, 1.0f);
 
 	Area rect(rc.GetLeft()+margin, rc.GetTop()+margin, 16, 16);
 	Area borderRect = rect;
 	borderRect.Narrow(2,2,2,2);
 
-	if(IsMouseOver() || down) {
-		LinearGradientBrush focusBr(PointF(0.0f, float(rc.GetTop())), PointF(0.0f, (float)rc.GetBottom()), down?theme->GetColor(Theme::ColorTimeSelectionEnd):theme->GetColor(Theme::ColorTimeSelectionStart), down?theme->GetColor(Theme::ColorTimeSelectionStart):theme->GetColor(Theme::ColorTimeSelectionEnd));
-		g.FillRectangle(&focusBr, rect);
-		SolidBrush disabled(theme->GetColor(Theme::ColorDisabledOverlay));
-		g.FillRectangle(&disabled, rect);
+	theme->DrawInsetRectangleLight(g, borderRect);
+	if(HasFocus()) {
+		theme->DrawToolbarBackground(g, borderRect);
 	}
 
 	g.DrawRectangle(&borderPen, borderRect);
@@ -120,7 +111,7 @@ void CheckboxWnd::OnFocus(bool f) {
 }
 
 void CheckboxWnd::OnKey(Key k, wchar_t ch, bool down, bool isAccelerator) {
-	if(!isAccelerator && down && (k==KeyLeft || k==KeyRight) && !IsReadOnly()) {
+	if(!isAccelerator && down && (k==KeyLeft || k==KeyRight || ch==L' ') && !IsReadOnly()) {
 		SetChecked(!_checked);
 	}
 }

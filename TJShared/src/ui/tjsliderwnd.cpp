@@ -3,7 +3,7 @@
 using namespace tj::shared::graphics;
 using namespace tj::shared;
 
-SliderWnd::SliderWnd(const wchar_t* title): ChildWnd(title), _value(0.0f), _displayValue(0.0f), _flash(false), _oldValue(0.0f), _mark(-1.0f), _showValue(true), _snapHalf(false), _preciseDrag(false), _color(0) {
+SliderWnd::SliderWnd(const wchar_t* title): ChildWnd(title), _value(0.0f), _displayValue(0.0f), _mark(-1.0f), _showValue(true), _snapHalf(false), _preciseDrag(false), _color(0) {
 	SetStyle(WS_TABSTOP);
 }
 
@@ -25,6 +25,10 @@ float SliderWnd::GetMarkValue() const {
 
 float SliderWnd::GetDisplayValue() const {
 	return _displayValue;
+}
+
+void SliderWnd::OnFocus(bool focus) {
+	Repaint();
 }
 
 void SliderWnd::SetColor(int idx) {
@@ -144,7 +148,7 @@ void SliderWnd::Paint(Graphics& g, ref<Theme> theme) {
 	g.FillRectangle(&border, dragger);
 	g.FillRectangle(&backBrush, draggerInside);
 	
-	if(HasFocus()||_flash) {
+	if(HasFocus()) {
 		LinearGradientBrush lbr(PointF(float(x+1), float(y)), PointF(float(x+1), float(y+6)), colorStart, colorEnd );
 		g.FillRectangle(&lbr, draggerInside);
 	}
@@ -161,71 +165,7 @@ void SliderWnd::Paint(Graphics& g, ref<Theme> theme) {
 }
 
 LRESULT SliderWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
-	if(msg==WM_CONTEXTMENU) {
-		msg = WM_RBUTTONDOWN;
-	}
-	else if(msg==WM_KEYUP || msg==WM_RBUTTONUP) {
-		if(_flash) {
-			SetValue(_oldValue);
-		}
-		_flash = false;
-	}
-	else if(msg==WM_KEYDOWN) {
-		if(IsKeyDown(KeyShift)) {
-			if(!_flash) {
-				_flash = true;	
-				_oldValue = _value;
-			}
-		}
-		
-		if(wp==VK_DOWN) {
-			SetValue(_value - (1.0f/255.0f));
-		}
-		else if(wp==VK_UP) {
-			SetValue(_value+(1.0f/255.0f));
-		}
-		else if(wp==VK_NEXT) {
-			SetValue(0.0f);
-		}
-		else if(wp==VK_PRIOR) {
-			SetValue(1.0f);
-		}
-		else if(wp>=L'0'&& wp <= L'9' || wp == VK_OEM_3) {
-			float v = (wp - L'0')*0.1f;
-			if(wp==L'0') {
-				v = 1.0f;
-			}
-			else if(wp==VK_OEM_3) {
-				v = 0.0f;
-			}
-
-			SetValue(v);
-		}
-		else {
-			HWND first = ::GetWindow(GetWindow(), GW_HWNDFIRST);
-			HWND last = ::GetWindow(GetWindow(), GW_HWNDLAST);
-
-			if(wp==VK_LEFT) {
-				if(GetWindow()==last) {
-					SetFocus(first);
-				}
-				else {
-					HWND next = ::GetWindow(GetWindow(), GW_HWNDNEXT);
-					SetFocus(next);
-				}
-			}
-			else if(wp==VK_RIGHT) {
-				if(GetWindow()==first) {
-					SetFocus(last);
-				}
-				else {
-					HWND next = ::GetWindow(GetWindow(), GW_HWNDPREV);
-					SetFocus(next);
-				}
-			}
-		}
-	}
-	else if(msg==WM_MOUSEWHEEL) {
+	if(msg==WM_MOUSEWHEEL) {
 		int delta = GET_WHEEL_DELTA_WPARAM(wp);
 		if(delta<0) {
 			SetValue(max(0.0f, _value - 0.05f));
@@ -236,15 +176,37 @@ LRESULT SliderWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 			Repaint();
 		}
 	}
-	else if(msg==WM_SIZE) {
-		Repaint();
-	}
-
 	return ChildWnd::Message(msg, wp, lp);
 }
 
-void SliderWnd::OnFocus(bool a) {
+void SliderWnd::OnSize(const Area& ns) {
 	Repaint();
+}
+
+void SliderWnd::OnKey(Key k, wchar_t ch, bool down, bool isaccel) {	
+	if(k==KeyDown) {
+		SetValue(_value - (1.0f/255.0f));
+	}
+	else if(k==KeyUp) {
+		SetValue(_value+(1.0f/255.0f));
+	}
+	else if(k==KeyPageDown) {
+		SetValue(0.0f);
+	}
+	else if(k==KeyPageUp) {
+		SetValue(1.0f);
+	}
+	else if(k==KeyCharacter && (ch>=L'0'&& ch <= L'9') || ch == VK_OEM_3) {
+		float v = (ch - L'0')*0.1f;
+		if(ch==L'0') {
+			v = 1.0f;
+		}
+		else if(ch==VK_OEM_3) {
+			v = 0.0f;
+		}
+
+		SetValue(v);
+	}
 }
 
 void SliderWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
@@ -289,13 +251,6 @@ void SliderWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 
 				y -= rc.GetTop();
 				float val = float(y)/rc.GetHeight();
-
-				if(ev==MouseEventRDown) {
-					if(!_flash) {
-						_oldValue = _value;
-						_flash = true;
-					}
-				}
 				
 				if(_snapHalf && val<0.51f && val>0.49f) {
 					SetValue(0.5f);

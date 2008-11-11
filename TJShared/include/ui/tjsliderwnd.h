@@ -33,11 +33,11 @@ namespace tj {
 			protected:
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
 				virtual void OnFocus(bool focus);
+				virtual void OnKey(Key k, wchar_t ch, bool down, bool accel);
+				virtual void OnSize(const Area& ns);
 
 				float _value;
 				float _displayValue;
-				bool _flash;
-				float _oldValue;
 				int _color;
 				float _mark;
 				bool _showValue;

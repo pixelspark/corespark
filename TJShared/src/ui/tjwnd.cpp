@@ -26,6 +26,7 @@ GraphicsInit::~GraphicsInit() {
 
 Wnd::Wnd(const wchar_t* title, HWND parent, const wchar_t* className, bool usedb, int exStyle): _horizontalPos(0), _verticalPos(0), _horizontalPageSize(1), _verticalPageSize(1), _buffer(0), _doubleBuffered(usedb) {
 	RegisterClasses();
+	exStyle |= WS_EX_CONTROLPARENT;
 	_wnd = CreateWindowEx(exStyle, className, title, WS_CLIPCHILDREN|WS_CLIPSIBLINGS, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, parent, (HMENU)0, GetModuleHandle(NULL), (void*)this);
 	if(_wnd==0) Throw(L"Could not create window", ExceptionTypeError);
 
@@ -170,7 +171,7 @@ void Wnd::Show(bool t) {
 
 bool Wnd::HasFocus(bool childrenToo) const {
 	HWND focus = GetFocus();
-	return GetFocus()==_wnd || (childrenToo && IsChild(_wnd, focus));
+	return focus==_wnd || (childrenToo && IsChild(_wnd, focus));
 }
 
 bool Wnd::IsShown() const {
@@ -640,13 +641,28 @@ LRESULT Wnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		return 0;
 	}
 	else if(msg==WM_SETFOCUS) {
+		// Send message to parent (this is useful for PropertyGridWnd, for example
+		HWND parent = ::GetParent(GetWindow());
+		SendMessage(parent, WM_PARENTNOTIFY, WM_SETFOCUS, 0);
 		OnFocus(true);
 	}
 	else if(msg==WM_KILLFOCUS) {
 		OnFocus(false);
 	}
+	else if(msg==WM_PARENTNOTIFY) {
+		// Repaint when child focus acquired
+		if(wp==WM_SETFOCUS) {
+			Repaint();
+		}
+	}
 	else if(msg==WM_KEYDOWN || msg==WM_KEYUP || msg==WM_SYSKEYDOWN || msg==WM_SYSKEYUP) {
-		if(msg==WM_KEYDOWN && IsKeyDown(KeyControl)) {
+		if(msg==WM_KEYDOWN && LOWORD(wp)==VK_TAB) {
+			HWND root = ::GetAncestor(GetWindow(), GA_ROOT);
+			HWND next = GetNextDlgTabItem(root, GetWindow(), !IsKeyDown(KeyShift));
+			SetFocus(next);
+			return 0;
+		}
+		else if(msg==WM_KEYDOWN && IsKeyDown(KeyControl)) {
 			if(wp==L'C'||wp==L'c') {
 				OnCopy();
 			}
@@ -657,11 +673,12 @@ LRESULT Wnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 				OnCut();
 			}
 		}
-
-		Key key = KeyNone;
-		wchar_t ch = L'\0';
-		TranslateKeyCodes((int)wp, key, ch);
-		OnKey(key, ch, msg==WM_KEYDOWN, (msg==WM_SYSKEYUP || msg==WM_SYSKEYDOWN));
+		else {
+			Key key = KeyNone;
+			wchar_t ch = L'\0';
+			TranslateKeyCodes((int)wp, key, ch);
+			OnKey(key, ch, msg==WM_KEYDOWN, (msg==WM_SYSKEYUP || msg==WM_SYSKEYDOWN));
+		}
 	}
 	else if(msg==WM_COPY) {
 		OnCopy();

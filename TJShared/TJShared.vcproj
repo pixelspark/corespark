@@ -544,6 +544,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\properties\tjlinkproperty.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\properties\tjproperty.cpp"
 					>
 				</File>
@@ -918,6 +922,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\include\properties\tjlinkproperty.h"
+					>
+				</File>
+				<File
 					RelativePath=".\include\properties\tjlistproperty.h"
 					>
 				</File>
@@ -955,10 +963,6 @@
 				</File>
 				<File
 					RelativePath=".\include\tjany.h"
-					>
-				</File>
-				<File
-					RelativePath=".\include\tjappcore.h"
 					>
 				</File>
 				<File

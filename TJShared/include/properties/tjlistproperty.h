@@ -32,7 +32,9 @@ namespace tj {
 							Area rc = GetClientArea();
 							graphics::SolidBrush back(theme->GetColor(Theme::ColorBackground));
 							g.FillRectangle(&back, rc);
-							if(IsMouseOver()) {
+							theme->DrawInsetRectangleLight(g, rc);
+							
+							if(HasFocus()) {
 								theme->DrawToolbarBackground(g, 0.0f, 0.0f, float(rc.GetWidth()), float(rc.GetHeight()));
 							}
 
@@ -98,8 +100,23 @@ namespace tj {
 								Repaint();
 							}
 							else if(ev==MouseEventLDown) {
+								Focus();
 								OnContextMenu(x,y);
 							}
+							ChildWnd::OnMouse(ev,x,y);
+						}
+
+						virtual void OnKey(Key k, wchar_t ch, bool down, bool accel) {
+							if(k==KeyCharacter && ch==L' ' && down) {
+								// Open the menu when the user hits space
+								OnContextMenu(0,0);
+							}
+							ChildWnd::OnKey(k,ch,down,accel);
+						}
+
+						virtual void OnFocus(bool t) {
+							Repaint();
+							ChildWnd::OnFocus(t);
 						}
 
 						virtual void OnContextMenu(Pixels x, Pixels y) {

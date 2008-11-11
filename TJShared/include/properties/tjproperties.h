@@ -14,6 +14,7 @@
 #include "tjreadonlyproperty.h"
 #include "tjcolorproperty.h"
 #include "tjfileproperty.h"
+#include "tjlinkproperty.h"
 
 #pragma warning(pop)
 #endif
