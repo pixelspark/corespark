@@ -210,6 +210,47 @@ LRESULT FloatingPane::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	else if(msg==WM_GETMINMAXINFO) {
 		return _pane->GetWindow()->Message(msg,wp,lp);
 	}
+	else if(msg==WM_WINDOWPOSCHANGING) {
+        bool isIcon = IsIconic(GetWindow()) == TRUE;
+        bool isZoom = IsZoomed(GetWindow()) == TRUE;
+
+		if(!isIcon && !isZoom) {
+            WINDOWPOS* info = (LPWINDOWPOS)lp;
+            if(info!=0) {
+				RECT wndrc;
+				wndrc.left = info->x;
+				wndrc.top = info->y;
+				wndrc.bottom = wndrc.top + info->cy;
+				wndrc.right = wndrc.left + info->cx;
+				HMONITOR monitor = MonitorFromRect(&wndrc, MONITOR_DEFAULTTONEAREST);
+
+				MONITORINFO mi;
+				const static int KSnapDistance = 12;
+				mi.cbSize = sizeof(MONITORINFO);
+				if(GetMonitorInfo(monitor, &mi)) {
+					const RECT& rc = mi.rcWork;
+
+					if(abs(info->x - rc.left) <= KSnapDistance) {
+						// Snap left edge
+						info->x = rc.left;
+					}
+					else if (abs((info->x + info->cx) - rc.right) <= KSnapDistance) {
+						// Snap right edge
+						info->x = rc.right - info->cx + 1;
+					}
+
+					if (abs(info->y - rc.top) <= KSnapDistance) {
+						// Snap top edge
+						info->y = rc.top;
+					}
+					else if(abs((info->y + info->cy) - rc.bottom) <= KSnapDistance) {
+						// Snap bottom edge
+						info->y = rc.bottom - info->cy + 1;
+					}
+				}
+			}
+		}
+	}
 	return Wnd::Message(msg,wp,lp);
 }
 
