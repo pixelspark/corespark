@@ -278,13 +278,12 @@ void Socket::SendSetClientAddress(ref<BasicClient> client, std::wstring na) {
 	Send(stream);
 }
 
-void Socket::SendInput(const PatchIdentifier& patch, const ChannelID& cid, const SubChannelID& scid, float value) {
+void Socket::SendInput(const PatchIdentifier& patch, const InputID& path, float value) {
 	ThreadLock lock(&_lock);
 
 	ref<Message> stream = GC::Hold(new Message(ActionInput));
 	stream->Add(patch);
-	stream->Add(cid);
-	stream->Add(scid);
+	stream->Add(path);
 	stream->Add(value);
 	Send(stream);
 }

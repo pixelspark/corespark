@@ -37,7 +37,7 @@ namespace tj {
 				void SendResetAll();
 				void SendSetPatch(tj::shared::ref<BasicClient> c, const PatchIdentifier& pi, const DeviceIdentifier& di);
 				void SendSetClientAddress(tj::shared::ref<BasicClient> c, std::wstring newAddress);
-				void SendInput(const PatchIdentifier& patch, const ChannelID& cid, const SubChannelID& scid, float value);
+				void SendInput(const PatchIdentifier& patch, const InputID& path, float value);
 				void SendOutletChange(Channel ch, const std::wstring& outletName, const tj::shared::Any& value);
 
 				void Send(tj::shared::strong<Message> s);

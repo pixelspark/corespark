@@ -19,9 +19,9 @@ namespace tj {
 		typedef std::wstring PatchIdentifier;
 		typedef std::wstring DeviceIdentifier;
 		
-		// For input
-		typedef int ChannelID;
-		typedef int SubChannelID;
+		/* For input; InputID is a 'path' that the device can use to identify a particular input channel
+		For example, MIDI input plug-ins can use paths like '/cc/123' or '/note/12' */
+		typedef std::wstring InputID;
 
 		/** TNP3 packet header (needs to be in public protocol header file because Stream/code writers use this **/
 		struct PacketHeader {
