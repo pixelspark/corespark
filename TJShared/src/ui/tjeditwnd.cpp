@@ -14,9 +14,11 @@ LRESULT CALLBACK EditWndSubclassProc(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM lP
 		SetFocus(next);
 		return 0;
 	}
-	else if((uMsg==WM_CHAR || uMsg==WM_KEYUP) && LOWORD(wParam)==VK_TAB) {
-		// consume
-		return 0;
+	else if((uMsg==WM_CHAR || uMsg==WM_KEYUP)) {
+		if(LOWORD(wParam)==VK_TAB) {
+			// consume
+			return 0;
+		}
 	}
 	else if(uMsg==WM_SETFOCUS) {
 		// Send message to parent (this is useful for PropertyGridWnd, for example
@@ -24,7 +26,15 @@ LRESULT CALLBACK EditWndSubclassProc(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM lP
 		SendMessage(parent, WM_PARENTNOTIFY, WM_SETFOCUS, 0);
 	}
 	
-	return DefSubclassProc(hWnd, uMsg, wParam, lParam);
+	LRESULT res = DefSubclassProc(hWnd, uMsg, wParam, lParam);
+	if(uMsg==WM_KEYUP && LOWORD(wParam)==VK_RETURN) {
+		LONG style = GetWindowLong(hWnd, GWL_STYLE);
+		if((style & ES_WANTRETURN)!=0) {
+			return 1; // let the ModalLoop know we handled this message, preventing it from ending the modal loop
+		}
+	}
+
+	return res;
 }
 
 EditWnd::EditWnd(bool multiline): ChildWnd(L"", false), _backBrush(0) {

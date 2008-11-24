@@ -16,11 +16,13 @@ namespace tj {
 				virtual void PopupAtMouse();
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 				virtual void Show(bool t);
+				virtual void SetModal(bool m);
 
 			protected:
 				virtual void FitToMonitor(POINT& p);
 				virtual void OnActivate(bool activate);
 				Pixels _w, _h;
+				bool _isModal;
 		};
 	}
 }

@@ -21,16 +21,6 @@ int ContextMenu::DoContextMenu(ref<Wnd> wnd, Pixels x, Pixels y) {
 	}
 	
 	if(wnd) {
-		// If this context menu is called from a popup window, disable it,
-		// so it won't disappear when it is deactivated
-		HWND root = ::GetAncestor(wnd->GetWindow(), GA_ROOT);
-		DWORD style = GetWindowLong(root, GWL_STYLE);
-		bool fromPopup = ((style & WS_POPUP) !=0);
-		if(fromPopup) {
-			///Log::Write(L"TJShared/ContextMenu", L"Owner of this context menu is a popup");
-			EnableWindow(root, FALSE);
-		}
-
 		if(x<0 || y<0) {
 			ref<Theme> theme = ThemeManager::GetTheme();
 			float df = theme->GetDPIScaleFactor();
@@ -48,15 +38,7 @@ int ContextMenu::DoContextMenu(ref<Wnd> wnd, Pixels x, Pixels y) {
 
 		// Create popup
 		ref<ContextPopupWnd> cpw = GC::Hold(new ContextPopupWnd(this, wnd->GetWindow()));
-
-		// Calculate size of text
 		int result =  cpw->DoModal(wnd,x,y);
-
-		if(fromPopup) {
-			EnableWindow(root, TRUE);
-		}
-		SetForegroundWindow(wnd->GetWindow());
-
 		return result;
 	}
 
@@ -110,7 +92,10 @@ ContextPopupWnd::ContextPopupWnd(ContextMenu* cm, HWND parent): PopupWnd(parent,
 ContextPopupWnd::~ContextPopupWnd() {
 }
 
-int ContextPopupWnd::DoModal(ref<Wnd> parent, Pixels x, Pixels y) {
+int ContextPopupWnd::DoModal(strong<Wnd> parent, Pixels x, Pixels y) {
+	SetModal(true);
+
+	// Calculate size
 	ref<Theme> theme = ThemeManager::GetTheme();
 	Area measured = theme->MeasureText(_cm->_longestString, theme->GetGUIFontBold());
 	Pixels itemHeight = theme->GetMeasureInPixels(Theme::MeasureMenuItemHeight);
@@ -130,7 +115,9 @@ int ContextPopupWnd::DoModal(ref<Wnd> parent, Pixels x, Pixels y) {
 
 	// Start modality
 	_result = -1;
-	ModalLoop::Result res = _loop.Enter(GetWindow(),false);
+	ModalLoop::Result res = _loop.Enter(GetWindow(), false);
+
+	SetModal(false);
 	Show(false);
 
 	if(res==ModalLoop::ResultSucceeded) {

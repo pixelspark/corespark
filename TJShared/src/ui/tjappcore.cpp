@@ -149,7 +149,7 @@ ModalLoop::Result ModalLoop::Enter(HWND m, bool isDialog) {
 			TranslateMessage(&msg);
 
 			if(msg.message==WM_KEYDOWN && LOWORD(msg.wParam)==VK_ESCAPE) {
-				// End modal loop
+				// End the modal loop whenever the escape key is pressed.
 				End(ResultCancelled);
 			}
 			else if(!isDialog && ((msg.message==WM_KEYUP || msg.message==WM_KEYDOWN) && (msg.wParam==VK_SPACE || msg.wParam==VK_DOWN || msg.wParam==VK_UP))) {
@@ -159,6 +159,9 @@ ModalLoop::Result ModalLoop::Enter(HWND m, bool isDialog) {
 				DispatchMessage(&msg);
 			}
 			else if(!isDialog && msg.message==WM_ACTIVATE && msg.wParam==WA_INACTIVE) {
+				/* If we're not a dialog (i.e. a context menu), we want to end the modal loop when some other window
+				gets activated. Normally, context menu popups shouldn't ever be activated, but under some circumstances,
+				they can be. */
 				if(!IsChild(m,msg.hwnd)) {
 					End(ResultCancelled);
 				}
@@ -175,7 +178,20 @@ ModalLoop::Result ModalLoop::Enter(HWND m, bool isDialog) {
 				}
 			}
 			else {
-				DispatchMessage(&msg);
+				LRESULT ret = DispatchMessage(&msg);
+
+				/* Normally, WM_KEYUP is handled somewhere and the return value is 0. I believe that DefWindowProc
+				returns 0 when 'handling' a WM_KEYUP. When we're in a dialog, we want to 'catch' VK_RETURN presses
+				so we can end the dialog (emulating a 'default button'). So here, we test the return value of the
+				WM_KEYUP message. In normal cases, this will be 0 and we know we can end the dialog. However, multiline
+				edit controls really need the VK_RETURN and they will handle it. The EditWndSubClassProc returns a 1 instead
+				of 0 when this is the case, so we do not end the dialog. Other windows that really want the VK_RETURN
+				should make sure they return anything non-zero from their WM_KEYUP handler whenever VK_RETURN is the
+				character code. This probably should be an extra flag in ChildWnd or something, but for the time being,
+				this works perfectly... */
+				if(isDialog && msg.message==WM_KEYUP && LOWORD(msg.wParam)==VK_RETURN && ret==0) {
+					End(ResultSucceeded);
+				}
 			}
 
 			if(!_running) break;

@@ -424,6 +424,13 @@ LRESULT Wnd::PreMessage(UINT msg, WPARAM wp, LPARAM lp) {
 			GraphicsContainer container = buffered.BeginContainer();
 			buffered.ScaleTransform(dpiScale, dpiScale);
 			Paint(buffered, theme);
+
+			if((GetWindowLong(_wnd, GWL_STYLE) & WS_DISABLED)!=0) {
+				SolidBrush disabledBrush(theme->GetColor(Theme::ColorDisabledOverlay));
+				Area rc = GetClientArea();
+				buffered.FillRectangle(&disabledBrush, rc);
+			}
+
 			buffered.EndContainer(container);
 			org.DrawImage(_buffer,0,0);
 		}
@@ -447,6 +454,9 @@ LRESULT Wnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	else if(msg==WM_TIMER) {
 		OnTimer((unsigned int)wp);
 		return 0;
+	}
+	else if(msg==WM_ENABLE) {
+		Repaint();
 	}
 	else if(msg==WM_CONTEXTMENU) {
 		ref<Theme> theme = ThemeManager::GetTheme();

@@ -2,7 +2,7 @@
 using namespace tj::shared;
 using namespace tj::shared::graphics;
 
-PopupWnd::PopupWnd(HWND parent, bool isDialog): Wnd(L"", parent, TJ_DROPSHADOW_CLASS_NAME, true, WS_EX_TOOLWINDOW|WS_EX_CONTROLPARENT) {
+PopupWnd::PopupWnd(HWND parent, bool isDialog): Wnd(L"", parent, TJ_DROPSHADOW_CLASS_NAME, true, WS_EX_TOOLWINDOW|WS_EX_CONTROLPARENT), _isModal(false) {
 	SetStyle(WS_POPUP);
 	UnsetStyle(WS_CAPTION);
 }
@@ -70,7 +70,34 @@ LRESULT PopupWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	if(msg==WM_MOUSEACTIVATE) {
 		return MA_NOACTIVATE;
 	}
+	else if(msg==WM_CLOSE) {
+		if(_isModal) {
+			SetModal(false);
+		}
+	}
 	return Wnd::Message(msg,wp,lp);
+}
+
+void PopupWnd::SetModal(bool m) {
+	if(m && !_isModal) {
+		/* This implements modality; idea from Google Chromium browser UI implementation
+		(ChromeViews); see /src/chrome/views/window.cc in method BecomeModal() */
+		HWND start = ::GetAncestor(GetWindow(), GA_ROOT);
+		while(start!=NULL && start!=GetWindow()) {
+			::EnableWindow(start, FALSE);
+			start = ::GetParent(start);
+		}
+		_isModal = true;
+	}
+
+	if(!m && _isModal) {
+		HWND start = ::GetAncestor(GetWindow(), GA_ROOT);
+		while(start!=NULL) {
+			::EnableWindow(start, TRUE);
+			start = ::GetParent(start);
+		}
+		_isModal = false;
+	}
 }
 
 void PopupWnd::FitToMonitor(POINT& pt) {
