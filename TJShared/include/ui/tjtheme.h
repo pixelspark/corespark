@@ -32,6 +32,7 @@ namespace tj {
 					IconCopy,
 					IconCut,
 					IconPaste,
+					IconSubMenu,
 					_IconLast,
 				};
 

@@ -7,7 +7,7 @@ const unsigned int ContextPopupWnd::KMaxItems = 15;
 Menu::~Menu() {
 }
 
-ContextMenu::ContextMenu() {
+ContextMenu::ContextMenu(): _menu(GC::Hold(new BasicMenu())) {
 }
 
 ContextMenu::~ContextMenu() {
@@ -16,7 +16,7 @@ ContextMenu::~ContextMenu() {
 /* If x=-1 and y=-1, we use the current cursor pos */
 int ContextMenu::DoContextMenu(ref<Wnd> wnd, Pixels x, Pixels y) {
 	// If there are no items, always fail
-	if(_items.empty()) {
+	if(_menu->GetItemCount()==0) {
 		return -1;
 	}
 	
@@ -37,7 +37,7 @@ int ContextMenu::DoContextMenu(ref<Wnd> wnd, Pixels x, Pixels y) {
 		}
 
 		// Create popup
-		ref<ContextPopupWnd> cpw = GC::Hold(new ContextPopupWnd(this, wnd->GetWindow()));
+		ref<ContextPopupWnd> cpw = GC::Hold(new ContextPopupWnd(_menu, wnd->GetWindow()));
 		int result =  cpw->DoModal(wnd,x,y);
 		return result;
 	}
@@ -54,34 +54,33 @@ int ContextMenu::DoContextMenu(ref<Wnd> wnd) {
 	Throw(L"Context menu must have an owner window", ExceptionTypeSevere);
 }
 
-/** if command == -1, then the item will be grayed out/disabled **/
-void ContextMenu::AddItem(const std::wstring& name, int command, bool hilite, bool radiocheck) {
-	AddItem(name,command,hilite, radiocheck?MenuItem::Checked: MenuItem::NotChecked);
-}
-
-void ContextMenu::AddItem(const std::wstring& name, int command, bool hilite, MenuItem::CheckType checked) {
-	ref<MenuItem> ci = GC::Hold(new MenuItem(name,command,hilite,checked));
-	AddItem(ci);
-}
-
 void ContextMenu::AddItem(ref<MenuItem> ci) {
-	if(!ci) Throw(L"Cannot add a null context item", ExceptionTypeError);
-	_items.push_back(ci);
-
-	if(ci->GetTitle().length() > _longestString.length()) {
-		_longestString = ci->GetTitle();
+	if(ci) {
+		_menu->AddItem(strong<MenuItem>(ci));
 	}
 }
 
-void ContextMenu::AddSeparator(const std::wstring& title) {
-	ref<MenuItem> item = GC::Hold(new MenuItem());
-	item->SetTitle(title);
-	item->SetSeparator(true);
-	_items.push_back(item);
+strong<Menu> ContextMenu::GetMenu() {
+	return _menu;
+}
+
+/** if command == -1, then the item will be grayed out/disabled **/
+void ContextMenu::AddItem(const std::wstring& name, int command, bool hilite, bool radiocheck) {
+	strong<MenuItem> ci = GC::Hold(new MenuItem(name, command, hilite, radiocheck?MenuItem::Checked: MenuItem::NotChecked));
+	_menu->AddItem(ci);
+}
+
+void ContextMenu::AddItem(const std::wstring& name, int command, bool hilite, MenuItem::CheckType checked) {
+	strong<MenuItem> ci = GC::Hold(new MenuItem(name,command,hilite,checked));
+	_menu->AddItem(ci);
+}
+
+void ContextMenu::AddSeparator(const std::wstring& text) {
+	_menu->AddSeparator(text);
 }
 
 /** ContextPopupWnd **/
-ContextPopupWnd::ContextPopupWnd(ContextMenu* cm, HWND parent): PopupWnd(parent,false), _cm(cm), _result(-1), _mouseOver(-1), _mouseDown(-1), _checkedIcon(Icons::GetIconPath(Icons::IconChecked)), _radioCheckedIcon(Icons::GetIconPath(Icons::IconRadioChecked)) {
+ContextPopupWnd::ContextPopupWnd(strong<Menu> menu, HWND parent): PopupWnd(parent,false), _firstMenu(menu), _result(-1), _mouseOver(-1), _mouseDown(-1), _checkedIcon(Icons::GetIconPath(Icons::IconChecked)), _radioCheckedIcon(Icons::GetIconPath(Icons::IconRadioChecked)), _subIcon(Icons::GetIconPath(Icons::IconSubMenu)) {
 	SetWantMouseLeave(true);
 	SetVerticallyScrollable(true);
 	_openAnimation.SetLength(Time(300));
@@ -93,24 +92,11 @@ ContextPopupWnd::~ContextPopupWnd() {
 }
 
 int ContextPopupWnd::DoModal(strong<Wnd> parent, Pixels x, Pixels y) {
+	_menu.clear();
+	EnterSubMenu(_firstMenu);
+	strong<Menu> cm = _firstMenu;
+
 	SetModal(true);
-
-	// Calculate size
-	ref<Theme> theme = ThemeManager::GetTheme();
-	Area measured = theme->MeasureText(_cm->_longestString, theme->GetGUIFontBold());
-	Pixels itemHeight = theme->GetMeasureInPixels(Theme::MeasureMenuItemHeight);
-	Pixels width = max(theme->GetMeasureInPixels(Theme::MeasureMinimumContextMenuWidth), measured.GetWidth()+10)+itemHeight;
-
-	// Showtime
-	unsigned int itemsShown = min((unsigned int)_cm->_items.size(), ContextPopupWnd::KMaxItems);
-	SetSize(width, Pixels(int(itemsShown)*itemHeight));
-	
-	// Set scroll info
-	SetVerticalScrollInfo(Range<int>(0,int(_cm->_items.size())*itemHeight), itemsShown*itemHeight + 1);
-	SetVerticalPos(0);
-
-	StartTimer(Time(50), 1);
-	_openAnimation.Start();
 	PopupAt(x,y,parent);
 
 	// Start modality
@@ -125,6 +111,46 @@ int ContextPopupWnd::DoModal(strong<Wnd> parent, Pixels x, Pixels y) {
 	}
 
 	return -1;
+}
+
+void ContextPopupWnd::EnterSubMenu(strong<Menu> cm) {
+	_menu.push_front(cm);
+	UpdateSize();
+
+	// Start animation
+	StartTimer(Time(50), 1);
+	_openAnimation.Start();
+
+	Repaint();
+}
+
+void ContextPopupWnd::LeaveSubMenu() {
+	// This means leave without having selected an item
+	_menu.pop_front();
+	if(_menu.size()<1) {
+		EndModal(-1);
+	}
+	else {
+		UpdateSize();
+	}
+	Repaint();
+}
+
+void ContextPopupWnd::UpdateSize() {
+	// Calculate size
+	strong<Menu> cm = GetCurrentMenu();
+	strong<Theme> theme = ThemeManager::GetTheme();
+	Pixels largestWidth = cm->GetLargestWidth(theme, theme->GetGUIFontBold());
+	Pixels itemHeight = theme->GetMeasureInPixels(Theme::MeasureMenuItemHeight);
+	Pixels width = max(theme->GetMeasureInPixels(Theme::MeasureMinimumContextMenuWidth),largestWidth+10)+itemHeight;
+
+	// Set size
+	unsigned int itemsShown = min((unsigned int)cm->GetItemCount(), ContextPopupWnd::KMaxItems);
+	SetSize(width, Pixels(int(itemsShown)*itemHeight));
+	
+	// Set scroll info
+	SetVerticalScrollInfo(Range<int>(0,int(cm->GetItemCount())*itemHeight), itemsShown*itemHeight + 1);
+	SetVerticalPos(0);
 }
 
 void ContextPopupWnd::EndModal(int r) {
@@ -145,42 +171,66 @@ int ContextPopupWnd::GetItemAt(Pixels y) {
 }
 
 void ContextPopupWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
-	if(ev==MouseEventMove || ev==MouseEventLDown) {
-		if(!_closeAnimation.IsAnimating()) {
-			int idx = GetItemAt(y);
-			if(idx>=0 && idx<int(_cm->_items.size())) {
-				_mouseOver = idx;
-				if(ev==MouseEventLDown) {
-					_mouseDown = idx;
+	strong<Menu> cm = GetCurrentMenu();
+	ref<Theme> theme = ThemeManager::GetTheme();
+	Pixels leftHeaderSize = Pixels(_openAnimation.GetFraction()*(theme->GetMeasureInPixels(Theme::MeasureMenuItemHeight)/2));
+	
+	if(_menu.size() < 2 || x > leftHeaderSize) {
+		// Mouse event handling for the menu items
+		if(ev==MouseEventMove || ev==MouseEventLDown) {
+			if(!_closeAnimation.IsAnimating()) {
+				int idx = GetItemAt(y);
+				if(idx>=0 && idx<int(cm->GetItemCount())) {
+					_mouseOver = idx;
+					if(ev==MouseEventLDown) {
+						_mouseDown = idx;
+					}
+					else {
+						_mouseDown = KMouseOverNothing;
+					}
 				}
 				else {
+					_mouseOver = -1;
 					_mouseDown = -1;
 				}
+				Repaint();
 			}
-			else {
-				_mouseOver = -1;
-				_mouseDown = -1;
-			}
-			Repaint();
 		}
-	}
-	else if(ev==MouseEventLUp) {
-		int idx = GetItemAt(y);
-		if(idx>=0 && idx<int(_cm->_items.size())) {
-			ref<MenuItem> ci = _cm->_items.at(idx);
-			if(!ci->IsDisabled() || ci->IsSeparator()) {
-				int command = _cm->_items.at(idx)->_command;
-				EndModal(command);
+		else if(ev==MouseEventLUp) {
+			int idx = GetItemAt(y);
+			if(idx>=0 && idx<int(cm->GetItemCount())) {
+				ref<MenuItem> ci = cm->GetItemByIndex(idx);
+				if(ci) {
+					OnSelectItem(ci);
+				}
 			}
 		}
 	}
-	else if(ev==MouseEventLeave) {
+	else {
+		// Mouse event handling for the 'go back' button
+		if(ev==MouseEventLDown) {
+			_mouseDown = KMouseOverBackButton;
+		}
+		else if(ev==MouseEventMove) {
+			_mouseOver = KMouseOverBackButton;
+		}
+		else if(ev==MouseEventLUp) {
+			LeaveSubMenu();
+		}
+		Repaint();
+	}
+
+	if(ev==MouseEventLeave) {
 		if(!_closeAnimation.IsAnimating()) {
 			_mouseOver = -1;
 			Repaint();
 		}
 	}
 	PopupWnd::OnMouse(ev,x,y);
+}
+
+strong<Menu> ContextPopupWnd::GetCurrentMenu() {
+	return _menu[0];
 }
 
 void ContextPopupWnd::OnActivate(bool a) {
@@ -193,15 +243,17 @@ void ContextPopupWnd::OnActivate(bool a) {
 }
 
 void ContextPopupWnd::OnKey(Key k, wchar_t ch, bool down, bool accelerator) {
+	strong<Menu> cm = GetCurrentMenu();
+
 	if(!accelerator) {
 		switch(k) {
 			case KeyDown:
 				if(down) {
 					++_mouseOver;
-					if(_mouseOver > int(_cm->_items.size())-1) {
+					if(_mouseOver > int(cm->GetItemCount())-1) {
 						_mouseOver = 0;
 					}
-					_mouseDown = -1;
+					_mouseDown = KMouseOverNothing;
 				}
 				break;
 
@@ -209,9 +261,14 @@ void ContextPopupWnd::OnKey(Key k, wchar_t ch, bool down, bool accelerator) {
 				if(down) {
 					--_mouseOver;
 					if(_mouseOver < 0) {
-						_mouseOver = int(_cm->_items.size())-1;
+						_mouseOver = int(cm->GetItemCount())-1;
 					}
-					_mouseDown = -1;
+					_mouseDown = KMouseOverNothing;
+				}
+				break;
+			case KeyLeft:
+				if(down) {
+					LeaveSubMenu();
 				}
 				break;
 			case KeyCharacter:
@@ -220,8 +277,11 @@ void ContextPopupWnd::OnKey(Key k, wchar_t ch, bool down, bool accelerator) {
 						_mouseDown = _mouseOver;
 					}
 					else {
-						if(_mouseDown >= 0 && _mouseDown < int(_cm->_items.size())) {
-							EndModal(_cm->_items.at(_mouseDown)->_command);
+						if(_mouseDown >= 0 && _mouseDown < int(cm->GetItemCount())) {
+							ref<MenuItem> ci = cm->GetItemByIndex(_mouseOver);
+							if(ci) {
+								OnSelectItem(ci);
+							}
 						}
 					}
 				}
@@ -231,11 +291,65 @@ void ContextPopupWnd::OnKey(Key k, wchar_t ch, bool down, bool accelerator) {
 	Repaint();
 }
 
+void ContextPopupWnd::OnSelectItem(strong<MenuItem> ci) {
+	if(!ci->IsDisabled() && !ci->IsSeparator()) {
+		ref<Menu> sub = ci->GetSubMenu();
+		if(sub) {
+			EnterSubMenu(sub);
+		}
+		else {
+			EndModal(ci->GetCommandCode());
+		}
+	}
+}
+
 void ContextPopupWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	Area rc = GetClientArea();
+	Area originalRc = rc;
 	SolidBrush back(theme->GetColor(Theme::ColorBackground));
 	g.FillRectangle(&back, rc);
+	theme->DrawInsetRectangle(g, rc);
 
+	// If we're in a submenu, do a transition if we're animating
+	if(_menu.size()>1) {
+		// Draw left header (back button)
+		Pixels leftHeaderSize = Pixels(_openAnimation.GetFraction()*(theme->GetMeasureInPixels(Theme::MeasureMenuItemHeight)/2));
+		Area leftButtonRc(rc.GetLeft(), rc.GetTop(), leftHeaderSize, rc.GetHeight());
+		LinearGradientBrush selected(PointF(0.0f, float(leftButtonRc.GetTop())), PointF(0.0f, float(leftButtonRc.GetBottom())), theme->GetColor(Theme::ColorTimeSelectionStart), theme->GetColor(Theme::ColorTimeSelectionEnd));
+		LinearGradientBrush down(PointF(0.0f, float(leftButtonRc.GetTop())), PointF(0.0f, float(leftButtonRc.GetBottom())), theme->GetColor(Theme::ColorTimeSelectionEnd), theme->GetColor(Theme::ColorTimeSelectionStart));
+	
+		if(_mouseDown==KMouseOverBackButton) {
+			leftButtonRc.Narrow(1,0,1,0);
+			g.FillRectangle(&down, leftButtonRc);
+		}
+		else if(_mouseOver==KMouseOverBackButton) {
+			leftButtonRc.Narrow(1,0,1,0);
+			g.FillRectangle(&selected, leftButtonRc);
+		}
+
+		rc.Narrow(leftHeaderSize, 0, 0, 0);
+		g.TranslateTransform(rc.GetWidth()-_openAnimation.GetFraction()*float(rc.GetWidth()), 0.0f);
+	}
+
+	SolidBrush disabled(theme->GetColor(Theme::ColorDisabledOverlay));
+	g.FillRectangle(&disabled, rc);
+	DrawMenuItems(g, theme, GetCurrentMenu(), rc);
+
+	if(_menu.size()>1 && _openAnimation.IsAnimating()) {
+		g.TranslateTransform(float(-rc.GetWidth()), 0.0f);
+		strong<Menu> previous = _menu[1];
+		DrawMenuItems(g, theme, previous, rc);
+		g.FillRectangle(&disabled, rc);
+	}
+
+	// Draw border
+	originalRc.Narrow(0,0,1,1);
+	SolidBrush border(theme->GetColor(Theme::ColorActiveStart));
+	Pen pn(&border, 1.0f);
+	g.DrawRectangle(&pn, originalRc);
+}
+
+void ContextPopupWnd::DrawMenuItems(graphics::Graphics& g, strong<Theme> theme, strong<Menu> cm, const Area& rc) {
 	Pixels y = -GetVerticalPos();
 	Pixels itemHeight = theme->GetMeasureInPixels(Theme::MeasureMenuItemHeight);
 
@@ -257,110 +371,106 @@ void ContextPopupWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
 	sf.SetTrimming(StringTrimmingEllipsisPath);
 	REAL tabs[] = {50, 50, 50};
 	sf.SetTabStops(0, 3, tabs);
-
-	int n = 0;
 	Pixels indentSize = Pixels(itemHeight*0.619f);
 
-	std::vector< ref<MenuItem> >::iterator it = _cm->_items.begin();
-	while(it!=_cm->_items.end()) {
-		ref<MenuItem> item = *it;
-		Area current = rc;
-		current.SetY(y);
-		current.SetHeight(itemHeight);
+	for(unsigned int n=0; n<cm->GetItemCount(); n++) {
+		ref<MenuItem> item = cm->GetItemByIndex(n);
+		if(item) {
+			Area current = rc;
+			current.SetY(y);
+			current.SetHeight(itemHeight);
 
-		Pixels indentRight = item->GetIndent()*indentSize;
-		current.Narrow(indentRight,0,0,0);
-		Area currentText = current;
+			Pixels indentRight = item->GetIndent()*indentSize;
+			current.Narrow(indentRight,0,0,0);
+			Area currentText = current;
 
-		if(item->IsSeparator()) {
-			const std::wstring& title = item->GetTitle();
-			if(title.length()>0) {
-				currentText.Narrow(itemHeight/2,2,2,2);
-				g.DrawString(title.c_str(), (int)title.length(), theme->GetGUIFontBold(), currentText, &sf, &header);
-				RectF lr;
-				g.MeasureString(title.c_str(), (int)title.length(), theme->GetGUIFontBold(), currentText, &sf, &lr);
-				current.Narrow((Pixels)lr.Width, 0,0,0);
-			}
+			if(item->IsSeparator()) {
+				const std::wstring& title = item->GetTitle();
+				if(title.length()>0) {
+					currentText.Narrow(itemHeight/2,2,2,2);
+					g.DrawString(title.c_str(), (int)title.length(), theme->GetGUIFontBold(), currentText, &sf, &header);
+					RectF lr;
+					g.MeasureString(title.c_str(), (int)title.length(), theme->GetGUIFontBold(), currentText, &sf, &lr);
+					current.Narrow((Pixels)lr.Width, 0,0,0);
+				}
 
-			current.Narrow(itemHeight,0,itemHeight,0);
-			Pixels y = current.GetTop() + (current.GetBottom()-current.GetTop())/2;
-			g.DrawLine(&separator, current.GetLeft(), y, current.GetRight(), y);
-		}
-		else {
-			currentText.Narrow(itemHeight,2,2,2);
-
-			if(n==_mouseDown) {
-				Area selection = current;
-				selection.Narrow(1,0,1,0);
-				g.FillRectangle(&down, selection);
-			}
-			else if(n==_mouseOver) {
-				Area selection = current;
-				selection.Narrow(1,0,1,0);
-				g.FillRectangle(&selected, selection);
-			}
-
-			// Draw item text
-			if(item->IsLink()) {
-				g.DrawString(item->GetTitle().c_str(), (int)item->GetTitle().length(), theme->GetLinkFont(), currentText, &sf, &link);
+				current.Narrow(itemHeight,0,itemHeight,0);
+				Pixels y = current.GetTop() + (current.GetBottom()-current.GetTop())/2;
+				g.DrawLine(&separator, current.GetLeft(), y, current.GetRight(), y);
 			}
 			else {
-				g.DrawString(item->GetTitle().c_str(), (int)item->GetTitle().length(), item->_hilite?theme->GetGUIFontBold():theme->GetGUIFont(), currentText, &sf, &text);
-			}
+				currentText.Narrow(itemHeight,2,2,2);
 
-			// Draw item icon or check mark
-			if(item->HasIcon() || item->_checked!=MenuItem::NotChecked) {
-				Area iconArea = current;
-				iconArea.Narrow(3,1,1,1);
-				iconArea.SetWidth(16);
-				iconArea.SetHeight(16);
-				if(item->HasIcon()) {
-					item->GetIcon()->Paint(g, iconArea, !item->IsDisabled(), _openAnimation.GetFraction());
+				if(n==_mouseDown) {
+					Area selection = current;
+					selection.Narrow(1,0,1,0);
+					g.FillRectangle(&down, selection);
+				}
+				else if(n==_mouseOver) {
+					Area selection = current;
+					selection.Narrow(1,0,1,0);
+					g.FillRectangle(&selected, selection);
+				}
+
+				// Draw item text
+				if(item->IsLink()) {
+					g.DrawString(item->GetTitle().c_str(), (int)item->GetTitle().length(), theme->GetLinkFont(), currentText, &sf, &link);
 				}
 				else {
-					Icon& icon = (item->_checked == MenuItem::Checked)?_checkedIcon:_radioCheckedIcon;
-					icon.Paint(g, iconArea, !item->IsDisabled(), _openAnimation.GetFraction());
+					g.DrawString(item->GetTitle().c_str(), (int)item->GetTitle().length(), item->_hilite?theme->GetGUIFontBold():theme->GetGUIFont(), currentText, &sf, &text);
 				}
-			}
 
-			// Draw hotkey label
-			if(item->HasHotkey()) {
-				StringFormat hsf;
-				hsf.SetLineAlignment(StringAlignmentCenter);
-				hsf.SetAlignment(StringAlignmentFar);
+				// Draw item icon or check mark
+				if(item->HasIcon() || item->_checked!=MenuItem::NotChecked) {
+					Area iconArea = current;
+					iconArea.Narrow(3,1,1,1);
+					iconArea.SetWidth(16);
+					iconArea.SetHeight(16);
+					if(item->HasIcon()) {
+						item->GetIcon()->Paint(g, iconArea, !item->IsDisabled(), _openAnimation.GetFraction());
+					}
+					else {
+						Icon& icon = (item->_checked == MenuItem::Checked)?_checkedIcon:_radioCheckedIcon;
+						icon.Paint(g, iconArea, !item->IsDisabled(), _openAnimation.GetFraction());
+					}
+				}
 
-				const std::wstring& hk = item->GetHotkey();
-				RectF hbb;
-				g.MeasureString(hk.c_str(), (int)hk.length(), theme->GetGUIFontSmall(), PointF(float(current.GetTop()), float(current.GetRight())), &hsf, &hbb);
+				// Draw submenu indicator
+				if(item->GetSubMenu()) {
+					Area subIconArea(current.GetRight()-16, current.GetTop(), 16, current.GetHeight());
+					_subIcon.Paint(g, subIconArea);
+				}
+				// Draw hotkey label
+				else if(item->HasHotkey()) {
+					StringFormat hsf;
+					hsf.SetLineAlignment(StringAlignmentCenter);
+					hsf.SetAlignment(StringAlignmentFar);
 
-				Pixels w = Pixels(hbb.Width) + 6;
-				Area hotkeyLabel(current.GetRight()-w, current.GetTop(), w, current.GetHeight());
-				hotkeyLabel.Narrow(2,2,2,3);
-				hotkeyLabel.Translate(-2, 0);
+					const std::wstring& hk = item->GetHotkey();
+					RectF hbb;
+					g.MeasureString(hk.c_str(), (int)hk.length(), theme->GetGUIFontSmall(), PointF(float(current.GetTop()), float(current.GetRight())), &hsf, &hbb);
 
-				SolidBrush htbr(theme->GetColor(/*** n==_mouseOver ? Theme::ColorBackground : ***/ Theme::ColorActiveEnd));
-				g.DrawString(hk.c_str(), (int)hk.length(), theme->GetGUIFontSmall(), hotkeyLabel, &hsf, &htbr);
-			}
+					Pixels w = Pixels(hbb.Width) + 6;
+					Area hotkeyLabel(current.GetRight()-w, current.GetTop(), w, current.GetHeight());
+					hotkeyLabel.Narrow(2,2,2,3);
+					hotkeyLabel.Translate(-2, 0);
 
-			if(item->IsDisabled()) {
-				g.FillRectangle(&disabled, current);
-			}
+					SolidBrush htbr(theme->GetColor(/*** n==_mouseOver ? Theme::ColorBackground : ***/ Theme::ColorActiveEnd));
+					g.DrawString(hk.c_str(), (int)hk.length(), theme->GetGUIFontSmall(), hotkeyLabel, &hsf, &htbr);
+				}
 
-			if(_closeAnimation.IsAnimating() && _result != item->_command) {
-				g.FillRectangle(&closing, current);
+				if(item->IsDisabled()) {
+					g.FillRectangle(&disabled, current);
+				}
+
+				if(_closeAnimation.IsAnimating() && _result != item->_command) {
+					g.FillRectangle(&closing, current);
+				}
 			}
 		}
 
 		y += itemHeight;
-		++it;
-		++n;
 	}
-
-	// Draw border
-	rc.Narrow(0,0,1,1);
-	SolidBrush border(theme->GetColor(Theme::ColorActiveStart));
-	Pen pn(&border, 1.0f);
-	g.DrawRectangle(&pn, rc);
 }
 
 void ContextPopupWnd::OnTimer(unsigned int id) {
@@ -389,6 +499,10 @@ MenuItem::MenuItem(const std::wstring& title, int command, bool highlight, MenuI
 }
 
 MenuItem::~MenuItem() {
+}
+
+ref<Menu> MenuItem::GetSubMenu() {
+	return null;
 }
 
 bool MenuItem::IsLink() const {
@@ -453,4 +567,68 @@ void MenuItem::SetHotkey(const std::wstring& hk) {
 
 const std::wstring& MenuItem::GetHotkey() const {
 	return _hotkey;
+}
+
+int MenuItem::GetCommandCode() const {
+	return _command;
+}
+
+void MenuItem::SetCommandCode(int c) {
+	_command = c;
+}
+
+/** SubMenuItem **/
+SubMenuItem::SubMenuItem() {
+}
+
+SubMenuItem::SubMenuItem(const std::wstring& title, bool highlight, CheckType checked, const std::wstring& icon): MenuItem(title, 0, highlight, checked, icon) {
+}
+
+SubMenuItem::SubMenuItem(const std::wstring& title, bool highlight, CheckType checked, ref<Icon> icon): MenuItem(title, 0, highlight, checked, icon) {
+}
+
+SubMenuItem::~SubMenuItem() {
+}
+
+ref<Menu> SubMenuItem::GetSubMenu() {
+	return ref<Menu>(this);
+}
+
+/** BasicMenu **/
+BasicMenu::BasicMenu() {
+}
+
+BasicMenu::~BasicMenu() {
+}
+
+unsigned int BasicMenu::GetItemCount() const {
+	return (unsigned int)_items.size();
+}
+
+ref<MenuItem> BasicMenu::GetItemByIndex(unsigned int idx) {
+	try {
+		return _items.at(idx);
+	}
+	catch(...) {
+		return null;
+	}
+}
+
+void BasicMenu::AddSeparator(const std::wstring& title) {
+	strong<MenuItem> item = GC::Hold(new MenuItem());
+	item->SetTitle(title);
+	item->SetSeparator(true);
+	_items.push_back(item);
+}
+
+void BasicMenu::AddItem(strong<MenuItem> ci) {
+	_items.push_back(ci);
+
+	if(ci->GetTitle().length() > _longestString.length()) {
+		_longestString = ci->GetTitle();
+	}
+}
+
+Pixels BasicMenu::GetLargestWidth(strong<Theme> theme, Font* fnt) const {
+	 return theme->MeasureText(_longestString, fnt).GetWidth();
 }

@@ -5,15 +5,18 @@ namespace tj {
 	namespace shared {
 		class MenuItem;
 
-		class EXPORTED Menu {
+		class EXPORTED Menu: public virtual Object {
 			public:
 				virtual ~Menu();
 				virtual void AddSeparator(const std::wstring& text = L"") = 0;
-				virtual void AddItem(ref<MenuItem> ci) = 0;
+				virtual void AddItem(strong<MenuItem> ci) = 0;
+				virtual unsigned int GetItemCount() const = 0;
+				virtual ref<MenuItem> GetItemByIndex(unsigned int idx) = 0;
+				virtual Pixels GetLargestWidth(strong<Theme> theme, graphics::Font* fnt) const = 0;
 		};
 
 		/** The icon for a MenuItem needs to be 16x16 */
-		class EXPORTED MenuItem {
+		class EXPORTED MenuItem: public virtual Object {
 			friend class ContextMenu;
 			friend class ContextPopupWnd;
 
@@ -48,6 +51,10 @@ namespace tj {
 				virtual unsigned char GetIndent() const;
 				virtual void SetIndent(unsigned char level);
 
+				virtual int GetCommandCode() const;
+				virtual void SetCommandCode(int c);
+				virtual ref<Menu> GetSubMenu(); // returns null when this item doesn't have a submenu
+
 			protected:
 				std::wstring _title;
 				std::wstring _hotkey;
@@ -60,9 +67,33 @@ namespace tj {
 				unsigned char _indent;
 		};
 
+		class EXPORTED BasicMenu: public Menu {
+			public:
+				BasicMenu();
+				virtual ~BasicMenu();
+				virtual void AddSeparator(const std::wstring& text = L"");
+				virtual void AddItem(strong<MenuItem> ci);
+				virtual unsigned int GetItemCount() const;
+				virtual ref<MenuItem> GetItemByIndex(unsigned int idx);
+				virtual Pixels GetLargestWidth(strong<Theme> theme, graphics::Font* fnt) const;
+
+			protected:
+				std::vector< strong<MenuItem> > _items;
+				std::wstring _longestString;
+		};
+
+		class EXPORTED SubMenuItem: public MenuItem, public BasicMenu {
+			public:
+				SubMenuItem();
+				SubMenuItem(const std::wstring& title, bool highlight = false, CheckType checked = NotChecked, const std::wstring& icon = L"");
+				SubMenuItem(const std::wstring& title, bool highlight = false, CheckType checked = NotChecked, ref<Icon> icon = null);
+				virtual ~SubMenuItem();
+				virtual ref<Menu> GetSubMenu();
+		};
+
 		class EXPORTED ContextPopupWnd: public PopupWnd {
 			public:
-				ContextPopupWnd(ContextMenu* cm, HWND parent);
+				ContextPopupWnd(strong<Menu> menu, HWND parent);
 				virtual ~ContextPopupWnd();
 				virtual int DoModal(strong<Wnd> parent, Pixels x, Pixels y); // returns -1 when no command
 				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
@@ -74,37 +105,49 @@ namespace tj {
 				virtual void OnActivate(bool a);
 				virtual void OnTimer(unsigned int id);
 				int GetItemAt(Pixels y);
+				strong<Menu> GetCurrentMenu();
+				virtual void EnterSubMenu(strong<Menu> menu);
+				virtual void LeaveSubMenu();
+				virtual void OnSelectItem(strong<MenuItem> ci);
+				virtual void DrawMenuItems(graphics::Graphics& g, strong<Theme> theme, strong<Menu> cm, const Area& rc);
+				virtual void UpdateSize();
 
 				// TODO: move some of these to Theme GetMeasure
 				const static unsigned int KMaxItems;
 
 			private:
-				ContextMenu* _cm;
+				const static int KMouseOverNothing = -1;
+				const static int KMouseOverBackButton = -2;
+
+				strong<Menu> _firstMenu;
+				std::deque< strong<Menu> > _menu;
 				Animation _openAnimation;
 				Animation _closeAnimation;
 				int _result;
 				ModalLoop _loop;
-				Icon _checkedIcon, _radioCheckedIcon;
+				Icon _checkedIcon, _radioCheckedIcon, _subIcon;
 				int _mouseOver;
 				int _mouseDown;
 		};
 
-		class EXPORTED ContextMenu: public Menu {
+		/** ContextMenu is a wrapper class that can be created on the stack. It handles the menu creation and 
+		popup stuff for context menus **/
+		class EXPORTED ContextMenu {
 			friend class ContextPopupWnd;
 
 			public:
 				ContextMenu();
-				virtual ~ContextMenu();
+				~ContextMenu();
 				int DoContextMenu(ref<Wnd> wnd, Pixels x, Pixels y);
 				int DoContextMenu(ref<Wnd> wnd);
-				virtual void AddItem(ref<MenuItem> ci);
-				virtual void AddSeparator(const std::wstring& text = L"");
-				virtual void AddItem(const std::wstring& name, int command, bool hilite = false, bool checked = false);
-				virtual void AddItem(const std::wstring& name, int command, bool hilite, MenuItem::CheckType checked);
+				void AddItem(const std::wstring& name, int command, bool hilite = false, bool checked = false);
+				void AddItem(const std::wstring& name, int command, bool hilite, MenuItem::CheckType checked);
+				void AddItem(ref<MenuItem> ci);
+				void AddSeparator(const std::wstring& text = L"");
+				strong<Menu> GetMenu();
 
 			protected:
-				std::vector< ref<MenuItem> > _items;
-				std::wstring _longestString;
+				strong<Menu> _menu;
 		};
 	}
 }
