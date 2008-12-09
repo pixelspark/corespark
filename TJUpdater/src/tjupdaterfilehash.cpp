@@ -1,8 +1,7 @@
-#include "../include/tjcore.h"
-using namespace tj::shared;
+#include "../include/tjupdater.h"
 #include <string>
-
 typedef unsigned int uint32;
+using namespace tj::updater;
 
 
 // These functions perform MD5 operations. The simplest call is MD5Sum to
@@ -318,43 +317,40 @@ void MD5Sum(const void* data, size_t length, MD5Digest* digest) {
   MD5Final(digest, &ctx);
 }
 
-SecureHash::SecureHash() {
-	MD5Context* ctx = reinterpret_cast<MD5Context*>(malloc(sizeof(MD5Context)));
-	MD5Init(ctx);
-	_data = reinterpret_cast<void*>(ctx);
-}
+namespace tj {
+	namespace updater {
+		bool MD5HashFile(const std::wstring& path, std::wstring& hash) {
+			HANDLE file = CreateFile(path.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, NULL, NULL);
+			if(file==INVALID_HANDLE_VALUE) {
+				return false;	
+			}
 
-SecureHash::~SecureHash() {
-	free(_data);
-}
+			MD5Context ctx;
+			MD5Init(&ctx);
 
-void SecureHash::AddData(const void* data, size_t length) {
-	MD5Context* ctx = reinterpret_cast<MD5Context*>(_data);
-	MD5Update(ctx, data, length);
-}
+			DWORD bytesRead = 0;
+			unsigned char buffer[4096];
 
-std::string SecureHash::GetHashAsString() {
-	MD5Digest digest;
-	MD5Final(&digest, reinterpret_cast<MD5Context*>(_data));
-	return MD5DigestToBase16(digest);
-}
+			while(true) {
+				if(!ReadFile(file, buffer, 4096, &bytesRead, NULL)) {
+					break;
+				}
 
-void SecureHash::AddString(const wchar_t* data) {
-	AddData(data, wcslen(data));
-}
+				if(bytesRead<=0) {
+					break;
+				}
 
-void SecureHash::AddFile(const std::wstring& path) {
-	HANDLE file = CreateFile(path.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, NULL, NULL, NULL);
-	if(file==INVALID_HANDLE_VALUE) {
-		Throw(L"Could not open file for hashing", ExceptionTypeError);
+				MD5Update(&ctx, buffer, bytesRead);
+			}
+
+			MD5Digest digest;
+			MD5Final(&digest, &ctx);
+			std::string hashString = MD5DigestToBase16(digest);
+			std::wostringstream wos;
+			wos << hashString.c_str();
+			CloseHandle(file);
+			hash = wos.str();
+			return true;
+		}
 	}
-
-	unsigned char buffer[1024];
-	DWORD read = 0;
-	while(ReadFile(file, buffer, 1024, &read, NULL)) {
-		if(read==0) break; // EOF
-		AddData(buffer, read);
-	}
-
-	CloseHandle(file);
 }
