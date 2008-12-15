@@ -2,6 +2,7 @@
 #include <winhttp.h>
 #include <deque>
 #include <shlwapi.h>
+#include <shlobj.h>
 using namespace tj::updater;
 
 /** Update **/
@@ -86,11 +87,19 @@ const std::wstring& Update::GetDescription() const {
 }
 
 /** UpdatableComponent **/
-UpdatableComponent::UpdatableComponent(const std::wstring& name, const std::wstring& versionSource): _name(name), _versionSource(versionSource) {
+UpdatableComponent::UpdatableComponent(const std::wstring& name, const std::wstring& versionSource, const std::wstring& licenseSource): _name(name), _versionSource(versionSource), _licenseSource(licenseSource), _checked(false) {
 	CalculateCurrentVersion();
 }
 
 UpdatableComponent::~UpdatableComponent() {
+}
+
+bool UpdatableComponent::CheckedForUpdates() const {
+	return _checked;
+}
+
+void UpdatableComponent::SetCheckedForUpdates(bool c) {
+	_checked = c;
 }
 
 const std::wstring& UpdatableComponent::GetName() const {
@@ -105,6 +114,7 @@ void UpdatableComponent::Load(TiXmlElement* el) {
 	_name = GetAttribute<std::wstring>(el, "name", L"");
 	_versionSource = GetAttribute<std::wstring>(el, "version-source", L"");
 	_updateURL = GetAttribute<std::wstring>(el, "url", L"");
+	_licenseSource = GetAttribute<std::wstring>(el, "license-source", L"");
 	CalculateCurrentVersion();
 }
 
@@ -117,11 +127,26 @@ bool UpdatableComponent::UpdatesAvailable() const {
 }
 
 void UpdatableComponent::CalculateCurrentVersion() {
+	// Replace variables in the path (that are not provided by Windows)
+	wchar_t buf[MAX_PATH+1];
+	memset(buf,0, (MAX_PATH+1)*sizeof(wchar_t));
+	if(SHGetFolderPath(NULL, CSIDL_COMMON_APPDATA, NULL, SHGFP_TYPE_CURRENT, buf)==S_OK) {
+		ReplaceAll<std::wstring>(_licenseSource, L"%COMMONAPPDATA%", buf);
+		ReplaceAll<std::wstring>(_versionSource, L"%COMMONAPPDATA%", buf);
+	}
+
 	if(GetFileAttributes(_versionSource.c_str())!=INVALID_FILE_ATTRIBUTES) {
 		MD5HashFile(_versionSource, _versionHash);
 	}
 	else {
 		_versionHash = L"";
+	}
+
+	if(GetFileAttributes(_licenseSource.c_str())!=INVALID_FILE_ATTRIBUTES) {
+		MD5HashFile(_licenseSource, _licenseHash);
+	}
+	else {
+		_licenseHash = L"";
 	}
 }
 
@@ -141,11 +166,13 @@ void UpdatableComponent::FindAvailableUpdates() {
 		UpdaterLog::Write(L"Component cannot be updated, aborting");
 		return;
 	}
+	
+	SetCheckedForUpdates(true);
 
 	std::wostringstream finalURL;
 	std::wstring mac;
 	Machine::GetUniqueIdentifier(mac);
-	finalURL << _updateURL << L"?name=" << GetName() << L"&version=" << GetVersion() << L"&machine=" << mac;
+	finalURL << _updateURL << L"?name=" << GetName() << L"&version=" << GetVersion() << L"&machine=" << mac << L"&lh=" << _licenseHash;
 
 	HTTPRequest request(finalURL.str(), UpdaterSettings::GetSetting(L"updater.http.user-agent", L"TJUpdater-1.0"));
 	
@@ -206,7 +233,9 @@ void Updater::FindAvailableUpdates() {
 	std::deque<UpdatableComponent>::iterator it = _components.begin();
 	while(it!=_components.end()) {
 		UpdatableComponent& uc = *it;
-		uc.FindAvailableUpdates();
+		if(!uc.CheckedForUpdates()) {
+			uc.FindAvailableUpdates();
+		}
 		++it;
 	}
 }

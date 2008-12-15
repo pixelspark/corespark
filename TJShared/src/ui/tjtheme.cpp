@@ -188,6 +188,10 @@ void Theme::DrawFocusRectangle(graphics::Graphics& g, const Area& c, float alpha
 	static const Pixels KFocusRectangleWidth = 6;
 	static Color KSurroundColors[1] = { Color::Transparent };
 
+	// try to escape the clipping
+	GraphicsContainer gcc = g.BeginContainer();
+	g.ResetClip();
+
 	Area rc = c;
 	GraphicsPath path;
 	rc.Widen(KFocusRectangleWidth,KFocusRectangleWidth,KFocusRectangleWidth,KFocusRectangleWidth);
@@ -204,13 +208,18 @@ void Theme::DrawFocusRectangle(graphics::Graphics& g, const Area& c, float alpha
 	rc.Narrow(KFocusRectangleWidth,KFocusRectangleWidth,KFocusRectangleWidth,KFocusRectangleWidth);
 	Pen focusPen(&gbrush, 3.0f);
 	g.DrawRectangle(&focusPen, rc);
+	g.EndContainer(gcc);
 }
 
 void Theme::DrawFocusEllipse(graphics::Graphics& g, const Area& c, float alpha) {
-	static REAL blendPositions[3] = {0.0f, 0.2f, 1.0f};
+	static REAL blendPositions[3] = {0.0f, 0.5f, 1.0f};
 	static REAL blendFactors[3] = {1.0f, 0.0f, 0.0f};
-	static const Pixels KFocusRectangleWidth = 3;
+	static const Pixels KFocusRectangleWidth = 6;
 	static Color KSurroundColors[1] = { Color::Transparent };
+
+	// try to escape the clipping
+	GraphicsContainer gcc = g.BeginContainer();
+	g.ResetClip();
 
 	Area rc = c;
 	GraphicsPath path;
@@ -228,6 +237,7 @@ void Theme::DrawFocusEllipse(graphics::Graphics& g, const Area& c, float alpha) 
 	rc.Narrow(KFocusRectangleWidth,KFocusRectangleWidth,KFocusRectangleWidth,KFocusRectangleWidth);
 	Pen focusPen(&gbrush, 3.0f);
 	g.DrawEllipse(&focusPen, rc);
+	g.EndContainer(gcc);
 }
 
 void Theme::DrawMessageBar(graphics::Graphics& g, const Area& header) {

@@ -95,13 +95,13 @@ namespace tj {
 			public:
 				ContextPopupWnd(strong<Menu> menu, HWND parent);
 				virtual ~ContextPopupWnd();
-				virtual int DoModal(strong<Wnd> parent, Pixels x, Pixels y); // returns -1 when no command
+				virtual ref<MenuItem> DoModal(strong<Wnd> parent, Pixels x, Pixels y); // returns null when no command
 				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
 				virtual void OnKey(Key k, wchar_t ch, bool down, bool isAccelerator);
 
 			protected:
-				virtual void EndModal(int r);
+				virtual void EndModal(ref<MenuItem> result);
 				virtual void OnActivate(bool a);
 				virtual void OnTimer(unsigned int id);
 				int GetItemAt(Pixels y);
@@ -123,7 +123,7 @@ namespace tj {
 				std::deque< strong<Menu> > _menu;
 				Animation _openAnimation;
 				Animation _closeAnimation;
-				int _result;
+				ref<MenuItem> _resultItem;
 				ModalLoop _loop;
 				Icon _checkedIcon, _radioCheckedIcon, _subIcon;
 				int _mouseOver;
@@ -139,6 +139,7 @@ namespace tj {
 				ContextMenu();
 				~ContextMenu();
 				int DoContextMenu(ref<Wnd> wnd, Pixels x, Pixels y);
+				ref<MenuItem> DoContextMenuByItem(ref<Wnd> wnd, Pixels x, Pixels y);
 				int DoContextMenu(ref<Wnd> wnd);
 				void AddItem(const std::wstring& name, int command, bool hilite = false, bool checked = false);
 				void AddItem(const std::wstring& name, int command, bool hilite, MenuItem::CheckType checked);

@@ -54,7 +54,7 @@ namespace tj {
 			friend class UpdaterDialog;
 
 			public:
-				UpdatableComponent(const std::wstring& name = L"", const std::wstring& versionSource = L"");
+				UpdatableComponent(const std::wstring& name = L"", const std::wstring& versionSource = L"", const std::wstring& licenseSource = L"");
 				~UpdatableComponent();
 				const std::wstring& GetName() const;
 				const std::wstring& GetVersion() const;
@@ -63,6 +63,8 @@ namespace tj {
 				bool UpdatesAvailable() const;
 				void FindAvailableUpdates();
 				void DownloadResourcesForUpdates();
+				bool CheckedForUpdates() const;
+				void SetCheckedForUpdates(bool c);
 
 			protected:
 				void CalculateCurrentVersion();
@@ -73,7 +75,10 @@ namespace tj {
 				std::wstring _name;
 				std::wstring _versionSource;
 				std::wstring _versionHash;
+				std::wstring _licenseHash;
+				std::wstring _licenseSource;
 				std::wstring _updateURL;
+				bool _checked;
 		};
 
 		class Updater {

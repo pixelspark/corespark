@@ -38,6 +38,14 @@ LRESULT CALLBACK EditWndSubclassProc(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM lP
 }
 
 EditWnd::EditWnd(bool multiline): ChildWnd(L"", false), _backBrush(0) {
+	Create(multiline);
+}
+
+EditWnd::EditWnd(bool ml, bool db): ChildWnd(L"", db), _backBrush(0) {
+	Create(ml);
+}
+
+void EditWnd::Create(bool multiline) {
 	SetStyle(WS_CLIPCHILDREN);
 	SetStyleEx(WS_EX_CONTROLPARENT);
 
@@ -173,4 +181,128 @@ std::wstring EditWnd::GetText() {
 	std::wstring txt(buffer);
 	delete[] buffer;
 	return txt;
+}
+
+/** SuggestionEditWnd **/
+SuggestionEditWnd::SuggestionEditWnd(bool ml): EditWnd(ml, true), _arrowIcon(Icons::GetIconPath(Icons::IconDownArrow)), _sm(SuggestionModeReplace) {
+	SetWantMouseLeave(true);
+}
+
+SuggestionEditWnd::~SuggestionEditWnd() {
+}
+
+void SuggestionEditWnd::SetSuggestionMode(SuggestionMode sm) {
+	_sm = sm;
+}
+
+SuggestionEditWnd::SuggestionMode SuggestionEditWnd::GetSuggestionMode() const {
+	return _sm;
+}
+
+ref<MenuItem> SuggestionEditWnd::DoSuggestionMenu() {
+	if(_cm) {
+		Area rc = GetClientArea();
+		ref<MenuItem> mi = _cm->DoContextMenuByItem(this, rc.GetLeft(), rc.GetBottom());
+		if(mi && mi.IsCastableTo<SuggestionMenuItem>()) {
+			ref<SuggestionMenuItem> smi = mi;
+			const std::wstring& val = smi->GetSuggestionValue();
+			
+			switch(_sm) {
+				case SuggestionModeReplace:
+					SetText(val);
+					break;
+
+				case SuggestionModeInsert:
+					// Somehow insert the text, for now: append
+					SetText(GetText()+val);
+					break;
+			}
+
+			EventTextChanged.Fire(this, NotificationTextChanged());
+		}
+		
+		return mi;
+	}
+	return null;
+}
+
+strong<Menu> SuggestionEditWnd::GetSuggestionMenu() {
+	if(!_cm) {
+		_cm = GC::Hold(new ContextMenu());
+	}
+
+	return _cm->GetMenu();
+}
+
+void SuggestionEditWnd::Layout() {
+	Area rc = GetClientArea();
+	rc.Narrow(0,0,16,0);
+	ref<Theme> theme = ThemeManager::GetTheme();
+	rc.MultiplyCeil(theme->GetDPIScaleFactor(), theme->GetDPIScaleFactor());
+	SetWindowPos(_ctrl, 0L, rc.GetLeft(), rc.GetTop(), rc.GetWidth(), rc.GetHeight(), SWP_NOZORDER);
+}
+
+void SuggestionEditWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
+	// Draw background
+	Area rc = GetClientArea();
+	graphics::SolidBrush back(theme->GetColor(Theme::ColorBackground));
+	g.FillRectangle(&back, rc);
+	theme->DrawInsetRectangleLight(g, rc);
+
+	graphics::SolidBrush borderBrush(theme->GetColor(Theme::ColorActiveStart));
+	Area borderArea = rc;
+	borderArea.Narrow(0,0,1,1);
+	graphics::Pen borderPen(&borderBrush, 1.0f);
+	g.DrawRectangle(&borderPen, borderArea);
+	
+	Area buttonArea(rc.GetRight()-18, rc.GetTop(), 18, rc.GetHeight());
+
+	graphics::LinearGradientBrush buttonBr(graphics::PointF(0.0f, float(rc.GetTop()-1)), graphics::PointF(0.0f, float(rc.GetBottom()+1)), theme->GetColor(Theme::ColorActiveStart), theme->GetColor(Theme::ColorActiveEnd));
+	g.FillRectangle(&buttonBr, buttonArea);
+
+	if(!IsMouseOver()) {
+		buttonArea.Narrow(3,1,1,1);
+		graphics::SolidBrush disabledBr(theme->GetColor(Theme::ColorDisabledOverlay));
+		g.FillRectangle(&disabledBr, buttonArea);
+	}
+
+	// Draw icon to the right
+	Area iconArea(rc.GetRight()-16, rc.GetTop(), 16, 16);
+	g.DrawImage(_arrowIcon, iconArea);
+
+	// If there are no items, we are disabled
+	if(!_cm || _cm->GetMenu()->GetItemCount() < 1) {
+		Area drc = rc;
+		drc.Narrow(1,1,1,1);
+		graphics::SolidBrush dbr(theme->GetColor(Theme::ColorDisabledOverlay));
+		g.FillRectangle(&dbr, drc);
+	}
+}	
+
+void SuggestionEditWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
+	if(ev==MouseEventMove) {
+		SetWantMouseLeave(true);
+		Repaint();
+	}
+	else if(ev==MouseEventLeave) {
+		Repaint();
+	}
+	else if(ev==MouseEventLDown) {
+		if(x>16) {
+			// Do context menu
+			DoSuggestionMenu();
+		}
+		
+	}
+	EditWnd::OnMouse(ev,x,y);
+}
+
+SuggestionMenuItem::SuggestionMenuItem(const std::wstring& value, const std::wstring& friendly, bool highlight, MenuItem::CheckType checked, const std::wstring& icon, const std::wstring& hotkey): MenuItem(friendly, 0, highlight, checked, icon, hotkey), _value(value) {
+}
+
+SuggestionMenuItem::~SuggestionMenuItem() {
+}
+
+const std::wstring& SuggestionMenuItem::GetSuggestionValue() const {
+	return _value;
 }

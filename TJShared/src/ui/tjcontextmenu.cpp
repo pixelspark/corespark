@@ -15,9 +15,17 @@ ContextMenu::~ContextMenu() {
 
 /* If x=-1 and y=-1, we use the current cursor pos */
 int ContextMenu::DoContextMenu(ref<Wnd> wnd, Pixels x, Pixels y) {
+	ref<MenuItem> mi = DoContextMenuByItem(wnd, x, y);
+	if(mi) {
+		return mi->GetCommandCode();
+	}
+	return -1;
+}
+
+ref<MenuItem> ContextMenu::DoContextMenuByItem(ref<Wnd> wnd, Pixels x, Pixels y) {
 	// If there are no items, always fail
 	if(_menu->GetItemCount()==0) {
-		return -1;
+		return null;
 	}
 	
 	if(wnd) {
@@ -38,8 +46,7 @@ int ContextMenu::DoContextMenu(ref<Wnd> wnd, Pixels x, Pixels y) {
 
 		// Create popup
 		ref<ContextPopupWnd> cpw = GC::Hold(new ContextPopupWnd(_menu, wnd->GetWindow()));
-		int result =  cpw->DoModal(wnd,x,y);
-		return result;
+		return cpw->DoModal(wnd,x,y);
 	}
 
 	Throw(L"Context menu must have an owner window", ExceptionTypeSevere);
@@ -80,7 +87,7 @@ void ContextMenu::AddSeparator(const std::wstring& text) {
 }
 
 /** ContextPopupWnd **/
-ContextPopupWnd::ContextPopupWnd(strong<Menu> menu, HWND parent): PopupWnd(parent,false), _firstMenu(menu), _result(-1), _mouseOver(-1), _mouseDown(-1), _checkedIcon(Icons::GetIconPath(Icons::IconChecked)), _radioCheckedIcon(Icons::GetIconPath(Icons::IconRadioChecked)), _subIcon(Icons::GetIconPath(Icons::IconSubMenu)) {
+ContextPopupWnd::ContextPopupWnd(strong<Menu> menu, HWND parent): PopupWnd(parent,false), _firstMenu(menu), _mouseOver(-1), _mouseDown(-1), _checkedIcon(Icons::GetIconPath(Icons::IconChecked)), _radioCheckedIcon(Icons::GetIconPath(Icons::IconRadioChecked)), _subIcon(Icons::GetIconPath(Icons::IconSubMenu)) {
 	SetWantMouseLeave(true);
 	SetVerticallyScrollable(true);
 	_openAnimation.SetLength(Time(300));
@@ -91,7 +98,7 @@ ContextPopupWnd::ContextPopupWnd(strong<Menu> menu, HWND parent): PopupWnd(paren
 ContextPopupWnd::~ContextPopupWnd() {
 }
 
-int ContextPopupWnd::DoModal(strong<Wnd> parent, Pixels x, Pixels y) {
+ref<MenuItem> ContextPopupWnd::DoModal(strong<Wnd> parent, Pixels x, Pixels y) {
 	_menu.clear();
 	EnterSubMenu(_firstMenu);
 	strong<Menu> cm = _firstMenu;
@@ -100,17 +107,16 @@ int ContextPopupWnd::DoModal(strong<Wnd> parent, Pixels x, Pixels y) {
 	PopupAt(x,y,parent);
 
 	// Start modality
-	_result = -1;
 	ModalLoop::Result res = _loop.Enter(GetWindow(), false);
 
 	SetModal(false);
 	Show(false);
 
 	if(res==ModalLoop::ResultSucceeded) {
-		return _result;
+		return _resultItem;
 	}
 
-	return -1;
+	return null;
 }
 
 void ContextPopupWnd::EnterSubMenu(strong<Menu> cm) {
@@ -128,7 +134,7 @@ void ContextPopupWnd::LeaveSubMenu() {
 	// This means leave without having selected an item
 	_menu.pop_front();
 	if(_menu.size()<1) {
-		EndModal(-1);
+		EndModal(null);
 	}
 	else {
 		UpdateSize();
@@ -153,14 +159,14 @@ void ContextPopupWnd::UpdateSize() {
 	SetVerticalPos(0);
 }
 
-void ContextPopupWnd::EndModal(int r) {
-	if(Animation::IsAnimationsEnabled() && _result == -1) {
-		_result = r;
+void ContextPopupWnd::EndModal(ref<MenuItem> res) {
+	_resultItem = res;
+
+	if(Animation::IsAnimationsEnabled() && _resultItem == null) {
 		_closeAnimation.Start();
 		StartTimer(Time(50), 2);
 	}
 	else {
-		_result = r;
 		_loop.End(ModalLoop::ResultSucceeded);
 	}
 }
@@ -298,7 +304,7 @@ void ContextPopupWnd::OnSelectItem(strong<MenuItem> ci) {
 			EnterSubMenu(sub);
 		}
 		else {
-			EndModal(ci->GetCommandCode());
+			EndModal(ci);
 		}
 	}
 }
@@ -463,7 +469,7 @@ void ContextPopupWnd::DrawMenuItems(graphics::Graphics& g, strong<Theme> theme, 
 					g.FillRectangle(&disabled, current);
 				}
 
-				if(_closeAnimation.IsAnimating() && _result != item->_command) {
+				if(_closeAnimation.IsAnimating() && _resultItem != item) {
 					g.FillRectangle(&closing, current);
 				}
 			}
@@ -474,9 +480,9 @@ void ContextPopupWnd::DrawMenuItems(graphics::Graphics& g, strong<Theme> theme, 
 }
 
 void ContextPopupWnd::OnTimer(unsigned int id) {
-	if(!_closeAnimation.IsAnimating() && _result!=-1) {
+	if(!_closeAnimation.IsAnimating() && _resultItem) {
 		StopTimer(2);
-		EndModal(_result);
+		EndModal(null);
 	}
 	
 	if(!_openAnimation.IsAnimating()) {

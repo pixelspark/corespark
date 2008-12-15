@@ -42,6 +42,18 @@ namespace tj {
 			return w;
 		}
 
+		template<typename StringType> StringType& ReplaceAll(StringType& result, const StringType& replaceWhat, const StringType& replaceWithWhat) {
+			while(true) {
+				size_t pos = result.find(replaceWhat);
+				if(pos==-1) {
+					break;
+				}
+				result.replace(pos, replaceWhat.size(), replaceWithWhat);
+			}
+
+			return result;
+		}
+
 		class UpdaterLog {
 			public:
 				static void Write(const std::wstring& msg);
