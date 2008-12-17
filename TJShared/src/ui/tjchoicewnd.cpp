@@ -63,7 +63,7 @@ int ChoiceListWnd::GetItemCount() {
 	return (int)_choices.size();
 }
 
-void ChoiceListWnd::PaintItem(int id, graphics::Graphics &g, tj::shared::Area &row) {
+void ChoiceListWnd::PaintItem(int id, graphics::Graphics &g, tj::shared::Area &row, const ColumnInfo& ci) {
 	ref<Theme> theme = ThemeManager::GetTheme();
 	ref<Choice> choice = _choices.at(id);
 	if(choice) {

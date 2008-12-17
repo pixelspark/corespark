@@ -492,6 +492,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ui\tjtreewnd.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ui\tjwnd.cpp"
 					>
 				</File>
@@ -895,6 +899,10 @@
 				</File>
 				<File
 					RelativePath=".\include\ui\tjtooltipwnd.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\ui\tjtreewnd.h"
 					>
 				</File>
 				<File

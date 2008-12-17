@@ -12,7 +12,7 @@
 #pragma warning(disable: 4251)
 
 /** TJNP is an implementation of TNP, the TJ Network Protocol. **/
-#include "../../TJShared/include/tjshared.h"
+#include "../../TJShared/include/tjcore.h"
 
 #include "tjprotocol.h"
 #include "tjstream.h"

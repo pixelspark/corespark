@@ -3,27 +3,29 @@
 using namespace tj::shared::graphics;
 using namespace tj::shared;
 
-const float ListWnd::KMinimumColumnWidth = 0.075f;
+const float GridWnd::KMinimumColumnWidth = 0.075f;
 
-ListWnd::ListWnd(): ChildWnd(L"") {
-	SetVerticallyScrollable(true);
-	_draggingCol = -1;
-	_dragStartX = 0;
-	_selected = -1;
-	_showHeader = true;
-	SetStyle(WS_TABSTOP);
+/** GridWnd **/
+GridWnd::GridWnd(): ChildWnd(L""), _allowResize(true), _draggingCol(-1), _dragStartX(0), _showHeader(true) {
 }
 
-ListWnd::~ListWnd() {
+GridWnd::~GridWnd() {
 }
 
-void ListWnd::SetShowHeader(bool t) {
+void GridWnd::SetAllowColumnResizing(bool r) {
+	_allowResize = r;
+}
+
+bool GridWnd::IsColumnResizingAllowed() const {
+	return _allowResize && _cols.size() > 1;
+}
+
+void GridWnd::SetShowHeader(bool t) {
 	_showHeader = t;
 	Update();
 }
 
-void ListWnd::OnSettingsChanged() {
-	// Load settings!
+void GridWnd::OnSettingsChanged() {
 	ref<Settings> st = GetSettings();
 
 	bool changed = false;
@@ -36,7 +38,6 @@ void ListWnd::OnSettingsChanged() {
 		}
 
 		it->second._visible = st->GetFlag(L"col-"+Stringify(it->first)+L".visible", it->second._visible);
-
 		++it;
 	}
 
@@ -46,24 +47,35 @@ void ListWnd::OnSettingsChanged() {
 	}
 }
 
-void ListWnd::SetColumnVisible(int id, bool v) {
-	std::map<int, Column>::iterator it = _cols.find(id);
-	if(it!=_cols.end()) {
-		it->second._visible = v;
-
-		ref<Settings> st = GetSettings();
-		if(st) {
-			st->SetFlag(L"col-"+Stringify(id)+L".visible", v);
-		}
-	}
-	else {
-		Throw(L"Column could not be found", ExceptionTypeError);
-	}
-	OnColumnSizeChanged();
-	Repaint();
+Area GridWnd::GetClientArea() const {
+	Area rc = ChildWnd::GetClientArea();
+	rc.Narrow(0, GetHeaderHeight(), 0, 0);
+	return rc;
 }
 
-bool ListWnd::IsColumnVisible(int id) const {
+void GridWnd::SetColumnVisible(int id, bool v) {
+	if(_cols.size()>1) {
+		std::map<int, Column>::iterator it = _cols.find(id);
+		if(it!=_cols.end()) {
+			it->second._visible = v;
+
+			ref<Settings> st = GetSettings();
+			if(st) {
+				st->SetFlag(L"col-"+Stringify(id)+L".visible", v);
+			}
+		}
+		else {
+			Throw(L"Column could not be found", ExceptionTypeError);
+		}
+		OnColumnSizeChanged();
+		Repaint();
+	}
+}
+
+bool GridWnd::IsColumnVisible(int id) const {
+	if(_cols.size()<2) {
+		return true;
+	}
 	std::map<int, Column>::const_iterator it = _cols.find(id);
 	if(it!=_cols.end()) {
 		return it->second._visible;
@@ -71,10 +83,216 @@ bool ListWnd::IsColumnVisible(int id) const {
 	Throw(L"Column could not be found", ExceptionTypeError);
 }
 
-Pixels ListWnd::GetHeaderHeight() const {
-	if(!_showHeader) return false;
+Pixels GridWnd::GetHeaderHeight() const {
+	if(!_showHeader) return 0;
 	ref<Theme> theme = ThemeManager::GetTheme();
 	return theme->GetMeasureInPixels(Theme::MeasureListHeaderHeight);
+}
+
+void GridWnd::DoContextMenu(Pixels x, Pixels y) {
+	if(y < GetHeaderHeight()) {
+		ContextMenu cm;
+		std::map<int, Column>::const_iterator it = _cols.begin();
+		while(it!=_cols.end()) {
+			const std::pair<int, Column>& data = *it;
+			if(data.second._title.length()>0) { // columns without a title usually show icons and should not be hidden
+				cm.AddItem(data.second._title, data.first+1, false, data.second._visible);
+			}
+			++it;
+		}
+
+		int r = cm.DoContextMenu(ref<Wnd>(this), x, y);
+		if(r>0) {
+			SetColumnVisible(r-1, !IsColumnVisible(r-1));
+		}
+		Update();
+	}
+}
+
+void GridWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
+	if(y < GetHeaderHeight() && y > 0) {
+		if(ev==MouseEventLDown) {
+			if(IsColumnResizingAllowed()) {
+				_dragStartX = x;
+				Area r = ChildWnd::GetClientArea();
+				SetCursor(LoadCursor(NULL, IDC_SIZEWE));
+				int cx = 0;
+				std::map<int, Column>::iterator it = _cols.begin();
+				_draggingCol = -1;
+				while(it!=_cols.end()) {
+					Column& col = it->second;
+					if(col._visible) {
+					cx += int(r.GetWidth()*col._width);
+						if(x<cx) {
+							_draggingCol = it->first;
+							break;
+						}
+					}
+					++it;
+				}
+
+				if(_draggingCol>=0) {
+					SetCapture(GetWindow());
+				}
+			}
+		}
+		else if(ev==MouseEventRDown) {
+			DoContextMenu(x,y);
+		}
+		else if(ev==MouseEventMove) {
+			if(IsColumnResizingAllowed()) {
+				Pixels ch = GetHeaderHeight();
+
+				if(y<ch) {
+					if(_draggingCol>=0) {
+						int dx = x - _dragStartX;
+						_dragStartX = x;
+						Area r = ChildWnd::GetClientArea();
+						if(r.GetWidth()!=0) {
+							float colWidthChange = float(dx)/float(r.GetWidth());
+							_cols[_draggingCol]._width += colWidthChange; ///
+							if(_cols[_draggingCol]._width<=KMinimumColumnWidth) {
+								_cols[_draggingCol]._width = KMinimumColumnWidth;
+							}
+							OnColumnSizeChanged();
+						}
+					}
+					Repaint();
+				}
+			}
+		}
+		else if(ev==MouseEventLUp) {
+			// Update the width of the column in settings
+			ref<Settings> st = GetSettings();
+			if(st) {
+				st->SetValue(L"col-"+Stringify(_draggingCol)+L".width", Stringify(GetColumnWidth(_draggingCol)));
+			}
+
+			// Cancel the drag stuff
+			_draggingCol = -1;
+			ReleaseCapture();
+			SetCursor(LoadCursor(NULL, IDC_ARROW));		
+		}
+	}
+}
+
+void GridWnd::SetColumnWidth(int id, float w) {
+	std::map<int, Column>::iterator it = _cols.find(id);
+	if(it!=_cols.end()) {
+		it->second._width = w;
+
+		ref<Settings> st = GetSettings();
+		if(st) {
+			st->SetValue(L"col-"+Stringify(id)+L".width", Stringify(w));
+		}
+
+		OnColumnSizeChanged();
+		Repaint();
+	}
+}
+
+void GridWnd::OnContextMenu(Pixels x, Pixels y) {
+	DoContextMenu(x,y);
+}
+
+void GridWnd::OnColumnSizeChanged() {
+}
+
+float GridWnd::GetColumnX(int id) {
+	// If there is only one column, it is always the leftmost
+	if(_cols.size()<2) {
+		return 0.0f;
+	}
+
+	float cx = 0.0f;
+	std::map<int,Column>::iterator it = _cols.begin();
+	while(it!=_cols.end()) {
+		Column& col = it->second;
+		if(col._visible) {
+			if(it->first==id) {
+				return cx;
+			}
+			cx += col._width;
+		}
+		++it;
+	}
+	return 0.0f;
+}
+
+float GridWnd::GetColumnWidth(int id) {
+	// If there is only one column, it is 100% wide and it cannot be resized
+	if(_cols.size()<2) {
+		return 1.0f;
+	}
+
+	if(_cols.find(id)!=_cols.end()) {
+		return _cols[id]._width;
+	}
+	return 0.0f;
+}
+
+void GridWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
+	if(_showHeader) {
+		// draw columns
+		Pen border(theme->GetColor(Theme::ColorActiveStart), 1.0f);
+		Area area = ChildWnd::GetClientArea();
+		Pixels headHeight = GetHeaderHeight();
+
+		theme->DrawToolbarBackground(g, (float)area.GetLeft(), (float)area.GetTop(), (float)area.GetWidth(), (float)headHeight, 0.5f);
+		g.DrawLine(&border, 0, headHeight, area.GetWidth(), headHeight);
+
+		StringFormat sf;
+		sf.SetAlignment(StringAlignmentNear);
+		sf.SetLineAlignment(StringAlignmentCenter);
+		sf.SetTrimming(StringTrimmingEllipsisCharacter);
+
+		LinearGradientBrush colBr(PointF(0.0f, 4.0f), PointF(0.0f, float(headHeight-8)), theme->GetColor(Theme::ColorActiveStart), theme->GetColor(Theme::ColorActiveEnd));
+		Pen separator(theme->GetColor(Theme::ColorActiveEnd));
+
+		float x = float(area.GetLeft());
+		std::map<int,Column>::iterator it = _cols.begin();
+		while(it!=_cols.end()) {
+			Column& col = it->second;
+			if(col._visible) {
+				float w = col._width*area.GetWidth();
+				if(_cols.size()<2) {
+					w = float(area.GetWidth());
+				}
+				g.DrawString(col._title.c_str(), (int)col._title.length(), theme->GetGUIFontBold(), RectF(x+3.0f, (float)area.GetTop()+4.0f, w, headHeight-8.0f), &sf, &colBr);
+				g.DrawLine(&separator, x+w, area.GetTop()+2.0f, x+w, area.GetTop()+headHeight-4.0f);
+				x += w;
+			}
+			++it;
+		}
+	}
+}
+
+void GridWnd::AddColumn(std::wstring name, int id, float w, bool visible) {
+	_cols[id] = Column(name);
+	_cols[id]._visible = visible;
+	if(w>0.0f) {
+		_cols[id]._width = w;
+	}
+}
+
+// Column
+GridWnd::Column::Column(std::wstring title) {
+	_title = title;
+	_width = 0.2f;
+	_visible = true;
+}
+
+/** ListWnd **/
+ListWnd::ListWnd(): _selected(-1) {
+	SetVerticallyScrollable(true);
+	SetStyle(WS_TABSTOP);
+}
+
+ListWnd::~ListWnd() {
+}
+
+void ListWnd::OnSettingsChanged() {
+	GridWnd::OnSettingsChanged();
 }
 
 void ListWnd::DrawCellText(graphics::Graphics& g, graphics::StringFormat* sf, graphics::SolidBrush* br, graphics::Font* font, int col, Area row, const std::wstring& str) {
@@ -123,8 +341,6 @@ std::wstring ListWnd::GetEmptyText() const {
 
 void ListWnd::Paint(graphics::Graphics &g, ref<Theme> theme) {
 	Area area = GetClientArea();
-	Pixels headHeight = GetHeaderHeight();
-
 	SolidBrush back(theme->GetColor(Theme::ColorBackground));
 	SolidBrush disabled(theme->GetColor(Theme::ColorDisabledOverlay));
 	g.FillRectangle(&back, area);
@@ -135,17 +351,17 @@ void ListWnd::Paint(graphics::Graphics &g, ref<Theme> theme) {
 	int n = GetItemCount();
 	if(n>0) {
 		// draw items, if they fit
-		int h = -int(GetVerticalPos());
+		int h = -int(GetVerticalPos()) + area.GetTop();
 		Pixels itemHeight = GetItemHeight();
 		SolidBrush colorEven(theme->GetColor(Theme::ColorTimeBackground));
-		LinearGradientBrush colorSelected(PointF(0.0f, float(h+headHeight)), PointF(0.0f, float(h+headHeight+itemHeight)), theme->GetColor(Theme::ColorTimeSelectionStart), theme->GetColor(Theme::ColorTimeSelectionEnd));
+		LinearGradientBrush colorSelected(PointF(0.0f, float(h)), PointF(0.0f, float(h+itemHeight)), theme->GetColor(Theme::ColorTimeSelectionStart), theme->GetColor(Theme::ColorTimeSelectionEnd));
 
 		for(int a=0;a<n;a++) {
-			if(h>area.GetHeight()) {
+			if(h>area.GetBottom()) {
 				break;
 			}
 			else if(h>=-2*itemHeight) {
-				Area rowArea(area.GetLeft(), area.GetTop()+headHeight+h+1, area.GetWidth(), itemHeight);
+				Area rowArea(area.GetLeft(), h+1, area.GetWidth(), itemHeight);
 				// draw a background if odd
 				if(a==_selected) {
 					g.FillRectangle(&colorSelected, rowArea);
@@ -156,8 +372,8 @@ void ListWnd::Paint(graphics::Graphics &g, ref<Theme> theme) {
 				}
 				
 				// draw item
-				PaintItem(a, g, rowArea);
-				g.DrawLine(&lineBorder, 0, h+itemHeight+headHeight, area.GetRight(), h+itemHeight+headHeight);
+				PaintItem(a, g, rowArea, *this);
+				g.DrawLine(&lineBorder, 0, h+itemHeight, area.GetRight(), h+itemHeight);
 			}
 			h += itemHeight;
 		}
@@ -168,41 +384,14 @@ void ListWnd::Paint(graphics::Graphics &g, ref<Theme> theme) {
 		sf.SetAlignment(StringAlignmentCenter);
 		SolidBrush descBrush(theme->GetColor(Theme::ColorHint));
 		Area emptyTextArea = area;
-		emptyTextArea.Narrow(0,int(headHeight*1.5f),0,0);
+		emptyTextArea.Narrow(0,int(GetHeaderHeight()*0.5f),0,0);
 		g.DrawString(_emptyText.c_str(), (int)_emptyText.length(), theme->GetGUIFont(), emptyTextArea, &sf, &descBrush);
 	}
 
-	// Draw shadow
-	Area shadowArea = area;
-	shadowArea.Narrow(0,_showHeader ? headHeight : 0, 0, 0);
-	theme->DrawInsetRectangleLight(g, shadowArea);
+	GridWnd::Paint(g, theme);
 
-	// draw columns
-	if(_showHeader) {
-		theme->DrawToolbarBackground(g, (float)area.GetLeft(), (float)area.GetTop(), (float)area.GetWidth(), (float)headHeight, 0.5f);
-		g.DrawLine(&border, 0, headHeight, area.GetWidth(), headHeight);
-
-		StringFormat sf;
-		sf.SetAlignment(StringAlignmentNear);
-		sf.SetLineAlignment(StringAlignmentCenter);
-		sf.SetTrimming(StringTrimmingEllipsisCharacter);
-		//SolidBrush colBr(theme->GetColor(Theme::ColorText));
-		LinearGradientBrush colBr(PointF(0.0f, 4.0f), PointF(0.0f, float(headHeight-8)), theme->GetColor(Theme::ColorActiveStart), theme->GetColor(Theme::ColorActiveEnd));
-		Pen separator(theme->GetColor(Theme::ColorActiveEnd));
-
-		float x = float(area.GetLeft());
-		std::map<int,Column>::iterator it = _cols.begin();
-		while(it!=_cols.end()) {
-			Column& col = it->second;
-			if(col._visible) {
-				float w = col._width*area.GetWidth();
-				g.DrawString(col._title.c_str(), (int)col._title.length(), theme->GetGUIFontBold(), RectF(x+3.0f, (float)area.GetTop()+4.0f, w, headHeight-8.0f), &sf, &colBr);
-				g.DrawLine(&separator, x+w, area.GetTop()+2.0f, x+w, area.GetTop()+headHeight-4.0f);
-				x += w;
-			}
-			++it;
-		}
-	}
+	Area rc = GetClientArea();
+	theme->DrawInsetRectangleLight(g, rc);
 }
 
 void ListWnd::SetSelectedRow(int r) {
@@ -212,29 +401,6 @@ void ListWnd::SetSelectedRow(int r) {
 
 int ListWnd::GetSelectedRow() const {
 	return _selected;
-}
-
-float ListWnd::GetColumnX(int id) {
-	float cx = 0.0f;
-	std::map<int,Column>::iterator it = _cols.begin();
-	while(it!=_cols.end()) {
-		Column& col = it->second;
-		if(col._visible) {
-			if(it->first==id) {
-				return cx;
-			}
-			cx += col._width;
-		}
-		++it;
-	}
-	return 0.0f;
-}
-
-float ListWnd::GetColumnWidth(int id) {
-	if(_cols.find(id)!=_cols.end()) {
-		return _cols[id]._width;
-	}
-	return 0.0f;
 }
 
 void ListWnd::OnSize(const Area& ns) {
@@ -249,21 +415,6 @@ void ListWnd::OnSize(const Area& ns) {
 void ListWnd::OnScroll(ScrollDirection dir) {
 	Layout();
 	Repaint();
-}
-
-void ListWnd::SetColumnWidth(int id, float w) {
-	std::map<int, Column>::iterator it = _cols.find(id);
-	if(it!=_cols.end()) {
-		it->second._width = w;
-
-		ref<Settings> st = GetSettings();
-		if(st) {
-			st->SetValue(L"col-"+Stringify(id)+L".width", Stringify(w));
-		}
-
-		OnColumnSizeChanged();
-		Repaint();
-	}
 }
 
 void ListWnd::OnColumnSizeChanged() {
@@ -302,39 +453,14 @@ void ListWnd::OnFocus(bool f) {
 }
 
 void ListWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
-	if(ev==MouseEventLDown) {
-		Focus();
+	Area rc = GetClientArea();
+	if(y < rc.GetTop()) {
+		GridWnd::OnMouse(ev, x, y);
 	}
-
-	if(ev==MouseEventRDown && y<=GetHeaderHeight()) {
-		DoContextMenu(x,y);
-	}
-	else if(ev==MouseEventLDown||ev==MouseEventLDouble||ev==MouseEventRDown) {
-		Pixels ch = GetHeaderHeight();
-		if(y<ch && ev!=MouseEventLDouble) {
-			_dragStartX = x;
-			Area r = GetClientArea();
-			SetCursor(LoadCursor(NULL, IDC_SIZEWE));
-			int cx = 0;
-			std::map<int, Column>::iterator it = _cols.begin();
-			_draggingCol = -1;
-			while(it!=_cols.end()) {
-				Column& col = it->second;
-				if(col._visible) {
-				cx += int(r.GetWidth()*col._width);
-					if(x<cx) {
-						_draggingCol = it->first;
-						break;
-					}
-				}
-				++it;
-			}
-
-			if(_draggingCol>=0) {
-				SetCapture(GetWindow());
-			}
-		}
-		else {
+	else {
+		if(ev==MouseEventLDown||ev==MouseEventLDouble||ev==MouseEventRDown) {
+			Focus();
+			Pixels ch = GetHeaderHeight();
 			Area area = GetClientArea();
 			int idx = GetRowIDByHeight(y);
 
@@ -362,69 +488,15 @@ void ListWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 				}
 				++it;
 			}
-		}
+		}	
 	}
-	else if(ev==MouseEventMove) {
-		Pixels ch = GetHeaderHeight();
-
-		if(y<ch) {
-			if(_draggingCol>=0) {
-				int dx = x - _dragStartX;
-				_dragStartX = x;
-				Area r = GetClientArea();
-				if(r.GetWidth()!=0) {
-					float colWidthChange = float(dx)/float(r.GetWidth());
-					_cols[_draggingCol]._width += colWidthChange; ///
-					if(_cols[_draggingCol]._width<=KMinimumColumnWidth) {
-						_cols[_draggingCol]._width = KMinimumColumnWidth;
-					}
-					OnColumnSizeChanged();
-				}
-			}
-			Repaint();
-		}
-	}	
-	else if(ev==MouseEventLUp) {
-		// Update the width of the column in settings
-		ref<Settings> st = GetSettings();
-		if(st) {
-			st->SetValue(L"col-"+Stringify(_draggingCol)+L".width", Stringify(GetColumnWidth(_draggingCol)));
-		}
-
-		// Cancel the drag stuff
-		_draggingCol = -1;
-		ReleaseCapture();
-		SetCursor(LoadCursor(NULL, IDC_ARROW));		
-	}
-}
-
-void ListWnd::OnContextMenu(Pixels x, Pixels y) {
-	OnMouse(MouseEventRDown, x, y);
-	OnMouse(MouseEventRUp, x, y);
-}
-
-void ListWnd::DoContextMenu(Pixels x, Pixels y) {
-	ContextMenu cm;
-	std::map<int, Column>::const_iterator it = _cols.begin();
-	while(it!=_cols.end()) {
-		const std::pair<int, Column>& data = *it;
-		if(data.second._title.length()>0) { // columns without a title usually show icons and should not be hidden
-			cm.AddItem(data.second._title, data.first+1, false, data.second._visible);
-		}
-		++it;
-	}
-
-	int r = cm.DoContextMenu(ref<Wnd>(this), x, y);
-	if(r>0) {
-		SetColumnVisible(r-1, !IsColumnVisible(r-1));
-	}
-	Update();
 }
 
 int ListWnd::GetRowIDByHeight(int y) {
 	int ih = GetItemHeight();
 	if(ih==0) ih = 1;
-	return (y - GetHeaderHeight() + int(GetVerticalPos()))/ih;
+	Area rc = GetClientArea();
+	return (y - rc.GetTop() + int(GetVerticalPos()))/ih;
 }
 
 void ListWnd::OnClickItem(int id, int col, Pixels x, Pixels y) {
@@ -443,29 +515,13 @@ int ListWnd::GetItemHeight() {
 
 Area ListWnd::GetRowArea(int rid) {
 	Area client = GetClientArea();
-	int h = -int(GetVerticalPos())+GetHeaderHeight();
 	int ih = GetItemHeight();
-
-	h += (rid*ih);
+	int h = -int(GetVerticalPos()) + (rid*ih);
+	
 	if(h>0 && h<client.GetBottom()) {
 		return Area(client.GetLeft(), client.GetTop()+h, client.GetWidth(), ih);
 	}
 	return Area(0,0,0,0);
-}
-
-void ListWnd::AddColumn(std::wstring name, int id, float w, bool visible) {
-	_cols[id] = Column(name);
-	_cols[id]._visible = visible;
-	if(w>0.0f) {
-		_cols[id]._width = w;
-	}
-}
-
-// Column
-ListWnd::Column::Column(std::wstring title) {
-	_title = title;
-	_width = 0.2f;
-	_visible = true;
 }
 
 // EditableListWnd
@@ -565,4 +621,7 @@ void EditableListWnd::SetSelectedRowAndEdit(int r) {
 		OnEditingStarted(r);
 		Repaint();
 	}
+}
+
+ColumnInfo::~ColumnInfo() {
 }

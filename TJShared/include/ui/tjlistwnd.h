@@ -3,7 +3,15 @@
 
 namespace tj {
 	namespace shared {
-		class EXPORTED ListWnd: public ChildWnd {
+		class EXPORTED ColumnInfo {
+			public:
+				virtual ~ColumnInfo();
+				virtual float GetColumnX(int id) = 0;
+				virtual float GetColumnWidth(int id) = 0;
+				virtual bool IsColumnVisible(int id) const = 0;
+		};
+
+		class EXPORTED GridWnd: public ChildWnd, public ColumnInfo {
 			public:
 				struct Column {
 					Column(std::wstring title=L"");
@@ -11,12 +19,11 @@ namespace tj {
 					float _width;
 					bool _visible;
 				};
-
-				ListWnd();
-				virtual ~ListWnd();
+				
+				GridWnd();
+				virtual ~GridWnd();
 				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
-				virtual void SetSelectedRow(int r);
-				virtual int GetSelectedRow() const;
+				virtual Area GetClientArea() const;
 
 				// col stuff
 				virtual void AddColumn(std::wstring name, int id, float w =-1.0f, bool visible=true);
@@ -25,17 +32,45 @@ namespace tj {
 				virtual float GetColumnWidth(int id);
 				virtual void SetColumnVisible(int id, bool v);
 				virtual bool IsColumnVisible(int id) const;
+				virtual void SetShowHeader(bool t);
+
+				virtual void SetAllowColumnResizing(bool r);
+				virtual bool IsColumnResizingAllowed() const;
+
+				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
+				virtual void OnColumnSizeChanged();
+				virtual void OnSettingsChanged();
+				virtual void OnContextMenu(Pixels x, Pixels y);
+
+			protected:
+				virtual void DoContextMenu(Pixels x, Pixels y);
+				virtual Pixels GetHeaderHeight() const;
+				const static float KMinimumColumnWidth;
+
+				std::map<int,Column> _cols;	
+				int _draggingCol;
+				int _dragStartX;
+				bool _showHeader;
+				bool _allowResize;
+		};
+
+		class EXPORTED ListWnd: public GridWnd {
+			public:
+				ListWnd();
+				virtual ~ListWnd();
+				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
+				virtual void SetSelectedRow(int r);
+				virtual int GetSelectedRow() const;
 
 				/* The 'empty text' is the text shown when the list is empty (could be a hint for the user
 				on how to fill the list */
 				virtual void SetEmptyText(const std::wstring& txt); 
 				std::wstring GetEmptyText() const;
-				virtual void SetShowHeader(bool t);
 
 			protected:
 				// to be implemented by child
 				virtual int GetItemCount() = 0;
-				virtual void PaintItem(int id, graphics::Graphics& g, Area& row) = 0;
+				virtual void PaintItem(int id, graphics::Graphics& g, Area& row, const ColumnInfo& ci) = 0;
 				virtual Pixels GetItemHeight();
 				virtual void OnClickItem(int id, int col, Pixels x, Pixels y);
 				virtual void OnRightClickItem(int id, int col);
@@ -44,8 +79,6 @@ namespace tj {
 				
 				virtual void OnSettingsChanged();
 				virtual void OnFocus(bool f);
-				virtual void OnContextMenu(Pixels x, Pixels y);
-				virtual void DoContextMenu(Pixels x, Pixels y);
 				virtual void OnSize(const Area& ns);
 				virtual void OnKey(Key k, wchar_t t, bool down, bool isAccel);
 				virtual void OnScroll(ScrollDirection dir);
@@ -59,18 +92,10 @@ namespace tj {
 
 				int GetRowIDByHeight(int h);
 				virtual Area GetRowArea(int rid);
-				virtual Pixels GetHeaderHeight() const;
-				const static float KMinimumColumnWidth;
-
-			protected:
-				std::map<int,Column> _cols;	
 
 			private:
 				std::wstring _emptyText;
-				int _draggingCol;
-				int _dragStartX;
 				int _selected;
-				bool _showHeader;
 		};
 
 		class EXPORTED EditableListWnd: public ListWnd {

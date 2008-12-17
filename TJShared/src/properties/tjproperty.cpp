@@ -1,4 +1,4 @@
-#include "../../include/tjshared.h"
+#include "../../include/properties/tjproperties.h"
 using namespace tj::shared;
 
 PropertySet::PropertySet() {

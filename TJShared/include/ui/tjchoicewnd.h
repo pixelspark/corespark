@@ -25,7 +25,7 @@ namespace tj {
 				ChoiceListWnd();
 				virtual ~ChoiceListWnd();
 				virtual int GetItemCount();
-				virtual void PaintItem(int id, graphics::Graphics& g, Area& row);
+				virtual void PaintItem(int id, graphics::Graphics& g, Area& row, const ColumnInfo& ci);
 				virtual int GetItemHeight();
 				virtual void AddChoice(ref<Choice> choice);
 				virtual void SetItemHeight(Pixels h);
