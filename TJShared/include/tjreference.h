@@ -250,6 +250,14 @@ namespace tj {
 					return _object != r._object;
 				}
 
+				template<typename TT> inline bool operator==(const strong<TT>& r) const {
+					return _object == r._object;
+				}
+
+				template<typename TT> inline bool operator!=(const strong<TT>& r) const {
+					return _object != r._object;
+				}
+
 				template<class X> inline bool IsCastableTo() const {
 					return (_object!=0) && (dynamic_cast<const X*>(_object)!=0);
 				}

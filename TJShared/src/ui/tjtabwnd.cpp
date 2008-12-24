@@ -25,8 +25,18 @@ TabWnd::TabWnd(ref<WindowManager> root, const std::wstring& id): ChildWnd(L"TabW
 TabWnd::~TabWnd() {
 }
 
+TabWnd::TabPane::TabPane(strong<Pane> pane): _pane(pane) {
+}
+
+TabWnd::TabPane::~TabPane() {
+}
+
 void TabWnd::OnTimer(unsigned int id) {
-	if(!_entryAnimation.IsAnimating()) {
+	if(!_entryAnimation.IsAnimating() && id==1) {
+		StopTimer(id);
+	}
+
+	if(!_tabAppearAnimation.IsAnimating() && id==2) {
 		StopTimer(id);
 	}
 	Repaint();
@@ -57,10 +67,11 @@ ref<Icon> TabWnd::GetTabIcon() const {
 }
 
 void TabWnd::Rename(ref<Wnd> wnd, std::wstring name) {
-	std::vector< ref<Pane> >::iterator it = _panes.begin();
+	std::vector< TabPane >::iterator it = _panes.begin();
 	while(it!=_panes.end()) {
-		ref<Pane> p = *it;
-		if(p->GetWindow() ==wnd) {
+		TabPane& tp = *it;
+		strong<Pane> p = tp._pane;
+		if(p->GetWindow() == wnd) {
 			p->SetTitle(name);
 			Update();
 			return;
@@ -81,7 +92,7 @@ void TabWnd::Paint(Graphics& g, ref<Theme> theme) {
 
 	Pixels totalTabsWidth = GetTotalTabWidth();
 	bool showScroller = (totalTabsWidth > (rect.GetWidth()-2*KIconWidth));
-	Pixels scrollerHeight = showScroller?KScrollerHeight:0;
+	Pixels scrollerHeight = (showScroller && !_childStyle) ?KScrollerHeight:0;
 	Pixels offset = showScroller ? _offset : 0;
 
 	if(_headerHeight>0) {		
@@ -118,14 +129,15 @@ void TabWnd::Paint(Graphics& g, ref<Theme> theme) {
 		Pen border(theme->GetColor(Theme::ColorActiveEnd), 1.0f);
 		g.DrawRectangle(&border, RectF(0, float(_headerHeight)-1, float(rect.GetWidth())-1, float(rect.GetHeight()-_headerHeight)));
 
-		std::vector< ref<Pane> >::iterator it = _panes.begin();
+		std::vector<TabPane>::iterator it = _panes.begin();
 		SolidBrush textBrush = theme->GetColor(Theme::ColorText);
 		SolidBrush inactiveTextBrush = Theme::ChangeAlpha(theme->GetColor(Theme::ColorText), int(127.0f + 127.0f * _entryAnimation.GetFraction()));
-		int left = -offset;
+		Pixels left = -offset;
 		int idx = 0;
 
 		while(it!=_panes.end()) {
-			ref<Pane> pane = *it;
+			TabPane& tp = *it;
+			strong<Pane> pane = tp._pane;
 			if(pane->_detached) {
 				++it;
 				continue;
@@ -133,47 +145,65 @@ void TabWnd::Paint(Graphics& g, ref<Theme> theme) {
 
 			RectF bound;
 			std::wstring title = pane->GetTitle();
-			g.MeasureString(title.c_str(), (INT)title.length(), theme->GetGUIFontBold(), PointF(0.0f, 0.0f), &bound);				
+			g.MeasureString(title.c_str(), (INT)title.length(), theme->GetGUIFontBold(), PointF(0.0f, 0.0f), &bound);	
+			bound.Width *= tp._appearAnimation.GetFraction();
 			
+			Pixels currentTabLeft = left;
+			if(_dragging==ref<Pane>(pane)) {
+				POINT lp;
+				GetCursorPos(&lp);
+				if(ScreenToClient(GetWindow(), &lp)) {
+					lp.x = long(lp.x / theme->GetDPIScaleFactor());
+					lp.y = long(lp.y / theme->GetDPIScaleFactor());
+					currentTabLeft = lp.x - Pixels(bound.Width/2);
+				}
+			}
+
 			// border
-			if(pane==_current) {
+			if(ref<Pane>(pane)==_current) {
 				if(!_childStyle) {
 					LinearGradientBrush lbr(PointF(0.0f, (float)scrollerHeight), PointF(0.0f, float(_headerHeight)), theme->GetColor(Theme::ColorActiveEnd), theme->GetColor(Theme::ColorActiveEnd));
-					g.FillRectangle(&lbr, RectF(float(left), scrollerHeight+2.0f, float(bound.Width+2+(pane->HasIcon()?KIconWidth:0)), float(_headerHeight-scrollerHeight)));
+					g.FillRectangle(&lbr, RectF(float(currentTabLeft), scrollerHeight+2.0f, float(bound.Width+2+(pane->HasIcon()?KIconWidth:0)), float(_headerHeight-scrollerHeight)));
 					SolidBrush backBrush(theme->GetColor(Theme::ColorTabButtonBackground));
-					g.FillRectangle(&backBrush, RectF(float(left+1.0f), scrollerHeight+3.0f, float(bound.Width+(pane->HasIcon()?KIconWidth:0)), float(_headerHeight-scrollerHeight)));
+					g.FillRectangle(&backBrush, RectF(float(currentTabLeft+1.0f), scrollerHeight+3.0f, float(bound.Width+(pane->HasIcon()?KIconWidth:0)), float(_headerHeight-scrollerHeight)));
 				}
 				else {
 					LinearGradientBrush lbr(PointF(0.0f, (float)scrollerHeight), PointF(0.0f, float(_headerHeight-2-scrollerHeight)), theme->ChangeAlpha(theme->GetColor(Theme::ColorActiveEnd), 0), theme->GetColor(Theme::ColorActiveEnd));
 					LinearGradientBrush bbr(PointF(0.0f, (float)scrollerHeight), PointF(0.0f, float(_headerHeight-2-scrollerHeight)), theme->ChangeAlpha(theme->GetColor(Theme::ColorActiveEnd), 0), theme->ChangeAlpha(theme->GetColor(Theme::ColorActiveEnd), 127));
 					Pen pn(&lbr, 1.0f);
 					
-					g.DrawRectangle(&pn, RectF(float(left), (float)scrollerHeight, float(bound.Width+2+(pane->HasIcon()?KIconWidth:0)), float(_headerHeight-3-scrollerHeight)));
-					g.FillRectangle(&bbr, RectF(float(left+1.0f), (float)scrollerHeight, float(bound.Width+(pane->HasIcon()?KIconWidth:0)), float(_headerHeight-3-scrollerHeight)));
+					g.DrawRectangle(&pn, RectF(float(currentTabLeft), (float)scrollerHeight, float(bound.Width+2+(pane->HasIcon()?KIconWidth:0)), float(_headerHeight-3-scrollerHeight)));
+					g.FillRectangle(&bbr, RectF(float(currentTabLeft+1.0f), (float)scrollerHeight, float(bound.Width+(pane->HasIcon()?KIconWidth:0)), float(_headerHeight-3-scrollerHeight)));
 				}
 			}
 			
 			// gradient achter actieve tab of dragging tab (niet border)
-			if((pane==_current && pane!=_dragging) || pane==_dragging) {
+			if(ref<Pane>(pane)==_dragging || (ref<Pane>(pane)==_current)) {
 				Color start = theme->GetColor(Theme::ColorTabButtonStart);
 				Color end = theme->GetColor(Theme::ColorTabButtonEnd);
 
 				if(!_childStyle) {
 					LinearGradientBrush lbr(PointF(0.0f, 0.0f), PointF(0.0f, float(_headerHeight)), start, end);
-					g.FillRectangle(&lbr, RectF(float(left), scrollerHeight+2.0f, float(bound.Width+2+(pane->HasIcon()?KIconWidth:0)), float(_headerHeight-2-scrollerHeight)));
+					g.FillRectangle(&lbr, RectF(float(currentTabLeft), scrollerHeight+2.0f, float(bound.Width+2+(pane->HasIcon()?KIconWidth:0)), float(_headerHeight-2-scrollerHeight)));
 				
 					LinearGradientBrush gbr(PointF(0.0f, 0.0f), PointF(0.0f, float(_headerHeight)/2.0f), theme->GetColor(Theme::ColorGlassStart), theme->GetColor(Theme::ColorGlassEnd));
-					g.FillRectangle(&gbr, RectF(float(left), scrollerHeight+2.0f, float(bound.Width+2+(pane->HasIcon()?KIconWidth:0)), float(_headerHeight/2.0f-2-scrollerHeight)));
+					g.FillRectangle(&gbr, RectF(float(currentTabLeft), scrollerHeight+2.0f, float(bound.Width+2+(pane->HasIcon()?KIconWidth:0)), float(_headerHeight/2.0f-2-scrollerHeight)));
 				}
 			}
 
+			bool isCurrent = ref<Pane>(pane)==_current;
 			if(pane->HasIcon()) {
 				ref<Icon> icon = pane->GetIcon();
 				if(icon) {
-					icon->Paint(g, Area(left+4, scrollerHeight+4, KRealIconWidth, KRealIconWidth), (pane==_current) ? 1.0f : (0.5f+(_entryAnimation.GetFraction()/2.0f)));
+					icon->Paint(g, Area(currentTabLeft+4, scrollerHeight+4, KRealIconWidth, KRealIconWidth), isCurrent ? 1.0f : (0.5f+(_entryAnimation.GetFraction()/2.0f)));
 				}
 			}
-			g.DrawString(title.c_str(), (INT)title.length(), theme->GetGUIFontBold(), PointF(float(left+1+(pane->HasIcon()?KIconWidth:0)), scrollerHeight+4.0f), (pane==_current) ? &textBrush : &inactiveTextBrush);
+
+			Area labelArea(currentTabLeft+1+(pane->HasIcon() ? KIconWidth : 0), scrollerHeight+4, Pixels(bound.Width)+2, _headerHeight-2-scrollerHeight);
+			StringFormat sf;
+			sf.SetFormatFlags(StringFormatFlagsLineLimit);
+			sf.SetAlignment(StringAlignmentNear);
+			g.DrawString(title.c_str(), (int)title.length(), theme->GetGUIFontBold(), labelArea, &sf, isCurrent ? &textBrush : &inactiveTextBrush);
 
 			left += int(bound.Width) + 4 + (pane->HasIcon()?KIconWidth:0);
 			++it;
@@ -237,30 +267,38 @@ const std::wstring& TabWnd::GetID() const {
 }
 
 ref<Pane> TabWnd::AddPane(ref<Pane> pane, bool select) {
-	assert(pane && pane->GetWindow());
-	SetParent(pane->GetWindow()->GetWindow(), GetWindow());
-	pane->GetWindow()->Show(false);
-	_panes.push_back(pane);
+	if(pane && pane->GetWindow()) {
+		SetParent(pane->GetWindow()->GetWindow(), GetWindow());
+		pane->GetWindow()->Show(false);
+		_panes.push_back(TabPane(pane));
+		TabPane& tp = *(_panes.rbegin());
 
-	Placement np;
-	np._type = Placement::Tab;
-	np._container = GetID();
-	pane->OnPlacementChange(np);
+		if(IsShown()) {
+			tp._appearAnimation.Start(Time(100));
+			_tabAppearAnimation.Start(Time(100));
+			StartTimer(Time(10), 2);
+		}
 
-	if(_panes.size()==1) {
-		SelectPane(0);
+		Placement np;
+		np._type = Placement::Tab;
+		np._container = GetID();
+		pane->OnPlacementChange(np);
+
+		if(_panes.size()==1) {
+			SelectPane(0);
+		}
+		else if(select) {
+			SelectPane(pane);
+		}
+
+		Repaint();
 	}
-	else if(select) {
-		SelectPane(pane);
-	}
-
-	Repaint();
 	return pane;
 }
 
 ref<Pane> TabWnd::GetPane(int index) {
 	try {
-		return _panes.at(index);
+		return _panes.at(index)._pane;
 	}
 	catch(...) {
 		return null;
@@ -277,35 +315,45 @@ void TabWnd::RemovePane(ref<Wnd> wnd) {
 			cw->Show(false);
 		}
 	}
-	_current = null;
-	_offset = null;
-	std::vector< ref<Pane> >::iterator it = _panes.begin();
+	_offset = 0;
+
+	bool removedWasCurrent = false;
+	std::vector<TabPane>::iterator it = _panes.begin();
 	while(it!=_panes.end()) {
-		ref<Pane> pane = *it;
+		TabPane& tp = *it;
+		strong<Pane> pane = tp._pane;
 		if(pane->GetWindow() == wnd) {
+			if(_current==ref<Pane>(pane)) {
+				removedWasCurrent = true;
+			}
 			_panes.erase(it);
 			break;
 		}
 		++it;
 	}
-	SelectPane(0);
+
+	if(removedWasCurrent) {
+		_current = null;
+		SelectPane(0);
+	}
 }
 
 void TabWnd::SelectPane(unsigned int index) {
 	try {
-		ref<Pane> pane = _panes.at(index);
-		SelectPane(pane);
+		strong<Pane> pane = _panes.at(index)._pane;
+		SelectPane(ref<Pane>(pane));
 	}
 	catch(...) {
 	}
 }
 
 void TabWnd::SelectPane(ref<Wnd> wnd) {
-	std::vector< ref<Pane> >::iterator it = _panes.begin();
+	std::vector<TabPane>::iterator it = _panes.begin();
 	while(it!=_panes.end()) {
-		ref<Pane> pane = *it;
+		TabPane& tp = *it;
+		strong<Pane> pane = tp._pane;
 		if(pane->GetWindow()==wnd) {
-			SelectPane(pane);
+			SelectPane(ref<Pane>(pane));
 			return;
 		}
 		++it;
@@ -333,9 +381,10 @@ void TabWnd::Layout() {
 	if(_current) {	
 		_current->GetWindow()->Move(_childStyle?0:1, rc.GetTop()+_headerHeight, rc.GetWidth()-(_childStyle?0:1), rc.GetHeight()-_headerHeight-1);
 		
-		std::vector< ref<Pane> >::iterator it = _panes.begin();
+		std::vector<TabPane>::iterator it = _panes.begin();
 		while(it!=_panes.end()) {
-			ref<Pane> pane = *it;
+			TabPane& tp = *it;
+			ref<Pane> pane = tp._pane;
 			pane->GetWindow()->Move(_childStyle?0:1, rc.GetTop()+_headerHeight, rc.GetWidth()-(_childStyle?0:1), rc.GetHeight()-_headerHeight-(_childStyle?0:1));
 			++it;
 		}
@@ -371,13 +420,14 @@ LRESULT TabWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 }
 
 Pixels TabWnd::GetTotalTabWidth() {
-	std::vector< ref<Pane> >::iterator it = _panes.begin();
+	std::vector<TabPane>::iterator it = _panes.begin();
 	Graphics g(GetWindow());
 	Pixels size = 0;
 	ref<Theme> theme = ThemeManager::GetTheme();
 
 	while(it!=_panes.end()) {
-		ref<Pane> pane = *it;
+		TabPane& tp = *it;
+		ref<Pane> pane = tp._pane;
 		if(pane->_detached) {
 			++it;
 			continue;
@@ -386,43 +436,55 @@ Pixels TabWnd::GetTotalTabWidth() {
 		RectF bound;
 		std::wstring title = pane->GetTitle();
 		g.MeasureString(title.c_str(), (INT)title.length(), theme->GetGUIFontBold(), PointF(0.0f, 0.0f), &bound);				
-		size += int(bound.Width) + 4 + (pane->HasIcon()?KIconWidth:0);
+		size += int(bound.Width * tp._appearAnimation.GetFraction()) + 4 + (pane->HasIcon()?KIconWidth:0);
 		++it;
 	}
 
 	return Pixels(size * theme->GetDPIScaleFactor());
 }
 
+void TabWnd::ClosePane(ref<Pane> current) {
+	ref<WindowManager> root = _root;
+	if(current && root) {
+		std::vector<TabPane>::iterator it = _panes.begin();
+		while(it!=_panes.end()) {
+			TabPane& tp = *it;
+			strong<Pane> pn = tp._pane;
+			if(ref<Pane>(pn)==current) {
+				_panes.erase(it);
+				break;
+			}
+			++it;
+		}
+
+		ref<Wnd> wnd = current->GetWindow();
+		if(wnd) wnd->Show(false);
+
+		if(!current->IsClosable()) {
+			root->AddOrphanPane(current);
+		}
+
+		if(_current==current) {
+			_current = null;
+			SelectPane(0);
+		}
+
+		if(_dragging==current) {
+			_dragging = null;
+		}
+		Update();
+	}
+}
+
 void TabWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
-	if(ev==MouseEventLDown || ev==MouseEventLUp) {
+	if(ev==MouseEventLDown || ev==MouseEventLUp || ev==MouseEventMUp) {
 		Area rect = GetClientArea();
 		if(y<_headerHeight) {
 			if(x>rect.GetWidth()-_headerHeight && y<_headerHeight) {
 				if(_detachAttachAllowed) {
 					// close button
 					if(ev==MouseEventLUp) {
-						ref<WindowManager> root = _root;
-						if(_current && root) {
-							std::vector< ref<Pane> >::iterator it = _panes.begin();
-							while(it!=_panes.end()) {
-								ref<Pane> pn = *it;
-								if(pn==_current) {
-									_panes.erase(it);
-									break;
-								}
-								++it;
-							}
-
-							ref<Wnd> wnd = _current->GetWindow();
-							if(wnd) wnd->Show(false);
-
-							if(!_current->IsClosable()) {
-								root->AddOrphanPane(_current);
-							}
-							_current = 0;
-							SelectPane(0);
-							Update();
-						}
+						ClosePane(_current);
 						return;
 					}
 				}
@@ -438,7 +500,7 @@ void TabWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 			}
 			else {			
 				// Select tab
-				std::vector< ref<Pane> >::iterator it = _panes.begin();
+				std::vector<TabPane>::iterator it = _panes.begin();
 				unsigned int idx = 0; 
 				Pixels totalWidth = GetTotalTabWidth();
 				Area rc = GetClientArea();
@@ -449,7 +511,9 @@ void TabWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 				ref<Theme> theme = ThemeManager::GetTheme();
 
 				while(it!=_panes.end()) {
-					ref<Pane> pane = *it;
+					TabPane& tp = *it;
+					strong<Pane> pane = tp._pane;
+					
 					if(pane->_detached) {
 						++it;
 						idx++;
@@ -457,17 +521,25 @@ void TabWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 					}
 					RectF bound;
 					std::wstring title = pane->GetTitle();
+					float af = tp._appearAnimation.GetFraction();
 					g.MeasureString(title.c_str(), (INT)title.length(), theme->GetGUIFontBold(), PointF(0.0f, 0.0f), &bound);				
-					left += int(bound.Width) + 4 + (pane->HasIcon()?KIconWidth:0);
+					left += int(bound.Width * af) + 4 + (pane->HasIcon()?KIconWidth:0);
+
 					if(x<left) {
 						if(ev==MouseEventLUp) {
 							SelectPane(idx);
 							_dragging = null;
 						}
+						else if(ev==MouseEventMUp) {
+							ClosePane(pane);
+						}
 						else {
-							SetDraggingPane(pane);
-							_dragStartX = x;
-							_dragStartY = y;
+							if(_current==ref<Pane>(pane)) {
+								SetCursor(theme->GetGrabbedCursor());
+								SetDraggingPane(pane);
+								_dragStartX = x;
+								_dragStartY = y;
+							}
 						}
 						break;
 					}
@@ -479,6 +551,11 @@ void TabWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 			if(_dragging) {
 				if(ev==MouseEventLDown) {
 					SetCapture(GetWindow());
+				}
+				else if(ev==MouseEventLUp) {
+					_dragging = null;
+					SetCursor(LoadCursor(0,IDC_ARROW));
+					Repaint();
 				}
 			}
 			else {
@@ -493,9 +570,11 @@ void TabWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 	}
 	else if(ev==MouseEventRUp) {
 		ReleaseCapture();
+		_dragging = null;
 	}
 	else if(ev==MouseEventLeave) {
 		_in = false;
+		_dragging = null;
 		_entryAnimation.SetReversed(true);
 		_entryAnimation.Start();
 		StartTimer(Time(50), 1);
@@ -525,35 +604,7 @@ void TabWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 			int dy = abs(_dragStartY - y);
 			
 			if(dy < TearOffLimit && dx > TearOffLimit ) {
-				// only move tabs
-				try {
-					std::vector< ref<Pane> >::iterator it = std::find(_panes.begin(), _panes.end(), _dragging);
-					if(it!=_panes.end() && it!=_panes.begin()) {
-						dx = x - _dragStartX;
-						if(dx<0) {
-							std::vector< ref<Pane> >::iterator leftNeighbour = it-1;
-							if(leftNeighbour!=_panes.end()) {
-								ref<Pane> left = *leftNeighbour;
-								*leftNeighbour = *it;
-								*it = left;
-							}
-						}
-						else {
-							std::vector< ref<Pane> >::iterator rightNeighbour = it+1;
-							if(rightNeighbour!=_panes.end()) {
-								ref<Pane> right = *rightNeighbour;
-								*rightNeighbour = *it;
-								*it = right;
-							}
-						}
-					}
-				}
-				catch(...) {
-					_dragging = null;
-				}
-
-				_dragStartX = x;
-				_dragStartY = y;
+				DropPaneAt(x, _dragging);
 			}
 			else if(dy > TearOffLimit) {
 				Detach(_dragging);
@@ -564,13 +615,32 @@ void TabWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 	}
 }
 
+void TabWnd::DropPaneAt(Pixels x, ref<Pane> dragging) {
+	// Find the dragging pane in the pane list
+	for(std::vector<TabPane>::iterator dit = _panes.begin(); dit != _panes.end(); ++dit) {
+		if(ref<Pane>((*dit)._pane) == dragging) {
+			Pixels xo = 0;
+			std::vector<TabPane>::iterator it = GetPaneIteratorAt(x,xo);
+			if(it!=_panes.end()) {
+				if(it<dit || (x-xo) > 10) {
+					TabPane& tp = *it;
+					(*dit)._pane = tp._pane;
+					tp._pane = dragging;
+					Update();
+				}
+			}
+			return;		
+		}
+	}
+}
+
 void TabWnd::OnKey(Key k, wchar_t t, bool down, bool isAccelerator) {
 	if(!isAccelerator) {
 		if(k==KeyBrowseBack) {
 			int cid = 0;
-			std::vector< ref<Pane> >::iterator it = _panes.begin();
+			std::vector<TabPane>::iterator it = _panes.begin();
 			while(it!=_panes.end()) {
-				if(*it==_current) {
+				if(ref<Pane>((*it)._pane)==_current) {
 					break;
 				}
 				cid++;
@@ -587,9 +657,9 @@ void TabWnd::OnKey(Key k, wchar_t t, bool down, bool isAccelerator) {
 		}
 		else if(k==KeyBrowseForward) {
 			int cid = 0;
-			std::vector< ref<Pane> >::iterator it = _panes.begin();
+			std::vector<TabPane>::iterator it = _panes.begin();
 			while(it!=_panes.end()) {
-				if(*it==_current) {
+				if(ref<Pane>((*it)._pane)==_current) {
 					break;
 				}
 				cid++;
@@ -610,9 +680,9 @@ void TabWnd::OnKey(Key k, wchar_t t, bool down, bool isAccelerator) {
 void TabWnd::Detach(ref<Pane> p) {
 	if(!_detachAttachAllowed) return;
 
-	std::vector< ref<Pane> >::iterator it = _panes.begin();
+	std::vector<TabPane>::iterator it = _panes.begin();
 	while(it!=_panes.end()) {
-		if(*it == p) {
+		if(ref<Pane>((*it)._pane) == p) {
 			_panes.erase(it);
 			break;
 		}
@@ -647,19 +717,26 @@ Placement TabWnd::GetPlacement() const {
 	return p;
 }
 
-ref<Pane> TabWnd::GetPaneAt(int x) {
-	std::vector< ref<Pane> >::iterator it = _panes.begin();
+ref<Pane> TabWnd::GetPaneAt(Pixels x) {
+	Pixels xo = 0;
+	std::vector<TabPane>::iterator it = GetPaneIteratorAt(x,xo);
+	if(it!=_panes.end()) {
+		TabPane& tp = *it;
+		return tp._pane;
+	}
+	return null;
+}
+
+std::vector<TabWnd::TabPane>::iterator TabWnd::GetPaneIteratorAt(Pixels x, Pixels& xOnThisPane) {
+	std::vector<TabPane>::iterator it = _panes.begin();
 	unsigned int idx = 0; 
-	int left = 0;
+	Pixels left = 0;
 	Graphics g(GetWindow());
 	ref<Theme> theme = ThemeManager::GetTheme();
 
-	RECT rc;
-	GetWindowRect(GetWindow(), &rc);
-	x -= rc.left;
-
 	while(it!=_panes.end()) {
-		ref<Pane> pane = *it;
+		TabPane& tp = *it;
+		strong<Pane> pane = tp._pane;
 		if(pane->_detached) {
 			++it;
 			idx++;
@@ -668,22 +745,27 @@ ref<Pane> TabWnd::GetPaneAt(int x) {
 		RectF bound;
 		std::wstring title = pane->GetTitle();
 		g.MeasureString(title.c_str(), (INT)title.length(), theme->GetGUIFontBold(), PointF(0.0f, 0.0f), &bound);				
-		left += int(bound.Width) + 4 + (pane->HasIcon()?KIconWidth:0);
-		if(x<left) {
-			return pane;
+		float af = tp._appearAnimation.GetFraction();
+		Pixels paneWidth = int(bound.Width * af) + 4 + (pane->HasIcon()?KIconWidth:0);
+		
+		if(x<(left+paneWidth)) {
+			xOnThisPane = x-(left+paneWidth);
+			return it;
 		}
+		left += paneWidth;
 		idx++;
 		++it;
 	}
 
-	return ref<Pane>(0);
+	return _panes.end();
 }
 
 bool TabWnd::RevealWindow(ref<Wnd> w) {
-	std::vector< ref<Pane> >::iterator it = _panes.begin();
+	std::vector<TabPane>::iterator it = _panes.begin();
 	int idx = 0;
 	while(it!=_panes.end()) {
-		ref<Pane> p = *it;
+		TabPane& tp = *it;
+		strong<Pane> p = tp._pane;
 		if(p->GetWindow() == w) {
 			SelectPane(idx);
 			return true;

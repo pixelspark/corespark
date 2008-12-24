@@ -6,6 +6,14 @@ namespace tj {
 		class EXPORTED TabWnd: public ChildWnd {
 			friend class FloatingPane;
 
+			struct TabPane {
+				TabPane(strong<Pane> p);
+				~TabPane();
+
+				strong<Pane> _pane;
+				Animation _appearAnimation;
+			};
+
 			public:
 				TabWnd(ref<WindowManager> root, const std::wstring& id = L"");
 				virtual ~TabWnd();
@@ -23,7 +31,7 @@ namespace tj {
 				
 				void Rename(ref<Wnd> pane, std::wstring name);
 				ref<Wnd> GetCurrentPane();
-				ref<Pane> GetPaneAt(int x);
+				ref<Pane> GetPaneAt(Pixels x);
 				void Detach(ref<Pane> p);
 				void Attach(ref<Pane> p);
 				bool RevealWindow(ref<Wnd> w);
@@ -40,13 +48,16 @@ namespace tj {
 				virtual void OnFocus(bool focus);
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
 				virtual void OnTimer(unsigned int id);
+				virtual void ClosePane(ref<Pane> pane);
+				std::vector<TabPane>::iterator GetPaneIteratorAt(Pixels x, Pixels& xOnPane);
 
 				void SetDraggingPane(ref<Pane> pane);
 				void DoAddMenu(Pixels x, Pixels y);
 				void FixScrollerOffset();
 				Pixels GetTotalTabWidth();
+				void DropPaneAt(Pixels x, ref<Pane> dragging);
 				
-				std::vector< ref<Pane> > _panes;
+				std::vector<TabPane> _panes;
 				ref<Pane> _current;
 				ref<Pane> _dragging;
 				weak<WindowManager> _root;
@@ -60,6 +71,7 @@ namespace tj {
 				bool _in;
 				std::wstring _id;
 				Animation _entryAnimation;
+				Animation _tabAppearAnimation;
 
 				const static int TearOffLimit = 15;
 				enum {defaultHeaderHeight = 24};
