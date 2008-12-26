@@ -6,18 +6,28 @@ namespace tj {
 		class EXPORTED TabWnd: public ChildWnd {
 			friend class FloatingPane;
 
-			struct TabPane {
-				TabPane(strong<Pane> p);
-				~TabPane();
+			class TabPane {
+				friend class tj::shared::TabWnd;
 
-				strong<Pane> _pane;
-				Animation _appearAnimation;
+				public:
+					TabPane(strong<Pane> p);
+					~TabPane();
+					Pixels GetWidth() const;
+					void Layout(strong<Theme> theme);
+					void Close();
+					bool IsDestroyed() const;
+					ref<Pane> GetPane();
+
+				protected:
+					ref<Pane> _pane;
+					Pixels _width;
+					Animation _appearAnimation;
 			};
 
 			public:
 				TabWnd(ref<WindowManager> root, const std::wstring& id = L"");
 				virtual ~TabWnd();
-				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
+				
 				ref<Pane> AddPane(ref<Pane> pane, bool select = false);
 				ref<Pane> GetPane(int index);
 				void RemovePane(ref<Wnd> wnd);
@@ -44,6 +54,8 @@ namespace tj {
 				virtual ref<Icon> GetTabIcon() const;
 			
 			protected:
+				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
+				virtual void OnSize(const Area& ns);
 				virtual void OnKey(Key k, wchar_t t, bool down, bool isAccelerator);
 				virtual void OnFocus(bool focus);
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
