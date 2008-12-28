@@ -518,7 +518,7 @@ Area ListWnd::GetRowArea(int rid) {
 	int ih = GetItemHeight();
 	int h = -int(GetVerticalPos()) + (rid*ih);
 	
-	if(h>0 && h<client.GetBottom()) {
+	if(h>=0 && h<client.GetBottom()) {
 		return Area(client.GetLeft(), client.GetTop()+h, client.GetWidth(), ih);
 	}
 	return Area(0,0,0,0);
