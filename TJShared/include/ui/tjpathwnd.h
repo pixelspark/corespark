@@ -54,7 +54,7 @@ namespace tj {
 				PathWnd(PropertyGridWnd* grid);
 				virtual ~PathWnd();
 				virtual void Update();
-				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
+				virtual void Paint(graphics::Graphics& g, strong<Theme> theme);
 				virtual void SetPath(ref<Path> p);
 				virtual ref<Crumb> GetCrumbAt(Pixels x, int* left=0);
 

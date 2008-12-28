@@ -22,7 +22,7 @@ namespace tj {
 				
 				GridWnd();
 				virtual ~GridWnd();
-				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
+				virtual void Paint(graphics::Graphics& g, strong<Theme> theme);
 				virtual Area GetClientArea() const;
 
 				// col stuff
@@ -58,7 +58,7 @@ namespace tj {
 			public:
 				ListWnd();
 				virtual ~ListWnd();
-				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
+				virtual void Paint(graphics::Graphics& g, strong<Theme> theme);
 				virtual void SetSelectedRow(int r);
 				virtual int GetSelectedRow() const;
 

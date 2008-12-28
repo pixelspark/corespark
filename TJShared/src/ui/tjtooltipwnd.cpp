@@ -23,7 +23,7 @@ TooltipWnd::~TooltipWnd() {
 }
 
 void TooltipWnd::Move(Pixels x, Pixels y) {
-	ref<Theme> theme = ThemeManager::GetTheme();
+	strong<Theme> theme = ThemeManager::GetTheme();
 	float df = theme->GetDPIScaleFactor();
 	POINT p;
 	p.x = int(x*df);

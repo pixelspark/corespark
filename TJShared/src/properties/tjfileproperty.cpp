@@ -12,7 +12,7 @@ FilePropertyWnd::FilePropertyWnd(const std::wstring& name, std::wstring* path, s
 FilePropertyWnd::~FilePropertyWnd() {
 }
 
-void FilePropertyWnd::Paint(Graphics& g, ref<Theme> theme) {
+void FilePropertyWnd::Paint(Graphics& g, strong<Theme> theme) {
 	Area rc = GetClientArea();
 
 	SolidBrush back(theme->GetColor(Theme::ColorBackground));

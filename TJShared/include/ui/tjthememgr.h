@@ -7,9 +7,9 @@ namespace tj {
 			public:
 				static strong<Theme> GetTheme();
 				static strong<SettingsStorage> GetLayoutSettings();
-				static void AddTheme(ref<Theme> thm);
+				static void AddTheme(strong<Theme> thm);
 				static void RemoveTheme(ref<Theme> thm);
-				static void SelectTheme(ref<Theme> thm);
+				static void SelectTheme(strong<Theme> thm);
 				static void SelectTheme(int n);
 				static void ListThemes(std::vector< ref<Theme> >& lst);
 				static int GetThemeId();
@@ -29,7 +29,7 @@ namespace tj {
 				static void SetFriendlyTime(bool t);
 
 			protected:
-				static std::vector< ref<Theme> > _themes;
+				static std::vector< strong<Theme> > _themes;
 				static ref<Theme> _theme;
 				static ref<SettingsStorage> _layoutSettings;
 				static bool _friendlyTime;

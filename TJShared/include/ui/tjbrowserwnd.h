@@ -11,7 +11,7 @@ namespace tj {
 			public:
 				BrowserWnd(const std::wstring& title);
 				virtual ~BrowserWnd();
-				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
+				virtual void Paint(graphics::Graphics& g, strong<Theme> theme);
 				void Hide(bool t);
 				void Navigate(const std::wstring& url);
 				virtual void Layout();

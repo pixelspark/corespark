@@ -22,7 +22,7 @@ using namespace tj::shared;
 				public:
 					BrowserToolbarWnd(BrowserWnd* browser);
 					virtual ~BrowserToolbarWnd();
-					virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
+					virtual void Paint(graphics::Graphics& g, strong<Theme> theme);
 					virtual void SetURL(const std::wstring& url);
 					virtual void Layout();
 
@@ -194,7 +194,7 @@ using namespace tj::shared;
 		}
 
 		// manually do the DPI stuff
-		ref<Theme> theme = ThemeManager::GetTheme();
+		strong<Theme> theme = ThemeManager::GetTheme();
 		r.Multiply(theme->GetDPIScaleFactor());
 
 		if(((CAxWindow*)_ax)->IsWindow()) {
@@ -225,7 +225,7 @@ using namespace tj::shared;
 		}
 	}
 
-	void BrowserWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
+	void BrowserWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 		//if(_hidden) {
 			Area rc = GetClientArea();
 			SolidBrush br(Color(0,0,0));
@@ -277,7 +277,7 @@ using namespace tj::shared;
 		}
 	}
 
-	void BrowserToolbarWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
+	void BrowserToolbarWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 		ToolbarWnd::Paint(g, theme);
 	}
 
@@ -298,7 +298,7 @@ using namespace tj::shared;
 		static HBRUSH editBackground = 0;
 
 		if(msg==WM_CTLCOLOREDIT) {
-			ref<Theme> theme = ThemeManager::GetTheme();
+			strong<Theme> theme = ThemeManager::GetTheme();
 			Color c = theme->GetColor(Theme::ColorBackground);
 
 			if(editBackground==0 || back.GetValue()!=back.GetValue()) {
@@ -351,7 +351,7 @@ using namespace tj::shared;
 	void BrowserWnd::Navigate(const std::wstring& url) {
 	}
 
-	void BrowserWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
+	void BrowserWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 		Area rc = GetClientArea();
 		SolidBrush br(theme->GetColor(Theme::ColorBackground));
 		g.FillRectangle(&br, rc);

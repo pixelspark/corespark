@@ -97,7 +97,7 @@ namespace tj {
 				virtual bool IsShown() const;
 				virtual void Update();
 
-				virtual void Paint(graphics::Graphics& g, ref<Theme> theme) = 0;
+				virtual void Paint(graphics::Graphics& g, strong<Theme> theme) = 0;
 
 				struct EXPORTED ShowNotification {
 					ShowNotification(bool shown);
@@ -184,7 +184,7 @@ namespace tj {
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 
 				// Messages
-				virtual void Paint(graphics::Graphics& g, ref<Theme> theme) = 0;
+				virtual void Paint(graphics::Graphics& g, strong<Theme> theme) = 0;
 				virtual void OnSize(const Area& newSize);
 				virtual void OnScroll(ScrollDirection dir);
 				virtual void OnActivate(bool activate);

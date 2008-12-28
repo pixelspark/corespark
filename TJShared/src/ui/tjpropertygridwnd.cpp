@@ -71,7 +71,7 @@ void PropertyGridWnd::OnSettingsChanged() {
 	}
 }
 
-void PropertyGridWnd::Paint(Graphics& g, ref<Theme> theme) {
+void PropertyGridWnd::Paint(Graphics& g, strong<Theme> theme) {
 	Area r = GetClientArea();
 
 	SolidBrush br(theme->GetColor(Theme::ColorPropertyBackground));

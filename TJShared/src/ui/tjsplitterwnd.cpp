@@ -106,7 +106,7 @@ void SplitterWnd::Layout() {
 	Area rc = GetClientArea();
 	
 	if(_collapse==CollapseFirst) {
-		ref<Theme> theme = ThemeManager::GetTheme();
+		strong<Theme> theme = ThemeManager::GetTheme();
 		if(_orientation==OrientationVertical) {
 			rc.Narrow(0,0,theme->GetMeasureInPixels(Theme::MeasureToolbarHeight),0);
 		}
@@ -118,7 +118,7 @@ void SplitterWnd::Layout() {
 		if(_b) _b->Show(false);
 	}
 	else if(_collapse==CollapseSecond) {
-		ref<Theme> theme = ThemeManager::GetTheme();
+		strong<Theme> theme = ThemeManager::GetTheme();
 		if(_orientation==OrientationVertical) {
 			rc.Narrow(theme->GetMeasureInPixels(Theme::MeasureToolbarHeight),0,0,0);
 		}
@@ -182,7 +182,7 @@ void SplitterWnd::Expand() {
 Area SplitterWnd::GetBarArea() {
 	Area bar;
 	Area rc = GetClientArea();
-	ref<Theme> theme = ThemeManager::GetTheme();
+	strong<Theme> theme = ThemeManager::GetTheme();
 	Pixels barWidth = theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
 	if(_collapse==CollapseFirst) { // First one is visible, so bar on the right
 		if(_orientation==OrientationVertical) {
@@ -204,7 +204,7 @@ Area SplitterWnd::GetBarArea() {
 	return bar;
 }
 
-void SplitterWnd::Paint(Graphics& g, ref<Theme> theme) {
+void SplitterWnd::Paint(Graphics& g, strong<Theme> theme) {
 	Area rc = GetClientArea();
 	
 	if(_collapse==CollapseNone) {

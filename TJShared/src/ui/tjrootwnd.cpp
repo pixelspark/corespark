@@ -62,7 +62,7 @@ Area RootWnd::GetClientArea() const {
 	return rc;
 }
 
-void RootWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
+void RootWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 	if(IsStatusBarShown()) {
 		Area wrc = Wnd::GetClientArea();
 		Area rc(wrc.GetLeft(), wrc.GetBottom()-KStatusBarHeight, wrc.GetWidth(), KStatusBarHeight);
@@ -150,7 +150,7 @@ LRESULT RootWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 			GetWindowPlacement(GetWindow(), &wp);
 
 			if(wp.showCmd!=SW_SHOWMAXIMIZED) {
-				ref<Theme> theme = ThemeManager::GetTheme();
+				strong<Theme> theme = ThemeManager::GetTheme();
 				float df = theme->GetDPIScaleFactor();
 				POINT p;
 				p.x = GET_X_LPARAM(lp);

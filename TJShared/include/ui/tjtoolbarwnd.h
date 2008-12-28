@@ -21,8 +21,8 @@ namespace tj {
 				virtual Area GetPreferredSize() const;
 				void SetPreferredSize(Pixels w, Pixels h);
 
-				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
-				virtual void Paint(graphics::Graphics& g, ref<Theme> theme, bool over, bool down, float backgroundAlpha = 1.0f);
+				virtual void Paint(graphics::Graphics& g, strong<Theme> theme);
+				virtual void Paint(graphics::Graphics& g, strong<Theme> theme, bool over, bool down, float backgroundAlpha = 1.0f);
 
 				static void DrawToolbarButton(graphics::Graphics& g, Icon& icon, const Area& rc, ref<Theme> theme, bool over, bool down, bool separator=false, bool enabled = true, float alpha=1.0f);
 				static void DrawToolbarButton(graphics::Graphics& g, const Area& rc, ref<Theme> theme, bool over, bool down, bool separator=false, bool enabled = true, float alpha = 1.0f);
@@ -53,7 +53,7 @@ namespace tj {
 			public:
 				ToolbarWnd();
 				virtual ~ToolbarWnd();
-				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
+				virtual void Paint(graphics::Graphics& g, strong<Theme> theme);
 				virtual void Layout();
 				virtual void Add(ref<ToolbarItem> item, bool alignRight = false);
 				virtual void Remove(ref<ToolbarItem> item);
@@ -93,7 +93,7 @@ namespace tj {
 				SearchToolbarWnd();
 				virtual ~SearchToolbarWnd();
 				virtual void Layout();
-				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
+				virtual void Paint(graphics::Graphics& g, strong<Theme> theme);
 				virtual void Notify(ref<Object> src, const EditWnd::NotificationTextChanged& data);
 
 			protected:

@@ -160,7 +160,7 @@ ref<TreeNode> TreeWnd::GetTreeNodeAt(Pixels x, Pixels y, Area& row, HitType& ht)
 
 	y += GetVerticalPos();
 
-	ref<Theme> theme = ThemeManager::GetTheme();
+	strong<Theme> theme = ThemeManager::GetTheme();
 	Pixels indent = theme->GetMeasureInPixels(Theme::MeasureListItemHeight);
 
 	class HitTestVisitor: public TreeVisitor {
@@ -265,7 +265,7 @@ void TreeWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 	GridWnd::OnMouse(ev,x,y);
 }
 
-void TreeWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
+void TreeWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 	Area area = GetClientArea();
 	SolidBrush back(theme->GetColor(Theme::ColorBackground));
 	SolidBrush disabled(theme->GetColor(Theme::ColorDisabledOverlay));

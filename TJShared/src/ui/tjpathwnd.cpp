@@ -92,7 +92,7 @@ void PathWnd::Update() {
 
 ref<Crumb> PathWnd::GetCrumbAt(int x, int* left) {
 	if(_path) {
-		ref<Theme> theme = ThemeManager::GetTheme();
+		strong<Theme> theme = ThemeManager::GetTheme();
 		HDC dc = GetDC(GetWindow());
 		{
 			Graphics g(dc);
@@ -120,7 +120,7 @@ ref<Crumb> PathWnd::GetCrumbAt(int x, int* left) {
 	return 0;
 }
 
-void PathWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
+void PathWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 	Area rc = GetClientArea();
 	
 	SolidBrush zwart(theme->GetColor(Theme::ColorBackground));

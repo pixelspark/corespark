@@ -70,7 +70,7 @@ EditWnd::~EditWnd() {
 }
 
 void EditWnd::UpdateColor() {
-	ref<Theme> theme = ThemeManager::GetTheme();
+	strong<Theme> theme = ThemeManager::GetTheme();
 	Color nb = theme->GetColor(Theme::ColorEditBackground);
 	if(nb.GetValue()!=_back.GetValue()||_backBrush==0) {
 		_back = nb;
@@ -80,7 +80,7 @@ void EditWnd::UpdateColor() {
 	
 }
 
-void EditWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
+void EditWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 }
 
 void EditWnd::Show(bool s) {
@@ -92,7 +92,7 @@ void EditWnd::Show(bool s) {
 
 void EditWnd::Layout() {
 	Area rc = GetClientArea();
-	ref<Theme> theme = ThemeManager::GetTheme();
+	strong<Theme> theme = ThemeManager::GetTheme();
 	rc.MultiplyCeil(theme->GetDPIScaleFactor(), theme->GetDPIScaleFactor());
 	SetWindowPos(_ctrl, 0L, rc.GetLeft(), rc.GetTop(), rc.GetWidth(), rc.GetHeight(), SWP_NOZORDER);
 }
@@ -237,12 +237,12 @@ strong<Menu> SuggestionEditWnd::GetSuggestionMenu() {
 void SuggestionEditWnd::Layout() {
 	Area rc = GetClientArea();
 	rc.Narrow(0,0,16,0);
-	ref<Theme> theme = ThemeManager::GetTheme();
+	strong<Theme> theme = ThemeManager::GetTheme();
 	rc.MultiplyCeil(theme->GetDPIScaleFactor(), theme->GetDPIScaleFactor());
 	SetWindowPos(_ctrl, 0L, rc.GetLeft(), rc.GetTop(), rc.GetWidth(), rc.GetHeight(), SWP_NOZORDER);
 }
 
-void SuggestionEditWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
+void SuggestionEditWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 	// Draw background
 	Area rc = GetClientArea();
 	graphics::SolidBrush back(theme->GetColor(Theme::ColorBackground));

@@ -7,7 +7,7 @@ namespace tj {
 			public:
 				SplashWnd(std::wstring path, Pixels w, Pixels h);
 				virtual ~SplashWnd();
-				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
+				virtual void Paint(graphics::Graphics& g, strong<Theme> theme);
 				virtual void Layout();
 
 			protected:

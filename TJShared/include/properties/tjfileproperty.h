@@ -7,7 +7,7 @@ namespace tj {
 			public:
 				FilePropertyWnd(const std::wstring& name, ResourceIdentifier* rid, strong<ResourceProvider> rmg, const wchar_t* filter);
 				virtual ~FilePropertyWnd();
-				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
+				virtual void Paint(graphics::Graphics& g, strong<Theme> theme);
 				virtual void OnDropFiles(const std::vector< std::wstring >& files);
 				virtual void Update();
 				virtual void OnSize(const Area& ns);

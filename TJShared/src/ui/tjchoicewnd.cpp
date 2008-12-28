@@ -64,7 +64,7 @@ int ChoiceListWnd::GetItemCount() {
 }
 
 void ChoiceListWnd::PaintItem(int id, graphics::Graphics &g, tj::shared::Area &row, const ColumnInfo& ci) {
-	ref<Theme> theme = ThemeManager::GetTheme();
+	strong<Theme> theme = ThemeManager::GetTheme();
 	ref<Choice> choice = _choices.at(id);
 	if(choice) {
 		Pixels iw = choice->GetWidth();
@@ -108,7 +108,7 @@ bool ChoiceWnd::HasHeader() const {
 	return _title.length()>0;
 }
 
-void ChoiceWnd::Paint(Graphics& g, ref<Theme> theme) {
+void ChoiceWnd::Paint(Graphics& g, strong<Theme> theme) {
 	Area rc = GetClientArea();
 
 	// Draw header
@@ -137,7 +137,7 @@ void ChoiceWnd::Paint(Graphics& g, ref<Theme> theme) {
 void ChoiceWnd::Layout() {
 	if(_choices) {
 		Area rc = GetClientArea();
-		ref<Theme> theme = ThemeManager::GetTheme();
+		strong<Theme> theme = ThemeManager::GetTheme();
 		rc.Narrow(1,HasHeader()?theme->GetMeasureInPixels(Theme::MeasureToolbarHeight):0,1,1);
 		_choices->Fill(LayoutFill,rc);
 	}

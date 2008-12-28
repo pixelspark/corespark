@@ -27,7 +27,7 @@ namespace tj {
 						virtual ~PropertyWnd() {
 						}
 
-						virtual void Paint(graphics::Graphics& g, ref<Theme> theme) {
+						virtual void Paint(graphics::Graphics& g, strong<Theme> theme) {
 							// Draw background
 							Area rc = GetClientArea();
 							graphics::SolidBrush back(theme->GetColor(Theme::ColorBackground));

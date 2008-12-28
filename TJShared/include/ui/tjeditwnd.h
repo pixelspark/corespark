@@ -8,7 +8,7 @@ namespace tj {
 				EditWnd(bool multiLine=false);
 				virtual ~EditWnd();
 				virtual std::wstring GetText();
-				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
+				virtual void Paint(graphics::Graphics& g, strong<Theme> theme);
 				virtual void Layout();
 				virtual void SetText(const std::wstring& ws);
 				virtual void SetReadOnly(bool r);
@@ -59,7 +59,7 @@ namespace tj {
 				SuggestionEditWnd(bool multiLine = false);
 				virtual ~SuggestionEditWnd();
 				virtual void Layout();
-				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
+				virtual void Paint(graphics::Graphics& g, strong<Theme> theme);
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
 				virtual strong<Menu> GetSuggestionMenu();
 				virtual ref<MenuItem> DoSuggestionMenu();

@@ -15,7 +15,7 @@ namespace tj {
 				void SetMarkValue(float f);
 				float GetMarkValue() const;
 				virtual void Update();
-				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
+				virtual void Paint(graphics::Graphics& g, strong<Theme> theme);
 				virtual void SetColor(int idx);
 				void SetShowValue(bool show);
 				void SetSnapToHalf(bool snap);

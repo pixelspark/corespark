@@ -96,7 +96,7 @@ namespace tj {
 				ContextPopupWnd(strong<Menu> menu, HWND parent);
 				virtual ~ContextPopupWnd();
 				virtual ref<MenuItem> DoModal(strong<Wnd> parent, Pixels x, Pixels y); // returns null when no command
-				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
+				virtual void Paint(graphics::Graphics& g, strong<Theme> theme);
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
 				virtual void OnKey(Key k, wchar_t ch, bool down, bool isAccelerator);
 

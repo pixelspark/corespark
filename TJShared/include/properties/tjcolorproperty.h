@@ -26,7 +26,7 @@ namespace tj {
 			public:
 				ColorPopupWnd();
 				virtual ~ColorPopupWnd();
-				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
+				virtual void Paint(graphics::Graphics& g, strong<Theme> theme);
 				virtual void Layout();
 				virtual void Notify(ref<Object> source, const SliderWnd::NotificationChanged& evt);
 				virtual void Update();
@@ -60,7 +60,7 @@ namespace tj {
 			public:
 				ColorChooserWnd(RGBColor* c, RGBColor* tc);
 				virtual ~ColorChooserWnd();
-				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
+				virtual void Paint(graphics::Graphics& g, strong<Theme> theme);
 				virtual void Notify(ref<Object> source, const ColorPopupWnd::NotificationChanged& data);
 
 			protected:

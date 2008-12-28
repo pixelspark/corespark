@@ -7,7 +7,7 @@ namespace tj {
 			public:
 				ProgressWnd();
 				virtual ~ProgressWnd();
-				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
+				virtual void Paint(graphics::Graphics& g, strong<Theme> theme);
 				void SetIndeterminate(bool t);
 				void SetValue(float x);
 				void Update();

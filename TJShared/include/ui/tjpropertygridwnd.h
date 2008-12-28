@@ -10,7 +10,7 @@ namespace tj {
 				void Update();
 				void Inspect(ref<Inspectable> isp, ref<Path> p = ref<Path>());
 				void Layout();
-				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
+				virtual void Paint(graphics::Graphics& g, strong<Theme> theme);
 				void Clear();
 				void SetNameWidth(Pixels w);
 				virtual void OnScroll(ScrollDirection dir);

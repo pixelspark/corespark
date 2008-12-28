@@ -375,13 +375,13 @@ LRESULT ColorWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	return Wnd::Message(msg,wp,lp);
 }
 
-void ColorWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
+void ColorWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 	SolidBrush br(Color(_r, _g, _b));
 	g.FillRectangle(&br, GetClientArea());
 }
 
 void Wnd::Move(Pixels x, Pixels y, Pixels w, Pixels h) {
-	ref<Theme> theme = ThemeManager::GetTheme();
+	strong<Theme> theme = ThemeManager::GetTheme();
 	float df = theme->GetDPIScaleFactor();
 
 	MoveWindow(_wnd, int(ceil(x*df)), int(ceil(y*df)), int(ceil(w*df)), int(ceil(h*df)), TRUE);
@@ -401,7 +401,7 @@ LRESULT Wnd::PreMessage(UINT msg, WPARAM wp, LPARAM lp) {
 		BeginPaint(_wnd, &ps);
 		Graphics org(ps.hdc);
 
-		ref<Theme> theme = ThemeManager::GetTheme();
+		strong<Theme> theme = ThemeManager::GetTheme();
 		float dpiScale = theme->GetDPIScaleFactor();
 
 		if(!_doubleBuffered) {
@@ -459,7 +459,7 @@ LRESULT Wnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		Repaint();
 	}
 	else if(msg==WM_CONTEXTMENU) {
-		ref<Theme> theme = ThemeManager::GetTheme();
+		strong<Theme> theme = ThemeManager::GetTheme();
 		float df = theme->GetDPIScaleFactor();
 		POINT p;
 		p.x = GET_X_LPARAM(lp);
@@ -482,62 +482,62 @@ LRESULT Wnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	}
 	// OnMouse handlers
 	else if(msg==WM_LBUTTONDOWN) {
-		ref<Theme> theme = ThemeManager::GetTheme();
+		strong<Theme> theme = ThemeManager::GetTheme();
 		float df = theme->GetDPIScaleFactor();
 		OnMouse(MouseEventLDown, int(ceil(GET_X_LPARAM(lp)/df)), int(ceil(GET_Y_LPARAM(lp)/df)));
 		return 0;
 	}
 	else if(msg==WM_RBUTTONDOWN) {
-		ref<Theme> theme = ThemeManager::GetTheme();
+		strong<Theme> theme = ThemeManager::GetTheme();
 		float df = theme->GetDPIScaleFactor();
 		OnMouse(MouseEventRDown, int(ceil(GET_X_LPARAM(lp)/df)), int(ceil(GET_Y_LPARAM(lp)/df)));
 		return 0;
 	}
 	else if(msg==WM_MBUTTONDOWN) {
-		ref<Theme> theme = ThemeManager::GetTheme();
+		strong<Theme> theme = ThemeManager::GetTheme();
 		float df = theme->GetDPIScaleFactor();
 		OnMouse(MouseEventMDown, int(ceil(GET_X_LPARAM(lp)/df)), int(ceil(GET_Y_LPARAM(lp)/df)));
 		return 0;
 	}
 	else if(msg==WM_LBUTTONUP) {
-		ref<Theme> theme = ThemeManager::GetTheme();
+		strong<Theme> theme = ThemeManager::GetTheme();
 		float df = theme->GetDPIScaleFactor();
 		OnMouse(MouseEventLUp, int(ceil(GET_X_LPARAM(lp)/df)), int(ceil(GET_Y_LPARAM(lp)/df)));
 		return 0;
 	}
 	else if(msg==WM_MBUTTONUP) {
-		ref<Theme> theme = ThemeManager::GetTheme();
+		strong<Theme> theme = ThemeManager::GetTheme();
 		float df = theme->GetDPIScaleFactor();
 		OnMouse(MouseEventMUp, int(ceil(GET_X_LPARAM(lp)/df)), int(ceil(GET_Y_LPARAM(lp)/df)));
 		return 0;
 	}
 	else if(msg==WM_RBUTTONUP) {
-		ref<Theme> theme = ThemeManager::GetTheme();
+		strong<Theme> theme = ThemeManager::GetTheme();
 		float df = theme->GetDPIScaleFactor();
 		OnMouse(MouseEventRUp, int(ceil(GET_X_LPARAM(lp)/df)), int(ceil(GET_Y_LPARAM(lp)/df)));
 		return 0;
 	}
 	else if(msg==WM_LBUTTONDBLCLK) {
-		ref<Theme> theme = ThemeManager::GetTheme();
+		strong<Theme> theme = ThemeManager::GetTheme();
 		float df = theme->GetDPIScaleFactor();
 		OnMouse(MouseEventLDouble, int(ceil(GET_X_LPARAM(lp)/df)), int(ceil(GET_Y_LPARAM(lp)/df)));
 		return 0;
 	}
 	else if(msg==WM_RBUTTONDBLCLK) {
-		ref<Theme> theme = ThemeManager::GetTheme();
+		strong<Theme> theme = ThemeManager::GetTheme();
 		float df = theme->GetDPIScaleFactor();
 		OnMouse(MouseEventRDouble, int(ceil(GET_X_LPARAM(lp)/df)), int(ceil(GET_Y_LPARAM(lp)/df)));
 		return 0;
 	}
 	else if(msg==WM_MOUSEMOVE) {
-		ref<Theme> theme = ThemeManager::GetTheme();
+		strong<Theme> theme = ThemeManager::GetTheme();
 		float df = theme->GetDPIScaleFactor();
 		OnMouse(MouseEventMove, int(ceil(GET_X_LPARAM(lp)/df)), int(ceil(GET_Y_LPARAM(lp)/df)));
 		SetWantMouseLeave(_wantsMouseLeave);
 		return 0;
 	}
 	else if(msg==WM_MOUSELEAVE) {
-		ref<Theme> theme = ThemeManager::GetTheme();
+		strong<Theme> theme = ThemeManager::GetTheme();
 		float df = theme->GetDPIScaleFactor();
 		OnMouse(MouseEventLeave, int(ceil(GET_X_LPARAM(lp)/df)), int(ceil(GET_Y_LPARAM(lp)/df)));
 		return 0;
@@ -816,14 +816,14 @@ void Wnd::SetText(const std::wstring& text) {
 }
 
 void Wnd::SetSize(Pixels w, Pixels h) {
-	ref<Theme> theme = ThemeManager::GetTheme();
+	strong<Theme> theme = ThemeManager::GetTheme();
 	SetWindowPos(_wnd, 0L, 0, 0, int(w*theme->GetDPIScaleFactor()), int(h*theme->GetDPIScaleFactor()), SWP_NOZORDER|SWP_NOMOVE|SWP_NOACTIVATE);
 }
 
 Area Wnd::GetClientArea() const {
 	RECT r;
 	GetClientRect(_wnd, &r);
-	ref<Theme> theme = ThemeManager::GetTheme();
+	strong<Theme> theme = ThemeManager::GetTheme();
 	float df = theme->GetDPIScaleFactor();
 	
 	// Scale back to logical pixels
@@ -961,7 +961,7 @@ void TopWnd::OnSettingsChanged() {
 
 	// Set window size (but only if w>0 and h>0)
 	if(w>0 && h>0) {
-		ref<Theme> theme = ThemeManager::GetTheme();
+		strong<Theme> theme = ThemeManager::GetTheme();
 		SetWindowPos(GetWindow(), 0L, 0, 0l, long(w*theme->GetDPIScaleFactor()), long(h*theme->GetDPIScaleFactor()), SWP_NOZORDER|SWP_NOMOVE|SWP_NOACTIVATE);
 	}
 }
@@ -992,7 +992,7 @@ LRESULT TopWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		GetMinimumSize(w,h);
 
 		if(w!=0 && h!=0) {
-			ref<Theme> theme = ThemeManager::GetTheme();
+			strong<Theme> theme = ThemeManager::GetTheme();
 			mm->ptMinTrackSize.x = (long)(w * theme->GetDPIScaleFactor());
 			mm->ptMinTrackSize.y = (long)(h * theme->GetDPIScaleFactor());
 			return 0;

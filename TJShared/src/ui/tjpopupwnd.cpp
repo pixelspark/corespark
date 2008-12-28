@@ -39,7 +39,7 @@ void PopupWnd::PopupAt(Pixels x, Pixels y, ref<Wnd> window) {
 		Throw(L"No window specified, cannot pop menu up", ExceptionTypeError);
 	}
 
-	ref<Theme> theme = ThemeManager::GetTheme();
+	strong<Theme> theme = ThemeManager::GetTheme();
 	POINT pt;
 	pt.x = long(x*theme->GetDPIScaleFactor());
 	pt.y = long(y*theme->GetDPIScaleFactor());

@@ -24,7 +24,7 @@ void ProgressWnd::Update() {
 	}
 }
 
-void ProgressWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
+void ProgressWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 	float v = fabs(_value);
 	
 	Area rc = GetClientArea();	

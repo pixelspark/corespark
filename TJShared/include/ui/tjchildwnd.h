@@ -15,7 +15,7 @@ namespace tj {
 				ColorWnd(unsigned char r, unsigned char g, unsigned char b);
 				virtual ~ColorWnd();
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
-				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
+				virtual void Paint(graphics::Graphics& g, strong<Theme> theme);
 
 				unsigned char _r,_g,_b;
 		};
@@ -28,7 +28,7 @@ namespace tj {
 				virtual void SetChecked(bool t);
 				virtual void SetReadOnly(bool r);
 				virtual bool IsReadOnly() const;
-				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
+				virtual void Paint(graphics::Graphics& g, strong<Theme> theme);
 
 			protected:
 				virtual void OnTimer(unsigned int id);

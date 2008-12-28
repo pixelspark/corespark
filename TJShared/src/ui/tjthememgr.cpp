@@ -2,7 +2,7 @@
 #include <windowsx.h>
 using namespace tj::shared;
 
-std::vector< ref<Theme> > ThemeManager::_themes;
+std::vector< strong<Theme> > ThemeManager::_themes;
 ref<Theme> ThemeManager::_theme;
 bool ThemeManager::_friendlyTime = false;
 ref<SettingsStorage> ThemeManager::_layoutSettings;
@@ -19,7 +19,7 @@ strong<Theme> ThemeManager::GetTheme() {
 	return _theme;
 }
 
-void ThemeManager::AddTheme(ref<Theme> th) {
+void ThemeManager::AddTheme(strong<Theme> th) {
 	_themes.push_back(th);
 	if(!_theme) {
 		_theme = th; // select this theme if no theme is selected yet
@@ -34,7 +34,7 @@ strong<SettingsStorage> ThemeManager::GetLayoutSettings() {
 }
 
 void ThemeManager::RemoveTheme(ref<Theme> thm) {
-	std::vector< ref<Theme> >::iterator it = _themes.begin();
+	std::vector< strong<Theme> >::iterator it = _themes.begin();
 	while(it!=_themes.end()) {
 		ref<Theme> th = *it;
 		if(th==thm) {
@@ -46,7 +46,7 @@ void ThemeManager::RemoveTheme(ref<Theme> thm) {
 }
 
 int ThemeManager::GetThemeId() {
-	std::vector< ref<Theme> >::iterator it = _themes.begin();
+	std::vector< strong<Theme> >::iterator it = _themes.begin();
 	int idx = 0;
 	while(it!=_themes.end()) {
 		ref<Theme> th = *it;
@@ -61,7 +61,7 @@ int ThemeManager::GetThemeId() {
 }
 
 void ThemeManager::ListThemes(std::vector< ref<Theme> >& lst) {
-	std::vector< ref<Theme> >::iterator it = _themes.begin();
+	std::vector< strong<Theme> >::iterator it = _themes.begin();
 	while(it!=_themes.end()) {
 		ref<Theme> theme = *it;
 		lst.push_back(theme);
@@ -69,7 +69,7 @@ void ThemeManager::ListThemes(std::vector< ref<Theme> >& lst) {
 	}
 }
 
-void ThemeManager::SelectTheme(ref<Theme> th) {
+void ThemeManager::SelectTheme(strong<Theme> th) {
 	_theme = th;
 	EventThemeChanged.Fire(null, ThemeChangeNotification(th));
 }

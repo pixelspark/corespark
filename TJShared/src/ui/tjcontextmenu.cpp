@@ -30,7 +30,7 @@ ref<MenuItem> ContextMenu::DoContextMenuByItem(ref<Wnd> wnd, Pixels x, Pixels y)
 	
 	if(wnd) {
 		if(x<0 || y<0) {
-			ref<Theme> theme = ThemeManager::GetTheme();
+			strong<Theme> theme = ThemeManager::GetTheme();
 			float df = theme->GetDPIScaleFactor();
 			POINT px;
 			if(GetCursorPos(&px)) {
@@ -172,13 +172,13 @@ void ContextPopupWnd::EndModal(ref<MenuItem> res) {
 }
 
 int ContextPopupWnd::GetItemAt(Pixels y) {
-	ref<Theme> theme = ThemeManager::GetTheme();
+	strong<Theme> theme = ThemeManager::GetTheme();
 	return ((y+GetVerticalPos())/theme->GetMeasureInPixels(Theme::MeasureMenuItemHeight));
 }
 
 void ContextPopupWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 	strong<Menu> cm = GetCurrentMenu();
-	ref<Theme> theme = ThemeManager::GetTheme();
+	strong<Theme> theme = ThemeManager::GetTheme();
 	Pixels leftHeaderSize = Pixels(_openAnimation.GetFraction()*(theme->GetMeasureInPixels(Theme::MeasureMenuItemHeight)/2));
 	
 	if(_menu.size() < 2 || x > leftHeaderSize) {
@@ -309,7 +309,7 @@ void ContextPopupWnd::OnSelectItem(strong<MenuItem> ci) {
 	}
 }
 
-void ContextPopupWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
+void ContextPopupWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 	Area rc = GetClientArea();
 	Area originalRc = rc;
 	SolidBrush back(theme->GetColor(Theme::ColorBackground));

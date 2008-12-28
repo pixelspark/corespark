@@ -59,7 +59,7 @@ void CheckboxWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 	}
 }
 
-void CheckboxWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
+void CheckboxWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 	SolidBrush back(theme->GetColor(Theme::ColorBackground));
 	Area rc = GetClientArea();
 	g.FillRectangle(&back, rc);

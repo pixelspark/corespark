@@ -50,7 +50,7 @@ ref<GraphItem> GraphWnd::GetItemAt(Pixels x, Pixels y) {
 }
 
 void GraphWnd::SaveImage(const std::wstring& path) {
-	ref<Theme> theme = ThemeManager::GetTheme();
+	strong<Theme> theme = ThemeManager::GetTheme();
 
 	if(path.length()>4) {
 		std::wstring ext = path.substr(path.length()-3, 3);
@@ -208,7 +208,7 @@ std::pair<Pixels,Pixels> GraphWnd::GetEdge(const Area& from, const Area& to) {
 	}
 }
 
-void GraphWnd::Paint(Graphics& g, ref<Theme> theme) {
+void GraphWnd::Paint(Graphics& g, strong<Theme> theme) {
 	Area rc = GetClientArea();
 
 	SolidBrush backBrush(theme->GetColor(Theme::ColorBackground));
@@ -394,7 +394,7 @@ std::wstring SimpleGraphItem::GetText() const {
 	return _text;
 }
 
-void SimpleGraphItem::Paint(graphics::Graphics& g, ref<Theme> theme) {
+void SimpleGraphItem::Paint(graphics::Graphics& g, strong<Theme> theme) {
 	LinearGradientBrush brush(PointF(0.0f, float(_area.GetTop())), PointF(0.0f, float(_area.GetBottom())), Theme::ChangeAlpha(_color, 200), _color);
 	Pen border(_color, 1.0f);
 	g.FillRectangle(&brush, _area);

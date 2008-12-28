@@ -61,7 +61,7 @@ namespace tj {
 			public:
 				TreeWnd();
 				virtual ~TreeWnd();
-				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
+				virtual void Paint(graphics::Graphics& g, strong<Theme> theme);
 				virtual void SetRoot(ref<TreeNode> _root);
 				virtual ref<TreeNode> GetRoot();
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);

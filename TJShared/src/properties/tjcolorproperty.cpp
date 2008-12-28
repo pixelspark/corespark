@@ -136,7 +136,7 @@ void ColorPopupWnd::Notify(ref<Object> source, const SliderWnd::NotificationChan
 	Update();
 }
 
-void ColorPopupWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
+void ColorPopupWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 	Area rc = GetClientArea();
 	SolidBrush back(theme->GetColor(Theme::ColorBackground));
 	g.FillRectangle(&back, rc);
@@ -262,7 +262,7 @@ ColorChooserWnd::ColorChooserWnd(RGBColor* c, RGBColor* tc): ChildWnd(L""), _col
 ColorChooserWnd::~ColorChooserWnd() {
 }
 
-void ColorChooserWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
+void ColorChooserWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 	Area rc = GetClientArea();
 	SolidBrush bbr(theme->GetColor(Theme::ColorBackground));
 	g.FillRectangle(&bbr, rc);

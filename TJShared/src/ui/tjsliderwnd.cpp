@@ -87,7 +87,7 @@ void SliderWnd::SetValue(float f, bool notify) {
 SliderWnd::~SliderWnd() {
 }
 
-void SliderWnd::Paint(Graphics& g, ref<Theme> theme) {
+void SliderWnd::Paint(Graphics& g, strong<Theme> theme) {
 	EventUpdate.Fire(ref<Wnd>(this), NotificationUpdate());
 
 	Pixels draggerWidth = theme->GetMeasureInPixels(Theme::MeasureSliderDraggerWidth);

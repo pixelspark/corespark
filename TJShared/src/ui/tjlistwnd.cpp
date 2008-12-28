@@ -85,7 +85,7 @@ bool GridWnd::IsColumnVisible(int id) const {
 
 Pixels GridWnd::GetHeaderHeight() const {
 	if(!_showHeader) return 0;
-	ref<Theme> theme = ThemeManager::GetTheme();
+	strong<Theme> theme = ThemeManager::GetTheme();
 	return theme->GetMeasureInPixels(Theme::MeasureListHeaderHeight);
 }
 
@@ -231,7 +231,7 @@ float GridWnd::GetColumnWidth(int id) {
 	return 0.0f;
 }
 
-void GridWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
+void GridWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 	if(_showHeader) {
 		// draw columns
 		Pen border(theme->GetColor(Theme::ColorActiveStart), 1.0f);
@@ -339,7 +339,7 @@ std::wstring ListWnd::GetEmptyText() const {
 	return _emptyText;
 }
 
-void ListWnd::Paint(graphics::Graphics &g, ref<Theme> theme) {
+void ListWnd::Paint(graphics::Graphics &g, strong<Theme> theme) {
 	Area area = GetClientArea();
 	SolidBrush back(theme->GetColor(Theme::ColorBackground));
 	SolidBrush disabled(theme->GetColor(Theme::ColorDisabledOverlay));
@@ -509,7 +509,7 @@ void ListWnd::OnDoubleClickItem(int id, int col) {
 }
 
 int ListWnd::GetItemHeight() {
-	ref<Theme> theme = ThemeManager::GetTheme();
+	strong<Theme> theme = ThemeManager::GetTheme();
 	return theme->GetMeasureInPixels(Theme::MeasureListItemHeight);
 }
 
@@ -559,7 +559,7 @@ void EditableListWnd::SetSelectedRow(int r) {
 
 void EditableListWnd::Layout() {
 	if(IsEditing()) {
-		ref<Theme> theme = ThemeManager::GetTheme();
+		strong<Theme> theme = ThemeManager::GetTheme();
 		Area row = GetRowArea(_rowEditing);
 
 		std::map< int, ref<Property> >::iterator it = _editorProperties.begin();

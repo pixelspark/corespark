@@ -40,7 +40,7 @@ void Property::SetExpandable(bool t) {
 }
 
 Pixels Property::GetHeight() {
-	ref<Theme> theme = ThemeManager::GetTheme();
+	strong<Theme> theme = ThemeManager::GetTheme();
 	return theme->GetMeasureInPixels(Theme::MeasurePropertyHeight);
 }
 

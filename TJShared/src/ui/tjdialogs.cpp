@@ -44,7 +44,7 @@ bool DialogWnd::DoModal(ref<Wnd> parent) {
 		EnableWindow(root,FALSE);
 
 		/* Center this window */
-		ref<Theme> theme = ThemeManager::GetTheme();
+		strong<Theme> theme = ThemeManager::GetTheme();
 		float df = theme->GetDPIScaleFactor();
 		Area rc = TopWnd::GetClientArea();
 		int w = int(rc.GetWidth()*df);
@@ -89,7 +89,7 @@ LRESULT DialogWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	return TopWnd::Message(msg,wp,lp);
 }
 
-void DialogWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
+void DialogWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 	Area buttons = TopWnd::GetClientArea();
 	Pixels hh = ThemeManager::GetTheme()->GetMeasureInPixels(Theme::MeasureDialogHeaderHeight);
 	buttons.Narrow(0,buttons.GetHeight()-hh, 0, 0);
@@ -141,7 +141,7 @@ void PropertyDialogWnd::OnAfterShowDialog() {
 	_grid->FocusFirstProperty();
 }
 
-void PropertyDialogWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
+void PropertyDialogWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 	Area header = GetClientArea();
 	header.SetHeight(GetHeaderHeight());
 

@@ -43,7 +43,7 @@ namespace tj {
 			public:
 				ChoiceWnd();
 				virtual ~ChoiceWnd();
-				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
+				virtual void Paint(graphics::Graphics& g, strong<Theme> theme);
 				virtual void Layout();
 				virtual void OnSize(const Area& ns);
 				virtual void AddChoice(ref<Choice> trick);

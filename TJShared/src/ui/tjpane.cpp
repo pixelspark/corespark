@@ -264,5 +264,5 @@ void FloatingPane::Layout() {
 }
 
 
-void FloatingPane::Paint(graphics::Graphics& g, ref<Theme> theme) {
+void FloatingPane::Paint(graphics::Graphics& g, strong<Theme> theme) {
 }

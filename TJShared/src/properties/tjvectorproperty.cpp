@@ -32,7 +32,7 @@ namespace tj {
 					DeleteObject((HGDIOBJ)_font);
 				}
 
-				virtual void Paint(graphics::Graphics& g, ref<Theme> theme) {
+				virtual void Paint(graphics::Graphics& g, strong<Theme> theme) {
 				}
 
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp) {
@@ -54,7 +54,7 @@ namespace tj {
 
 				virtual void Layout() {
 					Area rc = GetClientArea();
-					ref<Theme> theme = ThemeManager::GetTheme();
+					strong<Theme> theme = ThemeManager::GetTheme();
 					rc.MultiplyCeil(theme->GetDPIScaleFactor(), theme->GetDPIScaleFactor());
 
 					int w = rc.GetWidth()/3;

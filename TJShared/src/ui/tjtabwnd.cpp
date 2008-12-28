@@ -50,7 +50,7 @@ Pixels TabWnd::TabPane::GetWidth() const {
 void TabWnd::TabPane::Layout(strong<Theme> theme) {
 	if(_pane) {
 		Area txt = theme->MeasureText(_pane->GetTitle(), theme->GetGUIFontBold());
-		_width = txt.GetWidth();
+		_width = txt.GetWidth() *  theme->GetDPIScaleFactor();
 	}
 }
 
@@ -118,7 +118,7 @@ void TabWnd::SetDraggingPane(ref<Pane> pane) {
 	Update();
 }
 
-void TabWnd::Paint(Graphics& g, ref<Theme> theme) {
+void TabWnd::Paint(Graphics& g, strong<Theme> theme) {
 	g.SetSmoothingMode(SmoothingModeDefault);
 	g.SetCompositingQuality(CompositingQualityDefault);
 	Area rect = GetClientArea();
@@ -305,8 +305,8 @@ ref<Pane> TabWnd::AddPane(ref<Pane> pane, bool select) {
 		TabPane& tp = *(_panes.rbegin());
 
 		if(IsShown()) {
-			tp._appearAnimation.Start(Time(100));
-			_tabAppearAnimation.Start(Time(110));
+			tp._appearAnimation.Start(Time(200));
+			_tabAppearAnimation.Start(Time(210));
 			StartTimer(Time(10), 2);
 		}
 
@@ -478,7 +478,7 @@ Pixels TabWnd::GetTotalTabWidth() {
 	std::vector<TabPane>::iterator it = _panes.begin();
 	Graphics g(GetWindow());
 	Pixels size = 0;
-	ref<Theme> theme = ThemeManager::GetTheme();
+	strong<Theme> theme = ThemeManager::GetTheme();
 
 	while(it!=_panes.end()) {
 		TabPane& tp = *it;
@@ -564,7 +564,7 @@ void TabWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 				int left = showScroller ? -_offset : 0;
 				Graphics g(GetWindow());
 
-				ref<Theme> theme = ThemeManager::GetTheme();
+				strong<Theme> theme = ThemeManager::GetTheme();
 
 				while(it!=_panes.end()) {
 					TabPane& tp = *it;
@@ -792,7 +792,7 @@ std::vector<TabWnd::TabPane>::iterator TabWnd::GetPaneIteratorAt(Pixels x, Pixel
 	unsigned int idx = 0; 
 	Pixels left = 0;
 	Graphics g(GetWindow());
-	ref<Theme> theme = ThemeManager::GetTheme();
+	strong<Theme> theme = ThemeManager::GetTheme();
 
 	while(it!=_panes.end()) {
 		TabPane& tp = *it;

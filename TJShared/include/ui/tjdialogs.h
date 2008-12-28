@@ -7,7 +7,7 @@ namespace tj {
 			public:	
 				DialogWnd(const std::wstring& title);
 				virtual ~DialogWnd();
-				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
+				virtual void Paint(graphics::Graphics& g, strong<Theme> theme);
 				virtual void Layout();
 				virtual void OnSize(const Area& ns);
 				virtual void OnCreated();
@@ -29,7 +29,7 @@ namespace tj {
 			public:
 				PropertyDialogWnd(const std::wstring& title, const std::wstring& question = L"");
 				virtual ~PropertyDialogWnd();
-				virtual void Paint(graphics::Graphics& g, ref<Theme> theme);
+				virtual void Paint(graphics::Graphics& g, strong<Theme> theme);
 				virtual ref<PropertyGridWnd> GetPropertyGrid();
 				virtual void Layout();
 				virtual Area GetClientArea() const;

@@ -10,7 +10,7 @@ ButtonWnd::~ButtonWnd() {
 }
 
 void ButtonWnd::Fill(LayoutFlags f, Area& r, bool direct) {
-	ref<Theme> theme = ThemeManager::GetTheme();
+	strong<Theme> theme = ThemeManager::GetTheme();
 	Pixels h = theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
 	if(f==LayoutTop) {
 		if(direct) Move(r.GetLeft(), r.GetTop(), r.GetWidth(), h);
@@ -61,7 +61,7 @@ void ButtonWnd::OnFocus(bool f) {
 	Repaint();
 }
 
-void ButtonWnd::Paint(Graphics& g, ref<Theme> theme) {
+void ButtonWnd::Paint(Graphics& g, strong<Theme> theme) {
 	Area rc = GetClientArea();
 
 	// TODO: make changeable at runtime
@@ -161,7 +161,7 @@ StateButtonWnd::StateButtonWnd(const ResourceIdentifier& imageOn, const Resource
 StateButtonWnd::~StateButtonWnd() {
 }
 
-void StateButtonWnd::Paint(Graphics& g, ref<Theme> theme) {
+void StateButtonWnd::Paint(Graphics& g, strong<Theme> theme) {
 	Area rc = GetClientArea();
 
 	SolidBrush backBr(IsMouseOver()?theme->GetColor(Theme::ColorActiveEnd):theme->GetColor(Theme::ColorTimeBackground));

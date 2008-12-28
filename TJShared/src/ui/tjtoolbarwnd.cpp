@@ -35,7 +35,7 @@ void ToolbarWnd::Remove(ref<ToolbarItem> ti) {
 }
 
 void ToolbarWnd::Layout() {
-	ref<Theme> theme = ThemeManager::GetTheme();
+	strong<Theme> theme = ThemeManager::GetTheme();
 	Pixels bs = theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
 	Area rc = GetClientArea();
 
@@ -118,7 +118,7 @@ void ToolbarWnd::SetTip(ref<Wnd> tipWindow) {
 }
 
 void ToolbarWnd::Fill(LayoutFlags f, Area& r, bool direct) {
-	ref<Theme> theme = ThemeManager::GetTheme();
+	strong<Theme> theme = ThemeManager::GetTheme();
 	Pixels h = theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
 	if(f==LayoutTop) {
 		if(direct) Move(r.GetLeft(), r.GetTop(), r.GetWidth(), h);
@@ -167,7 +167,7 @@ void ToolbarWnd::OnTimer(unsigned int id) {
 }
 
 void ToolbarWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
-	ref<Theme> theme = ThemeManager::GetTheme();
+	strong<Theme> theme = ThemeManager::GetTheme();
 	Pixels bs = theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
 
 	if(ev==MouseEventMove||ev==MouseEventLDown) {
@@ -219,7 +219,7 @@ Area ToolbarWnd::GetFreeArea() const {
 	return _freeArea;
 }
 
-void ToolbarWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
+void ToolbarWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 	Area rc = GetClientArea();
 	Pixels buttonSize = theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
 	
@@ -407,11 +407,11 @@ int ToolbarItem::GetCommand() const {
 	return _command;
 }
 
-void ToolbarItem::Paint(Gdiplus::Graphics &g, tj::shared::ref<Theme> theme) {
+void ToolbarItem::Paint(Gdiplus::Graphics &g, tj::shared::strong<Theme> theme) {
 	Paint(g,theme,false, false);
 }
 
-void ToolbarItem::Paint(Gdiplus::Graphics &g, tj::shared::ref<Theme> theme, bool over, bool down, float alpha) {
+void ToolbarItem::Paint(Gdiplus::Graphics &g, strong<Theme> theme, bool over, bool down, float alpha) {
 	Area rc = GetClientArea();
 	bool active = IsActive();
 	bool enabled = IsEnabled();
@@ -424,7 +424,7 @@ Area ToolbarItem::GetPreferredSize() const {
 		return Area(0,0,_preferredWidth, _preferredHeight);
 	}
 	else {
-		ref<Theme> theme = ThemeManager::GetTheme();
+		strong<Theme> theme = ThemeManager::GetTheme();
 		Pixels bs = theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
 		return Area(0,0,IsSeparator() ? Pixels(bs+1) : bs,bs);
 	}
@@ -498,7 +498,7 @@ void SearchToolbarWnd::Layout() { // also called by ToolbarWnd::OnSize
 }
 
 bool SearchToolbarWnd::IsSearchBoxVisible() const {
-	ref<Theme> theme = ThemeManager::GetTheme();
+	strong<Theme> theme = ThemeManager::GetTheme();
 	Pixels buttonSize = theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
 
 	return GetSearchBoxArea().GetWidth()>=(2*buttonSize);
@@ -532,7 +532,7 @@ void SearchToolbarWnd::SetSearchBoxText(const std::wstring& txt) {
 	_edit->SetText(txt);
 }
 
-void SearchToolbarWnd::Paint(graphics::Graphics& g, ref<Theme> theme) {
+void SearchToolbarWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 	ToolbarWnd::Paint(g,theme);
 	Area search = GetSearchBoxArea();
 
