@@ -189,6 +189,22 @@ namespace tj {
 			return (c>a)&&(c<b);
 		}
 
+		/** This function 'clamps' an input value between a lower and upper bound
+		This means that when (val >= left && val <= right), val is returned
+		Otherwise, when val < left, it returns left
+		Otherwise, when val > right, it returns right **/
+		template<typename T> inline T Clamp(const T& val, const T& left, const T& right) {
+			if(val<left) {
+				return left;
+			}
+			else if(val>right) {
+				return right;
+			}
+			else {
+				return val;
+			}
+		}
+
 		template<typename StringType> void Trim(StringType& str) {
 			StringType::size_type pos = str.find_last_not_of(' ');
 			if(pos != StringType::npos) {

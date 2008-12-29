@@ -43,6 +43,7 @@ namespace tj {
 				operator bool() const;
 				operator double() const;
 				operator int() const;
+				operator float() const;
 
 				Any operator%(const Any& o) const;
 				Any operator-() const;

@@ -444,6 +444,10 @@ Any::operator double() const {
 	}	
 }
 
+Any::operator float() const {
+	return float(this->operator double());
+}
+
 Any::operator int() const {
 	switch(_type) {
 		case TypeBool:

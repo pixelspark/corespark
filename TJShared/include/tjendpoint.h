@@ -18,7 +18,7 @@ namespace tj {
 
 				virtual ~Endpoint();
 				virtual EndpointType GetType() const;
-				virtual void Set(float f) = 0;
+				virtual void Set(const Any& v) = 0;
 				virtual std::wstring GetName() const;
 		};
 	}

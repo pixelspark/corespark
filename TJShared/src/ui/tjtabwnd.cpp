@@ -50,7 +50,7 @@ Pixels TabWnd::TabPane::GetWidth() const {
 void TabWnd::TabPane::Layout(strong<Theme> theme) {
 	if(_pane) {
 		Area txt = theme->MeasureText(_pane->GetTitle(), theme->GetGUIFontBold());
-		_width = txt.GetWidth() *  theme->GetDPIScaleFactor();
+		_width = Pixels(txt.GetWidth() *  theme->GetDPIScaleFactor());
 	}
 }
 

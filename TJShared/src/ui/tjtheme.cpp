@@ -213,13 +213,14 @@ void Theme::DrawFocusRectangle(graphics::Graphics& g, const Area& c, float alpha
 
 void Theme::DrawFocusEllipse(graphics::Graphics& g, const Area& c, float alpha) {
 	static REAL blendPositions[3] = {0.0f, 0.5f, 1.0f};
-	static REAL blendFactors[3] = {1.0f, 0.0f, 0.0f};
-	static const Pixels KFocusRectangleWidth = 6;
+	static REAL blendFactors[3] = {1.0f, 0.3f, 0.0f};
+	static const Pixels KFocusRectangleWidth = 4;
 	static Color KSurroundColors[1] = { Color::Transparent };
 
 	// try to escape the clipping
 	GraphicsContainer gcc = g.BeginContainer();
 	g.ResetClip();
+	g.SetSmoothingMode(SmoothingModeHighQuality);
 
 	Area rc = c;
 	GraphicsPath path;
@@ -232,11 +233,13 @@ void Theme::DrawFocusEllipse(graphics::Graphics& g, const Area& c, float alpha) 
 
 	float fx = max(0.0f, float(rc.GetWidth()-5*KFocusRectangleWidth)/float(rc.GetWidth()));
 	float fy = max(0.0f, float(rc.GetHeight()-5*KFocusRectangleWidth)/float(rc.GetHeight()));
-	gbrush.SetFocusScales(fx,fy);
-	
-	rc.Narrow(KFocusRectangleWidth,KFocusRectangleWidth,KFocusRectangleWidth,KFocusRectangleWidth);
-	Pen focusPen(&gbrush, 3.0f);
-	g.DrawEllipse(&focusPen, rc);
+	gbrush.SetFocusScales(fx,fy);	
+	g.FillRectangle(&gbrush, rc);
+
+	// Draw white border
+	SolidBrush borderBrush(GetColor(ColorBackground));
+	Pen border(&borderBrush, 1.0f);
+	g.DrawEllipse(&border, c);
 	g.EndContainer(gcc);
 }
 
