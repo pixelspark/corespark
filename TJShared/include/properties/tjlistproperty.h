@@ -56,7 +56,7 @@ namespace tj {
 							}
 
 							// Draw icon to the right
-							Area iconArea(rc.GetRight()-rc.GetHeight(), rc.GetTop(), 16, 16);
+							Area iconArea(rc.GetRight()-16, rc.GetTop(), 16, 16);
 							g.DrawImage(_arrowIcon, iconArea);
 
 							// Text parameters
@@ -73,6 +73,7 @@ namespace tj {
 							}
 							graphics::StringFormat sf;
 							sf.SetTrimming(graphics::StringTrimmingEllipsisPath);
+							sf.SetFormatFlags(graphics::StringFormatFlagsLineLimit);
 
 							// Fetch text
 							T value = *(_prop._value);

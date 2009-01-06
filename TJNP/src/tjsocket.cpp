@@ -340,11 +340,10 @@ void Socket::SendResourceFind(const std::wstring& ident, ref<Transaction> ti) {
 	Send(stream);
 }
 
-/// TODO FIXME: client group push instead of per-channel push?
-void Socket::SendResourcePush(Channel c, const ResourceIdentifier& ident) {
+void Socket::SendResourcePush(const GroupID& gid, const ResourceIdentifier& ident) {
 	ThreadLock lock(&_lock);
 	ref<Message> stream = GC::Hold(new Message(ActionPushResource));
-	stream->GetHeader()->_channel = c;
+	stream->GetHeader()->_group = gid;
 	stream->Add(ident);
 	Send(stream);
 }

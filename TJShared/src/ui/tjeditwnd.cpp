@@ -114,10 +114,7 @@ void EditWnd::SetBorder(bool t) {
 }
 
 LRESULT EditWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
-	if(msg==WM_SIZE) {
-		Layout();
-	}
-	else if(msg==WM_CTLCOLOREDIT) {
+	if(msg==WM_CTLCOLOREDIT) {
 		UpdateColor();
 		/// SetBkMode(TRANSPARENT) doesn't seem to work with multiline edit controls
 		///SetBkMode((HDC)wp, TRANSPARENT);
@@ -150,6 +147,11 @@ LRESULT EditWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		}
 	}
 	return ChildWnd::Message(msg,wp,lp);
+}
+
+void EditWnd::OnSize(const Area& ns) {
+	Layout();
+	Repaint();
 }
 
 void EditWnd::Focus() {

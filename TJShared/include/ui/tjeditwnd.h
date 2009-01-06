@@ -26,6 +26,7 @@ namespace tj {
 			protected:
 				EditWnd(bool multiLine, bool doubleBuffer);
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
+				virtual void OnSize(const Area& ns);
 				void UpdateColor();
 				virtual void OnFocus(bool f);
 

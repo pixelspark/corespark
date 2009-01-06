@@ -237,8 +237,14 @@ void GridWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 		Pen border(theme->GetColor(Theme::ColorActiveStart), 1.0f);
 		Area area = ChildWnd::GetClientArea();
 		Pixels headHeight = GetHeaderHeight();
+		Area headRc = area;
+		headRc.SetHeight(headHeight);
 
-		theme->DrawToolbarBackground(g, (float)area.GetLeft(), (float)area.GetTop(), (float)area.GetWidth(), (float)headHeight, 0.5f);
+		LinearGradientBrush lbr(PointF(0.0f, float(area.GetTop())), PointF(0.0f, float(area.GetTop()+headHeight)), theme->GetColor(Theme::ColorActiveStart), theme->GetColor(Theme::ColorActiveEnd));
+		g.FillRectangle(&lbr, headRc);
+
+		SolidBrush disabledBr(theme->GetColor(Theme::ColorDisabledOverlay));
+		g.FillRectangle(&disabledBr, headRc);
 		g.DrawLine(&border, 0, headHeight, area.GetWidth(), headHeight);
 
 		StringFormat sf;

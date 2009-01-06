@@ -26,7 +26,7 @@ namespace tj {
 				void SendLeave();
 				void SendDemoted();
 				void SendPromoted();
-				void SendResourcePush(Channel c, const tj::shared::ResourceIdentifier& rid);
+				void SendResourcePush(const GroupID& gid, const tj::shared::ResourceIdentifier& rid);
 				void SendResourceFind(const tj::shared::ResourceIdentifier& ident, tj::shared::ref<Transaction> tr = 0);
 				void SendResourceAdvertise(const tj::shared::ResourceIdentifier& rid, const std::wstring& url, unsigned short port, TransactionIdentifier tid = 0);
 				void SendError(Features involved, tj::shared::ExceptionType type, const std::wstring& message);

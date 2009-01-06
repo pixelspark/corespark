@@ -340,21 +340,14 @@ ref<Pane> TabWnd::GetPane(int index) {
 void TabWnd::RemovePane(ref<Wnd> wnd) {
 	assert(wnd);
 
-	wnd->Show(false);
-	if(_current) {
-		ref<Wnd> cw = _current->GetWindow();
-		if(cw) {
-			cw->Show(false);
-		}
-	}
-	_offset = 0;
-
 	bool removedWasCurrent = false;
 	std::vector<TabPane>::iterator it = _panes.begin();
 	while(it!=_panes.end()) {
 		TabPane& tp = *it;
 		strong<Pane> pane = tp._pane;
 		if(pane->GetWindow() == wnd) {
+			wnd->Show(false);
+
 			if(_current==ref<Pane>(pane)) {
 				removedWasCurrent = true;
 			}
@@ -368,6 +361,7 @@ void TabWnd::RemovePane(ref<Wnd> wnd) {
 		_current = null;
 		SelectPane(0);
 	}
+	Layout();
 }
 
 void TabWnd::SelectPane(unsigned int index) {
