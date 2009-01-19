@@ -11,6 +11,7 @@ namespace tj {
 				Zone();
 				~Zone();
 				bool CanEnter();
+				bool IsInside() const;
 
 				// For 'sandboxed' threads
 				static void GlobalDeny();
@@ -42,10 +43,35 @@ namespace tj {
 				Zone& _zone;
 		};
 
+		/** Some global zones that can be used everywhere */
+		class EXPORTED Zones {
+			public:
+				enum PredefinedZone {
+					LocalFileReadZone = 1,
+					LocalFileWriteZone,
+					LocalFileInfoZone,
+					LocalFileAdministrationZone,
+					LogZone,
+					ModifyLocaleZone,
+					ClipboardZone,
+					ShowModalDialogsZone,
+					NetworkZone,
+					NetworkServerZone,
+					DebugZone,
+					_LastZone,
+				};
+
+				static Zone& Get(const PredefinedZone& z);
+				static bool IsDebug(); // Returns true when inside the 'debug zone', which means we should for example print more debug stuff
+		};
 
 		class EXPORTED ZoneEntry {
 			public:
 				inline ZoneEntry(Zone& z): _zone(z) {
+					_zone.Enter();
+				}
+
+				inline ZoneEntry(const Zones::PredefinedZone& pz): _zone(Zones::Get(pz)) {
 					_zone.Enter();
 				}
 
@@ -55,19 +81,6 @@ namespace tj {
 
 			private:
 				Zone& _zone;
-		};
-
-		/** Some global zones that can be used everywhere */
-		class EXPORTED Zones {
-			public:
-				static Zone LocalFileReadZone;
-				static Zone LocalFileWriteZone;
-				static Zone LocalFileInfoZone;				// Retrieval of information such as size, date etc. about local files
-				static Zone LocalFileAdministrationZone;	// Deleting, renaming etc. local files
-				static Zone LogZone;						// Writing to the log (e.g. Log::Write).
-				static Zone ModifyLocaleZone;				// Loading/changing loaded locale strings
-				static Zone ClipboardZone;					// Get/set clipboard contents
-				static Zone ShowModalDialogsZone;			// Show modal messages/dialogs
 		};
 	}
 }

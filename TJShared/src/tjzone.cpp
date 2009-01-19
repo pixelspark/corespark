@@ -85,6 +85,10 @@ void Zone::Leave() {
 	}
 }
 
+bool Zone::IsInside() const {
+	return (_entry > 0);
+}
+
 void Zone::Enter() {
 	if(CanEnter()) {
 		int old = _entry;
@@ -102,11 +106,13 @@ void Zone::Enter() {
 	}
 }
 
-Zone EXPORTED Zones::LocalFileReadZone;
-Zone EXPORTED Zones::LocalFileWriteZone;
-Zone EXPORTED Zones::LocalFileInfoZone;
-Zone EXPORTED Zones::LocalFileAdministrationZone;
-Zone EXPORTED Zones::LogZone;
-Zone EXPORTED Zones::ModifyLocaleZone;
-Zone EXPORTED Zones::ClipboardZone;
-Zone EXPORTED Zones::ShowModalDialogsZone;
+Zone GZones[Zones::_LastZone];
+
+Zone& Zones::Get(const Zones::PredefinedZone& pz) {
+	return GZones[pz];
+}
+
+bool Zones::IsDebug() {
+	Zone& z = Get(DebugZone);
+	return z.IsInside();	
+}

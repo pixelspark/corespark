@@ -371,10 +371,6 @@ void Wnd::SetVerticalScrollInfo(Range<int> rng, int pageSize) {
 	}
 }
 
-LRESULT ColorWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
-	return Wnd::Message(msg,wp,lp);
-}
-
 void ColorWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 	SolidBrush br(Color(_r, _g, _b));
 	g.FillRectangle(&br, GetClientArea());

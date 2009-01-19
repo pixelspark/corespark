@@ -24,7 +24,7 @@ namespace tj {
 				static std::wstring GetFriendlyDayName(DayOfWeek d);
 
 				Date();
-				virtual ~Date();
+				~Date();
 				Month GetMonth() const;
 				DayOfWeek GetDayOfWeek() const;
 				DayOfMonth GetDayOfMonth() const;
@@ -32,6 +32,7 @@ namespace tj {
 				Seconds GetSeconds() const;
 				Minutes GetMinutes() const;
 				Hours GetHours() const;
+				std::wstring ToFriendlyString() const;
 
 			private:
 				#ifdef _WIN32
@@ -192,11 +193,30 @@ namespace tj {
 				int _time;
 		};
 
-
 		EXPORTED std::wostream& operator<<(std::wostream& strm, const Time& time);
 		EXPORTED std::ostream& operator<<(std::ostream& strm, const Time& time);
 		EXPORTED std::wistream& operator>>(std::wistream& strm, Time& time);
 		EXPORTED std::istream& operator>>(std::istream& strm, Time& time);
+	
+
+		/** The Timestamp class is a very precise time stamp. It uses QueryPerformanceCounter on Windows. **/
+		class EXPORTED Timestamp {
+			public:
+				Timestamp(const Timestamp& t);
+				~Timestamp();
+				Timestamp(bool now = false);
+				void Now();
+				std::wstring ToString();
+				Timestamp Difference(const Timestamp& other) const;
+				long long ToMicroSeconds() const;
+				long double ToMilliSeconds() const;
+				bool operator>(const Timestamp& o) const;
+				bool operator<(const Timestamp& o) const;
+				Timestamp& operator =(const Timestamp& o);
+
+			protected:
+				long long _time;
+		};
 	}
 }
 

@@ -62,6 +62,15 @@ namespace tj {
 			KeyInsert,
 		};
 
+		enum LayoutFlags {
+			LayoutHide = 0,
+			LayoutTop,
+			LayoutBottom,
+			LayoutLeft,
+			LayoutRight,
+			LayoutFill,
+		};
+
 		class EXPORTED Elements {
 			public:
 				template<class T> static ref<T> GetElementAt(std::vector< ref<T> >& elements, Pixels x, Pixels y) {

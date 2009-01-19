@@ -7,7 +7,7 @@
 //
 // Generated from the TEXTINCLUDE 2 resource.
 //
-#include <windows.h>
+#include "afxres.h"
 
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
@@ -71,12 +71,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "TJ"
             VALUE "FileDescription", "TJShared"
-            VALUE "FileVersion", "1, 0, 0, 1"
+            VALUE "FileVersion", "4.0"
             VALUE "InternalName", "TJShared"
-            VALUE "LegalCopyright", "Copyright (C) 2006 Tommy van der Vorst & Joost Wijgers"
+            VALUE "LegalCopyright", "Copyright (C) 2005-2009 Tommy van der Vorst"
             VALUE "OriginalFilename", "TJShared.dll"
             VALUE "ProductName", " TJShared Dynamic Link Library"
-            VALUE "ProductVersion", "1, 0, 0, 1"
+            VALUE "ProductVersion", "4.0"
         END
     END
     BLOCK "VarFileInfo"

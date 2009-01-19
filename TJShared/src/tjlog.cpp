@@ -91,7 +91,7 @@ strong<EventLogger> Log::GetEventLogger() {
 }
 
 void Log::Write(const std::wstring& source, const std::wstring& message) {
-	if(!Zones::LogZone.CanEnter()) {
+	if(!Zones::Get(Zones::LogZone).CanEnter()) {
 		return; // cannot log
 	}
 

@@ -33,6 +33,8 @@ namespace tj {
 					IconCut,
 					IconPaste,
 					IconSubMenu,
+					IconTabAddActive,
+					IconTabCloseActive,
 					_IconLast,
 				};
 

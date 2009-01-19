@@ -23,16 +23,12 @@ AbsoluteLocalFileResourceProvider::~AbsoluteLocalFileResourceProvider() {
 }
 
 ref<Resource> AbsoluteLocalFileResourceProvider::GetResource(const ResourceIdentifier& rid) {
-	if(!Zones::LocalFileInfoZone.CanEnter()) {
-		return false;
-	}
-
 	ZoneEntry ze(Zones::LocalFileInfoZone);
 	return GC::Hold(new LocalFileResource(rid, rid));
 }
 
 bool AbsoluteLocalFileResourceProvider::GetPathToLocalResource(const ResourceIdentifier& rid, std::wstring& path) {	
-	if(!Zones::LocalFileInfoZone.CanEnter()) {
+	if(!Zones::Get(Zones::LocalFileInfoZone).CanEnter()) {
 		return false;
 	}
 
@@ -42,10 +38,6 @@ bool AbsoluteLocalFileResourceProvider::GetPathToLocalResource(const ResourceIde
 }
 
 ResourceIdentifier AbsoluteLocalFileResourceProvider::GetRelative(const std::wstring& path) {
-	if(!Zones::LocalFileInfoZone.CanEnter()) {
-		return false;
-	}
-
 	ZoneEntry ze(Zones::LocalFileInfoZone);
 	return path;
 }
@@ -59,8 +51,8 @@ LocalFileResourceProvider::~LocalFileResourceProvider() {
 }
 
 ref<Resource> LocalFileResourceProvider::GetResource(const ResourceIdentifier& rid) {
-	if(!Zones::LocalFileInfoZone.CanEnter()) {
-		return false;
+	if(!Zones::Get(Zones::LocalFileInfoZone).CanEnter()) {
+		return null;
 	}
 
 	ZoneEntry ze(Zones::LocalFileInfoZone);
@@ -73,7 +65,7 @@ ref<Resource> LocalFileResourceProvider::GetResource(const ResourceIdentifier& r
 }
 
 bool LocalFileResourceProvider::GetPathToLocalResource(const ResourceIdentifier& rid, std::wstring& path) {	
-	if(!Zones::LocalFileInfoZone.CanEnter()) {
+	if(!Zones::Get(Zones::LocalFileInfoZone).CanEnter()) {
 		return false;
 	}
 
@@ -89,7 +81,7 @@ bool LocalFileResourceProvider::GetPathToLocalResource(const ResourceIdentifier&
 }
 
 ResourceIdentifier LocalFileResourceProvider::GetRelative(const std::wstring& path) {
-	if(!Zones::LocalFileInfoZone.CanEnter()) {
+	if(!Zones::Get(Zones::LocalFileInfoZone).CanEnter()) {
 		return L"";
 	}
 

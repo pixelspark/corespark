@@ -17,6 +17,7 @@ namespace tj {
 					void Close();
 					bool IsDestroyed() const;
 					ref<Pane> GetPane();
+					void Paint(graphics::Graphics& g, strong<Theme> theme, const Area& tab, bool isCurrent, bool isDragging, bool childStyle, float entryFraction);
 
 				protected:
 					ref<Pane> _pane;
@@ -78,6 +79,8 @@ namespace tj {
 				int _dragStartX, _dragStartY;
 				Icon _closeIcon;
 				Icon _addIcon;
+				Icon _addActiveIcon;
+				Icon _closeActiveIcon;
 				bool _detachAttachAllowed;
 				bool _childStyle;
 				bool _in;

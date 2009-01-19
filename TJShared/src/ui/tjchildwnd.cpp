@@ -9,8 +9,17 @@ ChildWnd::ChildWnd(const wchar_t* title, bool useDB): Wnd(title, 0L, TJ_DEFAULT_
 	SetStyle(WS_CHILD|WS_CLIPCHILDREN|WS_CLIPSIBLINGS|WS_TABSTOP);
 }
 
-LRESULT ChildWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
-	return Wnd::Message(msg,wp,lp);
+void ChildWnd::SetTabStop(bool ts) {
+	if(ts) {
+		SetStyle(WS_TABSTOP);
+	}
+	else {
+		UnsetStyle(WS_TABSTOP);
+	}
+}
+
+bool ChildWnd::GetTabStop() {
+	return (GetWindowLong(GetWindow(), GWL_STYLE) & WS_TABSTOP) != 0;
 }
 
 CheckboxWnd::CheckboxWnd(): ChildWnd(L""), _readOnly(false), _checkedIcon(Icons::GetIconPath(Icons::IconChecked)), _checked(false) {

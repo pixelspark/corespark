@@ -3,7 +3,6 @@
 
 namespace tj {
 	namespace shared {
-
 		class EXPORTED ToolbarItem: public Element {
 			public:
 				ToolbarItem(int command=0, graphics::Bitmap* bmp=0, const std::wstring& text = L"", bool separator = false);
@@ -125,6 +124,12 @@ namespace tj {
 				Animation Progress;					
 		};
 
+		class EXPORTED TimeToolbarItem: public ToolbarItem {
+			public:
+				TimeToolbarItem();
+				virtual ~TimeToolbarItem();
+				virtual void Paint(Gdiplus::Graphics& g, strong<Theme> theme, bool over, bool down, float alpha);
+		};
 	}
 }
 

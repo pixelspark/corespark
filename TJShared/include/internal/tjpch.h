@@ -1,7 +1,7 @@
 #ifndef _TJSHAREDPCH_H
 #define _TJSHAREDPCH_H
 
-#ifdef _WIN32
+#ifdef WIN32
 	#define _WIN32_WINNT 0x0700
 	#define _WIN32_IE 0x0700
 	#define _CRT_SECURE_CPP_OVERLOAD_SECURE_NAMES 1

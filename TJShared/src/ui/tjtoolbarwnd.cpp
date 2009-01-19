@@ -585,3 +585,40 @@ void ThrobberToolbarItem::Paint(graphics::Graphics& g, ref<Theme> theme, bool ov
 		g.DrawEllipse(&pen, rc);
 	}
 }
+
+/** TimeToolbarWnd **/
+TimeToolbarItem::TimeToolbarItem(): ToolbarItem(0, 0, L"", false) {
+	strong<Theme> theme = ThemeManager::GetTheme();
+	SetPreferredSize(50, theme->GetMeasureInPixels(Theme::MeasureToolbarHeight));
+	SetEnabled(false);
+}
+
+TimeToolbarItem::~TimeToolbarItem() {
+}
+
+void TimeToolbarItem::Paint(Gdiplus::Graphics& g, strong<Theme> theme, bool over, bool down, float alpha) {
+	Area rc = GetClientArea();
+	DrawToolbarButton(g, rc, theme, over, down, IsSeparator(), IsEnabled());
+
+	#ifdef WIN32
+		SYSTEMTIME time;
+		GetLocalTime(&time);
+		std::wostringstream wos;
+
+		wos << std::setfill(L'0') << std::setw(2) << std::setprecision(2) << time.wHour << L":";
+		wos << std::setfill(L'0') << std::setw(2) << std::setprecision(2) << time.wMinute;
+		std::wstring tijd = wos.str();
+	#else
+		#error Not yet implemented
+	#endif
+
+	StringFormat sf;
+	sf.SetAlignment(StringAlignmentCenter);
+	sf.SetLineAlignment(StringAlignmentCenter);
+
+	Color textColor = theme->GetColor(Theme::ColorText);
+	Color disabledColor = theme->GetColor(Theme::ColorDisabledOverlay);
+	SolidBrush tbr(Color(disabledColor.GetA(), textColor.GetR(), textColor.GetG(), textColor.GetB()));
+
+	g.DrawString(tijd.c_str(), (int)tijd.length(), theme->GetGUIFontBold(), rc, &sf, &tbr); 
+}

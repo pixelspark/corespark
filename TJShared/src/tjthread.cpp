@@ -155,10 +155,6 @@ void Thread::Run() {
 	bool Semaphore::Wait() {
 		return WaitForSingleObject(_sema, INFINITE) == WAIT_OBJECT_0;
 	}
-
-	HANDLE Semaphore::GetHandle() {
-		return _sema;
-	}
 #endif
 
 /* Event; Windows implementation */
@@ -181,10 +177,6 @@ void Thread::Run() {
 
 	void Event::Reset() {
 		ResetEvent(_event);
-	}
-
-	HANDLE Event::GetHandle() {
-		return _event;
 	}
 
 	void Event::Wait(int ms) {
@@ -220,4 +212,174 @@ ThreadLocal::operator int() const {
 
 void ThreadLocal::operator=(int r) {
 	SetValue(r);
+}
+
+/** Wait **/
+void Wait::For(Thread& t, const Time& out) {
+	For(t._thread, out);
+}
+
+void Wait::For(Event& e, const Time& out) {
+	For(e._event, out);
+}
+
+void Wait::For(Semaphore& sm, const Time& out) {
+	For(sm._sema, out);
+}
+
+Wait::Wait() {
+}
+
+Wait::~Wait() {
+}
+
+void Wait::Add(Thread& t) {
+	_handles.push_back(t._thread);
+}
+
+void Wait::Add(Event& evt) {
+	_handles.push_back(evt._event);
+}
+
+void Wait::Add(PeriodicTimer& h) {
+	_handles.push_back(h._timer);
+}
+
+void Wait::Add(Semaphore& sm) {
+	_handles.push_back(sm._sema);
+}
+
+bool Wait::ForAll(const Time& out) {
+	unsigned int n = (unsigned int)_handles.size();
+	HANDLE* handles = new HANDLE[n];
+	std::vector<HANDLE>::iterator it = _handles.begin();
+	for(unsigned int a=0;a<n;a++) {
+		handles[a] = *it;
+		++it;
+	}
+
+	bool r = For(handles, n, true, out) >= 0;	
+	delete[] handles;
+	return r;
+}
+
+int Wait::ForAny(const Time& out) {
+	unsigned int n = (unsigned int)_handles.size();
+	HANDLE* handles = new HANDLE[n];
+	std::vector<HANDLE>::iterator it = _handles.begin();
+	for(unsigned int a=0;a<n;a++) {
+		HANDLE h = *it;
+		handles[a] = h;
+		++it;
+	}
+
+	int r = For(&(handles[0]), n, true, out);
+	delete[] handles;
+	return r;
+}
+
+#ifdef WIN32
+	void Wait::For(HANDLE handle, const Time& out) {
+		DWORD tms = out.ToInt();
+		if(tms<1) {
+			tms = INFINITE;
+		}
+		
+		switch(WaitForSingleObject(handle, tms)) {
+			case WAIT_FAILED:
+				Throw(L"Wait for single thread failed; invalid thread handle?", ExceptionTypeError);
+				break;
+
+			case WAIT_ABANDONED:
+				Throw(L"Wait for single thread abandoned; this is bad.", ExceptionTypeError);
+				break;
+
+			default:
+				break;
+		}
+	}
+
+	int Wait::For(HANDLE* handles, unsigned int n, bool all, const Time& out) {
+		DWORD timeOutMs = out.ToInt();
+		if(timeOutMs<1) {
+			timeOutMs = INFINITE;
+		}
+
+		int r = WaitForMultipleObjects(n, handles, all, timeOutMs);
+		if(r==WAIT_ABANDONED) {
+			Throw(L"Wait was abandoned; probably, a thread or event was destroyed while another thread was waiting on it through this waiting operation", ExceptionTypeError);
+		}
+		else if(r==WAIT_FAILED) {
+			Throw(L"Wait failed; probably, an invalid handle or event was passed to this wait operation", ExceptionTypeError);
+		}
+		else if(r==WAIT_TIMEOUT) {
+			return -1;
+		}
+		else {
+			return r - WAIT_OBJECT_0;
+		}
+	}
+#else
+	#error Not implemented
+#endif
+
+/** PeriodicTimer **/
+PeriodicTimer::PeriodicTimer() {
+	#ifdef WIN32
+		_timer = CreateWaitableTimer(NULL,FALSE,NULL);
+	#else
+		#error Not implemented
+	#endif
+}
+
+PeriodicTimer::~PeriodicTimer() {
+	#ifdef WIN32
+		CloseHandle(_timer);
+	#else
+		#error Not implemented
+	#endif
+}
+
+void PeriodicTimer::Start(const Time& period) {
+	LARGE_INTEGER dueTime;
+	dueTime.QuadPart = 0;
+	SetWaitableTimer(_timer, &dueTime, period.ToInt(), 0, 0, 0);
+}
+
+/** CriticalSection **/
+CriticalSection::CriticalSection() {
+	#ifdef _WIN32
+		InitializeCriticalSectionAndSpinCount(&_cs, 1024);
+	#endif
+}
+
+CriticalSection::~CriticalSection() {
+	#ifdef _WIN32
+		DeleteCriticalSection(&_cs);
+	#endif
+}
+
+void CriticalSection::Enter() {
+	#ifdef _WIN32
+		EnterCriticalSection(&_cs);
+	#else
+		#error CriticalSection::Enter not implemented on this platform
+	#endif
+}
+
+void CriticalSection::Leave() {
+	#ifdef _WIN32
+		LeaveCriticalSection(&_cs);
+	#else
+		#error CriticalSection::Enter not implemented on this platform
+	#endif
+}
+
+/** ThreadLock **/
+ThreadLock::ThreadLock(CriticalSection *cs): _cs(cs) {
+	_cs->Enter();
+}
+
+ThreadLock::~ThreadLock() {
+	_cs->Leave();
 }

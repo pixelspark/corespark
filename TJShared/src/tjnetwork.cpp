@@ -4,6 +4,8 @@
 using namespace tj::shared;
 
 std::string Networking::GetHostName() {
+	ZoneEntry ze(Zones::NetworkZone);
+
 	char buffer[256];
 	if(gethostname(buffer, 255)!=SOCKET_ERROR) {
 		return std::string(buffer);
@@ -12,6 +14,8 @@ std::string Networking::GetHostName() {
 }
 
 std::string Networking::GetHostAddress() {
+	ZoneEntry ze(Zones::NetworkZone);
+
 	std::string hostName = GetHostName();
 	struct hostent *phe = gethostbyname(hostName.c_str());
     if(phe == 0) {
@@ -28,6 +32,8 @@ std::string Networking::GetHostAddress() {
 }
 
 void Networking::Wake(const MACAddress& mac) {
+	ZoneEntry ze(Zones::NetworkZone);
+
 	SOCKET sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 	if(sock!=INVALID_SOCKET) {
 		sockaddr_in address;
@@ -62,17 +68,24 @@ void Networking::Wake(const MACAddress& mac) {
 }
 
 bool Networking::GetMACAddress(const std::wstring& ip, MACAddress& maca) {
-	IPAddr ipa = inet_addr(Mbs(ip).c_str());
+	ZoneEntry ze(Zones::NetworkZone);
 
-	for(int a=0;a<6;a++) {
-		maca.address.data[a] = 0xFF;
-	}
+	#ifdef WIN32
+		IPAddr ipa = inet_addr(Mbs(ip).c_str());
 
-	ULONG length = 6;
-	if(SendARP(ipa, 0, (PULONG)maca.address.long_data, &length)==NO_ERROR) {
-		return true;
-	}
-	return false;
+		for(int a=0;a<6;a++) {
+			maca.address.data[a] = 0xFF;
+		}
+
+		ULONG length = 6;
+		if(SendARP(ipa, 0, (PULONG)maca.address.long_data, &length)==NO_ERROR) {
+			return true;
+		}
+		return false;
+	#else
+		#error Not implemented
+		return false;
+	#endif
 }
 
 Networking::MACAddress::MACAddress() {

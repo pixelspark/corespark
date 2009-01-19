@@ -58,7 +58,7 @@ void Core::Run(RunnableApplication* app, ref<Arguments> args) {
 			_app->Message(msg);
 		}
 
-		HANDLE handles[1] = { _actionEvent.GetHandle() };
+		HANDLE handles[1] = { _actionEvent._event };
 		result = MsgWaitForMultipleObjects(1, handles, FALSE, 1000, QS_ALLINPUT|QS_ALLPOSTMESSAGE); 
 
 		// The result tells us the type of event we have.

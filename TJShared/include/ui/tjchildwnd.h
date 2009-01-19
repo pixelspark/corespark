@@ -6,7 +6,8 @@ namespace tj {
 		class EXPORTED ChildWnd: public Wnd {
 			public:
 				ChildWnd(const wchar_t* title, bool useDoubleBuffering=true);
-				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
+				virtual void SetTabStop(bool ts);
+				virtual bool GetTabStop();
 		};
 
 		/* for testing the splitter thing */
@@ -14,7 +15,6 @@ namespace tj {
 		public:
 				ColorWnd(unsigned char r, unsigned char g, unsigned char b);
 				virtual ~ColorWnd();
-				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 				virtual void Paint(graphics::Graphics& g, strong<Theme> theme);
 
 				unsigned char _r,_g,_b;

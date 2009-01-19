@@ -704,23 +704,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\tjcriticalsection.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\tjdxutil.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\src\tjexception.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\src\tjfile.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\tjfilewriter.cpp"
 					>
 				</File>
 				<File
@@ -748,6 +736,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\tjserializable.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\tjsettings.cpp"
 					>
 				</File>
@@ -760,7 +752,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\tjtimestamp.cpp"
+					RelativePath=".\src\tjtime.cpp"
 					>
 				</File>
 				<File
@@ -974,10 +966,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\include\tjarguments.h"
-					>
-				</File>
-				<File
 					RelativePath=".\include\tjcache.h"
 					>
 				</File>
@@ -994,7 +982,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\include\tjdxutil.h"
+					RelativePath=".\include\tjcrypto.h"
 					>
 				</File>
 				<File
@@ -1010,10 +998,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\include\tjfilewriter.h"
-					>
-				</File>
-				<File
 					RelativePath=".\include\tjflags.h"
 					>
 				</File>
@@ -1022,19 +1006,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\include\tjhash.h"
-					>
-				</File>
-				<File
 					RelativePath=".\include\tjiterator.h"
 					>
 				</File>
 				<File
 					RelativePath=".\include\tjlanguage.h"
-					>
-				</File>
-				<File
-					RelativePath=".\include\tjlayout.h"
 					>
 				</File>
 				<File
@@ -1051,10 +1027,6 @@
 				</File>
 				<File
 					RelativePath=".\include\tjnetwork.h"
-					>
-				</File>
-				<File
-					RelativePath=".\include\tjobject.h"
 					>
 				</File>
 				<File
@@ -1082,19 +1054,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\include\tjtea.h"
-					>
-				</File>
-				<File
 					RelativePath=".\include\tjthread.h"
 					>
 				</File>
 				<File
 					RelativePath=".\include\tjtime.h"
-					>
-				</File>
-				<File
-					RelativePath=".\include\tjtimestamp.h"
 					>
 				</File>
 				<File

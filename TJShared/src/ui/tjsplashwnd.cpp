@@ -78,7 +78,7 @@ void SplashThread::Run() {
 	_wnd = GC::Hold(new SplashWnd(_path, _w, _h));
 	_wnd->Show(true);
 
-	HANDLE handles[1] = { _closeEvent.GetHandle() };
+	HANDLE handles[1] = { _closeEvent._event };
 
 	while(true) {
 		while(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) { 
