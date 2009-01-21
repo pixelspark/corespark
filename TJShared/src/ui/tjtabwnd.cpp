@@ -121,13 +121,12 @@ void TabWnd::Rename(ref<Wnd> wnd, std::wstring name) {
 void TabWnd::SetDraggingPane(ref<Pane> pane) {
 	_dragging = pane;
 	if(pane) {
-		_entryAnimation.Start(Time(300), pane!=null);
+		_entryAnimation.Start(Time(300), true);
 		StartTimer(1, Time(10));
 	}
 	else {
-		_entryAnimation.Stop();
-		_entryAnimation.SetReversed(false);
-		StopTimer(1);
+		//_entryAnimation.Stop();
+		//_entryAnimation.SetReversed(false);
 	}
 	Update();
 }
