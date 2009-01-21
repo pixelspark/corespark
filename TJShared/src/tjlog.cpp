@@ -96,7 +96,13 @@ void Log::Write(const std::wstring& source, const std::wstring& message) {
 	}
 
 	std::wostringstream wos;
-	wos << source << L' ' << GetCurrentThreadId() << L':' << L' ' << message;
+	wos << std::hex << std::setw(4) << std::uppercase << std::setfill(L'0') << GetCurrentThreadId();
+	
+	if(Zones::IsDebug() || ::IsDebuggerPresent()) {
+		wos << L' ' << Thread::GetCurrentThreadName();
+	}
+	
+	wos << L' ' << source << L' ' << L':' << L' ' << message;
 	std::wstring finalMessage = wos.str();
 	_logger.Log(finalMessage);
 

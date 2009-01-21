@@ -36,18 +36,6 @@ namespace tj {
 				Pixels _preferredWidth, _preferredHeight;
 		};
 
-		class EXPORTED StateToolbarItem: public ToolbarItem {
-			public:
-				StateToolbarItem(int command, const std::wstring& icon, const std::wstring& text = L"");
-				virtual ~StateToolbarItem();
-				virtual void SetState(bool on);
-				bool IsOn() const;
-				virtual void Paint(graphics::Graphics& g, ref<Theme> theme, bool over, bool down, float backgroundAlpha);
-
-			protected:
-				bool _on;
-		};
-
 		class EXPORTED ToolbarWnd: public ChildWnd {
 			public:
 				ToolbarWnd();
@@ -85,6 +73,18 @@ namespace tj {
 				ref<ToolbarItem> _tipItem;
 				ref<Wnd> _tip;
 				Animation _entryAnimation;
+		};
+
+		class EXPORTED StateToolbarItem: public ToolbarItem {
+			public:
+				StateToolbarItem(int command, const std::wstring& icon, const std::wstring& text = L"");
+				virtual ~StateToolbarItem();
+				virtual void SetState(bool on);
+				bool IsOn() const;
+				virtual void Paint(graphics::Graphics& g, ref<Theme> theme, bool over, bool down, float backgroundAlpha);
+
+			protected:
+				bool _on;
 		};
 
 		class EXPORTED SearchToolbarWnd: public ToolbarWnd, public Listener<EditWnd::NotificationTextChanged> {
@@ -129,6 +129,18 @@ namespace tj {
 				TimeToolbarItem();
 				virtual ~TimeToolbarItem();
 				virtual void Paint(Gdiplus::Graphics& g, strong<Theme> theme, bool over, bool down, float alpha);
+		};
+
+		class EXPORTED LogoToolbarItem: public ToolbarItem {
+			public:
+				LogoToolbarItem(const std::wstring& iconRid, Pixels width, int cmd = 0);
+				LogoToolbarItem(const Icon& icon, Pixels width, int cmd = 0);
+				virtual ~LogoToolbarItem();
+
+				virtual void Paint(Gdiplus::Graphics& g, strong<Theme> theme, bool over, bool down, float alpha);
+
+			protected:
+				Icon _logo;
 		};
 	}
 }

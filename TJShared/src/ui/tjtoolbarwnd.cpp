@@ -622,3 +622,25 @@ void TimeToolbarItem::Paint(Gdiplus::Graphics& g, strong<Theme> theme, bool over
 
 	g.DrawString(tijd.c_str(), (int)tijd.length(), theme->GetGUIFontBold(), rc, &sf, &tbr); 
 }
+
+/** LogoToolbarItem **/
+LogoToolbarItem::LogoToolbarItem(const std::wstring& iconRid, Pixels width, int cmd): ToolbarItem(cmd, 0, L"", false), _logo(iconRid) {
+	strong<Theme> theme = ThemeManager::GetTheme();
+	SetPreferredSize(width, theme->GetMeasureInPixels(Theme::MeasureToolbarHeight));
+}
+
+LogoToolbarItem::LogoToolbarItem(const Icon& icon, Pixels width, int cmd): ToolbarItem(cmd, 0, L"", false), _logo(icon) {
+	strong<Theme> theme = ThemeManager::GetTheme();
+	SetPreferredSize(width, theme->GetMeasureInPixels(Theme::MeasureToolbarHeight));
+}
+
+LogoToolbarItem::~LogoToolbarItem() {
+}
+
+void LogoToolbarItem::Paint(Gdiplus::Graphics& g, strong<Theme> theme, bool over, bool down, float alpha) {
+	Area rc = GetClientArea();
+	DrawToolbarButton(g, rc, theme, over, down, IsSeparator(), IsEnabled(), alpha);
+
+	rc.Narrow(1,1,1,1);
+	g.DrawImage(_logo, rc);
+}

@@ -67,7 +67,7 @@ void SplashThread::Hide() {
 }
 
 void SplashThread::Run() {
-	SetName("SplashThread");
+	SetName(L"SplashThread");
 	MSG msg;
 
 	// init GDI+

@@ -2,30 +2,8 @@
 using namespace tj::shared;
 
 volatile long Thread::_count = 0;
-
-// SetThreadName, see ms-help://MS.MSDNQTR.v80.en/MS.MSDN.v80/MS.VisualStudio.v80.en/dv_vsdebug/html/c85d0968-9f22-4d69-87f4-acca2ae777b8.htm
-#define MS_VC_EXCEPTION 0x406D1388
-
-typedef struct tagTHREADNAME_INFO {
-	DWORD dwType; // Must be 0x1000.
-	LPCSTR szName; // Pointer to name (in user addr space).
-	DWORD dwThreadID; // Thread ID (-1=caller thread).
-	DWORD dwFlags; // Reserved for future use, must be zero.
-} THREADNAME_INFO;
-
-void SetThreadName(DWORD dwThreadID, LPCSTR szThreadName) {
-   THREADNAME_INFO info;
-   info.dwType = 0x1000;
-   info.szName = szThreadName;
-   info.dwThreadID = dwThreadID;
-   info.dwFlags = 0;
-
-   __try {
-      RaiseException(MS_VC_EXCEPTION, 0, sizeof(info)/sizeof(DWORD), (DWORD*)&info );
-   }
-   __except(EXCEPTION_CONTINUE_EXECUTION) {
-   }
-}
+std::map<int, std::wstring> Thread::_names;
+CriticalSection Thread::_nameLock;
 
 namespace tj {
 	namespace shared {
@@ -47,7 +25,6 @@ namespace tj {
 	}
 }
 
-
 /* Thread */
 Thread::Thread() {
 	_thread = CreateThread(NULL, 4096, ThreadProc, (LPVOID)this, CREATE_SUSPENDED|STACK_SIZE_PARAM_IS_A_RESERVATION, (LPDWORD)&_id);
@@ -62,8 +39,28 @@ long Thread::GetThreadCount() {
 	return _count;
 }
 
-void Thread::SetName(const char* t) {
-	SetThreadName(_id, t);
+void Thread::SetName(const std::wstring& t) {
+	ThreadLock lock(&_nameLock);
+	_names[_id] = t;
+}
+
+int Thread::GetCurrentThreadID() {
+	#ifdef _WIN32
+		return (unsigned int)(::GetCurrentThreadId());
+	#else
+		#error Not implemented
+	#endif
+}
+
+std::wstring Thread::GetCurrentThreadName() {
+	int tid = GetCurrentThreadID();
+
+	ThreadLock lock(&_nameLock);
+	std::map<int, std::wstring>::const_iterator it = _names.find(tid);
+	if(it!=_names.end()) {
+		return it->second;
+	}
+	return L"";
 }
 
 void Thread::SetPriority(Priority p) {
@@ -273,7 +270,7 @@ int Wait::ForAny(const Time& out) {
 		++it;
 	}
 
-	int r = For(&(handles[0]), n, true, out);
+	int r = For(&(handles[0]), n, false, out);
 	delete[] handles;
 	return r;
 }

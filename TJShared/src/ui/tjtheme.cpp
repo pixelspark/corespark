@@ -524,3 +524,47 @@ Brush* Theme::GetApplicationBackgroundBrush(HWND root, HWND child) const {
 
 	return lbr;
 }
+
+
+
+void Theme::DrawRoundRectangle(graphics::Graphics& g, const Area& rc, const graphics::Color& col, float radiusPixels, float penWidth) {
+	graphics::Pen pn(col, penWidth);
+	DrawRoundRectangle(g, rc, pn, radiusPixels);
+}
+
+void Theme::DrawRoundRectangle(graphics::Graphics& g, const Area& rc, graphics::Pen& pn, float d) {
+	SmoothingMode old = g.GetSmoothingMode();
+	g.SetSmoothingMode(SmoothingModeHighQuality);
+	graphics::GraphicsPath gp;
+	AreaF r((float)rc.GetLeft()-1, (float)rc.GetTop()-1, (float)rc.GetWidth(), (float)rc.GetHeight());
+
+	gp.AddArc(r.GetLeft(), r.GetTop(), d, d, 180.0f, 90.0f);
+	gp.AddArc(r.GetLeft() + r.GetWidth() - d, r.GetTop(), d, d, 270.0f, 90.0f);
+	gp.AddArc(r.GetLeft() + r.GetWidth() - d, r.GetTop() + r.GetHeight() - d, d, d, 0.0f, 90.0f);
+	gp.AddArc(r.GetLeft(), r.GetTop() + r.GetHeight() - d, d, d, 90.0f, 90.0f);
+	gp.AddLine(r.GetLeft(), r.GetTop() + r.GetHeight() - d, r.GetLeft(), r.GetTop() + d / 2.0f);
+	
+	g.DrawPath(&pn, &gp);
+	g.SetSmoothingMode(old);
+}
+
+void Theme::FillRoundRectangle(graphics::Graphics& g, const Area& rc, const graphics::Color& col, float d) {
+	graphics::SolidBrush br(col);
+	FillRoundRectangle(g, rc, br, d);
+}
+
+void Theme::FillRoundRectangle(graphics::Graphics& g, const Area& rc, graphics::Brush& br, float d) {
+	SmoothingMode old = g.GetSmoothingMode();
+	g.SetSmoothingMode(SmoothingModeHighQuality);
+	graphics::GraphicsPath gp;
+	AreaF r((float)rc.GetLeft()-1, (float)rc.GetTop()-1, (float)rc.GetWidth(), (float)rc.GetHeight());
+
+	gp.AddArc(r.GetLeft(), r.GetTop(), d, d, 180.0f, 90.0f);
+	gp.AddArc(r.GetLeft() + r.GetWidth() - d, r.GetTop(), d, d, 270.0f, 90.0f);
+	gp.AddArc(r.GetLeft() + r.GetWidth() - d, r.GetTop() + r.GetHeight() - d, d, d, 0.0f, 90.0f);
+	gp.AddArc(r.GetLeft(), r.GetTop() + r.GetHeight() - d, d, d, 90.0f, 90.0f);
+	gp.AddLine(r.GetLeft(), r.GetTop() + r.GetHeight() - d, r.GetLeft(), r.GetTop() + d / 2.0f);
+	
+	g.FillPath(&br, &gp);
+	g.SetSmoothingMode(old);
+}

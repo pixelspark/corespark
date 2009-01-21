@@ -56,6 +56,7 @@ namespace tj {
 			
 			protected:
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
+				virtual LRESULT PreMessage(UINT msg, WPARAM wp, LPARAM lp);
 				virtual void OnSize(const Area& ns);
 				virtual void OnKey(Key k, wchar_t t, bool down, bool isAccelerator);
 				virtual void OnFocus(bool focus);

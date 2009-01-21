@@ -11,6 +11,32 @@ namespace tj {
 				virtual void Run() = 0;
 		};
 
+		class EXPORTED CriticalSection {
+			friend class ThreadLock;
+
+			public:
+				CriticalSection();
+				virtual ~CriticalSection();
+
+			protected:
+				void Enter();
+				void Leave();
+
+			private:
+				#ifdef _WIN32
+					CRITICAL_SECTION _cs;
+				#endif
+		};
+
+		class EXPORTED ThreadLock {
+			public:
+				ThreadLock(CriticalSection* cs);
+				virtual ~ThreadLock();
+
+			protected:
+				CriticalSection* _cs;
+		};
+
 		class EXPORTED ThreadLocal {
 			public:
 				ThreadLocal();
@@ -100,13 +126,19 @@ namespace tj {
 				virtual void Start();
 				void WaitForCompletion();
 				int GetID() const;
-				void SetName(const char* name);
-				static long GetThreadCount();
+				void SetName(const std::wstring& name);
 				virtual void SetPriority(Priority p);
+
+				static long GetThreadCount();
+				static int GetCurrentThreadID();
+				static std::wstring GetCurrentThreadName();
 
 			protected:
 				virtual void Run();
 				
+				static CriticalSection _nameLock;
+				static std::map<int, std::wstring> _names;
+
 				#ifdef _WIN32
 					HANDLE _thread;
 				#endif
@@ -143,32 +175,6 @@ namespace tj {
 					static int For(HANDLE* handles, unsigned int n, bool all, const Time& out);
 					std::vector<HANDLE> _handles;
 				#endif
-		};
-
-		class EXPORTED CriticalSection {
-			friend class ThreadLock;
-
-			public:
-				CriticalSection();
-				virtual ~CriticalSection();
-
-			protected:
-				void Enter();
-				void Leave();
-
-			private:
-				#ifdef _WIN32
-					CRITICAL_SECTION _cs;
-				#endif
-		};
-
-		class EXPORTED ThreadLock {
-			public:
-				ThreadLock(CriticalSection* cs);
-				virtual ~ThreadLock();
-
-			protected:
-				CriticalSection* _cs;
 		};
 	}
 }

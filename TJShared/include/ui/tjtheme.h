@@ -121,6 +121,11 @@ namespace tj {
 				virtual graphics::Color GetColor(const ColorIdentifier& ci) const;
 				static graphics::Color ChangeAlpha(const graphics::Color& col, int a);
 				static graphics::Color ChangeAlpha(const graphics::Color& col, float a);
+				static void DrawRoundRectangle(graphics::Graphics& g, const Area& rc, const graphics::Color& col, float radiusPixels, float penWidth = 1.0f);
+				static void DrawRoundRectangle(graphics::Graphics& g, const Area& rc, graphics::Pen& p, float radiusPixels);
+				static void FillRoundRectangle(graphics::Graphics& g, const Area& rc, const graphics::Color& col, float radiusPixels);
+				static void FillRoundRectangle(graphics::Graphics& g, const Area& rc, graphics::Brush& br, float radiusPixels);
+
 				virtual graphics::Color GetSliderColorStart(const SliderType& i) const;
 				virtual graphics::Color GetSliderColorEnd(const SliderType& i) const;
 

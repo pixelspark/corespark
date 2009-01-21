@@ -527,6 +527,21 @@ void TabWnd::OnFocus(bool focus) {
 	}
 }
 
+LRESULT TabWnd::PreMessage(UINT msg, WPARAM wp, LPARAM lp) {
+	/** The browser back/forward keys are used to navigate tabs in TabWnd. We don't want
+	those messages to propagate to parent windows, because we can handle them. Since the
+	WM_APPCOMMAND message is automatically propagated to the parent when it is not handled,
+	we should return 0 here to prevent DefWindowProc from doing that. **/
+	if(msg==WM_APPCOMMAND) {
+		int c = GET_APPCOMMAND_LPARAM(lp);
+		if(c==APPCOMMAND_BROWSER_BACKWARD || c==APPCOMMAND_BROWSER_FORWARD) {
+			ChildWnd::PreMessage(msg,wp,lp);
+			return 0;
+		}
+	}
+	return ChildWnd::PreMessage(msg,wp,lp);
+}
+
 LRESULT TabWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	if(msg==WM_MOUSEWHEEL) {
 		int delta = GET_WHEEL_DELTA_WPARAM(wp);
