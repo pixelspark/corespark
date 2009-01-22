@@ -29,6 +29,29 @@ namespace tj {
 				static const wchar_t* KFalse;
 		};
 
+		class EXPORTED GenericObject: public Serializable {
+			public:
+				GenericObject();
+				virtual ~GenericObject();
+				virtual void Save(TiXmlElement* you);
+				virtual void Load(TiXmlElement* you);
+
+				TiXmlElement _element;
+		};
+
+		class EXPORTED TaggedObject: public Serializable {
+			public:
+				TaggedObject(ref<Serializable> sr);
+				virtual void Save(TiXmlElement* save);
+				virtual void Load(TiXmlElement* load);
+				virtual void SetTag(const std::wstring& tag, bool f = true);
+				virtual bool HasTag(const std::wstring& tag);
+
+			protected:
+				ref<Serializable> _original;
+				std::set<std::wstring> _tags;
+		};
+
 		class EXPORTED Clipboard {
 			public:
 				static void SetClipboardText(const std::wstring& text);

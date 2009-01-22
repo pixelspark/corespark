@@ -233,6 +233,73 @@ namespace tj {
 	}
 }
 
+/** TaggedObject **/
+TaggedObject::TaggedObject(ref<Serializable> sr): _original(sr) {
+}
+
+void TaggedObject::Save(TiXmlElement* save) {
+	std::set<std::wstring>::const_iterator it = _tags.begin();
+	while(it!=_tags.end()) {
+		const std::wstring& tag = *it;
+		save->SetAttribute(Mbs(tag), 1);
+		++it;
+	}
+
+	TiXmlElement wrapper("tagged-object");
+	if(_original) {
+		_original->Save(&wrapper);
+	}
+	save->InsertEndChild(wrapper);
+}
+
+void TaggedObject::Load(TiXmlElement* load) {	
+	TiXmlElement* wrapper = load->FirstChildElement("tagged-object");
+	if(wrapper!=0) {
+		TiXmlAttribute* att = load->FirstAttribute();
+		while(att!=0) {
+			std::wstring name = Wcs(att->Name());
+			_tags.insert(name);
+			att = att->Next();
+		}
+
+		if(_original) _original->Load(wrapper);
+	}
+	else {
+		if(_original) _original->Load(load);
+	}
+}
+
+void TaggedObject::SetTag(const std::wstring& tag, bool f) {
+	if(f) {
+		_tags.insert(tag);
+	}
+	else {
+		std::set<std::wstring>::iterator it = _tags.find(tag);
+		if(it!=_tags.end()) {
+			_tags.erase(it);
+		}
+	}
+}
+
+bool TaggedObject::HasTag(const std::wstring& tag) {
+	return _tags.find(tag) != _tags.end();
+}
+
+/** GenericObject **/
+GenericObject::GenericObject(): _element("object") {
+}
+
+GenericObject::~GenericObject() {
+}
+
+void GenericObject::Save(TiXmlElement* you) {
+	you->InsertEndChild(_element);
+}
+
+void GenericObject::Load(TiXmlElement* you) {
+	_element = *you;
+}
+
 // Clipboard (Windows implementation)
 #ifdef _WIN32
 	void Clipboard::SetClipboardText(const std::wstring& text) {

@@ -254,24 +254,28 @@ void ContextPopupWnd::OnKey(Key k, wchar_t ch, bool down, bool accelerator) {
 	if(!accelerator) {
 		switch(k) {
 			case KeyDown:
+			case KeyUp:
 				if(down) {
-					++_mouseOver;
+					_mouseOver += (k==KeyDown) ? 1 : -1;
 					if(_mouseOver > int(cm->GetItemCount())-1) {
 						_mouseOver = 0;
 					}
+					else if(_mouseOver < 0) {
+						_mouseOver = int(cm->GetItemCount())-1;
+					}
+
 					_mouseDown = KMouseOverNothing;
+
+					strong<Theme> theme = ThemeManager::GetTheme();
+					Pixels itemHeight = theme->GetMeasureInPixels(Theme::MeasureMenuItemHeight);
+					Pixels itemY = _mouseOver * itemHeight;
+					Area rc = GetClientArea();
+					if(itemY > rc.GetBottom()-2*itemHeight) {
+						SetVerticalPos(max(0,min((_mouseOver - KMaxItems +2) * itemHeight, (cm->GetItemCount()-KMaxItems)*itemHeight)));
+					}
 				}
 				break;
 
-			case KeyUp:
-				if(down) {
-					--_mouseOver;
-					if(_mouseOver < 0) {
-						_mouseOver = int(cm->GetItemCount())-1;
-					}
-					_mouseDown = KMouseOverNothing;
-				}
-				break;
 			case KeyLeft:
 				if(down) {
 					LeaveSubMenu();

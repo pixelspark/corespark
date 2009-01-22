@@ -59,7 +59,7 @@ Color BrightTheme::GetColor(const Theme::ColorIdentifier& ci) const {
 			return Color(0,0,0);
 
 		case ColorActiveTrack:
-			return Color(240,240,240);
+			return Color(227,227,227); // 240,240,240
 
 		case ColorActiveStart:
 		case ColorToolbarStart:
@@ -178,9 +178,11 @@ graphics::Color VistaTheme::GetColor(const Theme::ColorIdentifier& ci) const {
 			return Color(100,255,255,255);
 
 		case ColorBackground:
-		case ColorActiveTrack:
 		case ColorEditBackground:
 			return Color(255,255,255);
+
+		case ColorActiveTrack:
+			return Color(231,241,244);
 
 		case ColorTabButtonBackground:
 			return Color(130,255,255,255);
@@ -193,11 +195,11 @@ graphics::Color VistaTheme::GetColor(const Theme::ColorIdentifier& ci) const {
 			return Color(0,0,0);
 
 		case ColorActiveStart:
-			return Color(200,145,175,194);
+			return Color(200,165,195,214); // 200,145,175,194
 
 		case ColorActiveEnd:
 		case ColorLine:
-			return Color(130,158,175);
+			return Color(150,178,195);
 
 		case ColorFocus:
 			return Color::DarkBlue;
