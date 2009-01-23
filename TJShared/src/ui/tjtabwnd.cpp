@@ -42,8 +42,14 @@ Pixels TabWnd::TabPane::GetWidth() const {
 		return Pixels(_width * _appearAnimation.GetFraction()) + ((_pane && _pane->HasIcon()) ? TabWnd::KIconWidth : 0) + 1;
 	}
 
-	if(_pane && _width>0) {
-		return _width + (_pane->HasIcon() ? TabWnd::KIconWidth : 0) + 1;
+	if(_pane) {
+		if(_width==0) {
+			// Icon-only pane (even if the pane has no icon, showing a little tab is better than nothing)
+			return TabWnd::KIconWidth + 4;
+		}
+		else if(_width>0) {
+			return _width + (_pane->HasIcon() ? TabWnd::KIconWidth : 0) + 1;
+		}
 	}
 
 	return 0;
