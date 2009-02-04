@@ -130,10 +130,6 @@ void TabWnd::SetDraggingPane(ref<Pane> pane) {
 		_entryAnimation.Start(Time(300), true);
 		StartTimer(1, Time(10));
 	}
-	else {
-		//_entryAnimation.Stop();
-		//_entryAnimation.SetReversed(false);
-	}
 	Update();
 }
 
@@ -249,7 +245,7 @@ void TabWnd::Paint(Graphics& g, strong<Theme> theme) {
 		ref<WindowManager> root = _root;
 		if(root) {
 			ref<TabWnd> dt =  root->GetDragTarget();
-			if(dt == ref<TabWnd>(this)) {
+			if(dt.GetPointer() == this) {
 				LinearGradientBrush br(PointF(0.0f, 0.0f), PointF(0.0f,float(_headerHeight)), theme->GetColor(Theme::ColorHighlightStart), theme->GetColor(Theme::ColorHighlightEnd));
 				g.FillRectangle(&br, Rect(rect.GetLeft()+1, rect.GetTop(), rect.GetRight(), _headerHeight));
 			}

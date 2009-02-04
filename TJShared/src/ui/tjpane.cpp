@@ -205,6 +205,9 @@ LRESULT FloatingPane::Message(UINT msg, WPARAM wp, LPARAM lp) {
 			GetCursorPos(&p);
 			ref<TabWnd> below = _root->FindTabWindowAt(p.x, p.y);
 			_root->SetDragTarget(below);
+			if(below) {
+				below->Repaint();
+			}
 		}
 	}
 	else if(msg==WM_GETMINMAXINFO) {
