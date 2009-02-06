@@ -31,6 +31,7 @@
 
 #include <winsock2.h>   // this must come first to prevent errors with MSVC7
 #include <windows.h>
+#include <ws2tcpip.h>
 #include <mmsystem.h>   // for timeGetTime()
 
 #include <vector>
@@ -179,12 +180,48 @@ public:
 
 	void Bind( const IpEndpointName& localEndpoint )
 	{
+		/* There are basically three types of addresses we can use here:
+		- Unicast addresses (like 192.168.0.12): simply bind to the address 
+		- Broadcast addresses (like 192.168.0.255): bind to INADDR_ANY
+		- Multicast addresses (like 224.0.0.2): bind to INADDR_ANY and use IP_ADD_MEMBERSHIP 
+		
+		A problem is that when binding to INADDR_ANY, we might receive messages from more than one address
+		(192.168.0.255 and 255.255.255.255, for example).We could filter this out when receiving the message
+		by examining the address it was sent to.
+		*/
 		struct sockaddr_in bindSockAddr;
-		SockaddrFromIpEndpointName( bindSockAddr, localEndpoint );
+		SockaddrFromIpEndpointName(bindSockAddr, localEndpoint);
 
-        if (bind(socket_, (struct sockaddr *)&bindSockAddr, sizeof(bindSockAddr)) < 0) {
-            throw std::runtime_error("unable to bind udp socket\n");
-        }
+		int on = 1;
+		if(setsockopt(socket_,SOL_SOCKET,SO_BROADCAST,(const char*)&on, sizeof(int))==SOCKET_ERROR) {
+			throw std::runtime_error("unable to set socket to broadcast mode");
+		}
+
+		if(setsockopt(socket_,SOL_SOCKET,SO_REUSEADDR,(const char*)&on, sizeof(int))==SOCKET_ERROR) {
+			throw std::runtime_error("unable to set socket to allow reuse");
+		}
+
+        if(bind(socket_, (struct sockaddr *)&bindSockAddr, sizeof(bindSockAddr)) < 0) {
+			int error = WSAGetLastError();
+			if(error==WSAEADDRINUSE) {
+				throw std::runtime_error("unable to bind to address; it is already in use");
+			}
+
+			/* You cannot bind a multicast socket; Bind to INADDR_ANY and try to make us member of the multicast group */
+			bindSockAddr.sin_addr.s_addr = INADDR_ANY;
+			if(bind(socket_, (struct sockaddr *)&bindSockAddr, sizeof(bindSockAddr)) < 0) {
+				throw std::runtime_error("unable to bind to INADDR_ANY for multicast/broadcast usage");
+			}
+
+			struct ip_mreq mreq;
+			mreq.imr_multiaddr.s_addr = htonl(localEndpoint.address);
+			mreq.imr_interface.s_addr = INADDR_ANY;
+			if(setsockopt(socket_, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char*)&mreq, sizeof(mreq))==SOCKET_ERROR) {
+				/* We could not add membership; this fails if the address is not a multicast address. If the address
+				was a broadcast address, we are bound to INADDR_ANY right now, so that's OK. If it's any other adress
+				we could not bind to, then this is bad */
+			}
+		}
 
 		isBound_ = true;
 	}
