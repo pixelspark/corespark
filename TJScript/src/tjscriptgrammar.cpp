@@ -13,6 +13,8 @@ using namespace tj::shared;
 using namespace tj::script;
 using namespace boost::spirit;
 
+Copyright KCRSpirit(L"TJScript", L"Spirit parser framework", L"Used under the Boost Software License version 1.0. ©1998-2003 Joel de Guzman, ©2001-2003 Daniel Nuffer, ©2001-2003 Hartmut Kaiser, ©2002-2003 Martin Wille, ©2002 Raghavendra Satish, ©2001 Bruce Florman");
+
 namespace tj {
 	namespace script {
 		namespace parser {

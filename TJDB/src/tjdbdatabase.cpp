@@ -3,6 +3,8 @@
 using namespace tj::db;
 using namespace tj::shared;
 
+Copyright KCRSQLite(L"TJDB", L"SQLite", L"(public domain software)");
+
 /* SQLiteDatabase */
 namespace tj {
 	namespace db {

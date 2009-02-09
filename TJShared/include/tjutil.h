@@ -79,6 +79,24 @@ namespace tj {
 				static std::wstring& StringToLower(std::wstring& r);
 				static std::wstring GetSizeString(Bytes bytes);
 				static std::wstring IPToString(in_addr ip);
+				static std::wstring GetModuleName();
+		};
+
+		class EXPORTED Copyright {
+			public:
+				inline Copyright(const std::wstring& module, const std::wstring& component, const std::wstring& description): _module(module), _component(component), _description(description) {
+					AddCopyright(this);
+				}
+
+				~Copyright();
+				static std::wstring Dump();
+				static void AddCopyright(Copyright* cs);
+
+			private:
+				std::wstring _module;
+				std::wstring _component;
+				std::wstring _description;
+				static std::set<Copyright*> _copyrights;
 		};
 
 		class EXPORTED MediaUtil {

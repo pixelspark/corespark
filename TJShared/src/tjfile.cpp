@@ -54,7 +54,28 @@ bool File::Copy(const std::wstring& from, const std::wstring& to, bool silent) {
 	return SHFileOperation(&op) == 0;
 }
 
+void File::DeleteFiles(const std::wstring& dir, const std::wstring& pattern) {
+	ZoneEntry ze(Zones::LocalFileAdministrationZone);
+
+	if(dir.size()>0) {
+		std::wstring wc = dir + L"\\" + pattern;
+		// Empty the cache
+		SHFILEOPSTRUCT shop;
+		shop.hwnd = 0L;
+		shop.fAnyOperationsAborted = FALSE;
+		shop.hNameMappings = NULL;
+		shop.lpszProgressTitle = 0L;
+		shop.wFunc = FO_DELETE;
+		shop.pFrom = wc.c_str();
+		shop.pTo = 0;
+		shop.fFlags = FOF_SILENT|FOF_NOCONFIRMATION;
+		SHFileOperation(&shop);
+	}
+}
+
 Bytes File::GetFileSize(const std::wstring& filePath) {
+	ZoneEntry ze(Zones::LocalFileInfoZone);
+
 	HANDLE file = CreateFile(filePath.c_str(), GENERIC_READ, FILE_SHARE_READ|FILE_SHARE_WRITE, NULL, OPEN_EXISTING, NULL, NULL);
 	if(file!=INVALID_HANDLE_VALUE) {
 		LARGE_INTEGER li;

@@ -4,6 +4,31 @@
 #include <dshow.h>
 using namespace tj::shared;
 
+std::set<Copyright*> Copyright::_copyrights;
+
+Copyright::~Copyright() {
+	std::set<Copyright*>::iterator it = _copyrights.find(this);
+	if(it!=_copyrights.end()) {
+		_copyrights.erase(it);
+	}
+}
+
+std::wstring Copyright::Dump() {
+	std::wostringstream wos;
+	std::set<Copyright*>::const_iterator it = _copyrights.begin();
+	while(it!=_copyrights.end()) {
+		Copyright* cr = *it;
+		wos << File::GetFileName(cr->_module) << L" uses " << cr->_component << L' ' << cr->_description << std::endl;
+		++it;
+	}
+
+	return wos.str();
+}
+
+void Copyright::AddCopyright(Copyright* cs) {
+	_copyrights.insert(cs);
+}
+
 Time MediaUtil::GetDuration(const std::wstring& file) {
 	ZoneEntry ze(Zones::LocalFileInfoZone);
 
@@ -89,6 +114,17 @@ wchar_t* Util::IntToWide(int x) {
 	wchar_t* str = new wchar_t[33];
 	_itow_s(x,str,33,10);
 	return str;
+}
+
+std::wstring Util::GetModuleName() {
+	#ifdef _WIN32
+		HMODULE mod = (HMODULE)GetModuleHandle(NULL);
+		wchar_t mfn[MAX_PATH+1];
+		GetModuleFileName(mod, mfn, MAX_PATH);
+		return std::wstring(mfn);
+	#else
+		#error Not implemented
+	#endif
 }
 
 std::wstring Util::IPToString(in_addr ip) {

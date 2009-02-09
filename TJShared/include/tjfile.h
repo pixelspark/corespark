@@ -12,6 +12,7 @@ namespace tj {
 				static bool Exists(const std::wstring& path);
 				static Bytes GetDirectorySize(const std::wstring& dirPath);
 				static Bytes GetFileSize(const std::wstring& filePath);
+				static void DeleteFiles(const std::wstring& dir, const std::wstring& pattern);
 				
 				static bool Move(const std::wstring& from, const std::wstring& to, bool silent = true);
 				static bool Copy(const std::wstring& from, const std::wstring& to, bool silent = true);
