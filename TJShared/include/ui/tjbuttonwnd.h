@@ -23,6 +23,7 @@ namespace tj {
 			protected:
 				virtual void OnKey(Key k, wchar_t t, bool down, bool isAccelerator);
 				virtual void OnFocus(bool f);
+				virtual void OnSize(const Area& ns);
 
 				std::wstring _text;
 				Icon _icon;

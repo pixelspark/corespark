@@ -377,6 +377,22 @@ ThreadLock::ThreadLock(CriticalSection *cs): _cs(cs) {
 	_cs->Enter();
 }
 
+ThreadLock::ThreadLock(strong<Lockable> lockable): _cs(&(lockable->_lock)) {
+	_cs->Enter();
+}
+
+ThreadLock::ThreadLock(Lockable* lockable): _cs(&(lockable->_lock)) {
+	_cs->Enter();
+}
+
+
 ThreadLock::~ThreadLock() {
 	_cs->Leave();
+}
+
+/** Lockable **/
+Lockable::Lockable() {
+}
+
+Lockable::~Lockable() {
 }

@@ -25,6 +25,11 @@ void ButtonWnd::Fill(LayoutFlags f, Area& r, bool direct) {
 	}
 }
 
+void ButtonWnd::OnSize(const Area& ns) {
+	Repaint();
+	ChildWnd::OnSize(ns);
+}
+
 void ButtonWnd::SetDisabled(bool d) {
 	_disabled = d;
 	Repaint();

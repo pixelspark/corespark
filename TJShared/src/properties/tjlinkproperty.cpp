@@ -21,6 +21,13 @@ void LinkProperty::Update() {
 void LinkProperty::OnClicked() {
 }
 
+void LinkProperty::SetText(const std::wstring& text) {
+	_text = text;
+	if(_wnd) {
+		_wnd->SetText(text.c_str());
+	}
+}
+
 /* LinkPropertyWnd */
 LinkPropertyWnd::LinkPropertyWnd(const std::wstring& text, ref<LinkProperty> lp, const std::wstring& icon): ButtonWnd(icon, text), _lp(lp) {
 }

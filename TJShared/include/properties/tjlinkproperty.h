@@ -13,6 +13,7 @@ namespace tj {
 				virtual ref<Wnd> GetWindow();
 				virtual void Update();
 				virtual void OnClicked();
+				virtual void SetText(const std::wstring& text);
 
 				Listenable<ButtonWnd::NotificationClicked> EventClicked;
 

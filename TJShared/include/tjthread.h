@@ -28,9 +28,18 @@ namespace tj {
 				#endif
 		};
 
+		class EXPORTED Lockable {
+			public:
+				Lockable();
+				virtual ~Lockable();
+				CriticalSection _lock;
+		};
+
 		class EXPORTED ThreadLock {
 			public:
 				ThreadLock(CriticalSection* cs);
+				ThreadLock(strong<Lockable> lockable);
+				ThreadLock(Lockable* lockable);
 				virtual ~ThreadLock();
 
 			protected:

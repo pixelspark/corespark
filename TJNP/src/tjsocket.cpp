@@ -240,6 +240,15 @@ void Socket::SendResetAll() {
 	Send(stream);
 }
 
+void Socket::SendResetChannel(GroupID gid, Channel ch) {
+	ThreadLock lock(&_lock);
+
+	ref<Message> stream = GC::Hold(new Message(ActionResetChannel));
+	stream->GetHeader()->_channel = ch;
+	stream->GetHeader()->_group = gid;
+	Send(stream);
+}
+
 void Socket::SendSetPatch(ref<BasicClient> c, const PatchIdentifier& pi, const DeviceIdentifier& di) {
 	ThreadLock lock(&_lock);
 
@@ -357,11 +366,12 @@ void Socket::SendResourceAdvertise(const ResourceIdentifier& rid, const std::wst
 	Send(stream);
 }
 
-void Socket::SendOutletChange(Channel ch, const std::wstring& outletName, const tj::shared::Any& value) {
+void Socket::SendOutletChange(Channel ch, GroupID gid, const std::wstring& outletName, const tj::shared::Any& value) {
 	ThreadLock lock(&_lock);
 	ref<Message> stream = GC::Hold(new Message(ActionOutletChange));
 	stream->Add<Channel>(ch);
-	stream->Add<short>(value.GetType());
+	stream->Add<GroupID>(gid);
+	stream->Add<unsigned int>(value.GetType());
 	stream->Add(value.ToString());
 	Hash hash;
 	stream->Add<OutletHash>(hash.Calculate(outletName));
