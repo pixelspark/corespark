@@ -176,6 +176,10 @@ namespace tj {
 			return def ? (ln!=Bool::KFalse) : (ln==Bool::KTrue);
 		}
 
+		template<> int StringTo(const std::wstring& s, const int& def) {
+			return _wtoi(s.c_str());
+		}
+
 		template<> std::wstring StringTo(const std::wstring& s, const std::wstring& def) {
 			return s;
 		}
@@ -505,4 +509,33 @@ void GenericObject::Load(TiXmlElement* you) {
 		Initialize();
 		return IsClipboardFormatAvailable(_formatID)==TRUE;
 	}
+#endif
+
+// lists of settings to change
+#ifdef _WIN32
+	static UINT dss_getlist[] = {SPI_GETLOWPOWERTIMEOUT, SPI_GETPOWEROFFTIMEOUT, SPI_GETSCREENSAVETIMEOUT};
+	static UINT dss_setlist[] = {SPI_SETLOWPOWERTIMEOUT, SPI_SETPOWEROFFTIMEOUT, SPI_SETSCREENSAVETIMEOUT};
+	static const int dss_listcount = 3;
+
+	ScreensaverOff::ScreensaverOff() {
+		_values = new int[dss_listcount];
+
+		for (int x=0;x<dss_listcount;x++) {
+		   SystemParametersInfo (dss_getlist[x], 0, &_values[x], 0);
+
+			// Turn off the parameter
+		   SystemParametersInfo (dss_setlist[x], 0, NULL, 0);
+		}
+	}
+
+	ScreensaverOff::~ScreensaverOff() {
+		for (int x=0;x<dss_listcount;x++) {
+			// Set the old value
+			SystemParametersInfo (dss_setlist[x],  _values[x], NULL, 0);
+		}
+
+		delete[] _values;
+	}
+#else
+	#error ScreensaverOff not implemented yet
 #endif

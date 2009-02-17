@@ -966,10 +966,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\include\tjcache.h"
-					>
-				</File>
-				<File
 					RelativePath=".\include\tjcode.h"
 					>
 				</File>

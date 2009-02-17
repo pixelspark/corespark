@@ -82,6 +82,16 @@ namespace tj {
 				static std::wstring GetModuleName();
 		};
 
+		/* This class takes care of disabling the screensaver */
+		class EXPORTED ScreensaverOff {
+			public:
+				ScreensaverOff();
+				~ScreensaverOff();
+
+			protected:
+				int* _values;
+		};
+
 		class EXPORTED Copyright {
 			public:
 				inline Copyright(const std::wstring& module, const std::wstring& component, const std::wstring& description): _module(module), _component(component), _description(description) {
@@ -283,6 +293,7 @@ namespace tj {
 		}
 
 		template<> EXPORTED bool StringTo(const std::wstring& s, const bool& def);
+		template<> EXPORTED int StringTo(const std::wstring& s, const int& def);
 		template<> EXPORTED std::wstring StringTo(const std::wstring& s, const std::wstring& def);
 		template<> EXPORTED std::wstring Stringify(const bool& x);
 		template<> EXPORTED std::wstring Stringify(const int& x);

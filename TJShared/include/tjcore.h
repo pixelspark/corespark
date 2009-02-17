@@ -26,7 +26,6 @@
 #include "tjlanguage.h"
 #include "tjlistener.h"
 #include "tjaction.h"
-#include "tjcache.h"
 #include "tjlog.h"
 #include "tjcore.h"
 #include "tjresourcemgr.h"
