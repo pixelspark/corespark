@@ -316,8 +316,7 @@ void ContextPopupWnd::OnSelectItem(strong<MenuItem> ci) {
 void ContextPopupWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 	Area rc = GetClientArea();
 	Area originalRc = rc;
-	SolidBrush back(theme->GetColor(Theme::ColorBackground));
-	g.FillRectangle(&back, rc);
+	g.Clear(theme->GetColor(Theme::ColorBackground));
 	theme->DrawInsetRectangle(g, rc);
 
 	// If we're in a submenu, do a transition if we're animating
@@ -379,7 +378,7 @@ void ContextPopupWnd::DrawMenuItems(graphics::Graphics& g, strong<Theme> theme, 
 	sf.SetAlignment(StringAlignmentNear);
 	sf.SetLineAlignment(StringAlignmentCenter);
 	sf.SetTrimming(StringTrimmingEllipsisPath);
-	REAL tabs[] = {50, 50, 50};
+	float tabs[] = {50, 50, 50};
 	sf.SetTabStops(0, 3, tabs);
 	Pixels indentSize = Pixels(itemHeight*0.619f);
 
@@ -401,7 +400,7 @@ void ContextPopupWnd::DrawMenuItems(graphics::Graphics& g, strong<Theme> theme, 
 					g.DrawString(title.c_str(), (int)title.length(), theme->GetGUIFontBold(), currentText, &sf, &header);
 					RectF lr;
 					g.MeasureString(title.c_str(), (int)title.length(), theme->GetGUIFontBold(), currentText, &sf, &lr);
-					current.Narrow((Pixels)lr.Width, 0,0,0);
+					current.Narrow((Pixels)lr.GetWidth(), 0,0,0);
 				}
 
 				current.Narrow(itemHeight,0,itemHeight,0);
@@ -460,7 +459,7 @@ void ContextPopupWnd::DrawMenuItems(graphics::Graphics& g, strong<Theme> theme, 
 					RectF hbb;
 					g.MeasureString(hk.c_str(), (int)hk.length(), theme->GetGUIFontSmall(), PointF(float(current.GetTop()), float(current.GetRight())), &hsf, &hbb);
 
-					Pixels w = Pixels(hbb.Width) + 6;
+					Pixels w = Pixels(hbb.GetWidth()) + 6;
 					Area hotkeyLabel(current.GetRight()-w, current.GetTop(), w, current.GetHeight());
 					hotkeyLabel.Narrow(2,2,2,3);
 					hotkeyLabel.Translate(-2, 0);

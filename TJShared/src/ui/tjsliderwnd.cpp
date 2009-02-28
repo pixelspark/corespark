@@ -97,8 +97,7 @@ void SliderWnd::Paint(Graphics& g, strong<Theme> theme) {
 	graphics::Color colorEnd = theme->GetSliderColorEnd((Theme::SliderType)_color);
 
 	// background
-	SolidBrush backBrush(theme->GetColor(Theme::ColorBackground));
-	g.FillRectangle(&backBrush,rect);
+	g.Clear(theme->GetColor(Theme::ColorBackground));
 
 	// middle rectangle, 6 pixels wide
 	rect.Narrow(0, 5, 0, _showValue ? KValueHeight : 10);
@@ -118,23 +117,23 @@ void SliderWnd::Paint(Graphics& g, strong<Theme> theme) {
 	int mx = (rect.GetWidth())/2 + (squareWidth/2);
 	for(float my=0.0f;my<=1.0f;my+=0.1f) {
 		float mty = float(int(rect.GetBottom()) - int(my*rect.GetHeight()));
-		g.DrawLine(&pn, (REAL)mx, mty, (REAL)mx+2,mty);
+		g.DrawLine(&pn, (float)mx, mty, (float)mx+2,mty);
 	}
 
 	if(_mark != _value && _mark <= 1.0f && _mark >= 0.0f) {
 		mx = (rect.GetWidth())/2 - (squareWidth/2);
 		Pen mpn(theme->GetColor(Theme::ColorCommandMarker), 3.0f);
 		float mty = float(int(rect.GetBottom()) - int(_mark*rect.GetHeight()));
-		g.DrawLine(&mpn, (REAL)mx, mty, (REAL)mx+squareWidth+1,mty);
+		g.DrawLine(&mpn, (float)mx, mty, (float)mx+squareWidth+1,mty);
 	}
 
 	// larger markers at 0.0, 0.5, 1.0
 	float mty = float(int(rect.GetBottom()) - int(0.5f*int(rect.GetHeight())));
-	g.DrawLine(&pn, (REAL)mx, mty, (REAL)mx+4,mty);
+	g.DrawLine(&pn, (float)mx, mty, (float)mx+4,mty);
 	mty = float( int(rect.GetBottom()) - int(1.0f*int(rect.GetHeight())));
-	g.DrawLine(&pn, (REAL)mx, mty, (REAL)mx+4,mty);
+	g.DrawLine(&pn, (float)mx, mty, (float)mx+4,mty);
 	mty = float(int(rect.GetBottom()) - int(0.0f*int(rect.GetHeight())));
-	g.DrawLine(&pn, (REAL)mx, mty, (REAL)mx+4,mty);
+	g.DrawLine(&pn, (float)mx, mty, (float)mx+4,mty);
 
 	// dragger
 	x = (rect.GetWidth())/2 - draggerWidth/2;
@@ -146,6 +145,7 @@ void SliderWnd::Paint(Graphics& g, strong<Theme> theme) {
 	draggerInside.Narrow(1,1,1,1);
 
 	g.FillRectangle(&border, dragger);
+	SolidBrush backBrush(theme->GetColor(Theme::ColorBackground));
 	g.FillRectangle(&backBrush, draggerInside);
 	
 	if(HasFocus()) {

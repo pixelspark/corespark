@@ -21,7 +21,7 @@ void FilePropertyWnd::Paint(Graphics& g, strong<Theme> theme) {
 		theme->DrawToolbarBackground(g, 0.0f, 0.0f, float(rc.GetWidth()), float(rc.GetHeight()));
 	}
 
-	g.DrawImage(_linkIcon, PointF(0.0f, 0.0f));
+	_linkIcon.Paint(g, Area(0,0,16,16));
 
 	// TODO fix with new resource system
 	//SolidBrush tbr(File::Exists(ResourceManager::Instance()->Get(*_path, true))?theme->GetColor(Theme::ColorActiveStart):theme->GetColor(Theme::ColorCommandMarker));
@@ -92,6 +92,7 @@ void FilePropertyWnd::Update() {
 
 void FilePropertyWnd::OnSize(const Area& ns) {
 	Layout();	
+	Repaint();
 }
 
 void FilePropertyWnd::Layout() {

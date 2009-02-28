@@ -4,23 +4,6 @@
 
 namespace tj {
 	namespace shared {
-		/** Class for initializing GDI+ **/
-		class EXPORTED GraphicsInit {
-			public:
-				GraphicsInit();
-				virtual ~GraphicsInit();
-		};
-
-		class EXPORTED Displays: public virtual Object {
-			public:
-				Displays();
-				virtual ~Displays();
-				void AddDisplay(HMONITOR hm);
-				RECT GetDisplayRectangle(int idx);
-			protected:
-				std::vector<HMONITOR> _displays;
-		};
-
 		enum ScrollDirection {
 			ScrollDirectionNone = 0,
 			ScrollDirectionHorizontal = 1,
@@ -222,6 +205,7 @@ namespace tj {
 				graphics::Bitmap* _buffer;
 				bool _doubleBuffered;
 				bool _wantsMouseLeave;
+				int _dirty;
 				int _horizontalPos;
 				int _verticalPos;
 				int _horizontalPageSize;

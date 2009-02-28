@@ -59,6 +59,7 @@ namespace tj {
 				virtual ref<Crumb> GetCrumbAt(Pixels x, int* left=0);
 
 			protected:
+				virtual void OnSize(const Area& ns);
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
 				virtual void DoCrumbMenu(ref<Crumb> r, int x);
 

@@ -76,8 +76,8 @@ Area Theme::MeasureText(const std::wstring& text, graphics::Font* font) const {
 		g.MeasureString(text.c_str(), (int)text.length(), font, PointF(0.0f, 0.0f), &sf, &bound);
 	}
 	ReleaseDC(NULL, dc);
-	ret.SetWidth(Pixels(bound.Width / df));
-	ret.SetHeight(Pixels(bound.Height / df));
+	ret.SetWidth(Pixels(bound.GetWidth() / df));
+	ret.SetHeight(Pixels(bound.GetHeight() / df));
 	return ret;
 }
 
@@ -117,7 +117,7 @@ void Theme::DrawToolbarBackground(graphics::Graphics& g, const Area& rc, float a
 
 	PointF origin(float(rc.GetLeft()), float(rc.GetTop()));
 	PointF bottom(float(rc.GetLeft()), float(rc.GetBottom()));
-	LinearGradientBrush br(origin, bottom, ChangeAlpha((ColorToolbarStart), alphaInt), ChangeAlpha(GetColor(ColorToolbarEnd), alphaInt));
+	LinearGradientBrush br(origin, bottom, ChangeAlpha(GetColor(ColorToolbarStart), alphaInt), ChangeAlpha(GetColor(ColorToolbarEnd), alphaInt));
 	SolidBrush dbr(GetColor(ColorDisabledOverlay));
 	g.FillRectangle(&br, rc);
 	g.FillRectangle(&dbr, rc);
@@ -144,11 +144,9 @@ void Theme::DrawInsetRectangle(graphics::Graphics& g, const Area& rc) {
 	Pixels halfWidth = highlight.GetWidth()/4;
 	highlight.Widen(halfWidth,highlight.GetHeight()*2,halfWidth,0);
 
-	Region oldClip;
-	g.GetClip(&oldClip);
-	g.SetClip(rc, CombineModeIntersect);
+	g.SetClip(BasicRectangle<float>(rc));
 	DrawHighlightEllipse(g, highlight, 0.61f);
-	g.SetClip(&oldClip);
+	g.ResetClip();
 
 	Pixels shadowSize = GetMeasureInPixels(MeasureShadowSize);
 	Area shadow = rc;
@@ -161,10 +159,10 @@ void Theme::DrawInsetRectangle(graphics::Graphics& g, const Area& rc) {
 }
 
 void Theme::DrawShadowRectangle(graphics::Graphics& g, const Area& c, float alpha) {
-	static REAL blendPositions[3] = {0.0f, 0.2f, 1.0f};
-	static REAL blendFactors[3] = {1.0f, 0.0f, 0.0f};
+	static float blendPositions[3] = {0.0f, 0.2f, 1.0f};
+	static float blendFactors[3] = {1.0f, 0.0f, 0.0f};
 	static const Pixels KFocusRectangleWidth = 6;
-	static Color KSurroundColors[1] = { Color::Transparent };
+	static Color KSurroundColors[1] = { Color() };
 
 	Area rc = c;
 	GraphicsPath path;
@@ -172,8 +170,7 @@ void Theme::DrawShadowRectangle(graphics::Graphics& g, const Area& c, float alph
 	path.AddRectangle(rc);
 	PathGradientBrush gbrush(&path);
 	gbrush.SetCenterColor(ChangeAlpha(GetColor(ColorShadow), int(alpha*255.0f)));
-	int KNumSurroundColors = 1;
-	gbrush.SetSurroundColors(KSurroundColors, &KNumSurroundColors);
+	gbrush.SetSurroundColors(KSurroundColors, 1);
 
 	float fx = max(0.0f, float(rc.GetWidth()-5*KFocusRectangleWidth)/float(rc.GetWidth()));
 	float fy = max(0.0f, float(rc.GetHeight()-5*KFocusRectangleWidth)/float(rc.GetHeight()));
@@ -185,10 +182,10 @@ void Theme::DrawShadowRectangle(graphics::Graphics& g, const Area& c, float alph
 }
 
 void Theme::DrawFocusRectangle(graphics::Graphics& g, const Area& c, float alpha) {
-	static REAL blendPositions[3] = {0.0f, 0.2f, 1.0f};
-	static REAL blendFactors[3] = {1.0f, 0.0f, 0.0f};
+	static float blendPositions[3] = {0.0f, 0.2f, 1.0f};
+	static float blendFactors[3] = {1.0f, 0.0f, 0.0f};
 	static const Pixels KFocusRectangleWidth = 6;
-	static Color KSurroundColors[1] = { Color::Transparent };
+	static Color KSurroundColors[1] = { Color() };
 
 	// try to escape the clipping
 	GraphicsContainer gcc = g.BeginContainer();
@@ -200,8 +197,7 @@ void Theme::DrawFocusRectangle(graphics::Graphics& g, const Area& c, float alpha
 	path.AddRectangle(rc);
 	PathGradientBrush gbrush(&path);
 	gbrush.SetCenterColor(ChangeAlpha(GetColor(ColorFocus), int(alpha*255.0f)));
-	int KNumSurroundColors = 1;
-	gbrush.SetSurroundColors(KSurroundColors, &KNumSurroundColors);
+	gbrush.SetSurroundColors(KSurroundColors, 1);
 
 	float fx = max(0.0f, float(rc.GetWidth()-5*KFocusRectangleWidth)/float(rc.GetWidth()));
 	float fy = max(0.0f, float(rc.GetHeight()-5*KFocusRectangleWidth)/float(rc.GetHeight()));
@@ -214,15 +210,14 @@ void Theme::DrawFocusRectangle(graphics::Graphics& g, const Area& c, float alpha
 }
 
 void Theme::DrawFocusEllipse(graphics::Graphics& g, const Area& c, float alpha) {
-	static REAL blendPositions[3] = {0.0f, 0.5f, 1.0f};
-	static REAL blendFactors[3] = {1.0f, 0.3f, 0.0f};
+	static float blendPositions[3] = {0.0f, 0.5f, 1.0f};
+	static float blendFactors[3] = {1.0f, 0.3f, 0.0f};
 	static const Pixels KFocusRectangleWidth = 4;
-	static Color KSurroundColors[1] = { Color::Transparent };
+	static Color KSurroundColors[1] = { Color() };
 
 	// try to escape the clipping
 	GraphicsContainer gcc = g.BeginContainer();
 	g.ResetClip();
-	g.SetSmoothingMode(SmoothingModeHighQuality);
 
 	Area rc = c;
 	GraphicsPath path;
@@ -230,8 +225,7 @@ void Theme::DrawFocusEllipse(graphics::Graphics& g, const Area& c, float alpha) 
 	path.AddEllipse(rc);
 	PathGradientBrush gbrush(&path);
 	gbrush.SetCenterColor(ChangeAlpha(GetColor(ColorFocus), int(alpha*255.0f)));
-	int KNumSurroundColors = 1;
-	gbrush.SetSurroundColors(KSurroundColors, &KNumSurroundColors);
+	gbrush.SetSurroundColors(KSurroundColors, 1);
 
 	float fx = max(0.0f, float(rc.GetWidth()-5*KFocusRectangleWidth)/float(rc.GetWidth()));
 	float fy = max(0.0f, float(rc.GetHeight()-5*KFocusRectangleWidth)/float(rc.GetHeight()));
@@ -263,17 +257,16 @@ void Theme::DrawMessageBar(graphics::Graphics& g, const Area& header) {
 }
 
 void Theme::DrawHighlightEllipse(graphics::Graphics& g, const Area& c, float alpha) {
-	static REAL blendPositions[2] = {0.0f, 1.0f};
-	static REAL blendFactors[2] = {1.0f, 0.0f};
-	static Color KSurroundColors[1] = { Color::Transparent };
+	static float blendPositions[2] = {0.0f, 1.0f};
+	static float blendFactors[2] = {1.0f, 0.0f};
+	static Color KSurroundColors[1] = { Color() };
 
 	Area rc = c;
 	GraphicsPath path;
 	path.AddEllipse(rc);
 	PathGradientBrush gbrush(&path);
 	gbrush.SetCenterColor(Color(int(alpha*255.0f), 255, 255, 255));
-	int KNumSurroundColors = 1;
-	gbrush.SetSurroundColors(KSurroundColors, &KNumSurroundColors);
+	gbrush.SetSurroundColors(KSurroundColors, 1);
 	
 	g.FillEllipse(&gbrush, rc);
 }
@@ -323,19 +316,23 @@ graphics::Color Theme::ChangeAlpha(const graphics::Color& col, float a) {
 }
 
 graphics::Color Theme::ChangeAlpha(const graphics::Color& col, int a) {
-	return graphics::Color(a, col.GetR(), col.GetG(), col.GetB());
+	return graphics::Color((unsigned char)a, col.GetR(), col.GetG(), col.GetB());
+}
+
+std::wstring Theme::GetGUIFontName() const {
+	return L"Tahoma";
 }
 
 graphics::Font* Theme::GetGUIFontBold() const {
 	if(_fontBold==0) {
-		_fontBold = new Font(L"Tahoma", 11, FontStyleBold, UnitPixel, 0);
+		_fontBold = new Font(GetGUIFontName().c_str(), 11, FontStyleBold);
 	}
 	return _fontBold;
 }
 
 graphics::Font* Theme::GetGUIFont() const {
 	if(_font==0) {
-		_font = new Font(L"Tahoma", 11, FontStyleRegular, UnitPixel, 0);
+		_font = new Font(GetGUIFontName().c_str(), 11, FontStyleRegular);
 	}
 	return _font;
 }
@@ -343,14 +340,14 @@ graphics::Font* Theme::GetGUIFont() const {
 
 graphics::Font* Theme::GetLinkFont() const {
 	if(_fontLink==0) {
-		_fontLink = new Font(L"Tahoma", 11, FontStyleUnderline, UnitPixel, 0);
+		_fontLink = new Font(GetGUIFontName().c_str(), 11, FontStyleUnderline);
 	}
 	return _fontLink;
 }
 
 graphics::Font* Theme::GetGUIFontSmall() const {
 	if(_fontSmall==0) {
-		_fontSmall = new Font(L"Tahoma", 9, FontStyleRegular, UnitPixel, 0);
+		_fontSmall = new Font(GetGUIFontName().c_str(), 9, FontStyleRegular);
 	}
 	return _fontSmall;
 }
@@ -384,7 +381,7 @@ graphics::Color Theme::GetColor(const ColorIdentifier& ci) const {
 			return Color(0,0,255);
 
 		case ColorFocus:
-			return Color::LightBlue;
+			return Color(0xAD, 0xD8, 0xE6);
 
 		case ColorShadow:
 			return Color(200,0,0,0);
@@ -453,10 +450,10 @@ graphics::Color Theme::GetColor(const ColorIdentifier& ci) const {
 			return Color(100,70,70,70);
 
 		case ColorProgressBackgroundStart:
-			return Color(201,201,201);
+			return Color(0,0,0);
 
 		case ColorProgressBackgroundEnd:
-			return Color(255,255,255);
+			return Color(54,54,54);
 
 		case ColorProgressGlassStart:
 			return Color(211,255,255,255);
@@ -516,55 +513,7 @@ Brush* Theme::GetApplicationBackgroundBrush(HWND root, HWND child) const {
 	GetWindowRect(root, &rootrc);
 	GetWindowRect(child, &childrc);
 
-	graphics::LinearGradientBrush* lbr = new graphics::LinearGradientBrush(PointF(0.0f, -float(childrc.top-rootrc.top)), PointF(0.0f,float(rootrc.bottom-rootrc.top)), Color(0,0,0), Color(90,90,90));
-	lbr->SetWrapMode(WrapModeClamp);
-	REAL factors[3] = {1.0f, 0.0f, 0.0f};
-	REAL positions[3] = {0.0f, 0.25f ,1.0f};
-	lbr->SetBlend(factors,positions, 3);
-
+	graphics::LinearGradientBrush* lbr = new graphics::LinearGradientBrush(PointF(0.0f, -float(childrc.top-rootrc.top)), PointF(0.0f,-float(childrc.top-rootrc.bottom)), Color(90,90,90), Color(0,0,0));
+	lbr->SetBlendPosition(0.1f);
 	return lbr;
-}
-
-
-
-void Theme::DrawRoundRectangle(graphics::Graphics& g, const Area& rc, const graphics::Color& col, float radiusPixels, float penWidth) {
-	graphics::Pen pn(col, penWidth);
-	DrawRoundRectangle(g, rc, pn, radiusPixels);
-}
-
-void Theme::DrawRoundRectangle(graphics::Graphics& g, const Area& rc, graphics::Pen& pn, float d) {
-	SmoothingMode old = g.GetSmoothingMode();
-	g.SetSmoothingMode(SmoothingModeHighQuality);
-	graphics::GraphicsPath gp;
-	AreaF r((float)rc.GetLeft()-1, (float)rc.GetTop()-1, (float)rc.GetWidth(), (float)rc.GetHeight());
-
-	gp.AddArc(r.GetLeft(), r.GetTop(), d, d, 180.0f, 90.0f);
-	gp.AddArc(r.GetLeft() + r.GetWidth() - d, r.GetTop(), d, d, 270.0f, 90.0f);
-	gp.AddArc(r.GetLeft() + r.GetWidth() - d, r.GetTop() + r.GetHeight() - d, d, d, 0.0f, 90.0f);
-	gp.AddArc(r.GetLeft(), r.GetTop() + r.GetHeight() - d, d, d, 90.0f, 90.0f);
-	gp.AddLine(r.GetLeft(), r.GetTop() + r.GetHeight() - d, r.GetLeft(), r.GetTop() + d / 2.0f);
-	
-	g.DrawPath(&pn, &gp);
-	g.SetSmoothingMode(old);
-}
-
-void Theme::FillRoundRectangle(graphics::Graphics& g, const Area& rc, const graphics::Color& col, float d) {
-	graphics::SolidBrush br(col);
-	FillRoundRectangle(g, rc, br, d);
-}
-
-void Theme::FillRoundRectangle(graphics::Graphics& g, const Area& rc, graphics::Brush& br, float d) {
-	SmoothingMode old = g.GetSmoothingMode();
-	g.SetSmoothingMode(SmoothingModeHighQuality);
-	graphics::GraphicsPath gp;
-	AreaF r((float)rc.GetLeft()-1, (float)rc.GetTop()-1, (float)rc.GetWidth(), (float)rc.GetHeight());
-
-	gp.AddArc(r.GetLeft(), r.GetTop(), d, d, 180.0f, 90.0f);
-	gp.AddArc(r.GetLeft() + r.GetWidth() - d, r.GetTop(), d, d, 270.0f, 90.0f);
-	gp.AddArc(r.GetLeft() + r.GetWidth() - d, r.GetTop() + r.GetHeight() - d, d, d, 0.0f, 90.0f);
-	gp.AddArc(r.GetLeft(), r.GetTop() + r.GetHeight() - d, d, d, 90.0f, 90.0f);
-	gp.AddLine(r.GetLeft(), r.GetTop() + r.GetHeight() - d, r.GetLeft(), r.GetTop() + d / 2.0f);
-	
-	g.FillPath(&br, &gp);
-	g.SetSmoothingMode(old);
 }

@@ -1,7 +1,6 @@
 #include "../include/tjcore.h"
 #include <math.h>
 using namespace tj::shared;
-using namespace tj::shared::graphics;
 
 Vector::Vector(float fx, float fy, float fz): x(fx), y(fy), z(fz) {
 }

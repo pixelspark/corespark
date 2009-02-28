@@ -28,6 +28,14 @@ Message::Message(bool toPlugin, const GroupID& gid, const Channel& cid, const Pl
 Message::~Message() {
 }
 
+strong<Packet> Message::ConvertToPacket() {
+	unsigned int dataSize = _writer->GetSize();
+	char* data = _writer->TakeOverBuffer();
+	strong<Packet> packet = GC::Hold(new Packet(data, dataSize));
+	_header = 0;
+	return packet;
+}
+
 bool Message::IsSent() const {
 	return _sent;
 }
@@ -37,13 +45,22 @@ void Message::SetSent() {
 }
 
 PacketHeader* Message::GetHeader() {
+	if(_header==0) {
+		Throw(L"Message was converted to Packet, cannot change header anymore", ExceptionTypeSevere);
+	}
 	return _header;
 }
 
 unsigned int Message::GetSize() {
+	if(_header==0) {
+		Throw(L"Message was converted to Packet, cannot get size anymore", ExceptionTypeSevere);
+	}
 	return _writer->GetSize();
 }
 
 const char* Message::GetBuffer() {
+	if(_header==0) {
+		Throw(L"Message was converted to Packet, cannot change contents anymore", ExceptionTypeSevere);
+	}
 	return _writer->GetBuffer();
 }

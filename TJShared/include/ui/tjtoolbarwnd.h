@@ -128,7 +128,7 @@ namespace tj {
 			public:
 				TimeToolbarItem();
 				virtual ~TimeToolbarItem();
-				virtual void Paint(Gdiplus::Graphics& g, strong<Theme> theme, bool over, bool down, float alpha);
+				virtual void Paint(graphics::Graphics& g, strong<Theme> theme, bool over, bool down, float alpha);
 		};
 
 		class EXPORTED LogoToolbarItem: public ToolbarItem {
@@ -137,7 +137,7 @@ namespace tj {
 				LogoToolbarItem(const Icon& icon, Pixels width, int cmd = 0);
 				virtual ~LogoToolbarItem();
 
-				virtual void Paint(Gdiplus::Graphics& g, strong<Theme> theme, bool over, bool down, float alpha);
+				virtual void Paint(graphics::Graphics& g, strong<Theme> theme, bool over, bool down, float alpha);
 
 			protected:
 				Icon _logo;

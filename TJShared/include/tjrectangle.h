@@ -5,71 +5,69 @@ namespace tj {
 	namespace shared {
 		typedef int Pixels; // Logical pixels are 1/Theme::KDefaultDPI inches
 
-		template<typename T> struct BasicCoord {
-			T x;
-			T y;
+		template<typename T> class BasicCoord {
+			public:
+				inline BasicCoord(const T& x = (T)0, const T& y = (T)0): _x(x), _y(y) {
+				}
+
+				template<typename Q> inline operator BasicCoord() {
+					return BasicCoord<Q>((Q)_x, (Q)_y);
+				}
+			
+			T _x;
+			T _y;
 		};
 
 		typedef BasicCoord<Pixels> Coord;
 
 		template<typename T> class BasicRectangle {
 			public:
-				BasicRectangle(T x=0, T y=0, T w=0, T h=0) {
-					_x = x;
-					_y = y;
-					_w = w;
-					_h = h;
+				inline BasicRectangle(const T& x = (T)0, const T& y = (T)0, const T& w = (T)0, const T& h = (T)0): _x(x), _y(y), _w(w), _h(h) {
 				}
 
-				BasicRectangle(const RECT& r) {
+				inline BasicRectangle(const RECT& r) {
 					_x = T(r.left);
 					_y = T(r.top);
 					_h = T(r.bottom-r.top);
 					_w = T(r.right-r.left);
 				}
 
-				BasicRectangle(const graphics::RectF& r) {
-					_x = (T)r.GetLeft();
-					_y = (T)r.GetTop();
-					_h = T(r.GetBottom())-_y;
-					_w = T(r.GetRight())-_x;
+				~BasicRectangle() {
 				}
 
-				virtual ~BasicRectangle() {
-				}
-
-				T GetX() const {
+				inline T GetX() const {
 					return _x;
 				}
 
-				T GetY() const {
+				inline T GetY() const {
 					return _y;
 				}
 
-				T GetWidth() const {
+				inline T GetWidth() const {
 					return _w;
 				}
 
-				T GetHeight() const {
+				inline T GetHeight() const {
 					return _h;
 				}
 
-				void SetX(T x) {
+				inline void SetX(T x) {
 					_x = x;
 				}
 
-				void SetY(T y) {
+				inline void SetY(T y) {
 					_y = y;
 				}
-				void SetWidth(T w) {
+				
+				inline void SetWidth(T w) {
 					_w = w;
 				}
 
-				void SetHeight(T h) {
+				inline void SetHeight(T h) {
 					_h = h;
 				}
 
-				void Narrow(T x, T y, T w, T h) {
+				inline void Narrow(T x, T y, T w, T h) {
 					_x += x;
 					_w -= x;
 					_y += y;
@@ -78,20 +76,16 @@ namespace tj {
 					_w -= w;
 				}
 
-				void Widen(T x, T y, T w, T h) {
+				inline void Widen(T x, T y, T w, T h) {
 					Narrow(-x, -y, -w, -h);
 				}
 
-				bool IsInside(T x, T y) const {
+				inline bool IsInside(T x, T y) const {
 					return (x > _x && y > _y && x < (_x+_w) && y < (_y+_h));
 				}
 				
-				bool IsInside(BasicCoord<T> pt) const {
+				inline bool IsInside(BasicCoord<T> pt) const {
 					return IsInside(pt.x, pt.y);
-				}
-
-				inline operator graphics::RectF() const {
-					return graphics::RectF(float(_x), float(_y), float(_w), float(_h));
 				}
 
 				inline operator RECT() const {
@@ -119,35 +113,35 @@ namespace tj {
 					return GetX() + GetWidth();
 				}
 
-				template<typename Q> void Multiply(Q wfactor, Q hfactor) {
+				template<typename Q> inline void Multiply(Q wfactor, Q hfactor) {
 					_w = T(_w*wfactor);
 					_h = T(_h*hfactor);
 					_x = T(_x*wfactor);
 					_y = T(_y*hfactor);
 				}
 
-				template<typename Q> void MultiplyCeil(Q wfactor, Q hfactor) {
+				template<typename Q> inline void MultiplyCeil(Q wfactor, Q hfactor) {
 					_w = (T)ceil(_w*wfactor);
 					_h = (T)ceil(_h*hfactor);
 					_x = (T)ceil(_x*wfactor);
 					_y = (T)ceil(_y*hfactor);
 				}
 
-				template<typename Q> void Multiply(Q factor) {
+				template<typename Q> inline void Multiply(Q factor) {
 					Multiply(factor,factor);
 				}
 
-				void Translate(T x, T y) {
+				inline void Translate(T x, T y) {
 					_x += x;
 					_y += y;
 				}
 
-				template<typename Q> void MultiplyTranslate(Q wfactor, Q hfactor, T xoffset, T yoffset) {
+				template<typename Q> inline void MultiplyTranslate(Q wfactor, Q hfactor, T xoffset, T yoffset) {
 					Multiply(wfactor,hfactor);
 					Translate(xoffset, yoffset);
 				}
 
-				std::wstring ToString() const {
+				inline std::wstring ToString() const {
 					std::wostringstream wos;
 					wos << L"{";
 					wos << _x << L",";
@@ -157,18 +151,22 @@ namespace tj {
 					return wos.str();
 				}
 
-				void Save(TiXmlElement* parent) const {
+				inline void Save(TiXmlElement* parent) const {
 					SaveAttributeSmall(parent,"x", _x);
 					SaveAttributeSmall(parent,"y", _y);
 					SaveAttributeSmall(parent,"w", _w);
 					SaveAttributeSmall(parent,"h", _h);
 				}
 
-				void Load(TiXmlElement* you) {
+				inline void Load(TiXmlElement* you) {
 					_x = LoadAttributeSmall(you, "x", _x);
 					_y = LoadAttributeSmall(you, "y", _y);
 					_w = LoadAttributeSmall(you, "w", _w);
 					_h = LoadAttributeSmall(you, "h", _h);
+				}
+
+				template<typename Q> inline operator BasicRectangle<Q>() {
+					return BasicRectangle<Q>((Q)_x, (Q)_y, (Q)_w, (Q)_h);
 				}
 
 			protected:

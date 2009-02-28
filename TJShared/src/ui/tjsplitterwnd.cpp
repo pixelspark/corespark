@@ -213,6 +213,7 @@ void SplitterWnd::Paint(Graphics& g, strong<Theme> theme) {
 		if(abr!=0) {
 			g.FillRectangle(abr, rc);
 		}
+		delete abr;
 	}
 	else {
 		Area bar = GetBarArea();
@@ -258,6 +259,7 @@ void SplitterWnd::Paint(Graphics& g, strong<Theme> theme) {
 		}
 
 		SolidBrush tbr(theme->GetColor(Theme::ColorActiveStart));
+		SolidBrush stbr(Theme::ChangeAlpha(theme->GetColor(Theme::ColorBackground),172));
 		StringFormat sf;
 		sf.SetAlignment(StringAlignmentNear);
 
@@ -269,7 +271,7 @@ void SplitterWnd::Paint(Graphics& g, strong<Theme> theme) {
 			g.RotateTransform(90.0f);
 		}
 		else {
-			g.TranslateTransform(float(bar.GetLeft())+3.0f, float(bar.GetTop())+3.0f);
+			g.TranslateTransform(float(bar.GetLeft())+3.0f, float(bar.GetTop())+4.0f);
 		}
 		
 		if(icon) {
@@ -277,6 +279,7 @@ void SplitterWnd::Paint(Graphics& g, strong<Theme> theme) {
 			offset += 20.0f;
 		}
 
+		g.DrawString(title.c_str(), (int)title.length(), theme->GetGUIFontBold(), PointF(offset+0.8f, 0.8f), &sf, &stbr);
 		g.DrawString(title.c_str(), (int)title.length(), theme->GetGUIFontBold(), PointF(offset, 0.0f), &sf, &tbr);
 		g.EndContainer(gc);
 	}

@@ -301,7 +301,7 @@ using namespace tj::shared;
 			strong<Theme> theme = ThemeManager::GetTheme();
 			Color c = theme->GetColor(Theme::ColorBackground);
 
-			if(editBackground==0 || back.GetValue()!=back.GetValue()) {
+			if(editBackground==0) {
 				if(editBackground!=0) DeleteObject(editBackground);
 				editBackground = CreateSolidBrush(RGB(c.GetR(), c.GetG(), c.GetB()));
 			}

@@ -2,35 +2,6 @@
 using namespace tj::shared;
 using namespace tj::shared::graphics;
 
-// TODO: move to some general class in TJShared
-int GetEncoderClsid(const WCHAR* format, CLSID* pClsid) {
-   UINT  num = 0;          // number of image encoders
-   UINT  size = 0;         // size of the image encoder array in bytes
-
-   ImageCodecInfo* pImageCodecInfo = NULL;
-
-   GetImageEncodersSize(&num, &size);
-   if(size == 0)
-      return -1;  // Failure
-
-   pImageCodecInfo = (ImageCodecInfo*)(malloc(size));
-   if(pImageCodecInfo == NULL)
-      return -1;  // Failure
-
-   GetImageEncoders(num, size, pImageCodecInfo);
-
-   for(UINT j = 0; j < num; ++j) {
-      if(wcscmp(pImageCodecInfo[j].MimeType, format) == 0) {
-         *pClsid = pImageCodecInfo[j].Clsid;
-         free(pImageCodecInfo);
-         return j;  // Success
-      }    
-   }
-
-   free(pImageCodecInfo);
-   return -1;  // Failure
-}
-
 GraphWnd::GraphWnd(): ChildWnd(L"") {
 }
 
@@ -47,38 +18,6 @@ ref<GraphItem> GraphWnd::GetItemAt(Pixels x, Pixels y) {
 		++it;
 	}
 	return null;
-}
-
-void GraphWnd::SaveImage(const std::wstring& path) {
-	strong<Theme> theme = ThemeManager::GetTheme();
-
-	if(path.length()>4) {
-		std::wstring ext = path.substr(path.length()-3, 3);
-		std::transform(ext.begin(), ext.end(), ext.begin(), tolower);
-
-		if(ext==L"emf") {
-			HDC windowDC = GetDC(GetWindow());
-
-			{
-				graphics::Metafile mf(path.c_str(), windowDC);
-				graphics::Graphics g(&mf);
-				Paint(g, theme);
-			}
-			ReleaseDC(GetWindow(), windowDC);					
-		}
-		else {
-			if(ext==L"jpg") ext = L"jpeg";
-			std::wstring mime = std::wstring(L"image/")+ext;
-			Area rc = GetClientArea();
-			Bitmap* bmp = new Bitmap(rc.GetWidth(), rc.GetHeight());
-			graphics::Graphics g(bmp);
-			Paint(g, theme);
-			CLSID pngClsid;
-			GetEncoderClsid(mime.c_str(), &pngClsid);
-			bmp->Save(path.c_str(),&pngClsid, NULL);
-			delete bmp;
-		}
-	}
 }
 
 void GraphWnd::OnSize(const Area& ns) {
@@ -210,10 +149,7 @@ std::pair<Pixels,Pixels> GraphWnd::GetEdge(const Area& from, const Area& to) {
 
 void GraphWnd::Paint(Graphics& g, strong<Theme> theme) {
 	Area rc = GetClientArea();
-
-	SolidBrush backBrush(theme->GetColor(Theme::ColorBackground));
-	g.FillRectangle(&backBrush, rc);
-	g.SetSmoothingMode(SmoothingModeHighQuality);
+	g.Clear(theme->GetColor(Theme::ColorBackground));
 	SolidBrush textBrush(theme->GetColor(Theme::ColorText));
 
 	std::vector< ref<GraphItem> >::iterator it = _items.begin();
@@ -230,10 +166,12 @@ void GraphWnd::Paint(Graphics& g, strong<Theme> theme) {
 			Pen arrowIn(theme->GetColor(Theme::ColorLine), 2.0f);
 			Pen normal(theme->GetColor(Theme::ColorLine), 1.0f);
 			Pen outLight(theme->GetColor(Theme::ColorLine), 1.0f);
-			AdjustableArrowCap aac(5.0f, 5.0f);
+
+			// TODO implement in Graphics
+			/*AdjustableArrowCap aac(5.0f, 5.0f);
 			arrowOut.SetCustomEndCap(&aac);
 			arrowIn.SetCustomStartCap(&aac);
-			outLight.SetCustomEndCap(&aac);
+			outLight.SetCustomEndCap(&aac);*/
 
 			std::vector<GraphArrow>::iterator ait = item->_arrows.begin();
 			while(ait!=item->_arrows.end()) {

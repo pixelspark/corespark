@@ -102,7 +102,7 @@ ref<Crumb> PathWnd::GetCrumbAt(int x, int* left) {
 				ref<Crumb> crumb = *it;
 				RectF textrc;
 				g.MeasureString(crumb->GetTextTrimmed().c_str(), int(crumb->GetTextTrimmed().length()), theme->GetGUIFont(), PointF(0.0f,0.0f), &textrc);
-				int totalWidth = int(textrc.Width)+KMarginLeft+KMarginRight+KIconWidth;
+				int totalWidth = int(textrc.GetWidth()) + KMarginLeft + KMarginRight + KIconWidth;
 				rx += totalWidth;
 
 				if(x<rx) {
@@ -122,9 +122,7 @@ ref<Crumb> PathWnd::GetCrumbAt(int x, int* left) {
 
 void PathWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 	Area rc = GetClientArea();
-	
-	SolidBrush zwart(theme->GetColor(Theme::ColorBackground));
-	g.FillRectangle(&zwart, rc);
+	g.Clear(theme->GetColor(Theme::ColorBackground));
 
 	LinearGradientBrush br(PointF(0.0f, 0.0f), PointF(0.0f, float(rc.GetHeight())), theme->GetColor(Theme::ColorToolbarStart), theme->GetColor(Theme::ColorToolbarEnd));
 	SolidBrush dbr(theme->GetColor(Theme::ColorDisabledOverlay));
@@ -154,7 +152,7 @@ void PathWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 			*/
 			RectF textrc;
 			g.MeasureString(text.c_str(), int(text.length()), theme->GetGUIFont(), PointF(0.0f,0.0f), &textrc);
-			RectF rtext(float(rx+KMarginLeft+KIconWidth), 4.0f, float(textrc.Width+1), float(15.0f));
+			RectF rtext(float(rx+KMarginLeft+KIconWidth), 4.0f, float(textrc.GetWidth()+1), float(15.0f));
 
 			StringFormat sf;
 			sf.SetAlignment(StringAlignmentFar);
@@ -162,11 +160,11 @@ void PathWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 			// active item draws differently
 			if(it+1 == _path->_crumbs.end()) {
 				LinearGradientBrush lbr(PointF(0.0f, 0.0f), PointF(0.0f, float(rc.GetHeight())), theme->GetColor(Theme::ColorActiveStart), theme->GetColor(Theme::ColorActiveEnd));
-				g.FillRectangle(&lbr,RectF(float(rx), 1.0f, float(textrc.Width+KMarginLeft+KMarginRight+KIconWidth), float(rc.GetHeight()-3)));
+				g.FillRectangle(&lbr,RectF(float(rx), 1.0f, float(textrc.GetWidth() + KMarginLeft + KMarginRight + KIconWidth), float(rc.GetHeight()-3)));
 				
 				if(_over!=crumb) {
 					SolidBrush dbr(theme->GetColor(Theme::ColorDisabledOverlay));
-					g.FillRectangle(&dbr,RectF(float(rx), 1.0f, float(textrc.Width+KMarginLeft+KMarginRight+KIconWidth), float(rc.GetHeight()-3)));
+					g.FillRectangle(&dbr,RectF(float(rx), 1.0f, float(textrc.GetWidth() + KMarginLeft + KMarginRight + KIconWidth), float(rc.GetHeight()-3)));
 				}
 				
 				g.DrawString(text.c_str(), int(text.length()), theme->GetGUIFont(), rtext, &sf, &atbr);
@@ -174,7 +172,7 @@ void PathWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 			else { 
 				if(_over==crumb) {
 					LinearGradientBrush lbr(PointF(0.0f, 0.0f), PointF(0.0f, float(rc.GetHeight())), theme->GetColor(Theme::ColorActiveStart), theme->GetColor(Theme::ColorActiveEnd));
-					g.FillRectangle(&lbr,RectF(float(rx), 1.0f, float(textrc.Width+KMarginLeft+KMarginRight+KIconWidth), float(rc.GetHeight()-3)));
+					g.FillRectangle(&lbr,RectF(float(rx), 1.0f, float(textrc.GetWidth()+KMarginLeft+KMarginRight+KIconWidth), float(rc.GetHeight()-3)));
 					g.DrawString(text.c_str(), int(text.length()), theme->GetGUIFont(), rtext, &sf, &atbr);
 				}
 				else {
@@ -183,7 +181,7 @@ void PathWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 
 				// draw separator after
 				if(_separator!=0) {
-					g.DrawImage(_separator, RectF(float(rx)+textrc.Width+KMarginLeft+KIconWidth-1,(rc.GetHeight()-KIconWidth)/2.0f, float(KIconWidth), float(KIconWidth)));
+					g.DrawImage(_separator, RectF(float(rx)+textrc.GetWidth()+KMarginLeft+KIconWidth-1,(rc.GetHeight()-KIconWidth)/2.0f, float(KIconWidth), float(KIconWidth)));
 				}
 			}
 
@@ -192,7 +190,7 @@ void PathWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 				g.DrawImage(crumb->_icon, RectF(float(rx+KMarginLeft/2), (rc.GetHeight()-KIconWidth)/2.0f, float(KIconWidth), float(KIconWidth)));
 			}
 
-			rx += int(textrc.Width)+KMarginLeft+KMarginRight+KIconWidth;
+			rx += int(textrc.GetWidth())+KMarginLeft+KMarginRight+KIconWidth;
 			++it;
 		}
 	}
@@ -201,6 +199,10 @@ void PathWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 void PathWnd::SetPath(ref<Path> p) {
 	_path = p;
 	Update();
+}
+
+void PathWnd::OnSize(const Area& ns) {
+	Repaint();
 }
 
 void PathWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {

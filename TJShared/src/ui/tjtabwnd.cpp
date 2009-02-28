@@ -209,9 +209,6 @@ void TabWnd::TabPane::Paint(Graphics& g, strong<Theme> theme, const Area& tab, b
 
 void TabWnd::Paint(Graphics& g, strong<Theme> theme) {
 	if(_headerHeight>0) {	
-		// Set up graphics options
-		g.SetSmoothingMode(SmoothingModeDefault);
-		g.SetCompositingQuality(CompositingQualityDefault);
 		Area rect = GetClientArea();
 
 		// Calculate total width and offset for scroller
@@ -236,7 +233,6 @@ void TabWnd::Paint(Graphics& g, strong<Theme> theme) {
 				g.FillRectangle(abr, Rect(rect.GetLeft(), rect.GetTop(), rect.GetRight(), _current?_headerHeight:(rect.GetHeight())));
 				Pen back(abr, 2.0f);
 				g.DrawRectangle(&back, RectF(0.0f, float(_headerHeight), float(rect.GetWidth()-1), float(rect.GetHeight()-_headerHeight+1)));
-			
 				delete abr;
 			}
 		}
@@ -310,8 +306,8 @@ void TabWnd::Paint(Graphics& g, strong<Theme> theme) {
 			if(!((totalTabsWidth+offset)<(rect.GetWidth()-2*_headerHeight))) {
 				HWND root = GetAncestor(GetWindow(), GA_ROOT);
 				graphics::Brush* abr = theme->GetApplicationBackgroundBrush(root, GetWindow());
-
 				g.FillRectangle(abr, RectF((float)buttonsLeft, 0.0f, float(rect.GetWidth()-buttonsLeft), float(_headerHeight)-1.0f));
+				delete abr;
 			}
 
 			Area addArea(buttonsLeft, rect.GetTop(), 19, 19);

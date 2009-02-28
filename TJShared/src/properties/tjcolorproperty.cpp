@@ -33,7 +33,7 @@ void ColorWheel::PaintMarker(graphics::Graphics& g, ref<Theme> theme, Pixels off
 	Pixels x = Pixels(centerX + cos(h*2.0*3.14159)*radius*s);
 	Pixels y = Pixels(centerY + sin(h*2.0*3.14159)*radius*s);
 	
-	SolidBrush black(Color::Black);
+	SolidBrush black(Color(0,0,0));
 	g.FillEllipse(&black, RectF(float(x-2.5f), float(y-2.5f), 5.0f, 5.0f));
 }
 
@@ -47,8 +47,6 @@ void ColorWheel::Paint(graphics::Graphics& g, ref<Theme> theme, Pixels offx, Pix
 		// Draw background
 		SolidBrush back(Color(0,255,255,255)); // transparent
 		Graphics bg(_bitmap);
-		bg.SetSmoothingMode(SmoothingModeHighQuality);
-		bg.SetCompositingQuality(CompositingQualityHighQuality);
 		bg.FillRectangle(&back, Rect(0,0,bitmapWidth, bitmapHeight));
 
 		// Calculate center
@@ -63,18 +61,17 @@ void ColorWheel::Paint(graphics::Graphics& g, ref<Theme> theme, Pixels offx, Pix
 
 		for(int a=0;a<PointCount;a++) {
 			float deg = (float(a)/float(PointCount))*2.0f*3.14159f;
-			points[a].X = cos(deg)*radius + centerX;
-			points[a].Y = sin(deg)*radius + centerY;
+			points[a]._x = cos(deg)*radius + centerX;
+			points[a]._y = sin(deg)*radius + centerY;
 			colors[a] = ColorSpaces::HSVToRGB(double(a)/double(PointCount), 1.0, 1.0);
 		}
 
 		PathGradientBrush pgb(points, PointCount);
-		pgb.SetCenterColor(Color::White);
+		pgb.SetCenterColor(Color(1.0, 1.0, 1.0));
 		pgb.SetCenterPoint(PointF(centerX, centerY));
 
-		int numColors = PointCount;
-		pgb.SetSurroundColors(colors,&numColors);
-		bg.FillEllipse(&pgb, centerX-radius, centerY-radius, radius*2.0f, radius*2.0f);
+		pgb.SetSurroundColors(colors, PointCount);
+		bg.FillEllipse(&pgb, RectF(centerX-radius, centerY-radius, radius*2.0f, radius*2.0f));
 	}
 	
 	g.DrawImage(_bitmap, RectF(float(offx), float(offy), float(_w), float(_h)));

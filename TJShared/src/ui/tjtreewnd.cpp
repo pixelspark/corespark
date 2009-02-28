@@ -67,7 +67,7 @@ void SimpleTreeNode::Paint(graphics::Graphics& g, ref<Theme> theme, const Area& 
 	StringFormat sf;
 	sf.SetFormatFlags(sf.GetFormatFlags()|StringFormatFlagsLineLimit);
 	sf.SetLineAlignment(StringAlignmentCenter);
-	g.DrawString(_text.c_str(), (int)_text.length(), theme->GetGUIFont(), row, &sf, &text);
+	g.DrawString(_text.c_str(), (int)_text.length(), theme->GetGUIFont(), BasicRectangle<float>(row), &sf, &text);
 }
 
 void SimpleTreeNode::Visit(TreeVisitor& tv) {
@@ -294,7 +294,7 @@ void TreeWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 						if(node.IsExpanded()) {
 							Point start(row.GetLeft() + (_indent/2), row.GetTop() + (h/2));
 							Point end(row.GetLeft() + (_indent)/2, row.GetTop() + hc);
-							Point secondEnd(end.X + 2, end.Y);
+							Point secondEnd(end._x + 2, end._y);
 							Pen line(_theme->GetColor(Theme::ColorActiveStart), 1.0f);
 							_g.DrawLine(&line, start, end);
 							_g.DrawLine(&line, end, secondEnd);

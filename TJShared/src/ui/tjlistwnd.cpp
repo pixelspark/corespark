@@ -234,7 +234,8 @@ float GridWnd::GetColumnWidth(int id) {
 void GridWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 	if(_showHeader) {
 		// draw columns
-		Pen border(theme->GetColor(Theme::ColorActiveStart), 1.0f);
+		SolidBrush borderBrush(theme->GetColor(Theme::ColorActiveStart));
+		Pen border(&borderBrush, 1.0f);
 		Area area = ChildWnd::GetClientArea();
 		Pixels headHeight = GetHeaderHeight();
 		Area headRc = area;
@@ -253,7 +254,8 @@ void GridWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 		sf.SetTrimming(StringTrimmingEllipsisCharacter);
 
 		LinearGradientBrush colBr(PointF(0.0f, 4.0f), PointF(0.0f, float(headHeight-8)), theme->GetColor(Theme::ColorActiveStart), theme->GetColor(Theme::ColorActiveEnd));
-		Pen separator(theme->GetColor(Theme::ColorActiveEnd));
+		SolidBrush separatorBrush(theme->GetColor(Theme::ColorActiveEnd));
+		Pen separator(&separatorBrush);
 
 		float x = float(area.GetLeft());
 		std::map<int,Column>::iterator it = _cols.begin();
@@ -347,11 +349,13 @@ std::wstring ListWnd::GetEmptyText() const {
 
 void ListWnd::Paint(graphics::Graphics &g, strong<Theme> theme) {
 	Area area = GetClientArea();
-	SolidBrush back(theme->GetColor(Theme::ColorBackground));
 	SolidBrush disabled(theme->GetColor(Theme::ColorDisabledOverlay));
-	g.FillRectangle(&back, area);
-	Pen border(theme->GetColor(Theme::ColorActiveStart), 1.0f);
-	Pen lineBorder(theme->GetColor(Theme::ColorActiveEnd), 1.0f);
+	g.Clear(theme->GetColor(Theme::ColorBackground));
+
+	SolidBrush borderBrush(theme->GetColor(Theme::ColorActiveStart));
+	SolidBrush lineBrush(theme->GetColor(Theme::ColorActiveEnd));
+	Pen border(&borderBrush, 1.0f);
+	Pen lineBorder(&lineBrush, 1.0f);
 	bool hasFocus = HasFocus(true);
 
 	int n = GetItemCount();

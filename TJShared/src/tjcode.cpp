@@ -31,10 +31,16 @@ unsigned int CodeWriter::GetCapacity() {
 }
 
 CodeWriter::~CodeWriter() {
-	delete[] _buffer;
+	if(_buffer!=0) {
+		delete[] _buffer;
+	}
 }
 
 void CodeWriter::Grow(unsigned int size) {
+	if(_buffer==0) {
+		Throw(L"CodeWriter grown after buffer has been taken over!", ExceptionTypeSevere);
+	}
+
 	if(_pos+size>_size) {
 		unsigned int newSize = max(_size*2, _size+size);
 		char* newBuffer = new char[newSize];
@@ -56,6 +62,10 @@ template<> tj::shared::Vector Code::Get(unsigned int& position) {
 }
 
 template<> CodeWriter& CodeWriter::Add(const std::wstring& x) {
+	if(_buffer==0) {
+		Throw(L"CodeWriter written to after buffer has been taken over!", ExceptionTypeSevere);
+	}
+
 	Grow((unsigned int)((x.length()*sizeof(wchar_t))+sizeof(unsigned int)));
 
 	Add<unsigned int>((unsigned int)x.length());

@@ -13,20 +13,49 @@ namespace tj {
 			double _h, _s, _v;
 		};
 
-		struct EXPORTED RGBColor: public virtual Object, public Serializable {
-			RGBColor(double ar = 0.0, double ag = 0.0, double ab = 0.0) {
-				_r = ar;
-				_g = ag;
-				_b = ab;
-			}
+		class EXPORTED RGBColor: public virtual Object, public Serializable {
+			public:
+				inline RGBColor(): _a(0.0), _r(0.0), _g(0.0), _b(0.0) {}
+				inline RGBColor(double aa, double ar, double ag, double ab): _a(aa), _r(ar), _g(ag), _b(ab) {}
+				inline RGBColor(double r, double g, double b): _a(1.0), _r(r), _g(g), _b(b) {}
+				inline RGBColor(unsigned char a, unsigned char r, unsigned char g, unsigned char b): _a(double(a)/255.0), _b(double(b)/255.0), _g(double(g)/255.0), _r(double(r)/255.0) {}
+				inline RGBColor(unsigned char r, unsigned char g, unsigned char b): _a(1.0), _b(double(b)/255.0), _g(double(g)/255.0), _r(double(r)/255.0) {}
+				inline RGBColor(int a, int r, int g, int b): _a(double(a)/255.0), _b(double(b)/255.0), _g(double(g)/255.0), _r(double(r)/255.0) {}
+				inline RGBColor(int r, int g, int b): _a(1.0), _b(double(b)/255.0), _g(double(g)/255.0), _r(double(r)/255.0) {}
+				
+				virtual ~RGBColor();
+				virtual void Save(TiXmlElement* parent);
+				virtual void Load(TiXmlElement* you);
 
-			virtual void Save(TiXmlElement* parent);
-			virtual void Load(TiXmlElement* you);
-			operator graphics::Color() const;
+				inline unsigned char GetRed() const {
+					return (unsigned char)(min(1.0, max(0.0, _r)) * 255.0);
+				}
 
-			double _r;
-			double _g;
-			double _b;
+				inline unsigned char GetGreen() const {
+					return (unsigned char)(min(1.0, max(0.0, _g)) * 255.0);
+				}
+
+				inline unsigned char GetBlue() const {
+					return (unsigned char)(min(1.0, max(0.0, _b)) * 255.0);
+				}
+
+				inline unsigned char GetAlpha() const {
+					return (unsigned char)(min(1.0, max(0.0, _a)) * 255.0);
+				}
+
+				inline unsigned char GetR() const { return GetRed(); }
+				inline unsigned char GetG() const { return GetGreen(); }
+				inline unsigned char GetB() const { return GetBlue(); }
+				inline unsigned char GetA() const { return GetAlpha(); }
+
+				inline double GetValue() const {
+					return _a + 10.0*_r + 100.0*_g + 1000.0*_b;
+				}
+
+				double _a;
+				double _r;
+				double _g;
+				double _b;
 		};
 
 		class EXPORTED ColorSpaces {

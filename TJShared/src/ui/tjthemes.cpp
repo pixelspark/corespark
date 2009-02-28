@@ -76,7 +76,7 @@ Color BrightTheme::GetColor(const Theme::ColorIdentifier& ci) const {
 			return Color(255,255,255);
 		
 		case ColorCurrentPosition:
-			return Color(0,0,0);
+			return Color(230, 0,0,0);
 
 		case ColorDescriptionText:
 			return Color(120,120,120);
@@ -148,12 +148,8 @@ Brush* BrightTheme::GetApplicationBackgroundBrush(HWND root, HWND child) const {
 	GetWindowRect(root, &rootrc);
 	GetWindowRect(child, &childrc);
 
-	graphics::LinearGradientBrush* lbr = new graphics::LinearGradientBrush(PointF(0.0f, -float(childrc.top-rootrc.top)), PointF(0.0f,float(rootrc.bottom-rootrc.top)), Color(255,255,255), Color(204,204,204));
-	lbr->SetWrapMode(WrapModeClamp);
-	REAL factors[3] = {1.0f, 0.0f, 0.0f};
-	REAL positions[3] = {0.0f, 0.25f ,1.0f};
-	lbr->SetBlend(factors,positions, 3);
-
+	graphics::LinearGradientBrush* lbr = new graphics::LinearGradientBrush(PointF(0.0f, -float(childrc.top-rootrc.top)), PointF(0.0f,-float(childrc.top-rootrc.bottom)), Color(221,221,221), Color(255,255,255));
+	lbr->SetBlendPosition(0.1f);
 	return lbr;
 }
 
@@ -202,7 +198,7 @@ graphics::Color VistaTheme::GetColor(const Theme::ColorIdentifier& ci) const {
 			return Color(150,178,195);
 
 		case ColorFocus:
-			return Color::DarkBlue;
+			return Color(0, 0, 0x90);
 
 		case ColorSplitterStart:
 			return Color(255,255,255);
@@ -212,6 +208,12 @@ graphics::Color VistaTheme::GetColor(const Theme::ColorIdentifier& ci) const {
 
 		case ColorCurrentPosition:
 			return Color(0,0,0);
+
+		case ColorProgressBackgroundStart:
+			return Color(201,201,201);
+
+		case ColorProgressBackgroundEnd:
+			return Color(255,255,255);
 
 		case ColorShadowed:
 			return ChangeAlpha(GetColor(ColorShadow),255/4);
@@ -250,11 +252,8 @@ graphics::Brush* VistaTheme::GetApplicationBackgroundBrush(HWND root, HWND child
 	GetWindowRect(root, &rootrc);
 	GetWindowRect(child, &childrc);
 
-	graphics::LinearGradientBrush* lbr = new graphics::LinearGradientBrush(PointF(0.0f, -float(childrc.top-rootrc.top)), PointF(0.0f,float(rootrc.bottom-rootrc.top)), Color(242,251,254), GetColor(ColorActiveEnd));
-	lbr->SetWrapMode(WrapModeClamp);
-	REAL factors[3] = {1.0f, 0.0f, 0.0f};
-	REAL positions[3] = {0.0f, 0.25f ,1.0f};
-	lbr->SetBlend(factors,positions, 3);
+	graphics::LinearGradientBrush* lbr = new graphics::LinearGradientBrush(PointF(0.0f, -float(childrc.top-rootrc.top)), PointF(0.0f,-float(childrc.top - rootrc.bottom)), Color(242,251,254), Color(255,255,255));
+	lbr->SetBlendPosition(0.381f);
 
 	return lbr;
 }

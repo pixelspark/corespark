@@ -48,10 +48,10 @@ void Icon::Paint(graphics::Graphics& g, const Area& rc, float alpha) {
 		0.0f,	0.0f,	0.0f, 0.0f, 1.0f,
 	};
 
-	Gdiplus::ImageAttributes attr;
+	ImageAttributes attr;
 	attr.SetColorMatrix(&cm);
 
-	g.DrawImage(_bitmap, rc, 0.0f, 0.0f, (float)_bitmap->GetWidth(), (float)_bitmap->GetHeight(), graphics::UnitPixel, &attr);
+	g.DrawImage(_bitmap, rc, &attr);
 }
 
 // disabled + alpha
@@ -70,10 +70,10 @@ void Icon::Paint(graphics::Graphics& g, const Area& rc, bool enabled, float alph
 			0.0f,	0.0f,	0.0f,	0.0f, 1.0f,
 		};
 
-		Gdiplus::ImageAttributes attr;
+		ImageAttributes attr;
 		attr.SetColorMatrix(&cm);
 
-		g.DrawImage(_bitmap, rc, 0.0f, 0.0f, (float)_bitmap->GetWidth(), (float)_bitmap->GetHeight(), graphics::UnitPixel, &attr);
+		g.DrawImage(_bitmap, rc, &attr);
 	}
 }
 
@@ -93,9 +93,9 @@ void Icon::Paint(graphics::Graphics& g, const Area& rc, bool enabled) {
 			0.0f,	0.0f,	0.0f,	0.0f, 1.0f,
 		};
 
-		Gdiplus::ImageAttributes attr;
+		ImageAttributes attr;
 		attr.SetColorMatrix(&cm);
 
-		g.DrawImage(_bitmap, rc, 0.0f, 0.0f, (float)_bitmap->GetWidth(), (float)_bitmap->GetHeight(), graphics::UnitPixel, &attr);
+		g.DrawImage(_bitmap, rc, &attr);
 	}
 }

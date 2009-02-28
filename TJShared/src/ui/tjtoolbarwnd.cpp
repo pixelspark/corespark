@@ -407,11 +407,11 @@ int ToolbarItem::GetCommand() const {
 	return _command;
 }
 
-void ToolbarItem::Paint(Gdiplus::Graphics &g, tj::shared::strong<Theme> theme) {
+void ToolbarItem::Paint(graphics::Graphics &g, tj::shared::strong<Theme> theme) {
 	Paint(g,theme,false, false);
 }
 
-void ToolbarItem::Paint(Gdiplus::Graphics &g, strong<Theme> theme, bool over, bool down, float alpha) {
+void ToolbarItem::Paint(graphics::Graphics &g, strong<Theme> theme, bool over, bool down, float alpha) {
 	Area rc = GetClientArea();
 	bool active = IsActive();
 	bool enabled = IsEnabled();
@@ -457,7 +457,7 @@ void StateToolbarItem::Paint(graphics::Graphics& g, ref<Theme> theme, bool over,
 		rc.Narrow(1,2, IsSeparator() ? 4 : 3, 3);
 		g.FillRectangle(&green, rc);
 
-		LinearGradientBrush lbr(PointF(0.0f, float(rc.GetTop()-1)), PointF(0.0f, float(rc.GetBottom()+1)), Color::Transparent, theme->GetColor(Theme::ColorDisabledOverlay));
+		LinearGradientBrush lbr(PointF(0.0f, float(rc.GetTop()-1)), PointF(0.0f, float(rc.GetBottom()+1)), Color(), theme->GetColor(Theme::ColorDisabledOverlay));
 		g.FillRectangle(&lbr, rc);
 	}
 
@@ -571,7 +571,6 @@ void ThrobberToolbarItem::Paint(graphics::Graphics& g, ref<Theme> theme, bool ov
 	Area rc = GetClientArea();
 	DrawToolbarButton(g, rc, theme, over, down, IsSeparator(), IsEnabled(), backgroundAlpha);
 	rc.Narrow(6,5,6,6);
-	g.SetSmoothingMode(SmoothingModeHighQuality);
 
 	if(Progress.IsAnimating()) {
 		SolidBrush progress(theme->GetColor(Theme::ColorProgress));
@@ -596,7 +595,7 @@ TimeToolbarItem::TimeToolbarItem(): ToolbarItem(0, 0, L"", false) {
 TimeToolbarItem::~TimeToolbarItem() {
 }
 
-void TimeToolbarItem::Paint(Gdiplus::Graphics& g, strong<Theme> theme, bool over, bool down, float alpha) {
+void TimeToolbarItem::Paint(graphics::Graphics& g, strong<Theme> theme, bool over, bool down, float alpha) {
 	Area rc = GetClientArea();
 	DrawToolbarButton(g, rc, theme, over, down, IsSeparator(), IsEnabled());
 
@@ -637,7 +636,7 @@ LogoToolbarItem::LogoToolbarItem(const Icon& icon, Pixels width, int cmd): Toolb
 LogoToolbarItem::~LogoToolbarItem() {
 }
 
-void LogoToolbarItem::Paint(Gdiplus::Graphics& g, strong<Theme> theme, bool over, bool down, float alpha) {
+void LogoToolbarItem::Paint(graphics::Graphics& g, strong<Theme> theme, bool over, bool down, float alpha) {
 	Area rc = GetClientArea();
 	DrawToolbarButton(g, rc, theme, over, down, IsSeparator(), IsEnabled(), alpha);
 

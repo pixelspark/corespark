@@ -10,16 +10,8 @@
 
 	#include <winsock2.h>
 	#include <windows.h>
-	#include <winspool.h>
 	#include <ole2.h>
 	#include <ws2tcpip.h>
-	#include <Gdiplus.h>
-
-	namespace tj {
-		namespace shared {
-			namespace graphics = ::Gdiplus;
-		}
-	}
 
 	#include <map>
 	#include <string>

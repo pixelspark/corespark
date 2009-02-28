@@ -73,9 +73,7 @@ void PropertyGridWnd::OnSettingsChanged() {
 
 void PropertyGridWnd::Paint(Graphics& g, strong<Theme> theme) {
 	Area r = GetClientArea();
-
-	SolidBrush br(theme->GetColor(Theme::ColorPropertyBackground));
-	g.FillRectangle(&br,-1,-1,r.GetWidth()+1,r.GetHeight()+1);
+	g.Clear(theme->GetColor(Theme::ColorBackground));
 
 	Pixels cH = GetPathHeight()-GetVerticalPos();
 	int hI = 0;
@@ -101,12 +99,12 @@ void PropertyGridWnd::Paint(Graphics& g, strong<Theme> theme) {
 		p->Update();
 		if(isSeparator || !previousCollapsed) {
 			if(p->GetWindow() && p->GetWindow()->HasFocus()) {
-				LinearGradientBrush gbr(graphics::Point(0, cH), graphics::Point(0, cH+p->GetHeight()+10), theme->GetColor(Theme::ColorTimeSelectionStart), theme->GetColor(Theme::ColorTimeSelectionEnd));
+				LinearGradientBrush gbr(graphics::PointF(0.0f, (float)cH), graphics::PointF(0.0f, float(cH+p->GetHeight()+10)), theme->GetColor(Theme::ColorTimeSelectionStart), theme->GetColor(Theme::ColorTimeSelectionEnd));
 				g.FillRectangle(&gbr, Rect(1, cH+1, r.GetWidth()-2, p->GetHeight()+(2*KPropertyMargin)-2));
 			}
 
 			if(isSeparator) {
-				LinearGradientBrush gbr(graphics::Point(0, cH), graphics::Point(0, cH+p->GetHeight()+10), theme->GetColor(Theme::ColorActiveStart), theme->GetColor(Theme::ColorActiveEnd));
+				LinearGradientBrush gbr(graphics::PointF(0.0f, (float)cH), graphics::PointF(0.0f, float(cH+p->GetHeight()+10)), theme->GetColor(Theme::ColorActiveStart), theme->GetColor(Theme::ColorActiveEnd));
 				g.FillRectangle(&gbr, Rect(1, cH+1, r.GetWidth()-2, p->GetHeight()+(2*KPropertyMargin)-2));
 
 				SolidBrush dbr(theme->GetColor(Theme::ColorDisabledOverlay));

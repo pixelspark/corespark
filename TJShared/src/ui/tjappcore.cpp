@@ -124,7 +124,7 @@ RunnableApplication* Core::GetApplicationPointer() {
 
 Core::Core() {
 	_app = 0;
-	_init = new GraphicsInit();
+	_init = new graphics::GraphicsInit();
 }
 
 Core::~Core() {

@@ -122,7 +122,7 @@
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
 				WholeProgramOptimization="true"
-				PreprocessorDefinitions="WIN32;_WINDOWS;_USRDLL;TJSHARED_EXPORTS;NDEBUG"
+				PreprocessorDefinitions="WIN32;_WINDOWS;_USRDLL;TJSHARED_EXPORTS;TJSHARED_USE_GDIPLUS;NDEBUG"
 				StringPooling="true"
 				MinimalRebuild="true"
 				RuntimeLibrary="2"
@@ -144,7 +144,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="gdiplus.lib comctl32.lib strmiids.lib quartz.lib iphlpapi.lib ../libraries/tinyxml.lib comsupp.lib ws2_32.lib shlwapi.lib"
+				AdditionalDependencies="comctl32.lib gdiplus.lib strmiids.lib quartz.lib iphlpapi.lib ../libraries/tinyxml.lib comsupp.lib ws2_32.lib shlwapi.lib"
 				OutputFile="$(OutDir)\..\..\Release\tjshared.dll"
 				GenerateManifest="true"
 				GenerateDebugInformation="true"
@@ -413,6 +413,14 @@
 				</File>
 				<File
 					RelativePath=".\src\ui\tjeditwnd.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ui\tjgraphics-cairo.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ui\tjgraphics-gdiplus.cpp"
 					>
 				</File>
 				<File
@@ -815,6 +823,10 @@
 				</File>
 				<File
 					RelativePath=".\include\ui\tjeditwnd.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\ui\tjgraphics.h"
 					>
 				</File>
 				<File

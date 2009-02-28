@@ -6,6 +6,7 @@
 #pragma warning(push)
 #pragma warning(disable: 4251) // about protected members needing dll access
 
+#include "tjgraphics.h"
 #include "tjtheme.h"
 #include "tjthememgr.h"
 #include "tjappcore.h"

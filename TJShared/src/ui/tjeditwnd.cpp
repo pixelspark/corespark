@@ -77,7 +77,6 @@ void EditWnd::UpdateColor() {
 		if(_backBrush!=0) DeleteObject(_backBrush);
 		_backBrush = CreateSolidBrush(RGB(_back.GetRed(), _back.GetGreen(), _back.GetBlue()));
 	}
-	
 }
 
 void EditWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {

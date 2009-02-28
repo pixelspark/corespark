@@ -14,14 +14,9 @@ LRESULT CALLBACK SocketMessageWindowProc(HWND, UINT, WPARAM, LPARAM);
 
 NetworkInitializer Socket::_initializer;
 
-Socket::Socket(int port, const char* address, ref<Node> nw) {
-	_bytesSent = 0;
-	_bytesReceived = 0;
-	_network = nw;
-
+Socket::Socket(int port, const char* address, ref<Node> nw): _lastPacketID(0), _bytesSent(0), _bytesReceived(0), _network(nw), _maxReliablePacketCount(KDefaultMaxReliablePacketCount) {
 	// Create a random transaction counter id
 	_transactionCounter = rand();
-
 	_initializer.Initialize();
 	assert(address!=0 && port > 0 && port < 65536);
 	_recieveBuffer = new char[Packet::maximumSize];
@@ -142,16 +137,112 @@ void Socket::Receive() {
 		// Extract packet header
 		ph = *((PacketHeader*)_recieveBuffer);
 		
-		// Check if this actually is a TNP3 packet
-		if(ph._version[0]!='T' || ph._version[1] != 'P' || ph._version[2]!='3') {
-			Log::Write(L"TJNP/Socket", L"Received invalid packets from the network; maybe network link is broken or other applications are running on this port");
+		// Check if this actually is a T4 packet
+		if(ph._version[0]!='T' || ph._version[1] != '4') {
+			if(ph._version[0]=='T') {
+				Log::Write(L"TJNP/Socket", L"Received a packet which has a different protocol version; cannot process this packet");
+			}
+			else {
+				Log::Write(L"TJNP/Socket", L"Received invalid packets from the network; maybe network link is broken or other applications are running on this port");
+			}
 			return;
 		}
 
 		// Check size
-		if(int(ph._size+sizeof(PacketHeader))>ret) {
-			Log::Write(L"TJNP/Socket", L"Packet smaller than it says it is");
+		if(int(ph._size+sizeof(PacketHeader)) > ret) {
+			Log::Write(L"TJNP/Socket", L"Packet smaller than it says it is; ignoring it!");
 			return;
+		}
+		
+		// Reject loopback messages
+		if(ph._from == nw->GetInstanceID()) {
+			return;
+		}
+	
+		// If this is a 'special packet', process the flags
+		if(ph._flags!=0) {
+			// Check if this packet is a re-delivery or a cannot-re-delivery
+			if((ph._flags & (PacketFlagCannotRedeliver|PacketFlagRedelivery))!=0) {
+				if(ph._flags & PacketFlagCannotRedeliver) {
+					///Log::Write(L"TJNP/Socket", L"Packet with rpid="+Stringify(ph._rpid)+L" from "+StringifyHex(ph._from)+L" could not be redelivered; removing from wishlist");
+				}
+				else {
+					///Log::Write(L"TJNP/Socket", L"Packet with rpid="+Stringify(ph._rpid)+L" from "+StringifyHex(ph._from)+L" was redelivered; removing from wishlist");
+				}
+				std::deque< std::pair<InstanceID, ReliablePacketID> >::iterator it = _reliableWishList.begin();
+				bool weRequestedRedelivery = false;
+				while(it!=_reliableWishList.end()) {
+					if(it->first == ph._from && it->second == ph._rpid) {
+						it = _reliableWishList.erase(it);
+						weRequestedRedelivery = true;
+					}
+					else {
+						++it;
+					}
+				}
+
+				if(!weRequestedRedelivery) {
+					return; // Packet was redelivered for a different instance on this pc
+				}
+			}
+			else if((ph._flags & PacketFlagRequestRedelivery)!=0) {
+				// Redeliver packet with ph._rpid to the sending node and return
+				std::map<ReliablePacketID, ref<Packet> >::iterator it = _reliableSentPackets.find(ph._rpid);
+				if(it==_reliableSentPackets.end()) {
+					///Log::Write(L"TJNP/Socket", L"Sending cannot redeliver (rpid requested="+Stringify(ph._rpid)+L")");
+					PacketHeader rph;
+					rph._flags = PacketFlagCannotRedeliver;
+					rph._from = nw->GetInstanceID();
+					rph._transaction = ph._transaction;
+					rph._rpid = ph._rpid;
+					ref<Packet> response = GC::Hold(new Packet(ph, (const char*)0, 0));
+					Send(response, &from, false);
+					// Send 'cannot redeliver'
+				}
+				else {
+					if(!(it->second)) {
+						///Log::Write(L"TJNP/Socket", L"Cannot redeliver, packet is null!");
+					}
+
+					if(ph._plugin==nw->GetInstanceID()) {
+						///Log::Write(L"TJNP/Socket", L"Redelivering (rpid requested="+Stringify(ph._rpid)+L")");
+						// Send packet with extra 'redelivery' flag, and *only* to the requesting computer
+						ref<Packet> packet = it->second;
+						packet->_header->_flags = PacketFlagRedelivery;
+						packet->_header->_from = nw->GetInstanceID();
+						Send(packet, &from, false);
+					}
+				}
+				return;
+			}
+		}
+
+		// Check reliability properties
+		if((ph._flags & PacketFlagReliable) != 0) {
+			std::map<InstanceID, ReliablePacketID>::iterator it = _reliableLastReceived.find(ph._from);
+			if(it!=_reliableLastReceived.end()) {
+				ReliablePacketID predictedNext = ++(it->second);
+
+				if(predictedNext!=ph._rpid) {
+					/** TODO: if the packet indicates that it may not be delivered out-of-order, then also put ph._rpid on the wishlist **/
+					///Log::Write(L"TJNP/Socket", L"Received packet is out of order (predicted rpid="+Stringify(predictedNext)+L", received rpid="+Stringify(ph._rpid));
+					unsigned int n = 0;
+					for(ReliablePacketID r = predictedNext; r < ph._rpid; ++r) {
+						++n;
+						if(_reliableWishList.size() > _maxReliablePacketCount) {
+							///Log::Write(L"TJNP/Socket", L"Wish list length exceeded; packets are being dropped!");
+							_reliableWishList.pop_front();
+						}
+						else if(n > _maxReliablePacketCount) {
+							///Log::Write(L"TJNP/Socket", L"Wish list length exceeded for this batch; packets are being dropped!");
+							break;
+						}
+						///Log::Write(L"TJNP/Socket", L"Adding reliable packet "+Stringify(r)+L" from "+StringifyHex(ph._from)+L" to receive wish list");
+						_reliableWishList.push_back(std::pair<InstanceID, ReliablePacketID>(ph._from, r));
+					}
+				}
+			}
+			_reliableLastReceived[ph._from] = ph._rpid;
 		}
 
 		// Extract packet contents
@@ -159,10 +250,7 @@ void Socket::Receive() {
 
 		// Find our transaction, if it exists. Otherwise, use the 'default transaction' (which happens to be _network)
 		if(ph._transaction==0) {
-			tx = ref<Node>(_network);
-			if(!tx) {
-				Log::Write(L"TJNP/Socket", L"Network instance was deleted");
-			}
+			tx = nw;
 		}
 		else {
 			if(_transactions.find(ph._transaction)!=_transactions.end()) {
@@ -177,11 +265,32 @@ void Socket::Receive() {
 	}
 }
 
+void Socket::SendRedeliveryRequests() {
+	ThreadLock lock(&_lock);
+
+	ref<Node> nw = _network;
+	if(!nw) return;
+	InstanceID iid = nw->GetInstanceID();
+
+	PacketHeader rph;
+	rph._flags = PacketFlagRequestRedelivery;
+	ref<Packet> rp = GC::Hold(new Packet(rph, (const char*)0, 0));
+	std::deque< std::pair<InstanceID, ReliablePacketID> >::iterator it = _reliableWishList.begin();
+	while(it!=_reliableWishList.end()) {
+		rp->_header->_rpid = it->second;
+		rp->_header->_from = iid;
+		rp->_header->_plugin = it->first;
+		///Log::Write(L"TJNP/Socket", L"Requesting redelivery (iid="+StringifyHex(it->first)+L" rpid="+Stringify(it->second)+L")");
+		Send(rp, false);
+		++it;
+	}
+}
+
 void Socket::SendDemoted() {
 	ThreadLock lock(&_lock);
 
 	ref<Message> stream = GC::Hold(new Message(ActionDemoted));
-	Send(stream);
+	Send(stream, true);
 }
 
 void Socket::SendError(Features fs, ExceptionType type, const std::wstring& msg) {
@@ -191,7 +300,7 @@ void Socket::SendError(Features fs, ExceptionType type, const std::wstring& msg)
 	stream->Add(fs);
 	stream->Add(type);
 	stream->Add<std::wstring>(msg);
-	Send(stream);
+	Send(stream, true);
 }
 
 void Socket::SendAnnounce(Role r, const std::wstring& address, Features feats, strong<Transaction> ti) {
@@ -230,14 +339,14 @@ void Socket::SendPromoted() {
 	ThreadLock lock(&_lock);
 
 	ref<Message> stream = GC::Hold(new Message(ActionPromoted));
-	Send(stream);
+	Send(stream, true);
 }
 
 void Socket::SendResetAll() {
 	ThreadLock lock(&_lock);
 
 	ref<Message> stream = GC::Hold(new Message(ActionResetAll));
-	Send(stream);
+	Send(stream, true);
 }
 
 void Socket::SendResetChannel(GroupID gid, Channel ch) {
@@ -246,7 +355,7 @@ void Socket::SendResetChannel(GroupID gid, Channel ch) {
 	ref<Message> stream = GC::Hold(new Message(ActionResetChannel));
 	stream->GetHeader()->_channel = ch;
 	stream->GetHeader()->_group = gid;
-	Send(stream);
+	Send(stream, true);
 }
 
 void Socket::SendSetPatch(ref<BasicClient> c, const PatchIdentifier& pi, const DeviceIdentifier& di) {
@@ -256,27 +365,27 @@ void Socket::SendSetPatch(ref<BasicClient> c, const PatchIdentifier& pi, const D
 	stream->Add<InstanceID>(c->GetInstanceID());
 	stream->Add<PatchIdentifier>(pi);
 	stream->Add<DeviceIdentifier>(di);
-	Send(stream);
+	Send(stream, true);
 }
 
-void Socket::SendListPatchesReply(const PatchIdentifier& pi, const DeviceIdentifier& di, TransactionIdentifier ti, in_addr to, bool isLast) {
+void Socket::SendListPatchesReply(const PatchIdentifier& pi, const DeviceIdentifier& di, TransactionIdentifier ti, in_addr to, unsigned int count) {
 	ThreadLock lock(&_lock);
 
 	ref<Message> stream = GC::Hold(new Message(ActionListPatchesReply, ti));
 	stream->Add<PatchIdentifier>(pi);
 	stream->Add<DeviceIdentifier>(di);
-	stream->Add<bool>(isLast);
-	Send(stream);
+	stream->Add<unsigned int>(count);
+	Send(stream, true);
 }
 
-void Socket::SendListDevicesReply(const DeviceIdentifier& di, const std::wstring& friendly, TransactionIdentifier ti, in_addr to, bool isLast) {
+void Socket::SendListDevicesReply(const DeviceIdentifier& di, const std::wstring& friendly, TransactionIdentifier ti, in_addr to, unsigned int count) {
 	ThreadLock lock(&_lock);
 
 	ref<Message> stream = GC::Hold(new Message(ActionListDevicesReply, ti));
 	stream->Add<DeviceIdentifier>(di);
 	stream->Add<std::wstring>(friendly);
-	stream->Add<bool>(isLast);
-	Send(stream);
+	stream->Add<unsigned int>(count);
+	Send(stream, true);
 }
 
 void Socket::SendSetClientAddress(ref<BasicClient> client, std::wstring na) {
@@ -284,7 +393,7 @@ void Socket::SendSetClientAddress(ref<BasicClient> client, std::wstring na) {
 	ref<Message> stream = GC::Hold(new Message(ActionSetAddress));
 	stream->Add(client->GetInstanceID());
 	stream->Add<std::wstring>(na);
-	Send(stream);
+	Send(stream, true);
 }
 
 void Socket::SendInput(const PatchIdentifier& patch, const InputID& path, float value) {
@@ -294,7 +403,7 @@ void Socket::SendInput(const PatchIdentifier& patch, const InputID& path, float 
 	stream->Add(patch);
 	stream->Add(path);
 	stream->Add(value);
-	Send(stream);
+	Send(stream, true);
 }
 
 void Socket::SendListDevices(InstanceID to, ref<Transaction> ti) {
@@ -307,7 +416,7 @@ void Socket::SendListDevices(InstanceID to, ref<Transaction> ti) {
 		ref<Message> msg = GC::Hold(new Message(ActionListDevices));
 		msg->Add<InstanceID>(to);
 		msg->Add<TransactionIdentifier>(_transactionCounter);
-		Send(msg);
+		Send(msg, true);
 	}
 }
 
@@ -321,7 +430,7 @@ void Socket::SendListPatches(InstanceID to, ref<Transaction> ti) {
 		ref<Message> msg = GC::Hold(new Message(ActionListPatches));
 		msg->Add<InstanceID>(to);
 		msg->Add<TransactionIdentifier>(_transactionCounter);
-		Send(msg);
+		Send(msg, true);
 	}
 }
 
@@ -329,8 +438,8 @@ void Socket::SendLeave() {
 	ThreadLock lock(&_lock);
 	PacketHeader ph;
 	ph._action = ActionLeave;
-	ref<Packet> p = GC::Hold(new Packet(ph, 0, 0));
-	Send(p);
+	ref<Packet> p = GC::Hold(new Packet(ph, (const char*)0, 0));
+	Send(p, true);
 }
 
 void Socket::SendResourceFind(const std::wstring& ident, ref<Transaction> ti) {
@@ -354,7 +463,7 @@ void Socket::SendResourcePush(const GroupID& gid, const ResourceIdentifier& iden
 	ref<Message> stream = GC::Hold(new Message(ActionPushResource));
 	stream->GetHeader()->_group = gid;
 	stream->Add(ident);
-	Send(stream);
+	Send(stream, true);
 }
 
 void Socket::SendResourceAdvertise(const ResourceIdentifier& rid, const std::wstring& url, unsigned short port, TransactionIdentifier tid) {
@@ -375,71 +484,84 @@ void Socket::SendOutletChange(Channel ch, GroupID gid, const std::wstring& outle
 	stream->Add(value.ToString());
 	Hash hash;
 	stream->Add<OutletHash>(hash.Calculate(outletName));
-	Send(stream);
+	Send(stream, true);
 }
 
-void Socket::Send(strong<Packet> p) {
+void Socket::Send(strong<Packet> p, bool reliable) {
 	sockaddr_in addr;
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons((u_short)_port);      
 	u_long dir_bcast_addr = inet_addr(_bcastAddress);
 	addr.sin_addr.s_addr = dir_bcast_addr;
-
-	Send(p, &addr);
+	Send(p, &addr, reliable);
 }
 
-void Socket::Send(strong<Packet> p, const sockaddr_in* address) {
+ReliablePacketID Socket::RegisterReliablePacket(strong<Packet> p) {
+	ThreadLock lock(&_lock);
+	ReliablePacketID next = _lastPacketID + 1;
+
+	if(_reliableSentPackets.size() > _maxReliablePacketCount) {
+		/* Remove the entry with the id next - _maxReliablePacketCount. When next=101, we remove 101-100=1 */
+		std::map<ReliablePacketID, ref<Packet> >::iterator it = _reliableSentPackets.find(next - _maxReliablePacketCount);
+		if(it!=_reliableSentPackets.end()) {
+			_reliableSentPackets.erase(it);
+		}
+		else {
+			Log::Write(L"TJNP/Socket", L"Could not remove sent reliable packet from list; probably causing memory leaks!");
+		}
+	}
+
+	if(_reliableSentPackets.size() > 2*_maxReliablePacketCount) {
+		_reliableSentPackets.clear();
+		Log::Write(L"TJNP/Socket", L"List of sent packets became too large; removed all of them!");
+	}
+
+	_reliableSentPackets[next] = p;
+	p->_header->_flags |= PacketFlagReliable;
+	p->_header->_rpid = next;
+	_lastPacketID = next;
+	return next;
+}
+
+void Socket::Send(strong<Packet> p, const sockaddr_in* address, bool reliable) {
 	ThreadLock lock(&_lock);
 	ref<Node> nw = _network;
 	if(!nw) return;
 
-	/* Compose packet */
-	memset(_recieveBuffer,0,Packet::maximumSize);
-	PacketHeader* bufferPH = (PacketHeader*)_recieveBuffer;
-	*bufferPH = p->GetHeader();
-	bufferPH->_from = nw->GetInstanceID();
-
-	if(p->GetSize()>0) {
-		char* bufferMessage = (char*)(_recieveBuffer + sizeof(PacketHeader));
-		memcpy(bufferMessage,p->GetMessage(), min(Packet::maximumSize-sizeof(PacketHeader), p->GetSize()));
+	/* If packet needs to be sent 'reliably', create a ReliablePacketID */
+	if(reliable) {
+		RegisterReliablePacket(p);
+		p->_header->_flags |= PacketFlagReliable;
 	}
 
+	/** For testing, drop a few packets **/
+	///if(rand()%4 == 0) {
+	///	Log::Write(L"TJNP/Socket", L"Deliberately dropping packet (rpid="+Stringify(p->_header->_rpid)+L") ");
+	///	return;
+	///}
+
 	unsigned int size = min(Packet::maximumSize-sizeof(PacketHeader), p->GetSize()) + sizeof(PacketHeader);
-	int ret = sendto(_client,_recieveBuffer,size, 0,(const sockaddr*)address,sizeof(sockaddr_in));
+	p->_header->_from = nw->GetInstanceID();
+	int ret = sendto(_client, reinterpret_cast<char*>(p->_header), size, 0, (const sockaddr*)address, sizeof(sockaddr_in));
 
 	if(ret != SOCKET_ERROR) {
 		_bytesSent += (int)size;
 	}
 }
 
-void Socket::Send(strong<Message> s) {
+void Socket::Send(strong<Message> s, bool reliable) {
 	sockaddr_in addr;
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons((u_short)_port);      
 	u_long dir_bcast_addr = inet_addr(_bcastAddress);
 	addr.sin_addr.s_addr = dir_bcast_addr;
 
-	Send(s,&addr);
+	s->SetSent();
+	Send(s->ConvertToPacket(), &addr, reliable);
 }
 
-void Socket::Send(strong<Message> s, const sockaddr_in* address) {
-	ref<Node> nw = _network;
-	if(!nw) return;
-	s->GetHeader()->_from = nw->GetInstanceID();
-
-	ThreadLock lock(&_lock);
-	unsigned int size = s->GetSize();
-	int ret = sendto(_client,s->GetBuffer(),size, 0,(const sockaddr*)address,sizeof(sockaddr_in));
-
-	if(ret == SOCKET_ERROR) {
-		// oops...
-		std::string a = inet_ntoa(*((const in_addr*)address));
-		Log::Write(L"TJNP/Socket", L"Could not send client-specific message, address was " +Wcs(a));
-	}
-	else {
-		s->SetSent();
-		_bytesSent += (int)size;
-	}
+unsigned int Socket::GetWishListSize() const {
+	return (unsigned int)_reliableWishList.size();
 }
 
 LRESULT CALLBACK SocketMessageWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) {

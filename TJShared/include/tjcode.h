@@ -36,6 +36,10 @@ namespace tj {
 				unsigned int GetSize();
 
 				template<typename T> CodeWriter& Add(const T& x) {
+					if(_buffer==0) {
+						Throw(L"CodeWriter written to after buffer has been taken over!", ExceptionTypeSevere);
+					}
+
 					unsigned int size = sizeof(T)/sizeof(char);
 					Grow(size);
 
@@ -47,6 +51,14 @@ namespace tj {
 
 				inline const char* GetBuffer() {
 					return _buffer;
+				}
+
+				inline char* TakeOverBuffer() {
+					char* buf = _buffer;
+					_buffer = 0;
+					_size = 0;
+					_pos = 0;
+					return buf;
 				}
 				
 			protected:

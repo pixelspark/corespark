@@ -9,22 +9,7 @@ using namespace tj::shared::graphics;
 
 bool Wnd::_classesRegistered = false;
 
-/* GDI+ Init */
-GraphicsInit::GraphicsInit() {
-	graphics::GdiplusStartupInput gdiplusStartupInput;
-	ULONG_PTR gdiplusToken;
-	graphics::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
-
-	INITCOMMONCONTROLSEX sex;
-	sex.dwSize = sizeof(INITCOMMONCONTROLSEX);
-	sex.dwICC = ICC_STANDARD_CLASSES|ICC_TAB_CLASSES|ICC_PROGRESS_CLASS|ICC_UPDOWN_CLASS|ICC_USEREX_CLASSES|ICC_WIN95_CLASSES;
-	InitCommonControlsEx(&sex);
-}
-
-GraphicsInit::~GraphicsInit() {
-}
-
-Wnd::Wnd(const wchar_t* title, HWND parent, const wchar_t* className, bool usedb, int exStyle): _horizontalPos(0), _verticalPos(0), _horizontalPageSize(1), _verticalPageSize(1), _buffer(0), _doubleBuffered(usedb) {
+Wnd::Wnd(const wchar_t* title, HWND parent, const wchar_t* className, bool usedb, int exStyle): _horizontalPos(0), _verticalPos(0), _horizontalPageSize(1), _verticalPageSize(1), _buffer(0), _dirty(-1), _doubleBuffered(usedb) {
 	RegisterClasses();
 	exStyle |= WS_EX_CONTROLPARENT;
 	_wnd = CreateWindowEx(exStyle, className, title, WS_CLIPCHILDREN|WS_CLIPSIBLINGS, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, parent, (HMENU)0, GetModuleHandle(NULL), (void*)this);
@@ -166,6 +151,7 @@ void Wnd::Show(bool t) {
 	if(!t) {
 		delete _buffer;
 		_buffer = 0;
+		_dirty = -1;
 	}
 }
 
@@ -189,9 +175,8 @@ Wnd::~Wnd() {
 }
 
 void Wnd::Repaint() {
-	RECT r;
-	GetClientRect(_wnd, &r);
-	InvalidateRect(_wnd, &r, FALSE);
+	_dirty = -1;
+	InvalidateRect(_wnd, NULL, FALSE);
 }
 
 LRESULT CALLBACK WndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) {
@@ -223,6 +208,11 @@ LRESULT CALLBACK WndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) {
 
 void Wnd::RegisterClasses() {
 	if(_classesRegistered) return;
+
+	INITCOMMONCONTROLSEX sex;
+	sex.dwSize = sizeof(INITCOMMONCONTROLSEX);
+	sex.dwICC = ICC_STANDARD_CLASSES|ICC_TAB_CLASSES|ICC_PROGRESS_CLASS|ICC_UPDOWN_CLASS|ICC_USEREX_CLASSES|ICC_WIN95_CLASSES;
+	InitCommonControlsEx(&sex);
 
 	WNDCLASSEX wc;
 	memset(&wc,0,sizeof(WNDCLASSEX));
@@ -385,50 +375,62 @@ void Wnd::Move(Pixels x, Pixels y, Pixels w, Pixels h) {
 
 LRESULT Wnd::PreMessage(UINT msg, WPARAM wp, LPARAM lp) {
 	if(msg==WM_ERASEBKGND) {
-		return 1;
+		return 0;
 	}
 	else if(msg==WM_PAINT) {
+		PAINTSTRUCT ps;
 		int style = GetWindowLong(_wnd, GWL_STYLE);
 		if((style & WS_VISIBLE) == 0) {
 			return 0;
 		}
 
-		PAINTSTRUCT ps;
 		BeginPaint(_wnd, &ps);
-		Graphics org(ps.hdc);
+		{
+			Graphics org(ps.hdc);
+			GraphicsContainer gc = org.BeginContainer();
 
-		strong<Theme> theme = ThemeManager::GetTheme();
-		float dpiScale = theme->GetDPIScaleFactor();
+			strong<Theme> theme = ThemeManager::GetTheme();
+			int themeID = ThemeManager::GetThemeId();
+			float dpiScale = theme->GetDPIScaleFactor();
 
-		if(!_doubleBuffered) {
-			GraphicsContainer container = org.BeginContainer();
-			org.ScaleTransform(dpiScale, dpiScale);
-			Paint(org, theme);
-			org.EndContainer(container);
-		}
-		else {
-			RECT cw;
-			GetClientRect(_wnd, &cw);
-
-			if(_buffer==0 || int(_buffer->GetWidth()) < int(cw.right-cw.left) || int(_buffer->GetHeight()) < int(cw.bottom-cw.top)) {
-				delete _buffer;
-				_buffer = 0;
-				_buffer = new Bitmap(cw.right-cw.left+100, cw.bottom-cw.top+100, &org); // +100 for buffer
+			if(!_doubleBuffered) {
+				GraphicsContainer container = org.BeginContainer();
+				org.ScaleTransform(dpiScale, dpiScale);
+				Paint(org, theme);
+				org.EndContainer(container);
 			}
+			else {
+				RECT cw;
+				GetClientRect(_wnd, &cw);
 
-			Graphics buffered(_buffer);
-			GraphicsContainer container = buffered.BeginContainer();
-			buffered.ScaleTransform(dpiScale, dpiScale);
-			Paint(buffered, theme);
+				if(_buffer==0 || int(_buffer->GetWidth()) < int(cw.right-cw.left) || int(_buffer->GetHeight()) < int(cw.bottom-cw.top)) {
+					delete _buffer;
+					_buffer = 0;
+					_buffer = new Bitmap(GetNextPowerOfTwo(cw.right-cw.left), GetNextPowerOfTwo(cw.bottom-cw.top), &org);
+					_dirty = -1;
+				}
+				
+				if(_dirty<0 || _dirty!=themeID) {
+					_dirty = themeID;
+					Graphics buffered(_buffer);
+					GraphicsContainer container = buffered.BeginContainer();
+					buffered.ScaleTransform(dpiScale, dpiScale);
+					Paint(buffered, theme);
 
-			if((GetWindowLong(_wnd, GWL_STYLE) & WS_DISABLED)!=0) {
-				SolidBrush disabledBrush(theme->GetColor(Theme::ColorDisabledOverlay));
-				Area rc = GetClientArea();
-				buffered.FillRectangle(&disabledBrush, rc);
+					if((GetWindowLong(_wnd, GWL_STYLE) & WS_DISABLED)!=0) {
+						SolidBrush disabledBrush(theme->GetColor(Theme::ColorDisabledOverlay));
+						Area rc = GetClientArea();
+						buffered.FillRectangle(&disabledBrush, rc);
+					}
+
+					buffered.EndContainer(container);
+				}
+
+				org.SetClip(ps.rcPaint);
+				org.SetCompositingMode(CompositingModeSourceCopy);
+				org.DrawImage(_buffer,ps.rcPaint.left,ps.rcPaint.top,ps.rcPaint.left, ps.rcPaint.top, ps.rcPaint.right-ps.rcPaint.left, ps.rcPaint.bottom-ps.rcPaint.top);
+				org.EndContainer(gc);
 			}
-
-			buffered.EndContainer(container);
-			org.DrawImage(_buffer,0,0);
 		}
 
 		EndPaint(_wnd, &ps);
@@ -890,6 +892,20 @@ void Wnd::OnMouse(MouseEvent me, Pixels x, Pixels y) {
 }
 
 /* Displays */
+namespace tj {
+	namespace shared {
+		class Displays: public virtual Object {
+			public:
+				Displays();
+				virtual ~Displays();
+				void AddDisplay(HMONITOR hm);
+				RECT GetDisplayRectangle(int idx);
+			protected:
+				std::vector<HMONITOR> _displays;
+		};
+	}
+}
+
 BOOL CALLBACK MonitorEnumProc(HMONITOR hMonitor,HDC hdcMonitor,LPRECT lprcMonitor,LPARAM dwData) {
 	Displays* dp = (Displays*)dwData;
 	if(dp!=0) {

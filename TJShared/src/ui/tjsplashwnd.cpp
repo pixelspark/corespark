@@ -7,7 +7,7 @@ SplashWnd::SplashWnd(std::wstring path, Pixels w, Pixels h) {
 	SetStyle(WS_POPUP);
 	UnsetStyle(WS_CAPTION);
 
-	_image = Bitmap::FromFile(path.c_str(), TRUE);
+	_image = Bitmap::FromFile(path.c_str(), true);
 	_progress = GC::Hold(new ProgressWnd());
 	_progress->SetIndeterminate(true);
 	Add(_progress);
@@ -69,11 +69,7 @@ void SplashThread::Hide() {
 void SplashThread::Run() {
 	SetName(L"SplashThread");
 	MSG msg;
-
-	// init GDI+
-	ULONG_PTR ptr;
-	GdiplusStartupInput input;
-	GdiplusStartup(&ptr, &input, 0);
+	graphics::GraphicsInit gi;
 
 	_wnd = GC::Hold(new SplashWnd(_path, _w, _h));
 	_wnd->Show(true);
@@ -100,6 +96,4 @@ void SplashThread::Run() {
 			break; // show is over
 		}
 	}
-
-	GdiplusShutdown(ptr);
 }

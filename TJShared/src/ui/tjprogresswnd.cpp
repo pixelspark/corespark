@@ -37,8 +37,8 @@ void ProgressWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 
 	// draw block
 	Color progress = theme->GetColor(Theme::ColorProgress);
-	Color green(Color(255,progress.GetR(),progress.GetG(),progress.GetB()));
-	Color trans(Color(0,progress.GetR(),progress.GetG(),progress.GetB()));
+	Color green = Theme::ChangeAlpha(progress, 255);
+	Color trans = Theme::ChangeAlpha(progress, 0);
 	int center = int(v * float(rc.GetWidth()));
 	LinearGradientBrush lbr(PointF(float(center-56), 0.0f), PointF(float(center), 0.0f), trans, green);
 	LinearGradientBrush rbr(PointF(float(center), 0.0f), PointF(float(center+56), 0.0f), green, trans);

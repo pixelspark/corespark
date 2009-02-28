@@ -3,6 +3,10 @@
 
 namespace tj {
 	namespace shared {	
+		namespace graphics {
+			class GraphicsInit;
+		}
+
 		class EXPORTED RunnableApplication {
 			public:
 				virtual ~RunnableApplication();
@@ -12,8 +16,6 @@ namespace tj {
 				static const int KUndoMemory = 10;
 				std::deque< ref<Action> > _undo;
 		};
-
-		class GraphicsInit;
 
 		class EXPORTED Core {
 			public:
@@ -32,7 +34,7 @@ namespace tj {
 				std::vector< ref<Runnable> > _actions;
 				Event _actionEvent;
 				Event _actionsProcessedEvent;
-				GraphicsInit* _init;
+				graphics::GraphicsInit* _init;
 
 				void ProcessActions();
 		};

@@ -5,7 +5,8 @@
 
 namespace tj {
 	namespace np {
-		
+		class Packet;
+
 		/** Message represents a message sent from master to client through a Stream. It can contain
 		any data you want. **/
 		class NP_EXPORTED Message: public virtual tj::shared::Object {
@@ -34,6 +35,8 @@ namespace tj {
 					_header->_action = (t ? ActionUpdatePlugin : ActionUpdate);
 				}
 
+				tj::shared::strong<Packet> ConvertToPacket();
+
 			protected:
 				const char* GetBuffer();
 				tj::shared::strong<tj::shared::CodeWriter> _writer;
@@ -61,7 +64,7 @@ namespace tj {
 			public:
 				virtual ~Stream() {}
 				virtual tj::shared::strong<Message> Create() = 0;
-				virtual void Send(tj::shared::ref<Message> msg) = 0;
+				virtual void Send(tj::shared::ref<Message> msg, bool reliable = false) = 0;
 		};
 	}
 }
