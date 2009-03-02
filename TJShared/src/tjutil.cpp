@@ -104,6 +104,12 @@ int Util::RandomInt() {
 	#endif
 }
 
+std::wstring Util::RandomIdentifier(wchar_t prefix) {
+	std::wostringstream wos;
+	wos << prefix << std::hex << std::uppercase << RandomInt() << std::hex << std::uppercase << Timestamp().ToMilliSeconds();
+	return wos.str();
+}
+
 char* Util::CopyString(const char* str) {
 	char* buf = new char[strlen(str)+1];
 	strcpy_s(buf,strlen(str)+1,str);

@@ -16,7 +16,7 @@ void ScriptThread::SetCleanupAfterRun(bool c) {
 }
 
 void ScriptThread::Run() {
-	int start = GetTickCount();
+	Timestamp start(true);
 
 	{
 		ref<ScriptContext> ctx = _context;
@@ -36,7 +36,8 @@ void ScriptThread::Run() {
 		}
 	}
 
-	Log::Write(L"TJScript/ScriptThread", L"Script ended; t="+Stringify(GetTickCount()-start)+L"ms");
+	Timestamp end(true);
+	Log::Write(L"TJScript/ScriptThread", L"Script ended; t="+Stringify(end.Difference(start).ToMilliSeconds())+L"ms");
 
 	if(_clean) {
 		_script = 0;

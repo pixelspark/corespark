@@ -52,6 +52,21 @@ namespace tj {
 					}
 				}
 
+				inline void RemoveListener(ref< Listener<NotificationType> > listener) {
+					ThreadLock lock(&_lock);
+					if(listener) {
+						std::vector< weak<Listener<NotificationType> > >::iterator it = _listeners.begin();
+						while(it!=_listeners.end()) {
+							if(*it == listener) {
+								it = _listeners.erase(it);
+							}
+							else {
+								++it;
+							}
+						}
+					}
+				}
+
 			private:
 				CriticalSection _lock;
 				std::vector< weak< Listener<NotificationType> > > _listeners;

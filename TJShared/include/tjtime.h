@@ -206,7 +206,8 @@ namespace tj {
 				~Timestamp();
 				Timestamp(bool now = false);
 				void Now();
-				std::wstring ToString();
+				std::wstring ToString() const;
+				std::wstring ToHexString() const;
 				Timestamp Difference(const Timestamp& other) const;
 				long long ToMicroSeconds() const;
 				long double ToMilliSeconds() const;

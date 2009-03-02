@@ -74,6 +74,7 @@ namespace tj {
 			public:
 				static float RandomFloat();
 				static int RandomInt();
+				static std::wstring RandomIdentifier(wchar_t prefix);
 				static char* CopyString(const char* str);
 				static wchar_t* IntToWide(int x);
 				static std::wstring& StringToLower(std::wstring& r);

@@ -90,8 +90,12 @@ void Timestamp::Now() {
 	}
 }
 
-std::wstring Timestamp::ToString() {
+std::wstring Timestamp::ToString() const {
 	return Stringify(ToMicroSeconds());
+}
+
+std::wstring Timestamp::ToHexString() const {
+	return StringifyHex(ToMicroSeconds());
 }
 
 Timestamp& Timestamp::operator =(const Timestamp& o) {
