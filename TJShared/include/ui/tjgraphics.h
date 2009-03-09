@@ -186,6 +186,7 @@ namespace tj {
 
 			class EXPORTED BitmapData {
 				friend class Bitmap;
+				friend class Graphics;
 
 				public:
 					BitmapData();
@@ -198,6 +199,9 @@ namespace tj {
 			};
 
 			class EXPORTED Bitmap: public Image {
+				friend class Graphics;
+				friend class Image;
+
 				public:
 					Bitmap(unsigned int w, unsigned int h);
 					Bitmap(unsigned int w, unsigned int h, Graphics* originalFormat);
@@ -206,6 +210,9 @@ namespace tj {
 
 					virtual bool LockBits(const Rect& rc, bool write, BitmapData* data);
 					virtual void UnlockBits(BitmapData* data);
+
+				protected:
+					Bitmap();
 			};
 
 			class EXPORTED Graphics {

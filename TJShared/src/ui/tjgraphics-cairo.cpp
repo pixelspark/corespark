@@ -10,10 +10,10 @@ using namespace tj::shared::graphics;
 	#include <cairo/cairo-win32.h>
 
 	char* ToUTF8(const wchar_t* text) {
-		int r = WideCharToMultiByte(CP_UTF8, 0, text, wcslen(text), NULL, 0, NULL, NULL);
+		int r = WideCharToMultiByte(CP_UTF8, 0, text, (int)wcslen(text), NULL, 0, NULL, NULL);
 		char* buffer = new char[r+1];
 		buffer[r] = 0;
-		WideCharToMultiByte(CP_UTF8, 0, text, wcslen(text), buffer, r, NULL, NULL);
+		WideCharToMultiByte(CP_UTF8, 0, text, (int)wcslen(text), buffer, r, NULL, NULL);
 		return buffer;
 	}
 #endif
@@ -358,7 +358,8 @@ void Graphics::FillRectangle(Brush* brush, const RectF& rc) {
 	cairo_save(cg);
 	cairo_pattern_t* cp = reinterpret_cast<cairo_pattern_t*>(brush->_private);
 	cairo_set_source(cg, cp);
-	cairo_rectangle(cg, rc.GetLeft(), rc.GetTop(), rc.GetWidth(), rc.GetHeight());
+	cairo_translate(cg, rc.GetLeft(), rc.GetTop());
+	cairo_rectangle(cg, 0, 0, rc.GetWidth(), rc.GetHeight());
 	cairo_fill(cg);
 	cairo_restore(cg);
 }
@@ -370,7 +371,8 @@ void Graphics::FillRectangle(Brush* brush, const Rect& rc) {
 		cairo_pattern_t* cp = reinterpret_cast<cairo_pattern_t*>(brush->_private);
 		if(cp!=0) {
 			cairo_set_source(cg, cp);
-			cairo_rectangle(cg, rc.GetLeft(), rc.GetTop(), rc.GetWidth(), rc.GetHeight());
+			cairo_translate(cg, rc.GetLeft(), rc.GetTop());
+			cairo_rectangle(cg, 0, 0, rc.GetWidth(), rc.GetHeight());
 			cairo_fill(cg);
 		}
 	}
@@ -384,7 +386,8 @@ void Graphics::DrawRectangle(Pen* pen, const RectF& rc) {
 	cairo_pattern_t* cp = pp->pattern;
 	cairo_set_source(cg, cp);
 	cairo_set_line_width(cg, pp->width);
-	cairo_rectangle(cg, rc.GetLeft(), rc.GetTop(), rc.GetWidth(), rc.GetHeight());
+	cairo_translate(cg, rc.GetLeft(), rc.GetTop());
+	cairo_rectangle(cg, 0, 0, rc.GetWidth(), rc.GetHeight());
 	cairo_stroke(cg);
 	cairo_restore(cg);
 }
@@ -396,7 +399,8 @@ void Graphics::DrawRectangle(Pen* pen, const Rect& rc) {
 	cairo_pattern_t* cp = pp->pattern;
 	cairo_set_source(cg, cp);
 	cairo_set_line_width(cg, pp->width);
-	cairo_rectangle(cg, rc.GetLeft(), rc.GetTop(), rc.GetWidth(), rc.GetHeight());
+	cairo_translate(cg, rc.GetLeft(), rc.GetTop());
+	cairo_rectangle(cg, 0, 0, rc.GetWidth(), rc.GetHeight());
 	cairo_stroke(cg);
 	cairo_restore(cg);
 }
@@ -540,7 +544,8 @@ void Graphics::DrawImage(Image* image, int x, int y) {
 	cairo_set_source_surface(cg, source, 0.0, 0.0);
 	int sourceWidth = cairo_image_surface_get_width(source);
 	int sourceHeight = cairo_image_surface_get_height(source);
-	cairo_rectangle(cg, x, y, sourceWidth, sourceHeight);
+	cairo_translate(cg, x,y);
+	cairo_rectangle(cg, 0, 0, sourceWidth, sourceHeight);
 	cairo_fill(cg);
 	cairo_restore(cg);
 }
@@ -549,32 +554,32 @@ void Graphics::DrawImage(Image* image, int x, int y, int srcX, int srcY, int src
 	cairo_t* cg = reinterpret_cast<cairo_t*>(_private);
 	cairo_save(cg);
 	cairo_surface_t* source = reinterpret_cast<cairo_surface_t*>(image->_private);
+	cairo_translate(cg, x,y);
 	cairo_set_source_surface(cg, source, srcX, srcY);
-	cairo_rectangle(cg, x, y, srcWidth, srcHeight);
+	cairo_rectangle(cg, 0, 0, srcWidth, srcHeight);
 	cairo_fill(cg);
 	cairo_restore(cg);
 }
 
 void Graphics::DrawImage(Image* image, const RectF& rc, const ImageAttributes* attr) {
 	cairo_t* cg = reinterpret_cast<cairo_t*>(_private);
-	cairo_save(cg);
 	cairo_surface_t* source = reinterpret_cast<cairo_surface_t*>(image->_private);
-
 	cairo_pattern_t* cp = cairo_pattern_create_for_surface(source);
 	int sourceWidth = cairo_image_surface_get_width(source);
 	int sourceHeight = cairo_image_surface_get_height(source);
 
 	cairo_matrix_t patternMatrix;
-	cairo_matrix_init_scale(&patternMatrix, rc.GetWidth()/sourceWidth, rc.GetHeight()/sourceHeight);
+	cairo_matrix_init_scale(&patternMatrix, sourceWidth/rc.GetWidth(), sourceHeight/rc.GetHeight());
 	cairo_pattern_set_matrix(cp, &patternMatrix);
 
-	cairo_pattern_set_extend(cp, CAIRO_EXTEND_REPEAT);
-
+	cairo_save(cg);
 	cairo_set_source(cg, cp);
-	cairo_rectangle(cg, rc.GetLeft(), rc.GetTop(), rc.GetWidth(), rc.GetHeight());
+	cairo_translate(cg, rc.GetLeft(), rc.GetTop());
+	cairo_rectangle(cg, 0, 0, rc.GetWidth(), rc.GetHeight());
 	cairo_fill(cg);
-	cairo_pattern_destroy(cp);
 	cairo_restore(cg);
+
+	cairo_pattern_destroy(cp);
 }
 
 void Graphics::DrawImage(Image* image, const Rect& rc, const ImageAttributes* attr) {
@@ -676,8 +681,11 @@ CompositingMode Graphics::GetCompositingMode() const {
 
 void Graphics::Clear(const Color& col) {
 	cairo_t* cg = reinterpret_cast<cairo_t*>(_private);
+	cairo_save(cg);
+	cairo_set_operator(cg, CAIRO_OPERATOR_SOURCE);
 	cairo_set_source_rgba(cg, col._r, col._g, col._b, col._a);
 	cairo_paint(cg);
+	cairo_restore(cg);
 }
 
 #endif

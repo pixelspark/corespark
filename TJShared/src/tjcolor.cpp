@@ -151,11 +151,9 @@ RGBColor ColorSpaces::HSVToRGB(double h, double s, double v)  {
 
 /* RGBColor */
 void RGBColor::Save(TiXmlElement* parent) {
-	TiXmlElement color("color");
-	SaveAttributeSmall(&color,"r", (int)(_r*255.0));
-	SaveAttributeSmall(&color, "g", (int)(_g*255.0));
-	SaveAttributeSmall(&color, "b", (int)(_b*255.0));
-	parent->InsertEndChild(color);
+	SaveAttributeSmall(parent,"r", (int)(_r*255.0));
+	SaveAttributeSmall(parent, "g", (int)(_g*255.0));
+	SaveAttributeSmall(parent, "b", (int)(_b*255.0));
 }
 
 void RGBColor::Load(TiXmlElement* you) {

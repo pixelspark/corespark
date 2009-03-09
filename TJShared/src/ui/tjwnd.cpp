@@ -394,10 +394,8 @@ LRESULT Wnd::PreMessage(UINT msg, WPARAM wp, LPARAM lp) {
 			float dpiScale = theme->GetDPIScaleFactor();
 
 			if(!_doubleBuffered) {
-				GraphicsContainer container = org.BeginContainer();
 				org.ScaleTransform(dpiScale, dpiScale);
 				Paint(org, theme);
-				org.EndContainer(container);
 			}
 			else {
 				RECT cw;
@@ -426,11 +424,12 @@ LRESULT Wnd::PreMessage(UINT msg, WPARAM wp, LPARAM lp) {
 					buffered.EndContainer(container);
 				}
 
-				org.SetClip(ps.rcPaint);
+				//org.SetClip(ps.rcPaint);
 				org.SetCompositingMode(CompositingModeSourceCopy);
 				org.DrawImage(_buffer,ps.rcPaint.left,ps.rcPaint.top,ps.rcPaint.left, ps.rcPaint.top, ps.rcPaint.right-ps.rcPaint.left, ps.rcPaint.bottom-ps.rcPaint.top);
-				org.EndContainer(gc);
 			}
+
+			org.EndContainer(gc);
 		}
 
 		EndPaint(_wnd, &ps);

@@ -100,10 +100,10 @@ Font::~Font() {
 
 /** Image **/
 Image* Image::FromFile(const wchar_t* path, bool useICM) {
-	Gdiplus::Image* gdiImage = Gdiplus::Image::FromFile(path, useICM);
-	if(gdiImage) {
-		Image* image = new Image();
-		image->_private = reinterpret_cast<void*>(gdiImage);
+	Gdiplus::Bitmap* gdiImage = Gdiplus::Bitmap::FromFile(path, useICM);
+	if(gdiImage!=0) {
+		Bitmap* image = new Bitmap();
+		image->_private = reinterpret_cast<void*>(dynamic_cast<Gdiplus::Image*>(gdiImage));
 		return image;
 	}
 	return 0;
@@ -135,6 +135,10 @@ bool Image::Save(const wchar_t* path, const wchar_t* mime) {
 }
 
 /** Bitmap **/
+Bitmap::Bitmap() {
+	_private = 0;
+}
+
 Bitmap::Bitmap(unsigned int w, unsigned int h) {
 	Gdiplus::Bitmap* gdiBitmap = new Gdiplus::Bitmap(w, h);
 	_private = reinterpret_cast<void*>(dynamic_cast<Gdiplus::Image*>(gdiBitmap));

@@ -12,17 +12,17 @@ namespace tj {
 		**/
 		template<typename T> class Mixed {
 			public:
-				Mixed() {
+				inline Mixed() {
 				}
 
-				virtual ~Mixed() {
+				~Mixed() {
 				}
 
-				void SetMixValue(const std::wstring& ident, T value) {
+				inline void SetMixValue(const std::wstring& ident, T value) {
 					_mixValues[ident] = value;
 				}
 
-				T GetMixValue(const std::wstring& ident, T defaultValue) const {
+				inline T GetMixValue(const std::wstring& ident, T defaultValue) const {
 					std::map< const std::wstring, T>::const_iterator it = _mixValues.find(ident);
 					if(it==_mixValues.end()) {
 						return defaultValue;
@@ -33,7 +33,7 @@ namespace tj {
 
 				/** This returns the value for the specified source value when using 'multiply mixing',
 				in which all mixing values are simply multiplied **/
-				T GetMultiplyMixValue(T source) const {
+				inline T GetMultiplyMixValue(T source) const {
 					std::map< const std::wstring, T>::const_iterator it = _mixValues.begin();
 					while(it!=_mixValues.end()) {
 						source *= it->second;
@@ -41,6 +41,13 @@ namespace tj {
 					}
 
 					return source;
+				}
+
+				inline void RemoveMixValue(const std::wstring& ident) {
+					std::map<const std::wstring, T>::iterator it = _mixValues.find(ident);
+					if(it!=_mixValues.end()) {
+						_mixValues.erase(it);
+					}
 				}
 
 			protected:
