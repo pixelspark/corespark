@@ -5,6 +5,88 @@ class TiXmlElement;
 
 namespace tj {
 	namespace shared {
+		class Property;
+		template<typename T> class GenericListProperty;
+
+		template<typename T> class Enumeration {
+			public:
+				Enumeration() {
+					InitializeMapping();
+				}
+
+				virtual ~Enumeration() {
+				}
+
+				std::wstring Serialize(const T& et) {
+					std::map<T, ValueInfo>::const_iterator it = _mapping.find(et);
+					while(it!=_mapping.end()) {
+						return it->second._serializedForm;
+					}
+					return L"";
+				}
+
+				T Unserialize(const std::wstring& ident) {
+					std::map<T, ValueInfo>::const_iterator it = _mapping.begin();
+					while(it!=_mapping.end()) {
+						if(it->second._serializedForm==ident) {
+							return it->first;
+						}
+						++it;
+					}
+					Throw(L"Could not unserialize enumeration value", ExceptionTypeError);
+				}
+				
+				T Unserialize(const std::wstring& ident, const T& defaultValue) {
+					std::map<T, ValueInfo>::const_iterator it = _mapping.begin();
+					while(it!=_mapping.end()) {
+						if(it->second._serializedForm==ident) {
+							return it->first;
+						}
+						++it;
+					}
+					return defaultValue;
+				}
+
+				std::wstring GetFriendlyName(const T& value) {
+					std::map<T, ValueInfo>::const_iterator it = _mapping.find(value);
+					if(it!=_mapping.end()) {
+						return Language::Get(it->second._friendlyForm);
+					}
+					return L"";
+				}
+
+				void Add(const T& value, const std::wstring& serialized, const std::wstring& friendly) {
+					ValueInfo vi;
+					vi._serializedForm = serialized;
+					vi._friendlyForm = friendly;
+					_mapping[value] = vi;
+				}
+
+				ref<Property> CreateSelectionProperty(const std::wstring& title, T* value) {
+					ref< GenericListProperty<T> > gp = GC::Hold(new GenericListProperty<T>(title, value, 0, *value));
+					std::map<T, ValueInfo>::const_iterator it = _mapping.begin();
+					while(it!=_mapping.end()) {
+						const ValueInfo& vi = it->second;
+						gp->AddOption(Language::Get(vi._friendlyForm), it->first);
+						++it;
+					}
+					return gp;
+				}
+
+				static Enumeration<T> Instance;
+
+			private:
+				struct ValueInfo {
+					std::wstring _serializedForm;
+					std::wstring _friendlyForm;
+				};
+
+				std::map<T, ValueInfo> _mapping;
+
+				// This should be implemented for each enumeration
+				void InitializeMapping();
+		};
+
 		class EXPORTED Serializable {
 			public:
 				virtual ~Serializable();
