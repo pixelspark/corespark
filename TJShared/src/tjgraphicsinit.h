@@ -6,14 +6,16 @@ namespace tj {
 		/* GDI+ Init */
 		struct GraphicsInit {
 			GraphicsInit() {
-				Gdiplus::GdiplusStartupInput gdiplusStartupInput;
-				ULONG_PTR gdiplusToken;
-				Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
+				#ifdef TJ_OS_WIN
+					Gdiplus::GdiplusStartupInput gdiplusStartupInput;
+					ULONG_PTR gdiplusToken;
+					Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
 
-				INITCOMMONCONTROLSEX sex;
-				sex.dwSize = sizeof(INITCOMMONCONTROLSEX);
-				sex.dwICC = ICC_STANDARD_CLASSES|ICC_TAB_CLASSES|ICC_PROGRESS_CLASS|ICC_UPDOWN_CLASS|ICC_USEREX_CLASSES|ICC_WIN95_CLASSES;
-				InitCommonControlsEx(&sex);
+					INITCOMMONCONTROLSEX sex;
+					sex.dwSize = sizeof(INITCOMMONCONTROLSEX);
+					sex.dwICC = ICC_STANDARD_CLASSES|ICC_TAB_CLASSES|ICC_PROGRESS_CLASS|ICC_UPDOWN_CLASS|ICC_USEREX_CLASSES|ICC_WIN95_CLASSES;
+					InitCommonControlsEx(&sex);
+				#endif
 			}
 
 			~GraphicsInit() {
