@@ -14,7 +14,7 @@ namespace tj {
 				virtual ~LogEventLogger() {
 				}
 
-				virtual void AddEvent(const std::wstring& message, ExceptionType e, bool read) {
+				virtual void AddEvent(const String& message, ExceptionType e, bool read) {
 					Log::Write(L"TJShared/LogEventLogger", message);
 				}
 		};
@@ -31,7 +31,7 @@ namespace tj {
 					WaitForCompletion();
 				}
 
-				virtual void Log(const std::wstring& msg) {
+				virtual void Log(const String& msg) {
 					//Start();
 					WaitForSingleObject(_loggerCreatedEvent, INFINITE);
 					_logger->Log(msg);
@@ -41,7 +41,7 @@ namespace tj {
 					_logger->Show(s);
 				}
 
-				virtual std::wstring GetContents() {
+				virtual String GetContents() {
 					WaitForSingleObject(_loggerCreatedEvent, INFINITE);
 					return _logger->GetContents();
 				}
@@ -90,7 +90,7 @@ strong<EventLogger> Log::GetEventLogger() {
 	return _eventLogger;
 }
 
-void Log::Write(const std::wstring& source, const std::wstring& message) {
+void Log::Write(const String& source, const String& message) {
 	if(!Zones::Get(Zones::LogZone).CanEnter()) {
 		return; // cannot log
 	}
@@ -103,7 +103,7 @@ void Log::Write(const std::wstring& source, const std::wstring& message) {
 	}
 	
 	wos << L' ' << source << L' ' << L':' << L' ' << message;
-	std::wstring finalMessage = wos.str();
+	String finalMessage = wos.str();
 	_logger.Log(finalMessage);
 
 	if(IsDebuggerPresent()) {
@@ -116,7 +116,7 @@ void Log::Show(bool t) {
 	_logger.Show(t);
 }
 
-std::wstring Log::GetContents() {
+String Log::GetContents() {
 	ZoneEntry ze(Zones::LogZone);
 	return _logger.GetContents();
 }

@@ -21,11 +21,11 @@ Arguments::~Arguments() {
     delete m_cmdline;
 }
 
-bool Arguments::IsSet(const std::wstring& option) {
+bool Arguments::IsSet(const String& option) {
 	std::vector<wchar_t*>::iterator it = _options.begin();
 	while(it!=_options.end()) {
 		wchar_t* str = *it;
-		if(std::wstring(str)==option) {
+		if(String(str)==option) {
 			return true;
 		}
 		++it;

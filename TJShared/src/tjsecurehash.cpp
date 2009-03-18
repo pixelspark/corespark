@@ -343,18 +343,22 @@ void SecureHash::AddString(const wchar_t* data) {
 	AddData(data, wcslen(data));
 }
 
-void SecureHash::AddFile(const std::wstring& path) {
-	HANDLE file = CreateFile(path.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, NULL, NULL, NULL);
-	if(file==INVALID_HANDLE_VALUE) {
-		Throw(L"Could not open file for hashing", ExceptionTypeError);
-	}
+void SecureHash::AddFile(const String& path) {
+	#ifdef TJ_OS_WIN
+		HANDLE file = CreateFile(path.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, NULL, NULL, NULL);
+		if(file==INVALID_HANDLE_VALUE) {
+			Throw(L"Could not open file for hashing", ExceptionTypeError);
+		}
 
-	unsigned char buffer[1024];
-	DWORD read = 0;
-	while(ReadFile(file, buffer, 1024, &read, NULL)) {
-		if(read==0) break; // EOF
-		AddData(buffer, read);
-	}
+		unsigned char buffer[1024];
+		DWORD read = 0;
+		while(ReadFile(file, buffer, 1024, &read, NULL)) {
+			if(read==0) break; // EOF
+			AddData(buffer, read);
+		}
 
-	CloseHandle(file);
+		CloseHandle(file);
+	#else
+		#error Not implemented
+	#endif
 }

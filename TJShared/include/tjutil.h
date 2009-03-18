@@ -1,25 +1,11 @@
 #ifndef _TJUTIL_H
 #define _TJUTIL_H
 
+struct in_addr;
+
 namespace tj {
 	namespace shared {
-		namespace intern {
-			struct CaseInsensitiveStringTraits : public std::char_traits<wchar_t> {
-				static bool eq(wchar_t c1, wchar_t c2) { return toupper(c1) == toupper(c2); }
-				static bool ne(wchar_t c1, wchar_t c2) { return toupper(c1) != toupper(c2); }
-				static bool lt(wchar_t c1, wchar_t c2) { return toupper(c1) <  toupper(c2); }
-				static int compare(const wchar_t* s1, const wchar_t* s2, size_t n) { return _memicmp( s1, s2, n ); }
-				static const wchar_t* find(const wchar_t* s, int n, char a) {
-					while( n-- > 0 && toupper(*s) != toupper(a) ) {
-						++s;
-					}
-					return s;
-				}
-			};	
-		}
-
-		typedef std::basic_string<wchar_t, intern::CaseInsensitiveStringTraits> CaseInsensitiveString;	// Case-insensitive string
-		typedef std::wstring String;
+		typedef String String;
 		class Serializable;
 		typedef long long Bytes; // This is equivalent to __int64 on MSVC++
 
@@ -29,33 +15,10 @@ namespace tj {
 				static const wchar_t* KFalse;
 		};
 
-		class EXPORTED GenericObject: public Serializable {
-			public:
-				GenericObject();
-				virtual ~GenericObject();
-				virtual void Save(TiXmlElement* you);
-				virtual void Load(TiXmlElement* you);
-
-				TiXmlElement _element;
-		};
-
-		class EXPORTED TaggedObject: public Serializable {
-			public:
-				TaggedObject(ref<Serializable> sr);
-				virtual void Save(TiXmlElement* save);
-				virtual void Load(TiXmlElement* load);
-				virtual void SetTag(const std::wstring& tag, bool f = true);
-				virtual bool HasTag(const std::wstring& tag);
-
-			protected:
-				ref<Serializable> _original;
-				std::set<std::wstring> _tags;
-		};
-
 		class EXPORTED Clipboard {
 			public:
-				static void SetClipboardText(const std::wstring& text);
-				static bool GetClipboardText(std::wstring& text);
+				static void SetClipboardText(const String& text);
+				static bool GetClipboardText(String& text);
 				static void SetClipboardObject(ref<Serializable> sr);
 				static bool GetClipboardObject(ref<Serializable> sr);
 				static bool GetClipboardObject(TiXmlDocument& doc);
@@ -74,13 +37,13 @@ namespace tj {
 			public:
 				static float RandomFloat();
 				static int RandomInt();
-				static std::wstring RandomIdentifier(wchar_t prefix);
+				static String RandomIdentifier(wchar_t prefix);
 				static char* CopyString(const char* str);
 				static wchar_t* IntToWide(int x);
-				static std::wstring& StringToLower(std::wstring& r);
-				static std::wstring GetSizeString(Bytes bytes);
-				static std::wstring IPToString(in_addr ip);
-				static std::wstring GetModuleName();
+				static String& StringToLower(String& r);
+				static String GetSizeString(Bytes bytes);
+				static String IPToString(const in_addr& ip);
+				static String GetModuleName();
 		};
 
 		/* This class takes care of disabling the screensaver */
@@ -95,24 +58,24 @@ namespace tj {
 
 		class EXPORTED Copyright {
 			public:
-				inline Copyright(const std::wstring& module, const std::wstring& component, const std::wstring& description): _module(module), _component(component), _description(description) {
+				inline Copyright(const String& module, const String& component, const String& description): _module(module), _component(component), _description(description) {
 					AddCopyright(this);
 				}
 
 				~Copyright();
-				static std::wstring Dump();
+				static String Dump();
 				static void AddCopyright(Copyright* cs);
 
 			private:
-				std::wstring _module;
-				std::wstring _component;
-				std::wstring _description;
+				String _module;
+				String _component;
+				String _description;
 				static std::set<Copyright*> _copyrights;
 		};
 
 		class EXPORTED MediaUtil {
 			public:
-				static Time GetDuration(const std::wstring& file);
+				static Time GetDuration(const String& file);
 		};
 
 		/** Command-line argument parser. **/
@@ -121,7 +84,7 @@ namespace tj {
 				Arguments(); 
 				virtual ~Arguments();
 				std::vector<wchar_t*>* GetOptions();
-				bool IsSet(const std::wstring& option);
+				bool IsSet(const String& option);
 
 			protected:
 				void Parse();
@@ -141,7 +104,7 @@ namespace tj {
 		}
 
 		template<typename T> void CleanWeakReferencesList(std::vector< weak<T> >& list) {
-			std::vector< weak<T> >::iterator it = list.begin();
+			typename std::vector< weak<T> >::iterator it = list.begin();
 			while(it!=list.end()) {
 				if(!it->IsValid()) {
 					it = list.erase(it);
@@ -152,28 +115,42 @@ namespace tj {
 			}
 		}
 
-		inline std::string Mbs(const std::wstring& ws) {
+		inline std::string Mbs(const String& ws) {
 			char* buf  = new char[ws.length()+2];
-			wcstombs_s(0, buf, ws.length()+1, ws.c_str(), _TRUNCATE);
+			
+			#ifdef TJ_OS_MAC
+				wcstombs(buf, ws.c_str(), ws.length()+1);
+			#endif
+			
+			#ifdef TJ_OS_WIN
+				wcstombs_s(0, buf, ws.length()+1, ws.c_str(), _TRUNCATE);
+			#endif
 
 			std::string w(buf);
 			delete[] buf;
 			return w;
 		}
 
-		inline std::wstring Wcs(const std::string& ws) {
+		inline String Wcs(const std::string& ws) {
 			wchar_t* buf  = new wchar_t[ws.length()+2];
-			mbstowcs_s(0, buf, ws.length()+1, ws.c_str(), _TRUNCATE);
-				
-			std::wstring w(buf);
+			
+			#ifdef TJ_OS_WIN
+				mbstowcs_s(0, buf, ws.length()+1, ws.c_str(), _TRUNCATE);
+			#endif
+			
+			#ifdef TJ_OS_MAC
+				mbstowcs(buf, ws.c_str(), ws.length());
+			#endif
+			
+			String w(buf);
 			delete[] buf;
 			return w;
 		}
 
 		template<typename StringType> std::vector<StringType> Explode(const StringType &inString, const StringType &separator) {
 			std::vector<StringType> returnVector;
-			StringType::size_type start = 0;
-			StringType::size_type end = 0;
+			typename StringType::size_type start = 0;
+			typename StringType::size_type end = 0;
 
 			while((end = inString.find (separator, start)) != StringType::npos) {
 				returnVector.push_back(inString.substr (start, end-start));
@@ -196,13 +173,13 @@ namespace tj {
 			return result;
 		}
 
-		template<typename T> inline std::wstring Stringify(const T& x) {
+		template<typename T> inline String Stringify(const T& x) {
 			std::wostringstream os;
 			os << x;
 			return os.str();
 		}
 
-		template<typename T> inline std::wstring StringifyHex(const T& x) {
+		template<typename T> inline String StringifyHex(const T& x) {
 			std::wostringstream os;
 			os << std::hex << std::uppercase << x;
 			return os.str();
@@ -214,11 +191,11 @@ namespace tj {
 			return os.str();
 		}
 
-		template<> std::string inline StringifyMbs(const std::wstring& x) {
+		template<> std::string inline StringifyMbs(const String& x) {
 			return Mbs(x);
 		}
 
-		template<typename T> inline T StringTo(const std::wstring& s, const T& def) {
+		template<typename T> inline T StringTo(const String& s, const T& def) {
 			std::wistringstream i(s);
 			T x;
 			if (!(i >> x)) {
@@ -245,14 +222,14 @@ namespace tj {
 			return StringTo<T>((std::string&)inp, def);
 		}
 
-		template<> inline std::wstring StringTo(const char* s, const std::wstring& def) {
+		template<> inline String StringTo(const char* s, const String& def) {
 			if(s==0) return def;
 			return Wcs(std::string(s));
 		}
 
 		template<typename T> inline T StringTo(const wchar_t* s, const T& def) {
 			if(s==0) return def;
-			return StringTo<T>(std::wstring(s), def);
+			return StringTo<T>(String(s), def);
 		}
 
 		template<typename T> inline bool Near(const T& a, const T& b, const T limit) {
@@ -280,7 +257,7 @@ namespace tj {
 		}
 
 		template<typename StringType> void Trim(StringType& str) {
-			StringType::size_type pos = str.find_last_not_of(' ');
+			typename StringType::size_type pos = str.find_last_not_of(' ');
 			if(pos != StringType::npos) {
 				str.erase(pos + 1);
 				pos = str.find_first_not_of(' ');
@@ -293,11 +270,11 @@ namespace tj {
 			}
 		}
 
-		template<> EXPORTED bool StringTo(const std::wstring& s, const bool& def);
-		template<> EXPORTED int StringTo(const std::wstring& s, const int& def);
-		template<> EXPORTED std::wstring StringTo(const std::wstring& s, const std::wstring& def);
-		template<> EXPORTED std::wstring Stringify(const bool& x);
-		template<> EXPORTED std::wstring Stringify(const int& x);
+		template<> EXPORTED bool StringTo(const String& s, const bool& def);
+		template<> EXPORTED int StringTo(const String& s, const int& def);
+		template<> EXPORTED String StringTo(const String& s, const String& def);
+		template<> EXPORTED String Stringify(const bool& x);
+		template<> EXPORTED String Stringify(const int& x);
 	}
 }
 #endif

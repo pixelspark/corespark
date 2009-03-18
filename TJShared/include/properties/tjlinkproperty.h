@@ -8,24 +8,24 @@ namespace tj {
 
 		class EXPORTED LinkProperty: public Property {
 			public:
-				LinkProperty(const std::wstring& name, const std::wstring& text, const std::wstring& iconrid = L"");
+				LinkProperty(const String& name, const String& text, const String& iconrid = L"");
 				virtual ~LinkProperty();
 				virtual ref<Wnd> GetWindow();
 				virtual void Update();
 				virtual void OnClicked();
-				virtual void SetText(const std::wstring& text);
+				virtual void SetText(const String& text);
 
 				Listenable<ButtonWnd::NotificationClicked> EventClicked;
 
 			protected:
 				ref<LinkPropertyWnd> _wnd;
-				std::wstring _text;
-				std::wstring _icon;
+				String _text;
+				String _icon;
 		};
 
 		class EXPORTED LinkPropertyWnd: public ButtonWnd, public Listener<ButtonWnd::NotificationClicked> {
 			public:
-				LinkPropertyWnd(const std::wstring& text, ref<LinkProperty> lp, const std::wstring& icon);
+				LinkPropertyWnd(const String& text, ref<LinkProperty> lp, const String& icon);
 				virtual ~LinkPropertyWnd();
 				virtual void OnCreated();
 				virtual void Notify(ref<Object> source, const ButtonWnd::NotificationClicked& nc);

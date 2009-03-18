@@ -16,7 +16,7 @@ Any::Any(bool b): _boolValue(b), _type(TypeBool) {
 Any::Any(int i): _intValue(i), _type(TypeInteger) {
 }
 
-Any::Any(const std::wstring& s): _stringValue(s), _type(TypeString) {
+Any::Any(const String& s): _stringValue(s), _type(TypeString) {
 }
 
 Any::Any(ref<Object> object): _object(object), _type(TypeObject) {
@@ -29,7 +29,7 @@ Any::Any(Type t): _type(t) {
 	_intValue = 0;
 }
 
-Any::Any(Type t, const std::wstring& s): _type(t) {
+Any::Any(Type t, const String& s): _type(t) {
 	switch(t) {
 		case TypeString:
 			_stringValue = s;
@@ -467,7 +467,7 @@ Any::operator int() const {
 	}	
 }
 
-std::wstring Any::ToString() const {
+String Any::ToString() const {
 	switch(_type) {
 		case TypeNull:
 			return L"null";
@@ -553,7 +553,7 @@ void Any::Save(TiXmlElement* you) {
 
 void Any::Load(TiXmlElement* you) {
 	_type = (Type)LoadAttributeSmall<int>(you, "type", (int)_type);
-	std::wstring value = LoadAttributeSmall(you, "value", ToString());
+	String value = LoadAttributeSmall(you, "value", ToString());
 
 	if(_type==TypeTuple) {
 		TiXmlElement* element = you->FirstChildElement("element");
@@ -596,7 +596,7 @@ void Any::Load(TiXmlElement* you) {
 	}
 }
 
-ref<Property> Any::CreateTypeProperty(const std::wstring& name, Type* type) {
+ref<Property> Any::CreateTypeProperty(const String& name, Type* type) {
 	assert(type!=0);
 	ref< GenericListProperty<Type> > pt = GC::Hold(new GenericListProperty<Type>(name, type, 0, *type));
 	pt->AddOption(TL(type_null), TypeNull);
@@ -609,7 +609,7 @@ ref<Property> Any::CreateTypeProperty(const std::wstring& name, Type* type) {
 	return pt;
 }
 
-std::wstring Any::GetTypeName(Type t) {
+String Any::GetTypeName(Type t) {
 	switch(t) {
 		case TypeNull:
 			return TL(type_null);
@@ -666,7 +666,7 @@ unsigned int Tuple::GetLength() const {
 	return _length;
 }
 
-std::wstring Tuple::ToString() const {
+String Tuple::ToString() const {
 	std::wostringstream wos;
 	wos << L'[';
 	for(unsigned int a=0;a<_length;a++) {

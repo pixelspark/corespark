@@ -8,7 +8,7 @@ namespace tj {
 		class EXPORTED Menu: public virtual Object {
 			public:
 				virtual ~Menu();
-				virtual void AddSeparator(const std::wstring& text = L"") = 0;
+				virtual void AddSeparator(const String& text = L"") = 0;
 				virtual void AddItem(strong<MenuItem> ci) = 0;
 				virtual unsigned int GetItemCount() const = 0;
 				virtual ref<MenuItem> GetItemByIndex(unsigned int idx) = 0;
@@ -28,24 +28,24 @@ namespace tj {
 				};
 
 				MenuItem(); // separator
-				MenuItem(const std::wstring& title, int command, bool highlight = false, CheckType checked = NotChecked, const std::wstring& icon = L"", const std::wstring& hotkey = L"");
-				MenuItem(const std::wstring& title, int command, bool highlight, CheckType checked, ref<Icon> icon);
+				MenuItem(const String& title, int command, bool highlight = false, CheckType checked = NotChecked, const String& icon = L"", const String& hotkey = L"");
+				MenuItem(const String& title, int command, bool highlight, CheckType checked, ref<Icon> icon);
 				
 				virtual ~MenuItem();
 				virtual bool IsSeparator() const;
 				virtual bool IsDisabled() const;
 				virtual bool HasIcon() const;
-				virtual void SetIcon(const std::wstring& icon);
+				virtual void SetIcon(const String& icon);
 				virtual void SetIcon(ref<Icon> icon);
-				virtual void SetHotkey(const std::wstring& hk);
-				virtual const std::wstring& GetHotkey() const;
+				virtual void SetHotkey(const String& hk);
+				virtual const String& GetHotkey() const;
 				virtual bool HasHotkey() const;
 				virtual bool IsLink() const;
 				virtual void SetLink(bool l);
 				virtual ref<Icon> GetIcon();
-				virtual const std::wstring& GetTitle() const;
+				virtual const String& GetTitle() const;
 
-				virtual void SetTitle(const std::wstring& title);
+				virtual void SetTitle(const String& title);
 				virtual void SetSeparator(bool s);
 
 				virtual unsigned char GetIndent() const;
@@ -56,8 +56,8 @@ namespace tj {
 				virtual ref<Menu> GetSubMenu(); // returns null when this item doesn't have a submenu
 
 			protected:
-				std::wstring _title;
-				std::wstring _hotkey;
+				String _title;
+				String _hotkey;
 				int _command;
 				CheckType _checked;
 				ref<Icon> _icon;
@@ -71,7 +71,7 @@ namespace tj {
 			public:
 				BasicMenu();
 				virtual ~BasicMenu();
-				virtual void AddSeparator(const std::wstring& text = L"");
+				virtual void AddSeparator(const String& text = L"");
 				virtual void AddItem(strong<MenuItem> ci);
 				virtual unsigned int GetItemCount() const;
 				virtual ref<MenuItem> GetItemByIndex(unsigned int idx);
@@ -79,14 +79,14 @@ namespace tj {
 
 			protected:
 				std::vector< strong<MenuItem> > _items;
-				std::wstring _longestString;
+				String _longestString;
 		};
 
 		class EXPORTED SubMenuItem: public MenuItem, public BasicMenu {
 			public:
 				SubMenuItem();
-				SubMenuItem(const std::wstring& title, bool highlight = false, CheckType checked = NotChecked, const std::wstring& icon = L"");
-				SubMenuItem(const std::wstring& title, bool highlight = false, CheckType checked = NotChecked, ref<Icon> icon = null);
+				SubMenuItem(const String& title, bool highlight = false, CheckType checked = NotChecked, const String& icon = L"");
+				SubMenuItem(const String& title, bool highlight = false, CheckType checked = NotChecked, ref<Icon> icon = null);
 				virtual ~SubMenuItem();
 				virtual ref<Menu> GetSubMenu();
 		};
@@ -141,10 +141,10 @@ namespace tj {
 				int DoContextMenu(ref<Wnd> wnd, Pixels x, Pixels y);
 				ref<MenuItem> DoContextMenuByItem(ref<Wnd> wnd, Pixels x, Pixels y);
 				int DoContextMenu(ref<Wnd> wnd);
-				void AddItem(const std::wstring& name, int command, bool hilite = false, bool checked = false);
-				void AddItem(const std::wstring& name, int command, bool hilite, MenuItem::CheckType checked);
+				void AddItem(const String& name, int command, bool hilite = false, bool checked = false);
+				void AddItem(const String& name, int command, bool hilite, MenuItem::CheckType checked);
 				void AddItem(ref<MenuItem> ci);
-				void AddSeparator(const std::wstring& text = L"");
+				void AddSeparator(const String& text = L"");
 				strong<Menu> GetMenu();
 
 			protected:

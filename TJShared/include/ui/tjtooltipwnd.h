@@ -10,7 +10,7 @@ namespace tj {
 				virtual void SetTrackEnabled(bool t);
 				virtual void SetTrackPosition(int x, int y);
 				virtual void Move(Pixels x, Pixels y);
-				virtual void SetTooltip(std::wstring text);
+				virtual void SetTooltip(String text);
 
 			protected:
 				HWND _owner;

@@ -25,12 +25,14 @@ namespace tj {
 				inline BasicRectangle(const T& x = (T)0, const T& y = (T)0, const T& w = (T)0, const T& h = (T)0): _x(x), _y(y), _w(w), _h(h) {
 				}
 
-				inline BasicRectangle(const RECT& r) {
-					_x = T(r.left);
-					_y = T(r.top);
-					_h = T(r.bottom-r.top);
-					_w = T(r.right-r.left);
-				}
+				#ifdef TJ_OS_WIN
+					inline BasicRectangle(const RECT& r) {
+						_x = T(r.left);
+						_y = T(r.top);
+						_h = T(r.bottom-r.top);
+						_w = T(r.right-r.left);
+					}
+				#endif
 
 				~BasicRectangle() {
 				}
@@ -88,14 +90,16 @@ namespace tj {
 					return IsInside(pt.x, pt.y);
 				}
 
-				inline operator RECT() const {
-					RECT r;
-					r.top = int(_y);
-					r.bottom = int(_y + _h);
-					r.left = int(_x);
-					r.right = int(_x + _w);
-					return r;
-				}
+				#ifdef TJ_OS_WIN
+					inline operator RECT() const {
+						RECT r;
+						r.top = int(_y);
+						r.bottom = int(_y + _h);
+						r.left = int(_x);
+						r.right = int(_x + _w);
+						return r;
+					}
+				#endif
 				
 				inline T GetTop() const {
 					return GetY();
@@ -141,7 +145,7 @@ namespace tj {
 					Translate(xoffset, yoffset);
 				}
 
-				inline std::wstring ToString() const {
+				inline String ToString() const {
 					std::wostringstream wos;
 					wos << L"{";
 					wos << _x << L",";

@@ -9,11 +9,11 @@ namespace tj {
 			friend class BrowserSink;
 
 			public:
-				BrowserWnd(const std::wstring& title);
+				BrowserWnd(const String& title);
 				virtual ~BrowserWnd();
 				virtual void Paint(graphics::Graphics& g, strong<Theme> theme);
 				void Hide(bool t);
-				void Navigate(const std::wstring& url);
+				void Navigate(const String& url);
 				virtual void Layout();
 				virtual void SetShowToolbar(bool t);
 				virtual void Back();

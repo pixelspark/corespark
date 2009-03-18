@@ -66,8 +66,16 @@ Hash::Hash() {
 Hash::~Hash() {
 }
 
-int Hash::Calculate(const std::wstring& s) {
-	wchar_t* buffer = _wcsdup(s.c_str());
+int Hash::Calculate(const String& s) {
+	#ifdef TJ_OS_WIN
+		wchar_t* buffer = _wcsdup(s.c_str());
+	#endif
+	
+	#ifdef TJ_OS_MAC
+		size_t len = wcslen(s.c_str())+1;
+		wchar_t* buffer = new wchar_t[len];
+		memcpy(buffer, s.c_str(), len);
+	#endif
 
 	int hash = FNVHash(buffer, sizeof(wchar_t)*s.length(), FNVInit);
 	delete[] buffer;

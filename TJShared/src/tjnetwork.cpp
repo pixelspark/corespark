@@ -67,7 +67,7 @@ void Networking::Wake(const MACAddress& mac) {
 	}
 }
 
-bool Networking::GetMACAddress(const std::wstring& ip, MACAddress& maca) {
+bool Networking::GetMACAddress(const String& ip, MACAddress& maca) {
 	ZoneEntry ze(Zones::NetworkZone);
 
 	#ifdef WIN32
@@ -93,7 +93,7 @@ Networking::MACAddress::MACAddress() {
 	address.long_data[1] = 0L;
 }
 
-Networking::MACAddress::MACAddress(const std::wstring& mac) {
+Networking::MACAddress::MACAddress(const String& mac) {
 	std::wistringstream is(mac);
 	try {
 		for(int a=0;a<6;a++) {
@@ -113,7 +113,7 @@ Networking::MACAddress::MACAddress(const std::wstring& mac) {
 	}
 }
 
-std::wstring Networking::MACAddress::ToString() const {
+String Networking::MACAddress::ToString() const {
 	std::wostringstream wos;
 	for(int a=0;a<5;a++) {
 		wos << std::setw(2) << std::setfill(L'0') << std::hex << std::uppercase << address.data[a] << L':';

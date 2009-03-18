@@ -25,7 +25,7 @@ namespace tj {
 				unsigned int _size;
 		};
 
-		template<> EXPORTED std::wstring Code::Get(unsigned int& position);
+		template<> EXPORTED String Code::Get(unsigned int& position);
 		template<> EXPORTED tj::shared::Vector Code::Get(unsigned int& position);
 
 		class EXPORTED CodeWriter: public virtual Object {
@@ -71,7 +71,7 @@ namespace tj {
 				char* _buffer;
 		};
 
-		template<> EXPORTED CodeWriter& CodeWriter::Add(const std::wstring& x);
+		template<> EXPORTED CodeWriter& CodeWriter::Add(const String& x);
 	}
 }
 

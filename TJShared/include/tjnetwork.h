@@ -7,20 +7,20 @@ namespace tj {
 			public:
 				struct EXPORTED MACAddress {
 					MACAddress();
-					MACAddress(const std::wstring& mac);
+					MACAddress(const String& mac);
 
 					union {
 						unsigned char data[6];
 						unsigned long long_data[2];
 					} address;
 
-					std::wstring ToString() const;
+					String ToString() const;
 				};
 
 				static std::string GetHostName();
 				static std::string GetHostAddress();
 				static void Wake(const MACAddress& mac);
-				static bool GetMACAddress(const std::wstring& ip, MACAddress& maca);
+				static bool GetMACAddress(const String& ip, MACAddress& maca);
 		};
 	}
 }

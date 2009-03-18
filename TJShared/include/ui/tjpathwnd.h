@@ -9,24 +9,24 @@ namespace tj {
 			friend class PathWnd;
 
 			public:
-				Crumb(const std::wstring& text, const ResourceIdentifier& icon);
+				Crumb(const String& text, const ResourceIdentifier& icon);
 				virtual ~Crumb();
-				std::wstring GetText() const;
-				std::wstring GetTextTrimmed() const;
+				String GetText() const;
+				String GetTextTrimmed() const;
 				graphics::Image* GetIcon();
 				virtual ref< std::vector< ref<Crumb> > > GetChildren();
 				virtual ref<Inspectable> GetSubject();
-				virtual void SetText(const std::wstring& x);
+				virtual void SetText(const String& x);
 
 			protected:
-				std::wstring _text;
+				String _text;
 				Icon _icon;
 				static const int KMaxTextLength = 15;
 		};
 
 		class EXPORTED BasicCrumb: public Crumb {
 			public:
-				BasicCrumb(const std::wstring& text, const ResourceIdentifier& icon, ref<Inspectable> subject);
+				BasicCrumb(const String& text, const ResourceIdentifier& icon, ref<Inspectable> subject);
 				virtual ~BasicCrumb();
 				virtual ref<Inspectable> GetSubject();
 				virtual ref< std::vector< ref<Crumb> > > GetChildren();
@@ -41,7 +41,7 @@ namespace tj {
 			public:
 				Path();
 				virtual ~Path();
-				virtual void Add(std::wstring text, std::wstring icon, ref<Inspectable> subject);
+				virtual void Add(String text, String icon, ref<Inspectable> subject);
 				virtual void Add(ref<Crumb> r);
 				virtual ref<Crumb> GetHead();
 

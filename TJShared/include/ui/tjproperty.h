@@ -5,13 +5,13 @@ namespace tj {
 	namespace shared {
 		class EXPORTED Property: public virtual Object {
 			public:
-				Property(const std::wstring& name, bool expandable=false);
+				Property(const String& name, bool expandable=false);
 				virtual ~Property();
 
-				virtual std::wstring GetName();
+				virtual String GetName();
 				virtual Pixels GetHeight();
-				virtual const std::wstring& GetHint() const;
-				virtual void SetHint(const std::wstring& h);
+				virtual const String& GetHint() const;
+				virtual void SetHint(const String& h);
 				virtual bool IsExpandable() const;
 				virtual void SetExpanded(bool t);
 				
@@ -24,8 +24,8 @@ namespace tj {
 
 				bool _expandable;
 				bool _expanded;
-				std::wstring _name;
-				std::wstring _hint;
+				String _name;
+				String _hint;
 		};
 
 		class EXPORTED PropertySet: public virtual Object {

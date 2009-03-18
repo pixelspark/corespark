@@ -143,8 +143,8 @@ namespace tj {
 
 				virtual void Move(Pixels x, Pixels y, Pixels w, Pixels h);
 
-				virtual std::wstring GetText();
-				virtual void SetText(const std::wstring& text);
+				virtual String GetText();
+				virtual void SetText(const String& text);
 				void SetSize(Pixels w, Pixels h);
 				virtual Area GetClientArea() const;
 				Area GetWindowArea();
@@ -159,7 +159,7 @@ namespace tj {
 				bool IsMouseOver();
 
 				HWND GetWindow();
-				virtual std::wstring GetTabTitle() const;	// return an empty string if you don't want to override Pane's title
+				virtual String GetTabTitle() const;	// return an empty string if you don't want to override Pane's title
 				virtual ref<Icon> GetTabIcon() const;		// should return 0 when you don't want to override the tab icon set in Pane
 				virtual void Focus();
 				virtual bool HasFocus(bool childrenToo = false) const;
@@ -183,7 +183,7 @@ namespace tj {
 				virtual void OnFocus(bool focus);
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
 				virtual void OnSettingsChanged();
-				virtual void OnDropFiles(const std::vector<std::wstring>& files);
+				virtual void OnDropFiles(const std::vector<String>& files);
 				virtual void OnTimer(unsigned int id);
 				virtual void OnKey(Key k, wchar_t t, bool down, bool isAccelerator);
 				virtual void OnContextMenu(Pixels x, Pixels y);

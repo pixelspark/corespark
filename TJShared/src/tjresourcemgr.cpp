@@ -11,7 +11,7 @@ ref<ResourceManager> ResourceManager::_instance;
 ResourceProvider::~ResourceProvider() {
 }
 
-bool ResourceProvider::GetPathToLocalResource(const ResourceIdentifier& rid, std::wstring& path) {
+bool ResourceProvider::GetPathToLocalResource(const ResourceIdentifier& rid, String& path) {
 	return false;
 }
 
@@ -27,7 +27,7 @@ ref<Resource> AbsoluteLocalFileResourceProvider::GetResource(const ResourceIdent
 	return GC::Hold(new LocalFileResource(rid, rid));
 }
 
-bool AbsoluteLocalFileResourceProvider::GetPathToLocalResource(const ResourceIdentifier& rid, std::wstring& path) {	
+bool AbsoluteLocalFileResourceProvider::GetPathToLocalResource(const ResourceIdentifier& rid, String& path) {	
 	if(!Zones::Get(Zones::LocalFileInfoZone).CanEnter()) {
 		return false;
 	}
@@ -37,14 +37,14 @@ bool AbsoluteLocalFileResourceProvider::GetPathToLocalResource(const ResourceIde
 	return true;
 }
 
-ResourceIdentifier AbsoluteLocalFileResourceProvider::GetRelative(const std::wstring& path) {
+ResourceIdentifier AbsoluteLocalFileResourceProvider::GetRelative(const String& path) {
 	ZoneEntry ze(Zones::LocalFileInfoZone);
 	return path;
 }
 
 
 /** LocalFileResourceProvider **/
-LocalFileResourceProvider::LocalFileResourceProvider(const std::wstring& searchPath): _searchPath(searchPath) {
+LocalFileResourceProvider::LocalFileResourceProvider(const String& searchPath): _searchPath(searchPath) {
 }
 
 LocalFileResourceProvider::~LocalFileResourceProvider() {
@@ -57,20 +57,20 @@ ref<Resource> LocalFileResourceProvider::GetResource(const ResourceIdentifier& r
 
 	ZoneEntry ze(Zones::LocalFileInfoZone);
 
-	std::wstring path;
+	String path;
 	if(GetPathToLocalResource(rid, path)) {
 		return GC::Hold(new LocalFileResource(rid, path));
 	}
 	return null;
 }
 
-bool LocalFileResourceProvider::GetPathToLocalResource(const ResourceIdentifier& rid, std::wstring& path) {	
+bool LocalFileResourceProvider::GetPathToLocalResource(const ResourceIdentifier& rid, String& path) {	
 	if(!Zones::Get(Zones::LocalFileInfoZone).CanEnter()) {
 		return false;
 	}
 
 	ZoneEntry ze(Zones::LocalFileInfoZone);
-	std::wstring myPath = _searchPath + File::PathSeparator + rid;
+	String myPath = _searchPath + File::PathSeparator + rid;
 
 	// check if that file exists
 	if(GetFileAttributes(myPath.c_str())!=INVALID_FILE_ATTRIBUTES) {
@@ -80,7 +80,7 @@ bool LocalFileResourceProvider::GetPathToLocalResource(const ResourceIdentifier&
 	return false;
 }
 
-ResourceIdentifier LocalFileResourceProvider::GetRelative(const std::wstring& path) {
+ResourceIdentifier LocalFileResourceProvider::GetRelative(const String& path) {
 	if(!Zones::Get(Zones::LocalFileInfoZone).CanEnter()) {
 		return L"";
 	}
@@ -117,7 +117,7 @@ void ResourceManager::RemoveProvider(strong<ResourceProvider> rp) {
 	std::remove(_paths.begin(), _paths.end(), rp);
 }
 
-ResourceIdentifier ResourceManager::GetRelative(const std::wstring& path) {
+ResourceIdentifier ResourceManager::GetRelative(const String& path) {
 	ZoneEntry ze(Zones::LocalFileInfoZone);
 	
 	std::deque< strong<ResourceProvider> >::iterator it = _paths.begin();
@@ -148,7 +148,7 @@ ref<Resource> ResourceManager::GetResource(const ResourceIdentifier& ident) {
 	return null;
 }
 
-bool ResourceManager::GetPathToLocalResource(const ResourceIdentifier& rid, std::wstring& path) {
+bool ResourceManager::GetPathToLocalResource(const ResourceIdentifier& rid, String& path) {
 	std::deque< strong<ResourceProvider> >::iterator it = _paths.begin();
 
 	while(it!=_paths.end()) {
@@ -197,7 +197,7 @@ void Resource::Save(TiXmlElement* el) {
 }
 
 /** LocalFileResource **/
-LocalFileResource::LocalFileResource(const ResourceIdentifier& rid, const std::wstring& path): _rid(rid), _path(path), _cachedSize(0) {
+LocalFileResource::LocalFileResource(const ResourceIdentifier& rid, const String& path): _rid(rid), _path(path), _cachedSize(0) {
 }
 
 LocalFileResource::~LocalFileResource() {
@@ -215,15 +215,15 @@ bool LocalFileResource::Exists() const {
 	return false;
 }
 
-std::wstring LocalFileResource::GetExtension() const {
-	return std::wstring(PathFindExtension(_path.c_str()));
+String LocalFileResource::GetExtension() const {
+	return String(PathFindExtension(_path.c_str()));
 }
 
 ResourceIdentifier LocalFileResource::GetIdentifier() const {
 	return _rid;
 }
 
-std::wstring LocalFileResource::GetPath() const {
+String LocalFileResource::GetPath() const {
 	return _path;
 }
 

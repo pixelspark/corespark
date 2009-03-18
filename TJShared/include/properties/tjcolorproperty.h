@@ -75,7 +75,7 @@ namespace tj {
 
 		class EXPORTED ColorProperty: public Property {
 			public:
-				ColorProperty(const std::wstring& name, RGBColor* color, RGBColor* tooColor = 0);
+				ColorProperty(const String& name, RGBColor* color, RGBColor* tooColor = 0);
 				virtual ~ColorProperty();
 				virtual ref<Wnd> GetWindow();
 				virtual void Update();

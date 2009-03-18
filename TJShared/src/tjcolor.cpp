@@ -33,12 +33,12 @@ HSVColor ColorSpaces::RGBToHSV(double r, double g, double b) {
 	double h;
 	double s;
 
-	double min = min(min(r, g), b);
-	double max = max(max(r, g), b);
-	double v = max;
-	double delta = max - min;
+	double dmin = min(min(r, g), b);
+	double dmax = max(max(r, g), b);
+	double v = dmax;
+	double delta = dmax - dmin;
 
-	if(max == 0.0 || delta == 0.0) {
+	if(dmax == 0.0 || delta == 0.0) {
 		// R, G, and B must be 0, or all the same.
 		// In this case, S is 0, and H is undefined.
 		// Using H = 0 is as good as any...
@@ -47,7 +47,7 @@ HSVColor ColorSpaces::RGBToHSV(double r, double g, double b) {
 	} 
 	else {
 		s = delta / max;
-		if(r == max) {
+		if(r == dmax) {
 			// Between Yellow and Magenta
 			h = (g - b) / delta;
 		} 

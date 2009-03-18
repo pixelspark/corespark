@@ -11,7 +11,7 @@ namespace tj {
 				Vector Dot(const Vector& other) const;
 				Vector Scale(float n) const;
 				float GetLength() const;
-				std::wstring ToString() const;
+				String ToString() const;
 
 				virtual void Save(TiXmlElement* parent);
 				virtual void Load(TiXmlElement* you);

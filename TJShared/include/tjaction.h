@@ -16,12 +16,12 @@ namespace tj {
 				virtual void Undo();
 
 				UndoSupport GetUndoSupport() const;
-				std::wstring GetName() const;
+				String GetName() const;
 
 			protected:
-				Action(const std::wstring& name, UndoSupport sup);
+				Action(const String& name, UndoSupport sup);
 				Action(UndoSupport sup);
-				std::wstring _name;
+				String _name;
 				UndoSupport _sup;
 				
 		};

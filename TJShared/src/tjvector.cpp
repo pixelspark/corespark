@@ -14,7 +14,7 @@ Vector::Vector(const Vector& other) {
 Vector::~Vector() {
 }
 
-std::wstring Vector::ToString() const {
+String Vector::ToString() const {
 	std::wostringstream wos;
 	wos << L'[' << x << L',' << y << L',' << z << L']';
 	return wos.str();

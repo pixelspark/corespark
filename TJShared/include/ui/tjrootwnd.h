@@ -25,11 +25,11 @@ namespace tj {
 				// Other
 				virtual void RevealWindow(ref<Wnd> wnd, ref<TabWnd> addTo = ref<TabWnd>()) = 0;
 				virtual ref<TabWnd> FindTabWindowAt(int x, int y) = 0;
-				virtual ref<TabWnd> GetTabWindowById(const std::wstring& id) = 0;
+				virtual ref<TabWnd> GetTabWindowById(const String& id) = 0;
 				virtual void SetDragTarget(ref<TabWnd> tw) = 0;
 				virtual ref<TabWnd> GetDragTarget() = 0;
 				virtual void RemoveWindow(ref<Wnd> w) = 0;
-				virtual void RenameWindow(ref<Wnd> w, std::wstring name) = 0;
+				virtual void RenameWindow(ref<Wnd> w, String name) = 0;
 				virtual void AddPane(ref<Pane> p, bool select = false) = 0; // add by preferred placement
 
 		};
@@ -38,7 +38,7 @@ namespace tj {
 			friend class NotificationWnd; 
 
 			public:
-				RootWnd(std::wstring title, const wchar_t* className=TJ_DEFAULT_CLASS_NAME, bool useDoubleBuffering=true);
+				RootWnd(String title, const wchar_t* className=TJ_DEFAULT_CLASS_NAME, bool useDoubleBuffering=true);
 				virtual ~RootWnd();
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 				virtual void Update();
@@ -53,7 +53,7 @@ namespace tj {
 
 				virtual void RevealWindow(ref<Wnd> wnd, ref<TabWnd> addTo = ref<TabWnd>());
 				virtual ref<TabWnd> FindTabWindowAt(int x, int y);
-				virtual ref<TabWnd> GetTabWindowById(const std::wstring& id);
+				virtual ref<TabWnd> GetTabWindowById(const String& id);
 				virtual void SetDragTarget(ref<TabWnd> tw);
 				virtual ref<TabWnd> GetDragTarget();
 				virtual bool IsOrphanPane(ref<Wnd> wnd);
@@ -62,7 +62,7 @@ namespace tj {
 				virtual std::vector< ref<Pane> >* GetOrphanPanes();
 				virtual void RemoveOrphanPane(ref<Pane> pane);
 				virtual void RemoveWindow(ref<Wnd> w);
-				virtual void RenameWindow(ref<Wnd> w, std::wstring name);
+				virtual void RenameWindow(ref<Wnd> w, String name);
 				virtual void AddPane(ref<Pane> p, bool select = false); // add by preferred placement
 
 				void FullRepaint(); // use after switching theme

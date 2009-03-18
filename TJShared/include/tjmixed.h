@@ -18,12 +18,12 @@ namespace tj {
 				~Mixed() {
 				}
 
-				inline void SetMixValue(const std::wstring& ident, T value) {
+				inline void SetMixValue(const String& ident, T value) {
 					_mixValues[ident] = value;
 				}
 
-				inline T GetMixValue(const std::wstring& ident, T defaultValue) const {
-					std::map< const std::wstring, T>::const_iterator it = _mixValues.find(ident);
+				inline T GetMixValue(const String& ident, T defaultValue) const {
+					typename std::map< const String, T>::const_iterator it = _mixValues.find(ident);
 					if(it==_mixValues.end()) {
 						return defaultValue;
 					}
@@ -34,7 +34,7 @@ namespace tj {
 				/** This returns the value for the specified source value when using 'multiply mixing',
 				in which all mixing values are simply multiplied **/
 				inline T GetMultiplyMixValue(T source) const {
-					std::map< const std::wstring, T>::const_iterator it = _mixValues.begin();
+					typename std::map< const String, T>::const_iterator it = _mixValues.begin();
 					while(it!=_mixValues.end()) {
 						source *= it->second;
 						++it;
@@ -43,15 +43,15 @@ namespace tj {
 					return source;
 				}
 
-				inline void RemoveMixValue(const std::wstring& ident) {
-					std::map<const std::wstring, T>::iterator it = _mixValues.find(ident);
+				inline void RemoveMixValue(const String& ident) {
+					typename std::map<const String, T>::iterator it = _mixValues.find(ident);
 					if(it!=_mixValues.end()) {
 						_mixValues.erase(it);
 					}
 				}
 
 			protected:
-				std::map< const std::wstring, T> _mixValues;
+				std::map< const String, T> _mixValues;
 		};
 	}
 }

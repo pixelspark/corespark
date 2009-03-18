@@ -5,7 +5,7 @@ namespace tj {
 	namespace shared {
 		class EXPORTED Icon {
 			public:
-				Icon(std::wstring rid);
+				Icon(String rid);
 				virtual ~Icon();
 				Icon(graphics::Image* bmp); // Icon will own and delete bmp!
 				operator graphics::Image*();

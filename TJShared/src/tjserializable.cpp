@@ -64,3 +64,70 @@ void FileReader::Read(const std::string& filename, ref<Serializable> ser) {
 	
 	ser->Load(modelElement);
 }
+
+/** TaggedObject **/
+TaggedObject::TaggedObject(ref<Serializable> sr): _original(sr) {
+}
+
+void TaggedObject::Save(TiXmlElement* save) {
+	std::set<String>::const_iterator it = _tags.begin();
+	while(it!=_tags.end()) {
+		const String& tag = *it;
+		save->SetAttribute(Mbs(tag), 1);
+		++it;
+	}
+	
+	TiXmlElement wrapper("tagged-object");
+	if(_original) {
+		_original->Save(&wrapper);
+	}
+	save->InsertEndChild(wrapper);
+}
+
+void TaggedObject::Load(TiXmlElement* load) {	
+	TiXmlElement* wrapper = load->FirstChildElement("tagged-object");
+	if(wrapper!=0) {
+		TiXmlAttribute* att = load->FirstAttribute();
+		while(att!=0) {
+			String name = Wcs(att->Name());
+			_tags.insert(name);
+			att = att->Next();
+		}
+		
+		if(_original) _original->Load(wrapper);
+	}
+	else {
+		if(_original) _original->Load(load);
+	}
+}
+
+void TaggedObject::SetTag(const String& tag, bool f) {
+	if(f) {
+		_tags.insert(tag);
+	}
+	else {
+		std::set<String>::iterator it = _tags.find(tag);
+		if(it!=_tags.end()) {
+			_tags.erase(it);
+		}
+	}
+}
+
+bool TaggedObject::HasTag(const String& tag) {
+	return _tags.find(tag) != _tags.end();
+}
+
+/** GenericObject **/
+GenericObject::GenericObject(): _element("object") {
+}
+
+GenericObject::~GenericObject() {
+}
+
+void GenericObject::Save(TiXmlElement* you) {
+	you->InsertEndChild(_element);
+}
+
+void GenericObject::Load(TiXmlElement* you) {
+	_element = *you;
+}

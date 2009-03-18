@@ -5,7 +5,7 @@ namespace tj {
 	namespace shared {
 		class EXPORTED ButtonWnd: public ChildWnd {
 			public:
-				ButtonWnd(const ResourceIdentifier& iconRid, const std::wstring& text = L"");
+				ButtonWnd(const ResourceIdentifier& iconRid, const String& text = L"");
 				virtual ~ButtonWnd();
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 				virtual void Paint(graphics::Graphics& g, strong<Theme> theme);
@@ -25,7 +25,7 @@ namespace tj {
 				virtual void OnFocus(bool f);
 				virtual void OnSize(const Area& ns);
 
-				std::wstring _text;
+				String _text;
 				Icon _icon;
 				bool _down;
 				bool _disabled;

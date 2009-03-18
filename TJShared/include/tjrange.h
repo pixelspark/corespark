@@ -34,11 +34,11 @@ namespace tj {
 					return _end - _start;
 				}
 
-				template<typename T> static Range<T>& Widest(Range<T> a, Range<T> b) {
+				template<typename Q> static Range<Q>& Widest(Range<Q> a, Range<Q> b) {
 					return a.Length()>b.Length()?a:b;
 				}
 
-				template<typename T> static Range<T>& Narrowest(Range<T> a, Range<T> b) {
+				template<typename Q> static Range<T>& Narrowest(Range<Q> a, Range<Q> b) {
 					return a.Length()<b.Length()?a:b;
 				}
 

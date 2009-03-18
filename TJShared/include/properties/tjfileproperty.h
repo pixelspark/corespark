@@ -5,20 +5,20 @@ namespace tj {
 	namespace shared {
 		class EXPORTED FilePropertyWnd: public ChildWnd {
 			public:
-				FilePropertyWnd(const std::wstring& name, ResourceIdentifier* rid, strong<ResourceProvider> rmg, const wchar_t* filter);
+				FilePropertyWnd(const String& name, ResourceIdentifier* rid, strong<ResourceProvider> rmg, const wchar_t* filter);
 				virtual ~FilePropertyWnd();
 				virtual void Paint(graphics::Graphics& g, strong<Theme> theme);
-				virtual void OnDropFiles(const std::vector< std::wstring >& files);
+				virtual void OnDropFiles(const std::vector< String >& files);
 				virtual void Update();
 				virtual void OnSize(const Area& ns);
 				virtual void Layout();
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 
 			protected:
-				void SetFile(const std::wstring& file);
+				void SetFile(const String& file);
 				virtual void OnMouse(MouseEvent me, Pixels x, Pixels y);
 				ResourceIdentifier* _path;
-				std::wstring _name;
+				String _name;
 				Icon _linkIcon;
 				const wchar_t* _filter;
 				strong<ResourceProvider> _rmg;
@@ -27,7 +27,7 @@ namespace tj {
 
 		class EXPORTED FileProperty: public Property {
 			public:
-				FileProperty(const std::wstring& name, ResourceIdentifier* path, strong<ResourceProvider> rmg, const wchar_t* filter=L"*.*\0\0\0");
+				FileProperty(const String& name, ResourceIdentifier* path, strong<ResourceProvider> rmg, const wchar_t* filter=L"*.*\0\0\0");
 				virtual ~FileProperty();
 				virtual ref<Wnd> GetWindow();
 				virtual void Update();

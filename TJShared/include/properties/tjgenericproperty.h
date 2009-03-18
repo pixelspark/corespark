@@ -5,7 +5,7 @@ namespace tj {
 	namespace shared {
 		template<typename T> class GenericProperty: public Property, public Listener<EditWnd::NotificationTextChanged> {
 			public:
-				GenericProperty(const std::wstring& name, T* value, T* alsoSet, T defaultValue): Property(name), _multiLine(false), _value(value), _alsoSet(alsoSet), _defaultValue(defaultValue) {
+				GenericProperty(const String& name, T* value, T* alsoSet, T defaultValue): Property(name), _multiLine(false), _value(value), _alsoSet(alsoSet), _defaultValue(defaultValue) {
 					if(value==0) Throw(L"Property value pointer cannot be null", ExceptionTypeWarning);
 				}
 

@@ -135,18 +135,18 @@ namespace tj {
 				virtual void Start();
 				void WaitForCompletion();
 				int GetID() const;
-				void SetName(const std::wstring& name);
+				void SetName(const String& name);
 				virtual void SetPriority(Priority p);
 
 				static long GetThreadCount();
 				static int GetCurrentThreadID();
-				static std::wstring GetCurrentThreadName();
+				static String GetCurrentThreadName();
 
 			protected:
 				virtual void Run();
 				
 				static CriticalSection _nameLock;
-				static std::map<int, std::wstring> _names;
+				static std::map<int, String> _names;
 
 				#ifdef _WIN32
 					HANDLE _thread;

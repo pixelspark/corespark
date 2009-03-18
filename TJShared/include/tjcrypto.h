@@ -8,7 +8,7 @@ namespace tj {
 			public:
 				Hash();
 				virtual ~Hash();
-				int Calculate(const std::wstring& data);
+				int Calculate(const String& data);
 		};
 
 		class EXPORTED Hasheable {
@@ -25,7 +25,7 @@ namespace tj {
 				virtual void AddData(const void* data, size_t length);
 				virtual std::string GetHashAsString();
 				virtual void AddString(const wchar_t* data);
-				virtual void AddFile(const std::wstring& path);
+				virtual void AddFile(const String& path);
 
 			protected:
 				void* _data;

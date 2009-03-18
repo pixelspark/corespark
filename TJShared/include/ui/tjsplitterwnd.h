@@ -39,7 +39,7 @@ namespace tj {
 				ref<Wnd> GetSecond();
 				const ref<Wnd> GetFirst() const;
 				const ref<Wnd> GetSecond() const;
-				virtual std::wstring GetTabTitle() const;
+				virtual String GetTabTitle() const;
 				bool IsCollapsed() const;
 
 			protected:

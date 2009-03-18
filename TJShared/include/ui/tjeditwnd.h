@@ -7,13 +7,13 @@ namespace tj {
 			public:
 				EditWnd(bool multiLine=false);
 				virtual ~EditWnd();
-				virtual std::wstring GetText();
+				virtual String GetText();
 				virtual void Paint(graphics::Graphics& g, strong<Theme> theme);
 				virtual void Layout();
-				virtual void SetText(const std::wstring& ws);
+				virtual void SetText(const String& ws);
 				virtual void SetReadOnly(bool r);
 				virtual void SetBorder(bool b);
-				void SetCue(const std::wstring& cue);
+				void SetCue(const String& cue);
 				virtual bool HasFocus(bool childrenToo) const;
 				virtual void Show(bool s);
 				virtual void Focus();
@@ -42,12 +42,12 @@ namespace tj {
 
 		class EXPORTED SuggestionMenuItem: public MenuItem {
 			public:
-				SuggestionMenuItem(const std::wstring& value, const std::wstring& friendly, bool highlight = false, MenuItem::CheckType checked = MenuItem::NotChecked, const std::wstring& icon = L"", const std::wstring& hotkey = L"");
+				SuggestionMenuItem(const String& value, const String& friendly, bool highlight = false, MenuItem::CheckType checked = MenuItem::NotChecked, const String& icon = L"", const String& hotkey = L"");
 				virtual ~SuggestionMenuItem();
-				virtual const std::wstring& GetSuggestionValue() const;
+				virtual const String& GetSuggestionValue() const;
 
 			protected:
-				std::wstring _value;
+				String _value;
 		};
 
 		class EXPORTED SuggestionEditWnd: public EditWnd {

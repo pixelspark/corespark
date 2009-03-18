@@ -5,7 +5,7 @@ namespace tj {
 	namespace shared {
 		class EXPORTED DialogWnd: public TopWnd, public Listener<ButtonWnd::NotificationClicked> {
 			public:	
-				DialogWnd(const std::wstring& title);
+				DialogWnd(const String& title);
 				virtual ~DialogWnd();
 				virtual void Paint(graphics::Graphics& g, strong<Theme> theme);
 				virtual void Layout();
@@ -27,7 +27,7 @@ namespace tj {
 
 		class EXPORTED PropertyDialogWnd: public DialogWnd {
 			public:
-				PropertyDialogWnd(const std::wstring& title, const std::wstring& question = L"");
+				PropertyDialogWnd(const String& title, const String& question = L"");
 				virtual ~PropertyDialogWnd();
 				virtual void Paint(graphics::Graphics& g, strong<Theme> theme);
 				virtual ref<PropertyGridWnd> GetPropertyGrid();
@@ -43,13 +43,13 @@ namespace tj {
 				
 			private:
 				ref<PropertyGridWnd> _grid;
-				std::wstring _question;
+				String _question;
 		};
 
 		class EXPORTED Dialog {
 			public:
-				static std::wstring AskForSaveFile(ref<Wnd> owner, const std::wstring& title, const wchar_t* filter, const std::wstring& defExt);
-				static std::wstring AskForOpenFile(ref<Wnd> owner, const std::wstring& title, const wchar_t* filter, const std::wstring& defExt);
+				static String AskForSaveFile(ref<Wnd> owner, const String& title, const wchar_t* filter, const String& defExt);
+				static String AskForOpenFile(ref<Wnd> owner, const String& title, const wchar_t* filter, const String& defExt);
 		};
 	}
 }

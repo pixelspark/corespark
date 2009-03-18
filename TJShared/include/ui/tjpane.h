@@ -14,12 +14,12 @@ namespace tj {
 			};
 
 			Type _type;
-			std::wstring _container;
+			String _container;
 
-			Placement(Type t = Orphan, const std::wstring& container = L"");
+			Placement(Type t = Orphan, const String& container = L"");
 			~Placement();
-			static std::wstring TypeToString(Type t);
-			static Type TypeFromString(const std::wstring& s);
+			static String TypeToString(Type t);
+			static Type TypeFromString(const String& s);
 		};
 
 		class EXPORTED Pane: public virtual Object {
@@ -28,14 +28,14 @@ namespace tj {
 			friend class FloatingPane;
 
 			public:
-				Pane(const std::wstring& title, ref<Wnd> wnd, bool detached, bool closable, ref<Settings> st, const Placement& defaultPlacement = Placement(Placement::Orphan), std::wstring icon=L"");
+				Pane(const String& title, ref<Wnd> wnd, bool detached, bool closable, ref<Settings> st, const Placement& defaultPlacement = Placement(Placement::Orphan), String icon=L"");
 				virtual ~Pane();
 				ref<Wnd> GetWindow();
 				const ref<Wnd> GetWindow() const;
 				ref<Icon> GetIcon() const;
-				std::wstring GetTitle() const;
+				String GetTitle() const;
 				bool IsClosable() const;
-				virtual void SetTitle(std::wstring c);
+				virtual void SetTitle(String c);
 				bool HasIcon() const;
 
 			protected:
@@ -44,7 +44,7 @@ namespace tj {
 				virtual Placement GetPreferredPlacement();
 				virtual RECT GetPreferredPosition(); // For FloatingPane
 
-				std::wstring _title;
+				String _title;
 				ref<Wnd> _wnd;
 				ref<Settings> _settings;
 				Placement _defaultPlacement;

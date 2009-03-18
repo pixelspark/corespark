@@ -5,44 +5,44 @@ using namespace tj::shared;
 
 class SettingsNamespace: public Settings {
 	public:
-		SettingsNamespace(ref<Settings> st, const std::wstring& ns): _settings(st), _ns(ns+L".") {
+		SettingsNamespace(ref<Settings> st, const String& ns): _settings(st), _ns(ns+L".") {
 			assert(_settings);
 		}
 
 		virtual ~SettingsNamespace() {
 		}
 
-		virtual bool GetFlag(const std::wstring& key) const {
+		virtual bool GetFlag(const String& key) const {
 			return _settings->GetFlag(_ns+key);
 		}
 
-		virtual bool GetFlag(const std::wstring& key, bool def) const {
+		virtual bool GetFlag(const String& key, bool def) const {
 			return _settings->GetFlag(_ns+key, def);
 		}
 
-		virtual std::wstring GetValue(const std::wstring& key) const {
+		virtual String GetValue(const String& key) const {
 			return _settings->GetValue(_ns+key);
 		}
 
-		virtual void SetValue(const std::wstring& key, const std::wstring& value) {
+		virtual void SetValue(const String& key, const String& value) {
 			_settings->SetValue(_ns+key, value);
 		}
 
-		virtual void SetFlag(const std::wstring& key, bool t) {
+		virtual void SetFlag(const String& key, bool t) {
 			_settings->SetFlag(_ns+key, t);
 		}
 
-		virtual ref<Settings> GetNamespace(const std::wstring& ns) {
+		virtual ref<Settings> GetNamespace(const String& ns) {
 			return GC::Hold(new SettingsNamespace(_settings, _ns+ns));
 		}
 
-		virtual std::wstring GetValue(const std::wstring& key, const std::wstring& defaultValue) const {
+		virtual String GetValue(const String& key, const String& defaultValue) const {
 			return _settings->GetValue(_ns+key, defaultValue);
 		}
 
 	protected:
 		ref<Settings> _settings;
-		std::wstring _ns;
+		String _ns;
 };
 
 Settings::~Settings() {
@@ -54,11 +54,11 @@ SettingsStorage::SettingsStorage() {
 SettingsStorage::~SettingsStorage() {
 }
 
-void SettingsStorage::Save(const std::wstring& path) const {
+void SettingsStorage::Save(const String& path) const {
 	TiXmlDocument doc;
 
 	TiXmlElement root("settings");
-	std::map< std::wstring, std::wstring >::const_iterator it = _data.begin();
+	std::map< String, String >::const_iterator it = _data.begin();
 	while(it!=_data.end()) {
 		TiXmlElement pref("pref");
 		pref.SetAttribute("key", Mbs(it->first).c_str());
@@ -73,7 +73,7 @@ void SettingsStorage::Save(const std::wstring& path) const {
 	doc.SaveFile(Mbs(path).c_str());
 }
 
-void SettingsStorage::Load(const std::wstring& path) {
+void SettingsStorage::Load(const String& path) {
 	ThreadLock lock(&_lock);
 	TiXmlDocument doc;
 	doc.LoadFile(Mbs(path).c_str());
@@ -103,44 +103,44 @@ void SettingsStorage::Load(const std::wstring& path) {
 	}
 }
 
-ref<Settings> SettingsStorage::GetNamespace(const std::wstring& ns) {
+ref<Settings> SettingsStorage::GetNamespace(const String& ns) {
 	return GC::Hold(new SettingsNamespace(this, ns));
 }
 
-void SettingsStorage::SetValue(const std::wstring& key, const std::wstring& value) {
+void SettingsStorage::SetValue(const String& key, const String& value) {
 	ThreadLock lock(&_lock);
 	_data[key] = value;
 }
 
-void SettingsStorage::SetFlag(const std::wstring& key, bool t) {
+void SettingsStorage::SetFlag(const String& key, bool t) {
 	if(t) {
-		SetValue(key, std::wstring(L"yes"));
+		SetValue(key, String(L"yes"));
 	}
 	else {
-		SetValue(key, std::wstring(L"no"));
+		SetValue(key, String(L"no"));
 	}
 }
 
-bool SettingsStorage::GetFlag(const std::wstring& key) const {
-	std::map< std::wstring, std::wstring >::const_iterator it = _data.find(key);
+bool SettingsStorage::GetFlag(const String& key) const {
+	std::map< String, String >::const_iterator it = _data.find(key);
 	if(it!=_data.end()) {
-		return it->second == std::wstring(L"yes");
+		return it->second == String(L"yes");
 	}
 	
 	Throw(L"SettingsStorage flag "+key+L" does not exist", ExceptionTypeWarning);
 }
 
-bool SettingsStorage::GetFlag(const std::wstring& key, bool def) const {
-	std::map< std::wstring, std::wstring >::const_iterator it = _data.find(key);
+bool SettingsStorage::GetFlag(const String& key, bool def) const {
+	std::map< String, String >::const_iterator it = _data.find(key);
 	if(it!=_data.end()) {
-		return it->second == std::wstring(L"yes");
+		return it->second == String(L"yes");
 	}
 
 	return def;
 }
 
-std::wstring SettingsStorage::GetValue(const std::wstring& key, const std::wstring& defaultValue) const {
-	std::map< std::wstring, std::wstring >::const_iterator it = _data.find(key);
+String SettingsStorage::GetValue(const String& key, const String& defaultValue) const {
+	std::map< String, String >::const_iterator it = _data.find(key);
 	if(it!=_data.end()) {
 		return it->second;
 	}
@@ -148,8 +148,8 @@ std::wstring SettingsStorage::GetValue(const std::wstring& key, const std::wstri
 	return defaultValue;
 }
 
-std::wstring SettingsStorage::GetValue(const std::wstring &key) const {
-	std::map< std::wstring, std::wstring >::const_iterator it = _data.find(key);
+String SettingsStorage::GetValue(const String &key) const {
+	std::map< String, String >::const_iterator it = _data.find(key);
 	if(it!=_data.end()) {
 		return it->second;
 	}
@@ -160,7 +160,7 @@ std::wstring SettingsStorage::GetValue(const std::wstring &key) const {
 /* Creates the path to a user-specific settings file.
 - On Windows: %USERPROFILE%\Application Data\TJ\TJShow\file.xml
 - On Unices, this would probably be something like /home/%USER%/.tj/tjshow/file.xml */
-std::wstring SettingsStorage::GetSettingsPath(const std::wstring& vendor, const std::wstring& app, const std::wstring& file) {
+String SettingsStorage::GetSettingsPath(const String& vendor, const String& app, const String& file) {
 	std::string suffix = "\\" + Mbs(vendor) + "\\" + Mbs(app) + "\\";
 	char buffer[MAX_PATH+2];
 	SHGetSpecialFolderPathA(NULL, buffer, CSIDL_APPDATA, TRUE);

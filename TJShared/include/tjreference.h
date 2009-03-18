@@ -1,8 +1,6 @@
 #ifndef _REFERENCE_H
 #define _REFERENCE_H
 
-#include <intrin.h>
-
 namespace tj {
 	namespace shared {
 		class BadCastException: public Exception {
@@ -29,6 +27,36 @@ namespace tj {
 				NullPointerException(): Exception(L"A null pointer was dereferenced", ExceptionTypeError) {
 				}
 		};
+		
+		namespace intern {
+			class Resource;
+		}
+		
+		/**  All classes that want Object functionality should inherit from it virtually:
+		 
+		 class X: public virtual Object, public OtherClass, public virtual SomeInterface {..};
+		 
+		 Without the virtual keyword, duplicate base instances of Object could be instantiated, which is not
+		 guaranteed to work. Object should be listed first in the list of extended classes.
+		 
+		 **/
+		class EXPORTED Object {
+			friend class GC;
+			
+			public:
+				inline Object(): _resource(0) {
+				}
+				
+				struct EXPORTED Notification {}; // useful for empty notifications; then just use Type::Notification
+				
+				// To make it a polymorphic type
+				virtual ~Object() {
+				}
+				
+				virtual void OnCreated();
+				
+				intern::Resource* _resource;
+		};
 
 		// T must be a pointer, like MyClass*
 		template<typename T> class ref;
@@ -37,8 +65,16 @@ namespace tj {
 		class GC;
 
 		namespace intern {
+			#ifdef TJ_OS_MAC
+				typedef int32_t ReferenceCount;
+			#endif
+			
+			#ifdef TJ_OS_WIN
+				typedef long ReferenceCount;
+			#endif
+			
 			class EXPORTED Resource {
-				friend class GC;
+				friend class tj::shared::GC;
 
 				public:
 					Resource();
@@ -46,22 +82,48 @@ namespace tj {
 
 					inline bool AddReference(bool first = false) {
 						if(!first && _referenceCount==0) return false;
-						_InterlockedIncrement(&_referenceCount);
+						#ifdef TJ_OS_WIN
+							_InterlockedIncrement(&_referenceCount);
+						#endif
+						
+						#ifdef TJ_OS_MAC
+							OSAtomicAdd32(1, &_referenceCount);
+						#endif
+
 						return true;
 					}
 
 					inline long DeleteReference() {
-						long old = _InterlockedDecrement(&_referenceCount);
+						#ifdef TJ_OS_WIN
+							ReferenceCount old = _InterlockedDecrement(&_referenceCount);
+						#endif
+						
+						#ifdef TJ_OS_MAC
+							ReferenceCount old = OSAtomicAdd32(-1, &_referenceCount) ;
+						#endif
+						
 						if(old==0 && !IsWeaklyReferenced()) delete this;
 						return old;
 					}
 
 					inline void AddWeakReference() {
-						_InterlockedIncrement(&_weakReferenceCount);
+						#ifdef TJ_OS_WIN
+							_InterlockedIncrement(&_weakReferenceCount);
+						#endif
+												
+						#ifdef TJ_OS_MAC
+							OSAtomicAdd32(1, &_weakReferenceCount);
+						#endif
 					}
 
 					inline void DeleteWeakReference() {
-						long old = _InterlockedDecrement(&_weakReferenceCount);
+						#ifdef TJ_OS_WIN
+							ReferenceCount old = _InterlockedDecrement(&_referenceCount);
+						#endif
+												
+						#ifdef TJ_OS_MAC
+							ReferenceCount old = OSAtomicAdd32(-1, &_referenceCount) ;
+						#endif		
 						if(old==0 && !IsReferenced()) {
 							delete this;	
 						}
@@ -77,10 +139,10 @@ namespace tj {
 
 					static long GetResourceCount();
 
-				private:
-					volatile long _referenceCount;
-					volatile long _weakReferenceCount;
-					volatile static long _resourceCount;
+				protected:
+					volatile ReferenceCount _referenceCount;
+					volatile ReferenceCount _weakReferenceCount;
+					volatile static ReferenceCount _resourceCount;
 			};
 		};
 

@@ -14,8 +14,8 @@ namespace tj {
 		class EXPORTED GridWnd: public ChildWnd, public ColumnInfo {
 			public:
 				struct Column {
-					Column(std::wstring title=L"");
-					std::wstring _title;
+					Column(String title=L"");
+					String _title;
 					float _width;
 					bool _visible;
 				};
@@ -26,7 +26,7 @@ namespace tj {
 				virtual Area GetClientArea() const;
 
 				// col stuff
-				virtual void AddColumn(std::wstring name, int id, float w =-1.0f, bool visible=true);
+				virtual void AddColumn(String name, int id, float w =-1.0f, bool visible=true);
 				virtual void SetColumnWidth(int id, float w);
 				virtual float GetColumnX(int id);
 				virtual float GetColumnWidth(int id);
@@ -64,8 +64,8 @@ namespace tj {
 
 				/* The 'empty text' is the text shown when the list is empty (could be a hint for the user
 				on how to fill the list */
-				virtual void SetEmptyText(const std::wstring& txt); 
-				std::wstring GetEmptyText() const;
+				virtual void SetEmptyText(const String& txt); 
+				String GetEmptyText() const;
 
 			protected:
 				// to be implemented by child
@@ -86,7 +86,7 @@ namespace tj {
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
 
 				// other handy stuff
-				void DrawCellText(graphics::Graphics& g, graphics::StringFormat* sf, graphics::SolidBrush* br, graphics::Font* font, int col, Area row, const std::wstring& str);
+				void DrawCellText(graphics::Graphics& g, graphics::StringFormat* sf, graphics::SolidBrush* br, graphics::Font* font, int col, Area row, const String& str);
 				void DrawCellDownArrow(graphics::Graphics& g, int col, const Area& row);
 				void DrawCellIcon(graphics::Graphics& g, int col, Area row, Icon& icon);
 
@@ -94,7 +94,7 @@ namespace tj {
 				virtual Area GetRowArea(int rid);
 
 			private:
-				std::wstring _emptyText;
+				String _emptyText;
 				int _selected;
 		};
 

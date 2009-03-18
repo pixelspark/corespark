@@ -26,15 +26,18 @@ distribution.
 #ifndef TINYXML_INCLUDED
 #define TINYXML_INCLUDED
 
-#define DLLEXPORT __declspec(dllimport)
+
 #define TIXML_USE_STL
 
 #ifdef _MSC_VER
+#define DLLEXPORT __declspec(dllimport)
 #pragma warning(push)
 #pragma warning( disable : 4530 )
 #pragma warning( disable : 4786 )
 #pragma warning( disable : 4996 )
 #pragma warning( disable : 4251 )
+#else
+#define DLLEXPORT
 #endif
 
 #include <ctype.h>

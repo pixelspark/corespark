@@ -13,7 +13,7 @@ Copyright::~Copyright() {
 	}
 }
 
-std::wstring Copyright::Dump() {
+String Copyright::Dump() {
 	std::wostringstream wos;
 	std::set<Copyright*>::const_iterator it = _copyrights.begin();
 	while(it!=_copyrights.end()) {
@@ -29,7 +29,7 @@ void Copyright::AddCopyright(Copyright* cs) {
 	_copyrights.insert(cs);
 }
 
-Time MediaUtil::GetDuration(const std::wstring& file) {
+Time MediaUtil::GetDuration(const String& file) {
 	ZoneEntry ze(Zones::LocalFileInfoZone);
 
 	#ifdef WIN32
@@ -104,7 +104,7 @@ int Util::RandomInt() {
 	#endif
 }
 
-std::wstring Util::RandomIdentifier(wchar_t prefix) {
+String Util::RandomIdentifier(wchar_t prefix) {
 	std::wostringstream wos;
 	wos << prefix << std::hex << std::uppercase << RandomInt() << std::hex << std::uppercase << Timestamp().ToMilliSeconds();
 	return wos.str();
@@ -122,94 +122,94 @@ wchar_t* Util::IntToWide(int x) {
 	return str;
 }
 
-std::wstring Util::GetModuleName() {
+String Util::GetModuleName() {
 	#ifdef _WIN32
 		HMODULE mod = (HMODULE)GetModuleHandle(NULL);
 		wchar_t mfn[MAX_PATH+1];
 		GetModuleFileName(mod, mfn, MAX_PATH);
-		return std::wstring(mfn);
+		return String(mfn);
 	#else
 		#error Not implemented
 	#endif
 }
 
-std::wstring Util::IPToString(in_addr ip) {
+String Util::IPToString(const in_addr& ip) {
 	return Wcs(std::string(inet_ntoa(ip)));
 }
 
-std::wstring Util::GetSizeString(Bytes bytes) {
+String Util::GetSizeString(Bytes bytes) {
 	// A negative size means something is wrong or the size is unknown
 	if(bytes<0) {
 		return L"";
 	}
 
-	std::wstring x;
+	String x;
 	const static Bytes BytesInATeraByte = Bytes(1024*1024*1024)*1024;
 	const static Bytes BytesInAGigaByte = 1024*1024*1024;
 	const static Bytes BytesInAMegaByte = 1024*1024;
 	const static Bytes BytesInAKiloByte = 1024;
 
 	if(bytes>BytesInATeraByte) {
-		x = Stringify(int(bytes/BytesInATeraByte)) + std::wstring(L" TB");
+		x = Stringify(int(bytes/BytesInATeraByte)) + String(L" TB");
 	}
 	else if(bytes>BytesInAGigaByte) {
-		x = Stringify(int(bytes/BytesInAGigaByte)) + std::wstring(L" GB");
+		x = Stringify(int(bytes/BytesInAGigaByte)) + String(L" GB");
 	}
 
 	else if(bytes>BytesInAMegaByte) { 
-		x = Stringify(int(bytes/BytesInAMegaByte)) + std::wstring(L" MB");
+		x = Stringify(int(bytes/BytesInAMegaByte)) + String(L" MB");
 	}
 	else if(bytes>BytesInAKiloByte) {
-		x = Stringify(int(bytes/BytesInAKiloByte)) + std::wstring(L" kB");
+		x = Stringify(int(bytes/BytesInAKiloByte)) + String(L" kB");
 	}
 	else {
-		x = Stringify(bytes)+ std::wstring(L" B");
+		x = Stringify(bytes)+ String(L" B");
 	}
 
 	return x;
 }
 
-std::wstring& Util::StringToLower(std::wstring& r) {
+String& Util::StringToLower(String& r) {
 	transform(r.begin(), r.end(), r.begin(), tolower);
 	return r;
 }
 
 namespace tj {
 	namespace shared {
-		template<> bool StringTo(const std::wstring& s, const bool& def) {
-			std::wstring ln = s;
+		template<> bool StringTo(const String& s, const bool& def) {
+			String ln = s;
 			std::transform(ln.begin(), ln.end(), ln.begin(), tolower);
 			return def ? (ln!=Bool::KFalse) : (ln==Bool::KTrue);
 		}
 
-		template<> int StringTo(const std::wstring& s, const int& def) {
+		template<> int StringTo(const String& s, const int& def) {
 			return _wtoi(s.c_str());
 		}
 
-		template<> std::wstring StringTo(const std::wstring& s, const std::wstring& def) {
+		template<> String StringTo(const String& s, const String& def) {
 			return s;
 		}
 
-		template<> std::wstring Stringify(const bool& x) {
+		template<> String Stringify(const bool& x) {
 			std::wostringstream o;
 			o << x ? Bool::KTrue : Bool::KFalse;
 			return o.str();
 		}
 
-		template<> std::wstring Stringify(const int& x) {
+		template<> String Stringify(const int& x) {
 			wchar_t buffer[33];
 			_itow_s(x, buffer, (size_t)16, 10);
-			return std::wstring(buffer);
+			return String(buffer);
 		}
 
-		Time::Time(const std::wstring& txt) {
+		Time::Time(const String& txt) {
 			std::wistringstream is(txt);
 			Time time;
 			is >> time;
 			_time = time._time;
 		}
 
-		std::wstring Time::Format() const {
+		String Time::Format() const {
 			// Value 0 seems to cause some trouble (displays weird values) so we handle that separately then...
 			if(_time==0) {
 				return L"00:00:00/000";
@@ -279,76 +279,9 @@ namespace tj {
 	}
 }
 
-/** TaggedObject **/
-TaggedObject::TaggedObject(ref<Serializable> sr): _original(sr) {
-}
-
-void TaggedObject::Save(TiXmlElement* save) {
-	std::set<std::wstring>::const_iterator it = _tags.begin();
-	while(it!=_tags.end()) {
-		const std::wstring& tag = *it;
-		save->SetAttribute(Mbs(tag), 1);
-		++it;
-	}
-
-	TiXmlElement wrapper("tagged-object");
-	if(_original) {
-		_original->Save(&wrapper);
-	}
-	save->InsertEndChild(wrapper);
-}
-
-void TaggedObject::Load(TiXmlElement* load) {	
-	TiXmlElement* wrapper = load->FirstChildElement("tagged-object");
-	if(wrapper!=0) {
-		TiXmlAttribute* att = load->FirstAttribute();
-		while(att!=0) {
-			std::wstring name = Wcs(att->Name());
-			_tags.insert(name);
-			att = att->Next();
-		}
-
-		if(_original) _original->Load(wrapper);
-	}
-	else {
-		if(_original) _original->Load(load);
-	}
-}
-
-void TaggedObject::SetTag(const std::wstring& tag, bool f) {
-	if(f) {
-		_tags.insert(tag);
-	}
-	else {
-		std::set<std::wstring>::iterator it = _tags.find(tag);
-		if(it!=_tags.end()) {
-			_tags.erase(it);
-		}
-	}
-}
-
-bool TaggedObject::HasTag(const std::wstring& tag) {
-	return _tags.find(tag) != _tags.end();
-}
-
-/** GenericObject **/
-GenericObject::GenericObject(): _element("object") {
-}
-
-GenericObject::~GenericObject() {
-}
-
-void GenericObject::Save(TiXmlElement* you) {
-	you->InsertEndChild(_element);
-}
-
-void GenericObject::Load(TiXmlElement* you) {
-	_element = *you;
-}
-
 // Clipboard (Windows implementation)
 #ifdef _WIN32
-	void Clipboard::SetClipboardText(const std::wstring& text) {
+	void Clipboard::SetClipboardText(const String& text) {
 		ZoneEntry ze(Zones::ClipboardZone);
 		if(OpenClipboard(NULL)) {
 			EmptyClipboard();
@@ -372,7 +305,7 @@ void GenericObject::Load(TiXmlElement* you) {
 		}
 	}
 
-	bool Clipboard::GetClipboardText(std::wstring& text) {
+	bool Clipboard::GetClipboardText(String& text) {
 		ZoneEntry ze(Zones::ClipboardZone);
 
 		if(!IsTextAvailable()) {
@@ -384,7 +317,7 @@ void GenericObject::Load(TiXmlElement* you) {
 			if(handle!=0) {
 				wchar_t* textPointer = (wchar_t*)GlobalLock(handle);
 				if(textPointer!=0) {
-					text = std::wstring(textPointer);
+					text = String(textPointer);
 					GlobalUnlock(handle);
 				}
 				else {

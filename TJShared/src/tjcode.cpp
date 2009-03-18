@@ -61,7 +61,7 @@ template<> tj::shared::Vector Code::Get(unsigned int& position) {
 	return v;
 }
 
-template<> CodeWriter& CodeWriter::Add(const std::wstring& x) {
+template<> CodeWriter& CodeWriter::Add(const String& x) {
 	if(_buffer==0) {
 		Throw(L"CodeWriter written to after buffer has been taken over!", ExceptionTypeSevere);
 	}
@@ -69,7 +69,7 @@ template<> CodeWriter& CodeWriter::Add(const std::wstring& x) {
 	Grow((unsigned int)((x.length()*sizeof(wchar_t))+sizeof(unsigned int)));
 
 	Add<unsigned int>((unsigned int)x.length());
-	std::wstring::const_iterator it = x.begin();
+	String::const_iterator it = x.begin();
 	while(it!=x.end()) {
 		wchar_t c = *it;
 		Add<wchar_t>(c);
@@ -78,7 +78,7 @@ template<> CodeWriter& CodeWriter::Add(const std::wstring& x) {
 	return *this;
 }
 
-template<> std::wstring Code::Get(unsigned int& position) {
+template<> String Code::Get(unsigned int& position) {
 	unsigned int length = Get<unsigned int>(position);
 	std::wostringstream os;
 	for(unsigned int a=0;a<length;a++) {

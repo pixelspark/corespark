@@ -5,7 +5,7 @@ namespace tj {
 	namespace shared {
 		class EXPORTED PropertySeparator: public Property {
 			public:
-				PropertySeparator(const std::wstring& group, bool collapsed = false);
+				PropertySeparator(const String& group, bool collapsed = false);
 				virtual ~PropertySeparator();
 				virtual ref<Wnd> GetWindow();
 				virtual void Update();

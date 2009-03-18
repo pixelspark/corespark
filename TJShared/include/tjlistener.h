@@ -23,7 +23,7 @@ namespace tj {
 				inline void Fire(ref<Object> source, const NotificationType& data) {
 					ThreadLock lock(&_lock);
 
-					std::vector< weak< Listener< NotificationType > > >::iterator it = _listeners.begin();
+					typename std::vector< weak< Listener< NotificationType > > >::iterator it = _listeners.begin();
 					while(it!=_listeners.end()) {
 						ref< Listener<NotificationType> > listener = *it;
 						if(listener) {
@@ -55,7 +55,7 @@ namespace tj {
 				inline void RemoveListener(ref< Listener<NotificationType> > listener) {
 					ThreadLock lock(&_lock);
 					if(listener) {
-						std::vector< weak<Listener<NotificationType> > >::iterator it = _listeners.begin();
+						typename std::vector< weak<Listener<NotificationType> > >::iterator it = _listeners.begin();
 						while(it!=_listeners.end()) {
 							if(*it == listener) {
 								it = _listeners.erase(it);

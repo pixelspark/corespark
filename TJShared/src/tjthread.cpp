@@ -2,28 +2,30 @@
 using namespace tj::shared;
 
 volatile long Thread::_count = 0;
-std::map<int, std::wstring> Thread::_names;
+std::map<int, String> Thread::_names;
 CriticalSection Thread::_nameLock;
 
-namespace tj {
-	namespace shared {
-		DWORD WINAPI ThreadProc(LPVOID lpParam) {
-			try {
-				InterlockedIncrement(&Thread::_count);
-				Thread* tr = (Thread*)lpParam;
-				if(tr!=0) {
-					srand(GetTickCount());
-					tr->Run();
+#ifdef TJ_OS_WIN
+	namespace tj {
+		namespace shared {
+			DWORD WINAPI ThreadProc(LPVOID lpParam) {
+				try {
+					InterlockedIncrement(&Thread::_count);
+					Thread* tr = (Thread*)lpParam;
+					if(tr!=0) {
+						srand(GetTickCount());
+						tr->Run();
+					}
 				}
+				catch(...) {
+				}
+				
+				InterlockedDecrement(&Thread::_count);
+				return 0;
 			}
-			catch(...) {
-			}
-			
-			InterlockedDecrement(&Thread::_count);
-			return 0;
 		}
 	}
-}
+#endif
 
 /* Thread */
 Thread::Thread() {
@@ -39,7 +41,7 @@ long Thread::GetThreadCount() {
 	return _count;
 }
 
-void Thread::SetName(const std::wstring& t) {
+void Thread::SetName(const String& t) {
 	ThreadLock lock(&_nameLock);
 	_names[_id] = t;
 }
@@ -52,11 +54,11 @@ int Thread::GetCurrentThreadID() {
 	#endif
 }
 
-std::wstring Thread::GetCurrentThreadName() {
+String Thread::GetCurrentThreadName() {
 	int tid = GetCurrentThreadID();
 
 	ThreadLock lock(&_nameLock);
-	std::map<int, std::wstring>::const_iterator it = _names.find(tid);
+	std::map<int, String>::const_iterator it = _names.find(tid);
 	if(it!=_names.end()) {
 		return it->second;
 	}

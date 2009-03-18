@@ -22,10 +22,10 @@ namespace tj {
 				Any(double d);
 				Any(bool b);
 				Any(int i);
-				Any(const std::wstring& s);
+				Any(const String& s);
 				Any(strong<Tuple> tuple);
 				Any(ref<Object> object);
-				Any(Type t, const std::wstring& s);
+				Any(Type t, const String& s);
 				Any(Type t);
 				virtual ~Any();
 
@@ -51,15 +51,15 @@ namespace tj {
 				Any Abs() const;
 				Any Force(Type t) const;
 
-				std::wstring ToString() const;
+				String ToString() const;
 				Type GetType() const;
 				ref<Object> GetContainedObject();
 
 				virtual void Save(TiXmlElement* you);
 				virtual void Load(TiXmlElement* you);
 
-				static ref<Property> CreateTypeProperty(const std::wstring& name, Type* type);
-				static std::wstring GetTypeName(Type t);
+				static ref<Property> CreateTypeProperty(const String& name, Type* type);
+				static String GetTypeName(Type t);
 
 			private:
 				union {
@@ -67,7 +67,7 @@ namespace tj {
 					bool _boolValue;
 					int _intValue;
 				};
-				std::wstring _stringValue;
+				String _stringValue;
 				ref<Object> _object;
 				Type _type;
 		};
@@ -80,7 +80,7 @@ namespace tj {
 				const Any& Get(unsigned int i) const;
 				unsigned int GetLength() const;
 				void Set(unsigned int i, const Any& a);
-				std::wstring ToString() const;
+				String ToString() const;
 
 			protected:
 				Any* _data;

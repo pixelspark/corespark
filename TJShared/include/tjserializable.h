@@ -17,16 +17,16 @@ namespace tj {
 				virtual ~Enumeration() {
 				}
 
-				std::wstring Serialize(const T& et) {
-					std::map<T, ValueInfo>::const_iterator it = _mapping.find(et);
+				String Serialize(const T& et) {
+					typename std::map<T, ValueInfo>::const_iterator it = _mapping.find(et);
 					while(it!=_mapping.end()) {
 						return it->second._serializedForm;
 					}
 					return L"";
 				}
 
-				T Unserialize(const std::wstring& ident) {
-					std::map<T, ValueInfo>::const_iterator it = _mapping.begin();
+				T Unserialize(const String& ident) {
+					typename std::map<T, ValueInfo>::const_iterator it = _mapping.begin();
 					while(it!=_mapping.end()) {
 						if(it->second._serializedForm==ident) {
 							return it->first;
@@ -36,8 +36,8 @@ namespace tj {
 					Throw(L"Could not unserialize enumeration value", ExceptionTypeError);
 				}
 				
-				T Unserialize(const std::wstring& ident, const T& defaultValue) {
-					std::map<T, ValueInfo>::const_iterator it = _mapping.begin();
+				T Unserialize(const String& ident, const T& defaultValue) {
+					typename std::map<T, ValueInfo>::const_iterator it = _mapping.begin();
 					while(it!=_mapping.end()) {
 						if(it->second._serializedForm==ident) {
 							return it->first;
@@ -47,24 +47,24 @@ namespace tj {
 					return defaultValue;
 				}
 
-				std::wstring GetFriendlyName(const T& value) {
-					std::map<T, ValueInfo>::const_iterator it = _mapping.find(value);
+				String GetFriendlyName(const T& value) {
+					typename std::map<T, ValueInfo>::const_iterator it = _mapping.find(value);
 					if(it!=_mapping.end()) {
 						return Language::Get(it->second._friendlyForm);
 					}
 					return L"";
 				}
 
-				void Add(const T& value, const std::wstring& serialized, const std::wstring& friendly) {
+				void Add(const T& value, const String& serialized, const String& friendly) {
 					ValueInfo vi;
 					vi._serializedForm = serialized;
 					vi._friendlyForm = friendly;
 					_mapping[value] = vi;
 				}
 
-				ref<Property> CreateSelectionProperty(const std::wstring& title, T* value) {
+				ref<Property> CreateSelectionProperty(const String& title, T* value) {
 					ref< GenericListProperty<T> > gp = GC::Hold(new GenericListProperty<T>(title, value, 0, *value));
-					std::map<T, ValueInfo>::const_iterator it = _mapping.begin();
+					typename std::map<T, ValueInfo>::const_iterator it = _mapping.begin();
 					while(it!=_mapping.end()) {
 						const ValueInfo& vi = it->second;
 						gp->AddOption(Language::Get(vi._friendlyForm), it->first);
@@ -77,8 +77,8 @@ namespace tj {
 
 			private:
 				struct ValueInfo {
-					std::wstring _serializedForm;
-					std::wstring _friendlyForm;
+					String _serializedForm;
+					String _friendlyForm;
 				};
 
 				std::map<T, ValueInfo> _mapping;
@@ -153,6 +153,30 @@ namespace tj {
 				virtual ~FileReader();
 				void Read(const std::string& filename, ref<Serializable> model);
 		};
+		
+		class EXPORTED GenericObject: public Serializable {
+		public:
+			GenericObject();
+			virtual ~GenericObject();
+			virtual void Save(TiXmlElement* you);
+			virtual void Load(TiXmlElement* you);
+			
+			TiXmlElement _element;
+		};
+		
+		class EXPORTED TaggedObject: public Serializable {
+		public:
+			TaggedObject(ref<Serializable> sr);
+			virtual void Save(TiXmlElement* save);
+			virtual void Load(TiXmlElement* load);
+			virtual void SetTag(const String& tag, bool f = true);
+			virtual bool HasTag(const String& tag);
+			
+		protected:
+			ref<Serializable> _original;
+			std::set<String> _tags;
+		};
+		
 	}
 }
 

@@ -7,7 +7,7 @@ namespace tj {
 
 		class EXPORTED VectorProperty: public Property {
 			public:
-				VectorProperty(const std::wstring& name, Vector* v);
+				VectorProperty(const String& name, Vector* v);
 				virtual ~VectorProperty();
 				virtual ref<Wnd> GetWindow();
 				virtual void Update();

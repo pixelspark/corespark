@@ -20,8 +20,8 @@ namespace tj {
 
 		class EXPORTED Date {
 			public:
-				static std::wstring GetFriendlyMonthName(Month m);
-				static std::wstring GetFriendlyDayName(DayOfWeek d);
+				static String GetFriendlyMonthName(Month m);
+				static String GetFriendlyDayName(DayOfWeek d);
 
 				Date();
 				~Date();
@@ -32,7 +32,7 @@ namespace tj {
 				Seconds GetSeconds() const;
 				Minutes GetMinutes() const;
 				Hours GetHours() const;
-				std::wstring ToFriendlyString() const;
+				String ToFriendlyString() const;
 
 			private:
 				#ifdef _WIN32
@@ -46,7 +46,7 @@ namespace tj {
 					_time = time;
 				}
 
-				Time(const std::wstring& t);
+				Time(const String& t);
 
 				inline Time& operator=(const Time& that) {
 					_time = that._time;
@@ -172,7 +172,7 @@ namespace tj {
 					return _time!=t._time;
 				}
 
-				std::wstring Format() const;
+				String Format() const;
 
 				inline static const Time& Earliest(const Time& a, const Time& b) {
 					if(a==Time(-1)) {
@@ -206,8 +206,8 @@ namespace tj {
 				~Timestamp();
 				Timestamp(bool now = false);
 				void Now();
-				std::wstring ToString() const;
-				std::wstring ToHexString() const;
+				String ToString() const;
+				String ToHexString() const;
 				Timestamp Difference(const Timestamp& other) const;
 				long long ToMicroSeconds() const;
 				long double ToMilliSeconds() const;

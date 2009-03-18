@@ -11,14 +11,14 @@ namespace tj {
 		class EXPORTED EventLogger {
 			public:
 				virtual ~EventLogger();
-				virtual void AddEvent(const std::wstring& message, ExceptionType e, bool read = false) = 0;
+				virtual void AddEvent(const String& message, ExceptionType e, bool read = false) = 0;
 		};
 
 		class EXPORTED Log: public virtual Object {
 			public:
-				static void Write(const std::wstring& source, const std::wstring& message);
+				static void Write(const String& source, const String& message);
 				static void Show(bool s);
-				static std::wstring GetContents();
+				static String GetContents();
 				static strong<EventLogger> GetEventLogger();
 				static void Stop();
 

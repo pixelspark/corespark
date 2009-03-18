@@ -13,7 +13,7 @@ namespace tj {
 				virtual T Get() = 0;
 
 				operator bool() {
-					return HasNext();
+					return IsValid();
 				}
 		};
 

@@ -9,7 +9,7 @@ namespace tj {
 					Item(): _separator(false) {
 					}
 
-					std::wstring _name;
+					String _name;
 					T _value;
 					bool _separator;
 
@@ -20,7 +20,7 @@ namespace tj {
 
 				class PropertyWnd: public ChildWnd {
 					public:
-						PropertyWnd(GenericListProperty<T>& prop, const std::wstring& icon): ChildWnd(L""), _icon(icon), _prop(prop), _arrowIcon(Icons::GetIconPath(Icons::IconDownArrow)) {
+						PropertyWnd(GenericListProperty<T>& prop, const String& icon): ChildWnd(L""), _icon(icon), _prop(prop), _arrowIcon(Icons::GetIconPath(Icons::IconDownArrow)) {
 							SetWantMouseLeave(true);
 						}
 
@@ -77,7 +77,7 @@ namespace tj {
 
 							// Fetch text
 							T value = *(_prop._value);
-							std::wstring displayText = L"";
+							String displayText = L"";
 							std::vector<Item>::const_iterator it = _prop._options.begin();
 							while(it!=_prop._options.end()) {
 								const Item& item = *it;
@@ -167,7 +167,7 @@ namespace tj {
 						Icon _icon;
 				};
 
-				GenericListProperty(std::wstring name, T* value, T* also, T def, const std::wstring& icon = L""): Property(name), _icon(icon) {
+				GenericListProperty(String name, T* value, T* also, T def, const String& icon = L""): Property(name), _icon(icon) {
 					_value = value;
 					_alsoSet = also;
 					_default = def;
@@ -176,14 +176,14 @@ namespace tj {
 				virtual ~GenericListProperty() {
 				}
 
-				void AddOption(const std::wstring& name, T value) {
+				void AddOption(const String& name, T value) {
 					Item it;
 					it._name = name;
 					it._value = value;
 					_options.push_back(it);
 				}
 
-				void AddSeparator(const std::wstring& title = L"") {
+				void AddSeparator(const String& title = L"") {
 					Item it;
 					it._separator = true;
 					it._name = title;
@@ -220,7 +220,7 @@ namespace tj {
 				T* _alsoSet;
 				ref<PropertyWnd> _pw;
 				std::vector<Item> _options;
-				std::wstring _icon;
+				String _icon;
 		};
 	}
 }

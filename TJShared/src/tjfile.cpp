@@ -1,43 +1,46 @@
 #include "../include/tjcore.h"
-#include <shellapi.h>
-#include <shlobj.h>
-#include <shobjidl.h>
-#include <shlguid.h>
-#include <shlwapi.h>
-#include <atlbase.h>
+
+#ifdef TJ_OS_WIN
+	#include <shellapi.h>
+	#include <shlobj.h>
+	#include <shobjidl.h>
+	#include <shlguid.h>
+	#include <shlwapi.h>
+	#include <atlbase.h>
+#endif
 
 using namespace tj::shared;
 
-std::wstring File::GetDirectory(const std::wstring& pathToFile) {
+String File::GetDirectory(const String& pathToFile) {
 	wchar_t* buf = _wcsdup(pathToFile.c_str());
 	PathRemoveFileSpec(buf);
-	std::wstring dir = buf;
+	String dir = buf;
 	delete[] buf;
 	return dir;
 }
 
-std::wstring File::GetFileName(const std::wstring& pathToFile) {
-	return std::wstring(PathFindFileName(pathToFile.c_str()));
+String File::GetFileName(const String& pathToFile) {
+	return String(PathFindFileName(pathToFile.c_str()));
 }
 
-std::wstring File::GetExtension(const std::wstring& pathToFile) {
-	return std::wstring(PathFindExtension(pathToFile.c_str()));
+String File::GetExtension(const String& pathToFile) {
+	return String(PathFindExtension(pathToFile.c_str()));
 }
 
-bool File::Exists(const std::wstring& st) {
+bool File::Exists(const String& st) {
 	ZoneEntry ze(Zones::LocalFileInfoZone);
 	return GetFileAttributes(st.c_str())!=INVALID_FILE_ATTRIBUTES;
 }
 
-bool File::Move(const std::wstring& from, const std::wstring& to, bool silent) {
+bool File::Move(const String& from, const String& to, bool silent) {
 	ZoneEntry ze(Zones::LocalFileAdministrationZone);
 	// If the target directory doesn't exist, create it
-	std::wstring dir = File::GetDirectory(to);
+	String dir = File::GetDirectory(to);
 	SHCreateDirectory(NULL, dir.c_str());
 	return MoveFile(from.c_str(), to.c_str())==TRUE;
 }
 
-bool File::Copy(const std::wstring& from, const std::wstring& to, bool silent) {
+bool File::Copy(const String& from, const String& to, bool silent) {
 	ZoneEntry ze(Zones::LocalFileAdministrationZone);
 
 	// TODO: this should try to use IFileOperation first too
@@ -54,11 +57,11 @@ bool File::Copy(const std::wstring& from, const std::wstring& to, bool silent) {
 	return SHFileOperation(&op) == 0;
 }
 
-void File::DeleteFiles(const std::wstring& dir, const std::wstring& pattern) {
+void File::DeleteFiles(const String& dir, const String& pattern) {
 	ZoneEntry ze(Zones::LocalFileAdministrationZone);
 
 	if(dir.size()>0) {
-		std::wstring wc = dir + L"\\" + pattern;
+		String wc = dir + L"\\" + pattern;
 		// Empty the cache
 		SHFILEOPSTRUCT shop;
 		shop.hwnd = 0L;
@@ -73,7 +76,7 @@ void File::DeleteFiles(const std::wstring& dir, const std::wstring& pattern) {
 	}
 }
 
-Bytes File::GetFileSize(const std::wstring& filePath) {
+Bytes File::GetFileSize(const String& filePath) {
 	ZoneEntry ze(Zones::LocalFileInfoZone);
 
 	HANDLE file = CreateFile(filePath.c_str(), GENERIC_READ, FILE_SHARE_READ|FILE_SHARE_WRITE, NULL, OPEN_EXISTING, NULL, NULL);
@@ -87,10 +90,10 @@ Bytes File::GetFileSize(const std::wstring& filePath) {
 	return -1;
 }
 
-Bytes File::GetDirectorySize(const std::wstring& dirPath) {
+Bytes File::GetDirectorySize(const String& dirPath) {
 	ZoneEntry ze(Zones::LocalFileInfoZone);
 	WIN32_FIND_DATA fd;
-	std::wstring searchPath = dirPath+L"*";
+	String searchPath = dirPath+L"*";
 	HANDLE search = FindFirstFile(searchPath.c_str(), &fd);
 
 	if(search==INVALID_HANDLE_VALUE) {
@@ -104,7 +107,7 @@ Bytes File::GetDirectorySize(const std::wstring& dirPath) {
 	do {
 		if((fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)!=0 && fd.cFileName[0]!=L'.') {
 			// calculate directory size
-			std::wstring subDirPath = dirPath + fd.cFileName + L"\\";
+			String subDirPath = dirPath + fd.cFileName + L"\\";
 			Bytes dirSize = GetDirectorySize(subDirPath);
 			totalSize.QuadPart += dirSize;
 		}

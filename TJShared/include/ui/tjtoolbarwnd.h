@@ -5,14 +5,14 @@ namespace tj {
 	namespace shared {
 		class EXPORTED ToolbarItem: public Element {
 			public:
-				ToolbarItem(int command=0, graphics::Bitmap* bmp=0, const std::wstring& text = L"", bool separator = false);
-				ToolbarItem(int command, const ResourceIdentifier& icon, const std::wstring& text = L"", bool separator = false);
+				ToolbarItem(int command=0, graphics::Bitmap* bmp=0, const String& text = L"", bool separator = false);
+				ToolbarItem(int command, const ResourceIdentifier& icon, const String& text = L"", bool separator = false);
 				~ToolbarItem();
 				bool IsSeparator() const;
 				void SetSeparator(bool s);
 				virtual int GetCommand() const;
 				virtual Icon& GetIcon();
-				virtual std::wstring GetText() const;
+				virtual String GetText() const;
 				void SetEnabled(bool e);
 				bool IsEnabled() const;
 				void SetActive(bool e);
@@ -32,7 +32,7 @@ namespace tj {
 				bool _separator;
 				bool _enabled;
 				bool _active;
-				std::wstring _text;
+				String _text;
 				Pixels _preferredWidth, _preferredHeight;
 		};
 
@@ -77,7 +77,7 @@ namespace tj {
 
 		class EXPORTED StateToolbarItem: public ToolbarItem {
 			public:
-				StateToolbarItem(int command, const std::wstring& icon, const std::wstring& text = L"");
+				StateToolbarItem(int command, const String& icon, const String& text = L"");
 				virtual ~StateToolbarItem();
 				virtual void SetState(bool on);
 				bool IsOn() const;
@@ -97,13 +97,13 @@ namespace tj {
 
 			protected:
 				virtual void SetSearchBoxRightMargin(Pixels r);
-				virtual void OnSearchChange(const std::wstring& q);
+				virtual void OnSearchChange(const String& q);
 				virtual void OnCreated();
 				Area GetSearchBoxArea() const;
 				bool IsSearchBoxVisible() const;
 				virtual void SetSearchBoxSize(Pixels w, Pixels h);
-				virtual void SetSearchBoxHint(const std::wstring& txt);
-				virtual void SetSearchBoxText(const std::wstring& txt);
+				virtual void SetSearchBoxHint(const String& txt);
+				virtual void SetSearchBoxText(const String& txt);
 				virtual bool CanShowHints();
 
 			private:
@@ -133,7 +133,7 @@ namespace tj {
 
 		class EXPORTED LogoToolbarItem: public ToolbarItem {
 			public:
-				LogoToolbarItem(const std::wstring& iconRid, Pixels width, int cmd = 0);
+				LogoToolbarItem(const String& iconRid, Pixels width, int cmd = 0);
 				LogoToolbarItem(const Icon& icon, Pixels width, int cmd = 0);
 				virtual ~LogoToolbarItem();
 

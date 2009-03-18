@@ -38,7 +38,7 @@ namespace tj {
 					_IconLast,
 				};
 
-				static std::wstring GetIconPath(IconIdentifier i);
+				static String GetIconPath(IconIdentifier i);
 
 			protected:
 				static const wchar_t* _paths[_IconLast];
@@ -48,7 +48,7 @@ namespace tj {
 			public:
 				Theme(float dpi);
 				virtual ~Theme();
-				virtual std::wstring GetName() const;
+				virtual String GetName() const;
 
 				enum Measure {
 					MeasureNone = 0,
@@ -129,8 +129,8 @@ namespace tj {
 				virtual graphics::Font* GetGUIFontBold() const;
 				virtual graphics::Font* GetLinkFont() const;
 				virtual graphics::Font* GetGUIFontSmall() const;
-				virtual Area MeasureText(const std::wstring& text, graphics::Font* font) const;
-				virtual std::wstring GetGUIFontName() const;
+				virtual Area MeasureText(const String& text, graphics::Font* font) const;
+				virtual String GetGUIFontName() const;
 
 				// Cursors
 				virtual HCURSOR GetGrabCursor() const;

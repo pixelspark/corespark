@@ -16,7 +16,7 @@ namespace tj {
 
 			Direction _direction;
 			weak<GraphItem> _to;
-			std::wstring _text;
+			String _text;
 		};
 
 		class EXPORTED GraphItem: public virtual Object {
@@ -29,13 +29,13 @@ namespace tj {
 				virtual void SetSelected(bool t);
 				virtual void Hide(bool h);
 				bool IsHidden() const;
-				virtual std::wstring GetText() = 0;
+				virtual String GetText() = 0;
 
 				virtual Area& GetArea();
 				virtual void SetPosition(Pixels x, Pixels y);
 				virtual void SetSize(Pixels x, Pixels y);
 				virtual void Paint(graphics::Graphics& g, strong<Theme> theme) = 0;
-				virtual void AddArrow(ref<GraphItem> to, GraphArrow::Direction dir, const std::wstring& text);
+				virtual void AddArrow(ref<GraphItem> to, GraphArrow::Direction dir, const String& text);
 				virtual void OnMouse(MouseEvent e, Pixels x, Pixels y, ref<GraphWnd> gw);
 				virtual void OnContextMenu(Pixels x, Pixels y, ref<GraphWnd> gw);
 				virtual void OnKey(Key k, wchar_t key, bool down, bool isAccelerator, ref<GraphWnd> gw);
@@ -54,13 +54,13 @@ namespace tj {
 			public:
 				SimpleGraphItem();
 				virtual ~SimpleGraphItem();
-				virtual void SetText(const std::wstring& t);
+				virtual void SetText(const String& t);
 				virtual void SetColor(const graphics::Color& c);
-				virtual std::wstring GetText() const;
+				virtual String GetText() const;
 				virtual void Paint(graphics::Graphics& g, strong<Theme> theme);
 
 			protected:
-				std::wstring _text;
+				String _text;
 				graphics::Color _color;
 		};
 

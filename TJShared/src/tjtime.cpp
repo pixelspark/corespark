@@ -3,7 +3,7 @@
 using namespace tj::shared;
 
 /* Date */
-std::wstring Date::GetFriendlyMonthName(Month m) {
+String Date::GetFriendlyMonthName(Month m) {
 	static const wchar_t* localeKeys[12] = {L"month_january", L"month_february", L"month_march", 
 											L"month_april", L"month_may", L"month_june", L"month_july",
 											L"month_august", L"month_september", L"month_october",
@@ -15,14 +15,10 @@ std::wstring Date::GetFriendlyMonthName(Month m) {
 	return L"";
 }
 
-std::wstring Date::GetFriendlyDayName(DayOfWeek m) {
+String Date::GetFriendlyDayName(DayOfWeek m) {
 	static const wchar_t* localeKeys[7] = {L"day_monday", L"day_tuesday", L"day_wednesday", L"day_thursday", 
 											L"day_friday", L"day_saturday", L"day_sunday"};
-
-	if(m >= 0 && m <= 6) {
-		return Language::Get(localeKeys[m]);
-	}
-	return L"";
+	return Language::Get(localeKeys[m]);
 }
 
 Date::Date() {
@@ -59,11 +55,11 @@ Hours Date::GetHours() const {
 	return (Hours)_time.wHour;
 }
 
-std::wstring Date::ToFriendlyString() const {
+String Date::ToFriendlyString() const {
 	wchar_t time[255];
 	memset(time, 0, sizeof(wchar_t)*255);
 	GetTimeFormat(LOCALE_USER_DEFAULT, 0, &_time, NULL, time, 253);
-	return std::wstring(time);
+	return String(time);
 }
 
 /* Timestamp */
@@ -90,11 +86,11 @@ void Timestamp::Now() {
 	}
 }
 
-std::wstring Timestamp::ToString() const {
+String Timestamp::ToString() const {
 	return Stringify(ToMicroSeconds());
 }
 
-std::wstring Timestamp::ToHexString() const {
+String Timestamp::ToHexString() const {
 	return StringifyHex(ToMicroSeconds());
 }
 

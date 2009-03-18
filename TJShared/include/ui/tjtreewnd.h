@@ -39,12 +39,12 @@ namespace tj {
 
 		class EXPORTED SimpleTreeNode: public TreeNode {
 			public:
-				SimpleTreeNode(const std::wstring& text = L"");
+				SimpleTreeNode(const String& text = L"");
 				virtual ~SimpleTreeNode();
 				virtual bool IsExpandable() const;
 				virtual Pixels GetHeight(bool recursive) const;
 				virtual void SetHeight(Pixels c);
-				virtual void SetText(const std::wstring& text);
+				virtual void SetText(const String& text);
 				virtual void Add(strong<TreeNode> child);
 				virtual void Paint(graphics::Graphics& g, ref<Theme> theme, const Area& row, const TreeColumnInfo& ci);
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
@@ -54,7 +54,7 @@ namespace tj {
 			protected:
 				std::deque< strong<TreeNode> > _children;
 				Pixels _height;
-				std::wstring _text;
+				String _text;
 		};
 
 		class EXPORTED TreeWnd: public GridWnd {

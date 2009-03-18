@@ -5,17 +5,17 @@ namespace tj {
 	namespace shared {
 		class EXPORTED File {
 			public:
-				static std::wstring GetDirectory(const std::wstring& pathToFile);
-				static std::wstring GetFileName(const std::wstring& pathToFile);
-				static std::wstring GetExtension(const std::wstring& pathToFile);
+				static String GetDirectory(const String& pathToFile);
+				static String GetFileName(const String& pathToFile);
+				static String GetExtension(const String& pathToFile);
 
-				static bool Exists(const std::wstring& path);
-				static Bytes GetDirectorySize(const std::wstring& dirPath);
-				static Bytes GetFileSize(const std::wstring& filePath);
-				static void DeleteFiles(const std::wstring& dir, const std::wstring& pattern);
+				static bool Exists(const String& path);
+				static Bytes GetDirectorySize(const String& dirPath);
+				static Bytes GetFileSize(const String& filePath);
+				static void DeleteFiles(const String& dir, const String& pattern);
 				
-				static bool Move(const std::wstring& from, const std::wstring& to, bool silent = true);
-				static bool Copy(const std::wstring& from, const std::wstring& to, bool silent = true);
+				static bool Move(const String& from, const String& to, bool silent = true);
+				static bool Copy(const String& from, const String& to, bool silent = true);
 
 				static const wchar_t PathSeparator = L'\\';
 		};

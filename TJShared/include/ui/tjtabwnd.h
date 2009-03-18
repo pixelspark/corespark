@@ -26,7 +26,7 @@ namespace tj {
 			};
 
 			public:
-				TabWnd(ref<WindowManager> root, const std::wstring& id = L"");
+				TabWnd(ref<WindowManager> root, const String& id = L"");
 				virtual ~TabWnd();
 				
 				ref<Pane> AddPane(ref<Pane> pane, bool select = false);
@@ -40,7 +40,7 @@ namespace tj {
 				virtual void Paint(graphics::Graphics& g, strong<Theme> theme);
 				void SetChildStyle(bool c);
 				
-				void Rename(ref<Wnd> pane, std::wstring name);
+				void Rename(ref<Wnd> pane, String name);
 				ref<Wnd> GetCurrentPane();
 				ref<Pane> GetPaneAt(Pixels x);
 				void Detach(ref<Pane> p);
@@ -49,9 +49,9 @@ namespace tj {
 				void SetDetachAttachAllowed(bool allow);
 				void SelectPane(ref<Pane> pane);
 				virtual void Add(ref<Wnd> child); // do not use; use AddPane instead
-				const std::wstring& GetID() const;
+				const String& GetID() const;
 				Placement GetPlacement() const;
-				virtual std::wstring GetTabTitle() const;
+				virtual String GetTabTitle() const;
 				virtual ref<Icon> GetTabIcon() const;
 			
 			protected:
@@ -85,7 +85,7 @@ namespace tj {
 				bool _detachAttachAllowed;
 				bool _childStyle;
 				bool _in;
-				std::wstring _id;
+				String _id;
 				Animation _entryAnimation;
 				Animation _tabAppearAnimation;
 

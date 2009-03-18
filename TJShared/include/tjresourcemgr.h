@@ -4,7 +4,7 @@
 namespace tj {
 	namespace shared {
 		class RootWnd;
-		typedef std::wstring ResourceIdentifier;
+		typedef String ResourceIdentifier;
 
 		/** Represents a resource **/
 		class EXPORTED Resource {
@@ -24,20 +24,20 @@ namespace tj {
 			public:
 				virtual ~ResourceProvider();
 				virtual ref<Resource> GetResource(const ResourceIdentifier& rid) = 0;
-				virtual bool GetPathToLocalResource(const ResourceIdentifier& rid, std::wstring& path);
-				virtual ResourceIdentifier GetRelative(const std::wstring& path) = 0;
+				virtual bool GetPathToLocalResource(const ResourceIdentifier& rid, String& path);
+				virtual ResourceIdentifier GetRelative(const String& path) = 0;
 		};
 
 		class EXPORTED LocalFileResourceProvider: public ResourceProvider {
 			public:
-				LocalFileResourceProvider(const std::wstring& searchPath);
+				LocalFileResourceProvider(const String& searchPath);
 				virtual ~LocalFileResourceProvider();
 				virtual ref<Resource> GetResource(const ResourceIdentifier& rid);
-				virtual bool GetPathToLocalResource(const ResourceIdentifier& rid, std::wstring& path);
-				virtual ResourceIdentifier GetRelative(const std::wstring& path);
+				virtual bool GetPathToLocalResource(const ResourceIdentifier& rid, String& path);
+				virtual ResourceIdentifier GetRelative(const String& path);
 
 			protected:
-				std::wstring _searchPath;
+				String _searchPath;
 		};
 
 		class EXPORTED AbsoluteLocalFileResourceProvider: public ResourceProvider {
@@ -45,8 +45,8 @@ namespace tj {
 				AbsoluteLocalFileResourceProvider();
 				virtual ~AbsoluteLocalFileResourceProvider();
 				virtual ref<Resource> GetResource(const ResourceIdentifier& rid);
-				virtual bool GetPathToLocalResource(const ResourceIdentifier& rid, std::wstring& path);
-				virtual ResourceIdentifier GetRelative(const std::wstring& path);
+				virtual bool GetPathToLocalResource(const ResourceIdentifier& rid, String& path);
+				virtual ResourceIdentifier GetRelative(const String& path);
 		};
 
 		/** The ResourceManager class maps between ResourceIdentifiers and paths. A resource identifier is an identifier
@@ -59,9 +59,9 @@ namespace tj {
 				static strong<ResourceManager> Instance();
 
 				/** Returns a full path to the specified resource.**/
-				virtual bool GetPathToLocalResource(const ResourceIdentifier& identifier, std::wstring& path);
+				virtual bool GetPathToLocalResource(const ResourceIdentifier& identifier, String& path);
 				virtual ref<Resource> GetResource(const ResourceIdentifier& rid);
-				virtual ResourceIdentifier GetRelative(const std::wstring& path);
+				virtual ResourceIdentifier GetRelative(const String& path);
 				
 				virtual void AddProvider(strong<ResourceProvider> rp, bool upFront = false);
 				virtual void RemoveProvider(strong<ResourceProvider> rp);
@@ -84,13 +84,13 @@ namespace tj {
 		/** Represents a resource on the local filesystem **/
 		class EXPORTED LocalFileResource: public Resource {
 			public:
-				LocalFileResource(const ResourceIdentifier& rid, const std::wstring& path);
+				LocalFileResource(const ResourceIdentifier& rid, const String& path);
 				virtual ~LocalFileResource();
-				std::wstring GetPath() const;
+				String GetPath() const;
 				
 				virtual bool Exists() const;
 				virtual bool IsScript() const;
-				virtual std::wstring GetExtension() const;
+				virtual String GetExtension() const;
 				virtual void Open() const;
 				virtual void OpenFolder() const;
 				virtual Bytes GetSize();
@@ -99,7 +99,7 @@ namespace tj {
 		
 			protected:
 				ResourceIdentifier _rid;
-				std::wstring _path;
+				String _path;
 				Bytes _cachedSize;
 		};
 	}
