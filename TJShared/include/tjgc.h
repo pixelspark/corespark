@@ -12,7 +12,7 @@ namespace tj {
 				static inline void SetObjectPointer(...) {
 				}
 				
-				static inline void SetObjectPointer(Object* object, intern::Resource* rs) {
+				static inline void SetObjectPointer(tj::shared::Object* object, tj::shared::intern::Resource* rs) {
 					/** There is potential danger here: when SetObjectPointer is called, rs->_referenceCount == 0.
 					When a reference is created in OnCreated (which is likely!) and then destroyed, it will see 
 					a reference count of 0 and will delete the object. So then, we probably return some bad memory...

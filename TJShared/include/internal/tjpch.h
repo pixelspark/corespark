@@ -44,8 +44,10 @@
 #include "../../../Libraries/tinyxml.h"
 
 #ifdef TJSHARED_EXPORTS 
-	#ifdef TJ_OS_MAC
+	#ifdef TJ_OS_WIN
 		#define EXPORTED __declspec(dllexport)
+	#else
+		#define EXPORTED
 	#endif
 #else
 	#define EXPORTED
@@ -57,13 +59,7 @@
 
 namespace tj {
 	namespace shared {
-		#ifdef TJ_OS_WIN
-			typedef std::wstring String;
-		#endif
-		
-		#ifdef TJ_OS_MAC
-			typedef std::wstring String;
-		#endif
+		typedef std::wstring String;
 		
 		#ifdef TJ_OS_MAC
 			template<typename T> inline T& min(T& a, T& b) {
@@ -84,5 +80,5 @@ namespace tj {
 		#endif
 	}
 }
-
 #endif
+

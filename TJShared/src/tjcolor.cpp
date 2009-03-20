@@ -46,12 +46,12 @@ HSVColor ColorSpaces::RGBToHSV(double r, double g, double b) {
 		h = 0.0;
 	} 
 	else {
-		s = delta / max;
+		s = delta / dmax;
 		if(r == dmax) {
 			// Between Yellow and Magenta
 			h = (g - b) / delta;
 		} 
-		else if(g == max) {
+		else if(g == dmax) {
 			// Between Cyan and Yellow
 			h = 2 + (b - r) / delta;
 		} 

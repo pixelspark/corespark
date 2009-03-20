@@ -95,15 +95,17 @@ namespace tj {
 
 					inline long DeleteReference() {
 						#ifdef TJ_OS_WIN
-							ReferenceCount old = _InterlockedDecrement(&_referenceCount);
+							ReferenceCount nv = _InterlockedDecrement(&_referenceCount);
 						#endif
 						
 						#ifdef TJ_OS_MAC
-							ReferenceCount old = OSAtomicAdd32(-1, &_referenceCount) ;
+							ReferenceCount nv = OSAtomicAdd32(-1, &_referenceCount) ;
 						#endif
-						
-						if(old==0 && !IsWeaklyReferenced()) delete this;
-						return old;
+
+						if(nv==0 && !IsWeaklyReferenced()) {
+							delete this;
+						}
+						return nv;
 					}
 
 					inline void AddWeakReference() {
@@ -118,13 +120,14 @@ namespace tj {
 
 					inline void DeleteWeakReference() {
 						#ifdef TJ_OS_WIN
-							ReferenceCount old = _InterlockedDecrement(&_referenceCount);
+							ReferenceCount nv = _InterlockedDecrement(&_weakReferenceCount);
 						#endif
 												
 						#ifdef TJ_OS_MAC
-							ReferenceCount old = OSAtomicAdd32(-1, &_referenceCount) ;
-						#endif		
-						if(old==0 && !IsReferenced()) {
+							ReferenceCount nv = OSAtomicAdd32(-1, &_weakReferenceCount) ;
+						#endif
+
+						if(nv==0 && !IsReferenced()) {
 							delete this;	
 						}
 					}
@@ -203,13 +206,10 @@ namespace tj {
 						/* This exception can be thrown for two reasons:
 						* The object wasn't allocated with GC::Hold
 						* The objects tries to create a ref<T> from its constructor (in that case, _resource isn't set yet) */
-						if(object->_resource==0) {
-							throw BadReferenceException();
-						}
-
 						_object = dynamic_cast<T*>(object);
 						if(_object==0) throw BadCastException();
 						_resource = object->_resource;
+
 						if(_resource==0) throw BadReferenceException();
 						if(!_resource->IsReferenced()) throw BadReferenceException();
 
