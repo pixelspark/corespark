@@ -394,7 +394,9 @@ namespace tj {
 	}
 
 	std::ostream& operator<< (std::ostream& out, const TiXmlNode& doc) {
-		doc.StreamOut(&out);
+		TiXmlPrinter printer;
+		doc.Accept(&printer);
+		out << printer.Str();
 		return out;
 	}
 

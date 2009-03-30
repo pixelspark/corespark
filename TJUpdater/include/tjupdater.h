@@ -10,7 +10,7 @@
 #include <map>
 #include <deque>
 #include <winhttp.h>
-#include "../../Libraries/tinyxml.h" 
+#include "../../Libraries/tinyxml/tinyxml.h" 
 
 #include "tjupdaterutil.h"
 #include "tjupdaterhttp.h"

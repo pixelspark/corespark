@@ -133,7 +133,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="$(SolutionDir)\Libraries\tinyxml.lib winhttp.lib comctl32.lib iphlpapi.lib shlwapi.lib"
+				AdditionalDependencies="$(SolutionDir)/Libraries/tinyxml/build/release/tinyxml.lib winhttp.lib comctl32.lib iphlpapi.lib shlwapi.lib"
 				OutputFile="$(SolutionDir)\Release\tjupdater.exe"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"

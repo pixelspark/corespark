@@ -41,7 +41,7 @@
 #include <deque>
 #include <math.h>
 
-#include "../../../Libraries/tinyxml.h"
+#include "../../../Libraries/TinyXML/tinyxml.h"
 
 #ifdef TJSHARED_EXPORTS 
 	#ifdef TJ_OS_WIN

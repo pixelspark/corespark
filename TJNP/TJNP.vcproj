@@ -60,6 +60,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="$(SolutionDir)/Libraries/tinyxml/build/debug/tinyxmld.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -135,7 +136,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="$(SolutionDir)/Release/tjshared.lib ws2_32.lib $(SolutionDir)/Libraries/tinyxml.lib"
+				AdditionalDependencies="$(SolutionDir)/Release/tjshared.lib ws2_32.lib $(SolutionDir)/Libraries/tinyxml/build/release/tinyxml.lib"
 				OutputFile="$(SolutionDir)\Release\TJNP.dll"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"

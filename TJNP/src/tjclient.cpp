@@ -1,5 +1,5 @@
 #include "../include/tjnp.h"
-#include "../../Libraries/tinyxml.h"
+#include "../../Libraries/TinyXML/tinyxml.h"
 #include <time.h>
 #include <sstream>
 #include <ws2tcpip.h>
