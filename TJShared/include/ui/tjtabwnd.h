@@ -55,7 +55,13 @@ namespace tj {
 				virtual ref<Icon> GetTabIcon() const;
 			
 			protected:
-				virtual LRESULT PreMessage(UINT msg, WPARAM wp, LPARAM lp);
+				#ifdef TJ_OS_WIN
+					virtual LRESULT PreMessage(UINT msg, WPARAM wp, LPARAM lp);
+					virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
+				#else
+					#warning Needs Message implementation on non-Windows
+				#endif
+
 				virtual void OnSize(const Area& ns);
 				virtual void OnKey(Key k, wchar_t t, bool down, bool isAccelerator);
 				virtual void OnFocus(bool focus);

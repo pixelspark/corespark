@@ -169,8 +169,10 @@ String SettingsStorage::GetSettingsPath(const String& vendor, const String& app,
 
 		return Wcs(std::string(buffer) + suffix + Mbs(file) + ".xml");
 	#endif
-	
+
+			
 	#ifdef TJ_OS_MAC
 		#error Not implemented
-	#error
+	#endif
 }
+

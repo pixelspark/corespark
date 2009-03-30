@@ -6,7 +6,7 @@
 	#define TJ_OS_MAC
 #endif
 
-#ifdef WIN32
+#ifdef _MSC_VER
 	#define TJ_OS_WIN
 #endif
 
