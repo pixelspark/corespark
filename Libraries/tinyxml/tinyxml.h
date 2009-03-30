@@ -22,9 +22,12 @@ must not be misrepresented as being the original software.
 distribution.
 */
 
-
 #ifndef TINYXML_INCLUDED
 #define TINYXML_INCLUDED
+
+#ifndef TIXML_USE_STL
+	#define TIXML_USE_STL
+#endif
 
 #ifdef _MSC_VER
 #pragma warning( push )
@@ -41,6 +44,12 @@ distribution.
 // Help out windows:
 #if defined( _DEBUG ) && !defined( DEBUG )
 #define DEBUG
+#endif
+
+#ifdef TIXML_EXPORTS
+	#define TIXML_EXPORTED __declspec(dllexport)
+#else
+	#define TIXML_EXPORTED __declspec(dllimport)
 #endif
 
 #ifdef TIXML_USE_STL
@@ -82,14 +91,14 @@ distribution.
 	#endif
 #endif	
 
-class TiXmlDocument;
-class TiXmlElement;
-class TiXmlComment;
-class TiXmlUnknown;
-class TiXmlAttribute;
-class TiXmlText;
-class TiXmlDeclaration;
-class TiXmlParsingData;
+class TIXML_EXPORTED TiXmlDocument;
+class TIXML_EXPORTED TiXmlElement;
+class TIXML_EXPORTED TiXmlComment;
+class TIXML_EXPORTED TiXmlUnknown;
+class TIXML_EXPORTED TiXmlAttribute;
+class TIXML_EXPORTED TiXmlText;
+class TIXML_EXPORTED TiXmlDeclaration;
+class TIXML_EXPORTED TiXmlParsingData;
 
 const int TIXML_MAJOR_VERSION = 2;
 const int TIXML_MINOR_VERSION = 5;
@@ -98,7 +107,7 @@ const int TIXML_PATCH_VERSION = 3;
 /*	Internal structure for tracking location of items 
 	in the XML file.
 */
-struct TiXmlCursor
+struct TIXML_EXPORTED TiXmlCursor
 {
 	TiXmlCursor()		{ Clear(); }
 	void Clear()		{ row = col = -1; }
@@ -126,7 +135,7 @@ struct TiXmlCursor
 
 	@sa TiXmlNode::Accept()
 */
-class TiXmlVisitor
+class TIXML_EXPORTED TiXmlVisitor
 {
 public:
 	virtual ~TiXmlVisitor() {}
@@ -192,11 +201,11 @@ const TiXmlEncoding TIXML_DEFAULT_ENCODING = TIXML_ENCODING_UNKNOWN;
 	A Decleration contains: Attributes (not on tree)
 	@endverbatim
 */
-class TiXmlBase
+class TIXML_EXPORTED TiXmlBase
 {
-	friend class TiXmlNode;
-	friend class TiXmlElement;
-	friend class TiXmlDocument;
+	friend class TIXML_EXPORTED TiXmlNode;
+	friend class TIXML_EXPORTED TiXmlElement;
+	friend class TIXML_EXPORTED TiXmlDocument;
 
 public:
 	TiXmlBase()	:	userData(0)		{}
@@ -421,10 +430,10 @@ private:
 	in a document, or stand on its own. The type of a TiXmlNode
 	can be queried, and it can be cast to its more defined type.
 */
-class TiXmlNode : public TiXmlBase
+class TIXML_EXPORTED TiXmlNode : public TiXmlBase
 {
-	friend class TiXmlDocument;
-	friend class TiXmlElement;
+	friend class TIXML_EXPORTED TiXmlDocument;
+	friend class TIXML_EXPORTED TiXmlElement;
 
 public:
 	#ifdef TIXML_USE_STL	
@@ -777,9 +786,9 @@ private:
 		  part of the tinyXML document object model. There are other
 		  suggested ways to look at this problem.
 */
-class TiXmlAttribute : public TiXmlBase
+class TIXML_EXPORTED TiXmlAttribute : public TiXmlBase
 {
-	friend class TiXmlAttributeSet;
+	friend class TIXML_EXPORTED TiXmlAttributeSet;
 
 public:
 	/// Construct an empty attribute.
@@ -901,7 +910,7 @@ private:
 		- I like circular lists
 		- it demonstrates some independence from the (typical) doubly linked list.
 */
-class TiXmlAttributeSet
+class TIXML_EXPORTED TiXmlAttributeSet
 {
 public:
 	TiXmlAttributeSet();
@@ -941,7 +950,7 @@ private:
 	and can contain other elements, text, comments, and unknowns.
 	Elements also contain an arbitrary number of attributes.
 */
-class TiXmlElement : public TiXmlNode
+class TIXML_EXPORTED TiXmlElement : public TiXmlNode
 {
 public:
 	/// Construct an element.
@@ -1151,7 +1160,7 @@ private:
 
 /**	An XML comment.
 */
-class TiXmlComment : public TiXmlNode
+class TIXML_EXPORTED TiXmlComment : public TiXmlNode
 {
 public:
 	/// Constructs an empty comment.
@@ -1201,9 +1210,9 @@ private:
 	you generally want to leave it alone, but you can change the output mode with 
 	SetCDATA() and query it with CDATA().
 */
-class TiXmlText : public TiXmlNode
+class TIXML_EXPORTED TiXmlText : public TiXmlNode
 {
-	friend class TiXmlElement;
+	friend class TIXML_EXPORTED TiXmlElement;
 public:
 	/** Constructor for text element. By default, it is treated as 
 		normal, encoded text. If you want it be output as a CDATA text
@@ -1274,7 +1283,7 @@ private:
 	handled as special cases, not generic attributes, simply
 	because there can only be at most 3 and they are always the same.
 */
-class TiXmlDeclaration : public TiXmlNode
+class TIXML_EXPORTED TiXmlDeclaration : public TiXmlNode
 {
 public:
 	/// Construct an empty declaration.
@@ -1343,7 +1352,7 @@ private:
 
 	DTD tags get thrown into TiXmlUnknowns.
 */
-class TiXmlUnknown : public TiXmlNode
+class TIXML_EXPORTED TiXmlUnknown : public TiXmlNode
 {
 public:
 	TiXmlUnknown() : TiXmlNode( TiXmlNode::UNKNOWN )	{}
@@ -1382,7 +1391,7 @@ private:
 	XML pieces. It can be saved, loaded, and printed to the screen.
 	The 'value' of a document node is the xml file name.
 */
-class TiXmlDocument : public TiXmlNode
+class TIXML_EXPORTED TiXmlDocument : public TiXmlNode
 {
 public:
 	/// Create an empty document, that has no name.
@@ -1631,7 +1640,7 @@ private:
 	}
 	@endverbatim
 */
-class TiXmlHandle
+class TIXML_EXPORTED TiXmlHandle
 {
 public:
 	/// Create a handle from any node (at any depth of the tree.) This can be a null pointer.
@@ -1730,7 +1739,7 @@ private:
 	fprintf( stdout, "%s", printer.CStr() );
 	@endverbatim
 */
-class TiXmlPrinter : public TiXmlVisitor
+class TIXML_EXPORTED TiXmlPrinter : public TiXmlVisitor
 {
 public:
 	TiXmlPrinter() : depth( 0 ), simpleTextPrint( false ),
