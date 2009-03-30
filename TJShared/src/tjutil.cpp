@@ -1,7 +1,15 @@
 #include "../include/tjcore.h"
 #include <math.h>
 #include <iomanip>
-#include <dshow.h>
+
+#ifdef TJ_OS_WIN
+	#include <dshow.h>
+#endif
+
+#ifdef TJ_OS_MAC
+	#include <arpa/inet.h>
+#endif
+
 using namespace tj::shared;
 
 std::set<Copyright*> Copyright::_copyrights;
@@ -65,7 +73,9 @@ Time MediaUtil::GetDuration(const String& file) {
 		return Time(int(dur/10000));
 
 	#else
-		#error Not implemented
+		#warning "MediaUtil::GetDuration is not implemented on Mac"
+		Throw(L"Not implemented on other OS'es than Windows" , ExceptionTypeError);
+															
 	#endif
 }
 
@@ -111,15 +121,43 @@ String Util::RandomIdentifier(wchar_t prefix) {
 }
 
 char* Util::CopyString(const char* str) {
-	char* buf = new char[strlen(str)+1];
-	strcpy_s(buf,strlen(str)+1,str);
-	return buf;
+	#ifdef TJ_OS_WIN
+		char* buf = new char[strlen(str)+1];
+		strcpy_s(buf,strlen(str)+1,str);
+		return buf;
+	#endif
+	
+	#ifdef TJ_OS_MAC
+		return strdup(str);
+	#endif
+}
+
+wchar_t* Util::CopyString(const wchar_t* str) {
+	#ifdef TJ_OS_WIN
+		return _wcsdup(str);
+	#endif
+	
+	#ifdef TJ_OS_MAC
+		size_t size = wcslen(str)+1;
+		wchar_t* buffer = new wchar_t[size];
+		memcpy(buffer, str, size);
+		return buffer;
+	#endif
 }
 
 wchar_t* Util::IntToWide(int x) {
-	wchar_t* str = new wchar_t[33];
-	_itow_s(x,str,33,10);
-	return str;
+	#ifdef TJ_OS_WIN
+		wchar_t* str = new wchar_t[33];
+		_itow_s(x,str,33,10);
+		return str;
+	#endif
+	
+	#ifdef TJ_OS_MAC
+		std::wostringstream wos;
+		wos << x;
+		return CopyString(wos.str().c_str());
+		#warning "Slow implementation on Mac used in Util::IntToWide"
+	#endif
 }
 
 String Util::GetModuleName() {
@@ -129,7 +167,8 @@ String Util::GetModuleName() {
 		GetModuleFileName(mod, mfn, MAX_PATH);
 		return String(mfn);
 	#else
-		#error Not implemented
+		#warning Not correctly implemented on Mac
+		return L"";
 	#endif
 }
 
@@ -183,7 +222,16 @@ namespace tj {
 		}
 
 		template<> int StringTo(const String& s, const int& def) {
-			return _wtoi(s.c_str());
+			#ifdef TJ_OS_WIN
+				return _wtoi(s.c_str());
+			#endif
+			
+			#ifdef TJ_OS_MAC
+				std::wistringstream is(s);
+				int x = def;
+				is >> x;
+				return x;
+			#endif
 		}
 
 		template<> String StringTo(const String& s, const String& def) {
@@ -197,9 +245,17 @@ namespace tj {
 		}
 
 		template<> String Stringify(const int& x) {
-			wchar_t buffer[33];
-			_itow_s(x, buffer, (size_t)16, 10);
-			return String(buffer);
+			#ifdef TJ_OS_WIN
+				wchar_t buffer[33];
+				_itow_s(x, buffer, (size_t)16, 10);
+				return String(buffer);
+			#endif
+			
+			#ifdef TJ_OS_MAC
+				std::wostringstream wos;
+				wos << x;
+				return wos.str();
+			#endif
 		}
 
 		Time::Time(const String& txt) {
@@ -453,7 +509,7 @@ namespace tj {
 #endif
 
 // lists of settings to change
-#ifdef _WIN32
+#ifdef TJ_OS_WIN
 	static UINT dss_getlist[] = {SPI_GETLOWPOWERTIMEOUT, SPI_GETPOWEROFFTIMEOUT, SPI_GETSCREENSAVETIMEOUT};
 	static UINT dss_setlist[] = {SPI_SETLOWPOWERTIMEOUT, SPI_SETPOWEROFFTIMEOUT, SPI_SETSCREENSAVETIMEOUT};
 	static const int dss_listcount = 3;
@@ -478,5 +534,10 @@ namespace tj {
 		delete[] _values;
 	}
 #else
-	#error ScreensaverOff not implemented yet
+ScreensaverOff::ScreensaverOff() {
+	#warning ScreensaverOff not implemented on Mac
+}
+
+ScreensaverOff::~ScreensaverOff() {
+}
 #endif

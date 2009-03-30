@@ -12,7 +12,12 @@ namespace tj {
 				virtual void Update();
 				virtual void OnSize(const Area& ns);
 				virtual void Layout();
-				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
+			
+				#ifdef TJ_OS_WIN
+					virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
+				#else
+					#warning Needs a Message implementation on non-Windows
+				#endif
 
 			protected:
 				void SetFile(const String& file);

@@ -1,19 +1,30 @@
 #include "../include/tjcore.h"
+
+#ifdef TJ_OS_MAC
+	#include <CoreFoundation/CoreFoundation.h>
+#endif
+
 using namespace tj::shared;
 
-volatile long intern::Resource::_resourceCount = 0L;
+volatile ReferenceCount intern::Resource::_resourceCount = 0L;
 
 /* GC */
 void GC::Log(const char* tp, bool allocate) {
-	if(allocate) {
-		OutputDebugString(L"A ");
-	}
-	else {
-		OutputDebugString(L"D ");
-	}
+	#ifdef TJ_OS_WIN
+		if(allocate) {
+				OutputDebugString(L"A ");
+		}
+		else {
+			OutputDebugString(L"D ");
+		}
 
-	OutputDebugStringA(tp);
-	OutputDebugString(L"r\n");
+		OutputDebugStringA(tp);
+		OutputDebugString(L"\r\n");
+	#endif
+	
+	#ifdef TJ_OS_MAC
+		#warning GC::Log not implemented on Mac
+	#endif
 }
 
 /* Endpoint */
@@ -30,11 +41,23 @@ String Endpoint::GetName() const {
 
 /* Resource */
 intern::Resource::Resource(): _referenceCount(0), _weakReferenceCount(0) {
-	InterlockedIncrement(&_resourceCount);
+	#ifdef TJ_OS_WIN
+		InterlockedIncrement(&_resourceCount);
+	#endif
+	
+	#ifdef TJ_OS_MAC
+		OSAtomicAdd32(1, &_resourceCount);
+	#endif
 }
 
 intern::Resource::~Resource() {
-	InterlockedDecrement(&_resourceCount);
+	#ifdef TJ_OS_WIN
+		InterlockedDecrement(&_resourceCount);
+	#endif
+	
+	#ifdef TJ_OS_MAC
+		OSAtomicAdd32(-1, &_resourceCount);
+	#endif
 }
 
 long intern::Resource::GetResourceCount() {

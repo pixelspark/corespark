@@ -63,16 +63,16 @@ namespace tj {
 		template<typename T> class weak;
 		template<typename T> class strong;
 		class GC;
-
-		namespace intern {
-			#ifdef TJ_OS_MAC
+		
+		#ifdef TJ_OS_MAC
 				typedef int32_t ReferenceCount;
-			#endif
-			
-			#ifdef TJ_OS_WIN
+		#endif
+				
+		#ifdef TJ_OS_WIN
 				typedef long ReferenceCount;
-			#endif
-			
+		#endif
+
+		namespace intern {			
 			class EXPORTED Resource {
 				friend class tj::shared::GC;
 

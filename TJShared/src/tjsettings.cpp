@@ -161,10 +161,16 @@ String SettingsStorage::GetValue(const String &key) const {
 - On Windows: %USERPROFILE%\Application Data\TJ\TJShow\file.xml
 - On Unices, this would probably be something like /home/%USER%/.tj/tjshow/file.xml */
 String SettingsStorage::GetSettingsPath(const String& vendor, const String& app, const String& file) {
-	std::string suffix = "\\" + Mbs(vendor) + "\\" + Mbs(app) + "\\";
-	char buffer[MAX_PATH+2];
-	SHGetSpecialFolderPathA(NULL, buffer, CSIDL_APPDATA, TRUE);
-	SHCreateDirectoryExA(NULL, std::string(std::string(buffer)+suffix).c_str(),NULL);
+	#ifdef TJ_OS_WIN
+		std::string suffix = "\\" + Mbs(vendor) + "\\" + Mbs(app) + "\\";
+		char buffer[MAX_PATH+2];
+		SHGetSpecialFolderPathA(NULL, buffer, CSIDL_APPDATA, TRUE);
+		SHCreateDirectoryExA(NULL, std::string(std::string(buffer)+suffix).c_str(),NULL);
 
-	return Wcs(std::string(buffer) + suffix + Mbs(file) + ".xml");
+		return Wcs(std::string(buffer) + suffix + Mbs(file) + ".xml");
+	#endif
+	
+	#ifdef TJ_OS_MAC
+		#error Not implemented
+	#error
 }

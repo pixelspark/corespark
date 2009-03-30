@@ -10,7 +10,11 @@ namespace tj {
 		class EXPORTED RunnableApplication {
 			public:
 				virtual ~RunnableApplication();
-				virtual void Message(MSG& msg) = 0;
+			
+				#ifdef TJ_OS_WIN
+					virtual void Message(MSG& msg) = 0;
+				#endif
+			
 				virtual void AddCommandHistory(ref<Action> action);
 
 				static const int KUndoMemory = 10;
@@ -50,7 +54,10 @@ namespace tj {
 					ResultCancelled = 2,
 				};
 				
-				virtual Result Enter(HWND m, bool isDialog);
+				#ifdef TJ_OS_WIN
+					virtual Result Enter(HWND m, bool isDialog);
+				#endif
+			
 				virtual void End(Result r = ResultUnknown);
 
 			protected:

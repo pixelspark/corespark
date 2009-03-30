@@ -78,7 +78,7 @@ namespace tj {
 							// Fetch text
 							T value = *(_prop._value);
 							String displayText = L"";
-							std::vector<Item>::const_iterator it = _prop._options.begin();
+							typename std::vector<Item>::const_iterator it = _prop._options.begin();
 							while(it!=_prop._options.end()) {
 								const Item& item = *it;
 								if(item._value==value) {
@@ -125,7 +125,7 @@ namespace tj {
 
 							T val = *(_prop._value);
 
-							std::vector<Item>::const_iterator it = _prop._options.begin();
+							typename std::vector<Item>::const_iterator it = _prop._options.begin();
 							int i = 0;
 							while(it!=_prop._options.end()) {
 								const Item& item = *it;

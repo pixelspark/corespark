@@ -39,6 +39,7 @@ namespace tj {
 				static int RandomInt();
 				static String RandomIdentifier(wchar_t prefix);
 				static char* CopyString(const char* str);
+				static wchar_t* CopyString(const wchar_t* str);
 				static wchar_t* IntToWide(int x);
 				static String& StringToLower(String& r);
 				static String GetSizeString(Bytes bytes);

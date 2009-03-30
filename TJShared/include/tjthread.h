@@ -23,9 +23,14 @@ namespace tj {
 				void Leave();
 
 			private:
-				#ifdef _WIN32
+				#ifdef TJ_OS_WIN
 					CRITICAL_SECTION _cs;
 				#endif
+			
+				#ifdef TJ_OS_MAC
+					pthread_mutex_t _cs;
+				#endif
+			
 		};
 
 		class EXPORTED Lockable {
@@ -141,6 +146,9 @@ namespace tj {
 				static long GetThreadCount();
 				static int GetCurrentThreadID();
 				static String GetCurrentThreadName();
+			
+				static volatile ReferenceCount _count;
+
 
 			protected:
 				virtual void Run();
@@ -150,11 +158,12 @@ namespace tj {
 
 				#ifdef _WIN32
 					HANDLE _thread;
+				#else
+					void* _thread;
 				#endif
 				
 				int _id;
 				bool _started;
-				static volatile long _count;
 		};
 
 		class EXPORTED Wait {

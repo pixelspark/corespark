@@ -60,7 +60,13 @@ namespace tj {
 			public:
 				FloatingPane(RootWnd* rw, ref<Pane> pane);
 				virtual ~FloatingPane();
-				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
+			
+				#ifdef TJ_OS_WIN
+					virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
+				#else
+					#warning Needs a Message implementation on non-Windows
+				#endif
+			
 				virtual void Layout();
 				virtual void Paint(graphics::Graphics& g, strong<Theme> theme);
 

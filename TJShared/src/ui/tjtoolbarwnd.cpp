@@ -1,6 +1,11 @@
 #include "../../include/ui/tjui.h" 
 #include <iomanip>
-#include <windowsx.h>
+
+#ifdef TJ_OS_WIN
+	// TODO is this include needed anyway?
+	#include <windowsx.h>
+#endif
+
 using namespace tj::shared::graphics;
 using namespace tj::shared;
 
@@ -598,15 +603,16 @@ TimeToolbarItem::~TimeToolbarItem() {
 void TimeToolbarItem::Paint(graphics::Graphics& g, strong<Theme> theme, bool over, bool down, float alpha) {
 	Area rc = GetClientArea();
 	DrawToolbarButton(g, rc, theme, over, down, IsSeparator(), IsEnabled());
-
-	#ifdef WIN32
+	std::wstring tijd;
+	
+	#ifdef TJ_OS_WIN
 		SYSTEMTIME time;
 		GetLocalTime(&time);
 		std::wostringstream wos;
 
 		wos << std::setfill(L'0') << std::setw(2) << std::setprecision(2) << time.wHour << L":";
 		wos << std::setfill(L'0') << std::setw(2) << std::setprecision(2) << time.wMinute;
-		std::wstring tijd = wos.str();
+		tijd = wos.str();
 	#else
 		#error Not yet implemented
 	#endif

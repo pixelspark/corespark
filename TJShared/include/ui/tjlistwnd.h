@@ -82,7 +82,6 @@ namespace tj {
 				virtual void OnSize(const Area& ns);
 				virtual void OnKey(Key k, wchar_t t, bool down, bool isAccel);
 				virtual void OnScroll(ScrollDirection dir);
-				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
 
 				// other handy stuff
@@ -92,6 +91,12 @@ namespace tj {
 
 				int GetRowIDByHeight(int h);
 				virtual Area GetRowArea(int rid);
+			
+				#ifdef TJ_OS_WIN
+					virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
+				#else
+					#warning Needs a Message implementation on non-Windows
+				#endif
 
 			private:
 				String _emptyText;

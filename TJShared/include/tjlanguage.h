@@ -32,6 +32,13 @@ namespace tj {
 	}
 }
 
-#define TL(id) (tj::shared::Language::Get(String(L#id)))
+#ifdef TJ_OS_WIN
+	#define TL(id) (tj::shared::Language::Get(String(L#id)))
+#endif
+
+#ifdef TJ_OS_MAC
+	#define TL(id) (tj::shared::Wcs(std::string(#id)))
+	#warning TL hack on Mac active
+#endif
 
 #endif

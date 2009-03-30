@@ -17,7 +17,7 @@ Language::~Language() {
 	}
 }
 
-#ifdef _WIN32
+#ifdef TJ_OS_WIN
 	void Language::Translate(HWND wnd) {
 		HMENU menu = GetMenu(wnd);
 		if(menu==INVALID_HANDLE_VALUE) {
@@ -90,28 +90,34 @@ void Language::FindLocales(const String& dir) {
 	ZoneEntry zeb(Zones::LocalFileReadZone);
 	ZoneEntry zec(Zones::ModifyLocaleZone);
 
-	WIN32_FIND_DATAW d;
-	ZeroMemory(&d,sizeof(d));
-	String pathfilter = dir + L"\\*.*";
-	HANDLE hsr = FindFirstFile(pathfilter.c_str(), &d);
+	#ifdef TJ_OS_WIN
+		WIN32_FIND_DATAW d;
+		ZeroMemory(&d,sizeof(d));
+		String pathfilter = dir + L"\\*.*";
+		HANDLE hsr = FindFirstFile(pathfilter.c_str(), &d);
 
-	do {
-		if(hsr==INVALID_HANDLE_VALUE) {
-			continue;
-		}
+		do {
+			if(hsr==INVALID_HANDLE_VALUE) {
+				continue;
+			}
 
-		if(d.cFileName[0]==L'.' || (d.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN)!=0 ||(d.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)==0) {
-			// skip, file is not a directory or it is hidden, or the first character is a '.'
-			// (which indicates the special '.' or '..' directories under Windows and Unix and (under Unix)
-			// hidden files).
-		}
-		else {
-			_availableLocales.push_back(d.cFileName);
-			Log::Write(L"TJShared/Language", L"Locale found: "+String(d.cFileName));
-		}
-	} 
-	while(FindNextFile(hsr, &d));
-	FindClose(hsr);
+			if(d.cFileName[0]==L'.' || (d.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN)!=0 ||(d.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)==0) {
+				// skip, file is not a directory or it is hidden, or the first character is a '.'
+				// (which indicates the special '.' or '..' directories under Windows and Unix and (under Unix)
+				// hidden files).
+			}
+			else {
+				_availableLocales.push_back(d.cFileName);
+				Log::Write(L"TJShared/Language", L"Locale found: "+String(d.cFileName));
+			}
+		} 
+		while(FindNextFile(hsr, &d));
+		FindClose(hsr);
+	#endif
+	
+	#ifdef TJ_OS_MAC
+		#error Not implemented
+	#endif
 }
 
 void Language::LoadDirectory(const String& locdir, const LocaleIdentifier& lang) {
@@ -122,43 +128,49 @@ void Language::LoadDirectory(const String& locdir, const LocaleIdentifier& lang)
 	// Find languages
 	Language::FindLocales(locdir);
 
-	// Find .tjs files in the locale dir
-	String dir = locdir + L'\\' + lang;
+	#ifdef TJ_OS_WIN
+		// Find .tjs files in the locale dir
+		String dir = locdir + L'\\' + lang;
 
-	WIN32_FIND_DATAW d;
-	ZeroMemory(&d,sizeof(d));
+		WIN32_FIND_DATAW d;
+		ZeroMemory(&d,sizeof(d));
 
-	String pathfilter = dir + L"\\*.tjs";
+		String pathfilter = dir + L"\\*.tjs";
 
-	HANDLE hsr = FindFirstFile(pathfilter.c_str(), &d);
-	wchar_t buf[MAX_PATH+1];
+		HANDLE hsr = FindFirstFile(pathfilter.c_str(), &d);
+		wchar_t buf[MAX_PATH+1];
 
-	do {
-		if(hsr==INVALID_HANDLE_VALUE) {
-			continue;
-		}
+		do {
+			if(hsr==INVALID_HANDLE_VALUE) {
+				continue;
+			}
 
-		String naam = dir + L"\\";
-		naam += d.cFileName;
+			String naam = dir + L"\\";
+			naam += d.cFileName;
 
-		if(GetFullPathName(naam.c_str(), MAX_PATH,buf,0)==0) {
-			continue;
-		}
+			if(GetFullPathName(naam.c_str(), MAX_PATH,buf,0)==0) {
+				continue;
+			}
 
-		#ifdef _DEBUG
-			// Only be verbose if we are a debug build
-			Log::Write(L"TJShared/Language/DirLoad" , String(L"Loading language file ")+naam);
-		#endif
-		
-		Load(naam);
-	} 
-	while(FindNextFile(hsr, &d));
-	FindClose(hsr);
+			#ifdef _DEBUG
+				// Only be verbose if we are a debug build
+				Log::Write(L"TJShared/Language/DirLoad" , String(L"Loading language file ")+naam);
+			#endif
+			
+			Load(naam);
+		} 
+		while(FindNextFile(hsr, &d));
+		FindClose(hsr);
+	#endif
+	
+	#ifdef TJ_OS_MAC
+		#error Not implemented
+	#endif
 }
 
 template<typename StringType> std::pair<StringType,StringType> Split (const StringType &inString, const StringType &separator) {
-	std::vector<StringType> returnVector;
-	StringType::size_type end = inString.find(separator, 0);
+	typename std::vector<StringType> returnVector;
+	typename StringType::size_type end = inString.find(separator, 0);
 	return std::pair<StringType,StringType>(inString.substr(0, end), inString.substr(end+1));
 }
 
@@ -187,6 +199,6 @@ void Language::Load(const String& file) {
 		fs.getline(line,1023);
 		
 		std::pair<String, String> items = Split<String>(line, L":");
-		_instance._strings[items.first] = _wcsdup(items.second.c_str());
+		_instance._strings[items.first] = Util::CopyString(items.second.c_str());
 	}
 }

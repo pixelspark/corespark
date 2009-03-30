@@ -53,12 +53,14 @@ namespace tj {
 			LayoutRight,
 			LayoutFill,
 		};
+		
+		class Element;
 
 		class EXPORTED Elements {
 			public:
 				template<class T> static ref<T> GetElementAt(std::vector< ref<T> >& elements, Pixels x, Pixels y) {
-					std::vector< ref<T> >::iterator it = elements.begin();
-					std::vector< ref<T> >::iterator end = elements.end();
+					typename std::vector< ref<T> >::iterator it = elements.begin();
+					typename std::vector< ref<T> >::iterator end = elements.end();
 
 					while(it!=end) {
 						ref<T> element = *it;
@@ -116,7 +118,10 @@ namespace tj {
 			friend class FloatingPane;
 
 			public:
-				Wnd(const wchar_t* title, HWND parent=0, const wchar_t* className=TJ_DEFAULT_CLASS_NAME,  bool useDoubleBuffering=true, int exStyle=0L);
+				#ifdef TJ_OS_WIN
+					Wnd(const wchar_t* title, HWND parent=0, const wchar_t* className=TJ_DEFAULT_CLASS_NAME,  bool useDoubleBuffering=true, int exStyle=0L);
+				#endif
+			
 				virtual ~Wnd();
 				
 				virtual void Show(bool s);
@@ -124,12 +129,7 @@ namespace tj {
 				void Repaint();
 				virtual void Layout();
 				virtual void Update();
-				virtual LRESULT PreMessage(UINT msg, WPARAM wp, LPARAM lp);
 				virtual void SetText(const wchar_t* t);
-				void SetStyle(DWORD style);
-				void SetStyleEx(DWORD style);
-				void UnsetStyle(DWORD style);
-				void UnsetStyleEx(DWORD style);
 
 				// Scrolling
 				void SetHorizontallyScrollable(bool s);
@@ -158,23 +158,34 @@ namespace tj {
 				bool GetWantMouseLeave() const;
 				bool IsMouseOver();
 
-				HWND GetWindow();
-				virtual String GetTabTitle() const;	// return an empty string if you don't want to override Pane's title
-				virtual ref<Icon> GetTabIcon() const;		// should return 0 when you don't want to override the tab icon set in Pane
+				virtual String GetTabTitle() const;		// return an empty string if you don't want to override Pane's title
+				virtual ref<Icon> GetTabIcon() const;	// should return 0 when you don't want to override the tab icon set in Pane
 				virtual void Focus();
 				virtual bool HasFocus(bool childrenToo = false) const;
 				static bool IsKeyDown(Key k);
 				virtual void BringToFront();
 				void SetDropTarget(bool d);
 
-				/* Settings API */
+				// Settings functions
 				void SetSettings(ref<Settings> st);
 				ref<Settings> GetSettings();
 				virtual void Add(ref<Wnd> child, bool visible = true);
+			
+				// Platform stuff
+				#ifdef TJ_OS_WIN
+					virtual LRESULT PreMessage(UINT msg, WPARAM wp, LPARAM lp);
+					void SetStyle(DWORD style);
+					void SetStyleEx(DWORD style);
+					void UnsetStyle(DWORD style);
+					void UnsetStyleEx(DWORD style);
+					HWND GetWindow();
+				#endif
 
 			protected:
-				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
-
+				#ifdef TJ_OS_WIN
+					virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
+				#endif
+			
 				// Messages
 				virtual void Paint(graphics::Graphics& g, strong<Theme> theme) = 0;
 				virtual void OnSize(const Area& newSize);
@@ -201,7 +212,10 @@ namespace tj {
 			private:
 				static void RegisterClasses();
 
-				HWND _wnd;
+				#ifdef TJ_OS_WIN
+					HWND _wnd;
+				#endif
+			
 				graphics::Bitmap* _buffer;
 				bool _doubleBuffered;
 				bool _wantsMouseLeave;
@@ -220,7 +234,13 @@ namespace tj {
 				TopWnd(const wchar_t* title, HWND parent=0, const wchar_t* className=TJ_DEFAULT_CLASS_NAME,  bool useDoubleBuffering=true, int exStyle=0L);
 				virtual ~TopWnd();
 				virtual void SetQuitOnClose(bool t);
-				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
+			
+				#ifdef TJ_OS_WIN
+					virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
+				#else
+					#warning Needs Message implementation on non-Windows
+				#endif
+			
 				virtual void GetMinimumSize(Pixels& w, Pixels& h);
 
 				// Fullscreen support

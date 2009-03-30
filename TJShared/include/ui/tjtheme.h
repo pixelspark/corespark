@@ -133,10 +133,12 @@ namespace tj {
 				virtual String GetGUIFontName() const;
 
 				// Cursors
-				virtual HCURSOR GetGrabCursor() const;
-				virtual HCURSOR GetGrabbedCursor() const;
-				virtual graphics::Brush* GetApplicationBackgroundBrush(HWND root, HWND child) const;
-				
+				#ifdef TJ_OS_WIN
+					virtual HCURSOR GetGrabCursor() const;
+					virtual HCURSOR GetGrabbedCursor() const;
+					virtual graphics::Brush* GetApplicationBackgroundBrush(HWND root, HWND child) const;
+				#endif
+			
 				/* This needs a little explanation. This is the 'scale factor' to convert from 'logical pixels' 
 				(which we define as one pixel on a normal, 96 DPI computer screen) to 'device pixels', which is
 				what you use to paint in Windows. So when you're on a 96 DPI screen, this returns 1.0f. When you're
@@ -165,7 +167,10 @@ namespace tj {
 				mutable graphics::Font* _fontBold;
 				mutable graphics::Font* _fontSmall;
 				mutable graphics::Font* _fontLink;
-				HCURSOR _grab, _grabbed;
+			
+				#ifdef TJ_OS_WIN
+					HCURSOR _grab, _grabbed;
+				#endif
 				float _dpi;
 		};
 	}

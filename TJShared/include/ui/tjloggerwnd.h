@@ -14,8 +14,10 @@ namespace tj {
 				virtual String GetContents();
 
 			protected:
-				HFONT _font;
-				HWND _list;
+				#ifdef TJ_OS_WIN
+					HFONT _font;
+					HWND _list;
+				#endif
 		};
 	}
 }

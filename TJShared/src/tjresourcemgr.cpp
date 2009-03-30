@@ -1,8 +1,12 @@
 #include "../include/tjcore.h"
-#include <shlwapi.h>
-#include <commctrl.h>
-#include <shellapi.h>
-#include <winioctl.h>
+
+#ifdef TJ_OS_WIN
+	#include <shlwapi.h>
+	#include <commctrl.h>
+	#include <shellapi.h>
+	#include <winioctl.h>
+#endif
+
 using namespace tj::shared;
 
 ref<ResourceManager> ResourceManager::_instance;
@@ -73,7 +77,8 @@ bool LocalFileResourceProvider::GetPathToLocalResource(const ResourceIdentifier&
 	String myPath = _searchPath + File::PathSeparator + rid;
 
 	// check if that file exists
-	if(GetFileAttributes(myPath.c_str())!=INVALID_FILE_ATTRIBUTES) {
+	
+	if(File::Exists(myPath)) {
 		path = myPath;
 		return true;
 	}
@@ -208,11 +213,7 @@ void LocalFileResource::Save(TiXmlElement* el) {
 }
 
 bool LocalFileResource::Exists() const {
-	if(GetFileAttributes(_path.c_str())!=INVALID_FILE_ATTRIBUTES) {
-		return true;
-	}
-
-	return false;
+	return File::Exists(_path);
 }
 
 String LocalFileResource::GetExtension() const {

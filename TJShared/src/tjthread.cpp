@@ -1,13 +1,18 @@
 #include "../include/tjcore.h"
 using namespace tj::shared;
 
-volatile long Thread::_count = 0;
+#ifdef TJ_OS_MAC
+	#define TJ_USE_PTHREADS
+#endif
+
+volatile ReferenceCount Thread::_count = 0;
+
 std::map<int, String> Thread::_names;
 CriticalSection Thread::_nameLock;
 
-#ifdef TJ_OS_WIN
-	namespace tj {
-		namespace shared {
+namespace tj {
+	namespace shared {
+		#ifdef TJ_OS_WIN
 			DWORD WINAPI ThreadProc(LPVOID lpParam) {
 				try {
 					InterlockedIncrement(&Thread::_count);
@@ -23,18 +28,46 @@ CriticalSection Thread::_nameLock;
 				InterlockedDecrement(&Thread::_count);
 				return 0;
 			}
-		}
+		#endif
+		
+		#ifdef TJ_USE_PTHREADS
+			void* ThreadProc(void* arg) {
+				try {
+					OSAtomicAdd32(1, &Thread::_count);
+				}
+				catch(...) {
+				}
+				
+				OSAtomicAdd32(-1, &Thread::_count);
+				return NULL;
+			}
+		#endif
 	}
-#endif
+}
+
+
 
 /* Thread */
 Thread::Thread() {
-	_thread = CreateThread(NULL, 4096, ThreadProc, (LPVOID)this, CREATE_SUSPENDED|STACK_SIZE_PARAM_IS_A_RESERVATION, (LPDWORD)&_id);
+	#ifdef TJ_OS_WIN
+		_thread = CreateThread(NULL, 4096, ThreadProc, (LPVOID)this, CREATE_SUSPENDED|STACK_SIZE_PARAM_IS_A_RESERVATION, (LPDWORD)&_id);
+	#endif
+	
+	#ifdef TJ_USE_PTHREADS
+		_thread = 0;
+	#endif
+	
 	_started = false;
 }
 
 Thread::~Thread() {
-	CloseHandle(_thread);
+	#ifdef TJ_OS_WIN
+		CloseHandle(_thread);
+	#endif
+	
+	#ifdef TJ_USE_PTHREADS
+		#error Not implemented
+	#endif
 }
 
 long Thread::GetThreadCount() {
@@ -47,10 +80,12 @@ void Thread::SetName(const String& t) {
 }
 
 int Thread::GetCurrentThreadID() {
-	#ifdef _WIN32
+	#ifdef TJ_OS_WIN
 		return (unsigned int)(::GetCurrentThreadId());
-	#else
-		#error Not implemented
+	#endif
+	
+	#ifdef TJ_USE_PTHREADS
+		return reinterpret_cast<int>(pthread_self());
 	#endif
 }
 
@@ -66,51 +101,65 @@ String Thread::GetCurrentThreadName() {
 }
 
 void Thread::SetPriority(Priority p) {
-	// Convert priority to Win32 priority code
-	int prio = THREAD_PRIORITY_NORMAL;
-	switch(p) {
-		case PriorityAboveNormal:
-		case PriorityHigh:
-			prio = THREAD_PRIORITY_ABOVE_NORMAL;
-			break;
+	#ifdef TJ_OS_WIN
+		// Convert priority to Win32 priority code
+		int prio = THREAD_PRIORITY_NORMAL;
+		switch(p) {
+			case PriorityAboveNormal:
+			case PriorityHigh:
+				prio = THREAD_PRIORITY_ABOVE_NORMAL;
+				break;
 
-		case PriorityIdle:
-			prio = THREAD_PRIORITY_IDLE;
-			break;
+			case PriorityIdle:
+				prio = THREAD_PRIORITY_IDLE;
+				break;
 
-		case PriorityBelowNormal:
-		case PriorityLow:
-			prio = THREAD_PRIORITY_BELOW_NORMAL;
-			break;
+			case PriorityBelowNormal:
+			case PriorityLow:
+				prio = THREAD_PRIORITY_BELOW_NORMAL;
+				break;
 
-		case PriorityTimeCritical:
-			prio = THREAD_PRIORITY_TIME_CRITICAL;
-			break;
+			case PriorityTimeCritical:
+				prio = THREAD_PRIORITY_TIME_CRITICAL;
+				break;
 
-		default:
-		case PriorityNormal:
-			prio = THREAD_PRIORITY_NORMAL;
-	}
+			default:
+			case PriorityNormal:
+				prio = THREAD_PRIORITY_NORMAL;
+		}
 
-	SetThreadPriority(_thread, prio);
+		SetThreadPriority(_thread, prio);
+	#endif
+	
+	#ifdef TJ_USE_PTHREADS
+		#error Not implemented
+	#endif
 }
 
 void Thread::Start() {
-	DWORD code = -1;
-	GetExitCodeThread(_thread, &code);
+	#ifdef TJ_OS_WIN
+		DWORD code = -1;
+		GetExitCodeThread(_thread, &code);
 
-	if(code==STILL_ACTIVE) {
-		// we're running...
-		_started = true;
-		ResumeThread(_thread);
-	}
-	else {
-		// finished correctly, run again
-		CloseHandle(_thread);
-		_thread = CreateThread(NULL, 512, ThreadProc, (LPVOID)this, CREATE_SUSPENDED, (LPDWORD)&_id);
-		_started = true;
-		ResumeThread(_thread);
-	}
+		if(code==STILL_ACTIVE) {
+			// we're running...
+			_started = true;
+			ResumeThread(_thread);
+		}
+		else {
+			// finished correctly, run again
+			CloseHandle(_thread);
+			_thread = CreateThread(NULL, 512, ThreadProc, (LPVOID)this, CREATE_SUSPENDED, (LPDWORD)&_id);
+			_started = true;
+			ResumeThread(_thread);
+		}
+	#endif
+	
+	#ifdef TJ_USE_PTHREADS
+		if(_thread==0) {
+			pthread_create(reinterpret_cast<pthread_t*>(&_thread), NULL, ThreadProc, reinterpret_cast<void*>(this));
+		}
+	#endif
 }
 
 void Thread::WaitForCompletion() {
@@ -119,15 +168,31 @@ void Thread::WaitForCompletion() {
 		return;
 	}
 	
-	if(GetCurrentThread()==_thread) {
-		return; // Cannot wait on yourself
-	}
-
-	WaitForSingleObject(_thread,INFINITE);
+	#ifdef TJ_OS_WIN
+		if(GetCurrentThread()==_thread) {
+			return; // Cannot wait on yourself
+		}
+	
+		WaitForSingleObject(_thread,INFINITE);
+	#endif
+	
+	#ifdef TJ_USE_PTHREADS
+		if(pthread_self()==_thread) {
+			return; // Cannot wait on yourself
+		}
+	
+		pthread_join(*reinterpret_cast<pthread_t*>(_thread), NULL);
+	#endif	
 }
 
 void Thread::Terminate() {
-	TerminateThread(_thread, 0);
+	#ifdef TJ_OS_WIN
+		TerminateThread(_thread, 0);
+	#endif
+	
+	#ifdef TJ_OS_MAC
+		pthread_kill(reinterpret_cast<pthread_t>(_thread), SIGKILL);
+	#endif
 }
 
 int Thread::GetID() const {
@@ -346,33 +411,40 @@ void PeriodicTimer::Start(const Time& period) {
 }
 
 /** CriticalSection **/
-CriticalSection::CriticalSection() {
-	#ifdef _WIN32
+#ifdef TJ_OS_WIN
+	CriticalSection::CriticalSection() {
 		InitializeCriticalSectionAndSpinCount(&_cs, 1024);
-	#endif
-}
+	}
 
-CriticalSection::~CriticalSection() {
-	#ifdef _WIN32
+	CriticalSection::~CriticalSection() {
 		DeleteCriticalSection(&_cs);
-	#endif
-}
+	}
 
-void CriticalSection::Enter() {
-	#ifdef _WIN32
+	void CriticalSection::Enter() {
 		EnterCriticalSection(&_cs);
-	#else
-		#error CriticalSection::Enter not implemented on this platform
-	#endif
-}
+	}
 
-void CriticalSection::Leave() {
-	#ifdef _WIN32
+	void CriticalSection::Leave() {
 		LeaveCriticalSection(&_cs);
-	#else
-		#error CriticalSection::Enter not implemented on this platform
-	#endif
-}
+	}
+#endif
+
+#ifdef TJ_OS_MAC
+	CriticalSection::CriticalSection() {
+		_cs = PTHREAD_MUTEX_INITIALIZER;
+	}
+
+	CriticalSection::~CriticalSection() {
+	}
+
+	void CriticalSection::Enter() {
+		pthread_mutex_lock(&_cs);
+	}
+
+	void CriticalSection::Leave() {
+		pthread_mutex_unlock(&_cs);
+	}
+#endif
 
 /** ThreadLock **/
 ThreadLock::ThreadLock(CriticalSection *cs): _cs(cs) {
