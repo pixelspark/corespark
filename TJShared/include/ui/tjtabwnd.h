@@ -57,15 +57,13 @@ namespace tj {
 			protected:
 				#ifdef TJ_OS_WIN
 					virtual LRESULT PreMessage(UINT msg, WPARAM wp, LPARAM lp);
-					virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
-				#else
-					#warning Needs Message implementation on non-Windows
 				#endif
 
 				virtual void OnSize(const Area& ns);
 				virtual void OnKey(Key k, wchar_t t, bool down, bool isAccelerator);
 				virtual void OnFocus(bool focus);
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
+				virtual void OnMouseWheelMove(WheelDirection wd);
 				virtual void OnTimer(unsigned int id);
 				virtual void ClosePane(ref<Pane> pane);
 				std::vector<TabPane>::iterator GetPaneIteratorAt(Pixels x, Pixels& xOnPane);

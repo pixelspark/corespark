@@ -3,11 +3,15 @@
 
 /** Which platform are we building on? **/
 #ifdef __APPLE__
-	#define TJ_OS_MAC
+	#ifndef TJ_OS_WIN
+		#define TJ_OS_MAC
+	#endif
 #endif
 
 #ifdef _MSC_VER
-	#define TJ_OS_WIN
+	#ifndef TJ_OS_WIN
+		#define TJ_OS_WIN
+	#endif
 #endif
 
 #ifdef TJ_OS_WIN

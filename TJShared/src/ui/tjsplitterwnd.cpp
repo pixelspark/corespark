@@ -303,35 +303,36 @@ std::wstring SplitterWnd::GetTabTitle() const {
 	return title;
 }
 
-LRESULT SplitterWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
-	if(msg==WM_SIZE) {
-		Layout();
-		Repaint();
-	}
-	else if(msg==WM_MOUSEMOVE) {
-		int x = GET_X_LPARAM(lp);
-		int y = GET_Y_LPARAM(lp);
+void SplitterWnd::OnSize(const Area& ns) {
+	Layout();
+	Repaint();
+}
 
+void SplitterWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
+	if(ev==MouseEventMove) {
 		if(_dragging) {
-			RECT rc;
-			GetClientRect(GetWindow(),&rc);
+			Area rc = GetClientArea();
 			if(_orientation==OrientationHorizontal) {
-				_ratio = float(y)/float(rc.bottom-rc.top);
+				_ratio = float(y)/float(rc.GetHeight());
 			}
 			else if(_orientation==OrientationVertical) {
-				_ratio = float(x)/float(rc.right-rc.left);
+				_ratio = float(x)/float(rc.GetWidth());
 			}
 
-			/** UpdateWindow calls the window procedure of _a and _b directly, so the repainting looks
-			more smooth than using the (asynchronous) Repaint, which just does InvalidateRect() which sends
-			a message to the window.
-			
-			See http://msdn2.microsoft.com/en-us/library/ms534874.aspx.
-			**/
 			Layout();
-			UpdateWindow(_a->GetWindow());
-			UpdateWindow(_b->GetWindow());
-			UpdateWindow(GetWindow());
+
+			#ifdef TJ_OS_WIN
+				/** UpdateWindow calls the window procedure of _a and _b directly, so the repainting looks
+				more smooth than using the (asynchronous) Repaint, which just does InvalidateRect() which sends
+				a message to the window. Of course, the windows themselves already call Repaint when necessary
+				from their Layout methods, so this is not really needed.
+				
+				See http://msdn2.microsoft.com/en-us/library/ms534874.aspx.
+				**/
+				UpdateWindow(_a->GetWindow());
+				UpdateWindow(_b->GetWindow());
+				UpdateWindow(GetWindow());
+			#endif
 		}
 		else {
 			if(_collapse==CollapseNone) {
@@ -348,7 +349,7 @@ LRESULT SplitterWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 			}
 		}
 	}
-	else if(msg==WM_LBUTTONDOWN) {
+	else if(ev==MouseEventLDown) {
 		if(_collapse==CollapseNone) {
 			SetCursor(LoadCursor(0,_orientation==OrientationHorizontal?IDC_SIZENS:IDC_SIZEWE));
 			SetCapture(GetWindow());
@@ -357,7 +358,7 @@ LRESULT SplitterWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 			Repaint();
 		}
 	}
-	else if(msg==WM_LBUTTONUP) {
+	else if(ev==MouseEventLUp) {
 		if(_collapse==CollapseNone) {
 			_dragging = false;
 			ReleaseCapture();
@@ -388,14 +389,12 @@ LRESULT SplitterWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 			Collapse(CollapseNone);
 		}
 	}
-	else if(msg==WM_LBUTTONDBLCLK && _collapse==CollapseNone) {
+	else if(ev==MouseEventLDouble && _collapse==CollapseNone) {
 		Collapse(CollapseFirst);
 	}
-	else if(msg==WM_RBUTTONDBLCLK && _collapse==CollapseNone) {
+	else if(ev==MouseEventRDouble && _collapse==CollapseNone) {
 		Collapse(CollapseSecond);
 	}
-
-	return ChildWnd::Message(msg,wp,lp);
 }
 
 void SplitterWnd::Collapse(CollapseMode cm) {

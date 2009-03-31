@@ -122,7 +122,7 @@
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
 				WholeProgramOptimization="true"
-				PreprocessorDefinitions="WIN32;_WINDOWS;_USRDLL;TJSHARED_EXPORTS;TJSHARED_USE_GDIPLUS;NDEBUG"
+				PreprocessorDefinitions="WIN32;_WINDOWS;_USRDLL;TJ_OS_WIN;TJSHARED_EXPORTS;TJSHARED_USE_GDIPLUS;NDEBUG"
 				StringPooling="true"
 				MinimalRebuild="true"
 				RuntimeLibrary="2"
@@ -1087,10 +1087,6 @@
 				>
 				<File
 					RelativePath=".\include\internal\tjpch.h"
-					>
-				</File>
-				<File
-					RelativePath=".\include\internal\tjplatform.h"
 					>
 				</File>
 			</Filter>

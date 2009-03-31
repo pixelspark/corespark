@@ -6,7 +6,7 @@ using namespace tj::shared;
 const float GridWnd::KMinimumColumnWidth = 0.075f;
 
 /** GridWnd **/
-GridWnd::GridWnd(): ChildWnd(L""), _allowResize(true), _draggingCol(-1), _dragStartX(0), _showHeader(true) {
+GridWnd::GridWnd(): _allowResize(true), _draggingCol(-1), _dragStartX(0), _showHeader(true) {
 }
 
 GridWnd::~GridWnd() {
@@ -422,6 +422,21 @@ void ListWnd::OnSize(const Area& ns) {
 	Repaint();
 }
 
+void ListWnd::OnMouseWheelMove(WheelDirection wd) {
+	Area a = GetClientArea();
+	
+	if(a.GetHeight()<(1+GetItemCount())*GetItemHeight()) {
+		if(wd==WheelDirectionDown) {
+			SetVerticalPos(min(int(GetVerticalPos())+10, (1+GetItemCount())*GetItemHeight()-a.GetHeight()));
+		}
+		else {
+			SetVerticalPos(max(int(GetVerticalPos())-10, 0));
+		}
+	}
+
+	OnScroll(ScrollDirectionVertical);
+}
+
 void ListWnd::OnScroll(ScrollDirection dir) {
 	Layout();
 	Repaint();
@@ -437,25 +452,6 @@ void ListWnd::OnKey(Key k, wchar_t t, bool down, bool isAccelerator) {
 	else if(k==KeyDown && down && _selected<(GetItemCount()-1)) {
 		SetSelectedRow(_selected+1);
 	}
-}
-
-LRESULT ListWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
-	if(msg==WM_MOUSEWHEEL) {
-		int delta = GET_WHEEL_DELTA_WPARAM(wp);
-		Area a = GetClientArea();
-		
-		if(a.GetHeight()<(1+GetItemCount())*GetItemHeight()) {
-			if(delta<0) {
-				
-				SetVerticalPos(min(int(GetVerticalPos())+10, (1+GetItemCount())*GetItemHeight()-a.GetHeight()));
-			}
-			else {
-				SetVerticalPos(max(int(GetVerticalPos())-10, 0));
-			}
-		}
-		OnScroll(ScrollDirectionVertical);
-	}
-	return ChildWnd::Message(msg,wp,lp);
 }
 
 void ListWnd::OnFocus(bool f) {

@@ -45,7 +45,7 @@ ref<MenuItem> ContextMenu::DoContextMenuByItem(ref<Wnd> wnd, Pixels x, Pixels y)
 		}
 
 		// Create popup
-		ref<ContextPopupWnd> cpw = GC::Hold(new ContextPopupWnd(_menu, wnd->GetWindow()));
+		ref<ContextPopupWnd> cpw = GC::Hold(new ContextPopupWnd(_menu, wnd));
 		return cpw->DoModal(wnd,x,y);
 	}
 
@@ -87,7 +87,7 @@ void ContextMenu::AddSeparator(const std::wstring& text) {
 }
 
 /** ContextPopupWnd **/
-ContextPopupWnd::ContextPopupWnd(strong<Menu> menu, HWND parent): PopupWnd(parent,false), _firstMenu(menu), _mouseOver(-1), _mouseDown(-1), _checkedIcon(Icons::GetIconPath(Icons::IconChecked)), _radioCheckedIcon(Icons::GetIconPath(Icons::IconRadioChecked)), _subIcon(Icons::GetIconPath(Icons::IconSubMenu)) {
+ContextPopupWnd::ContextPopupWnd(strong<Menu> menu, ref<Wnd> parent): PopupWnd(parent, false), _firstMenu(menu), _mouseOver(-1), _mouseDown(-1), _checkedIcon(Icons::GetIconPath(Icons::IconChecked)), _radioCheckedIcon(Icons::GetIconPath(Icons::IconRadioChecked)), _subIcon(Icons::GetIconPath(Icons::IconSubMenu)) {
 	SetWantMouseLeave(true);
 	SetVerticallyScrollable(true);
 	_openAnimation.SetLength(Time(300));

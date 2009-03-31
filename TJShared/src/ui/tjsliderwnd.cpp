@@ -3,8 +3,9 @@
 using namespace tj::shared::graphics;
 using namespace tj::shared;
 
-SliderWnd::SliderWnd(const wchar_t* title): ChildWnd(title), _value(0.0f), _displayValue(0.0f), _mark(-1.0f), _showValue(true), _snapHalf(false), _preciseDrag(false), _color(0) {
+SliderWnd::SliderWnd(const String& title): _value(0.0f), _displayValue(0.0f), _mark(-1.0f), _showValue(true), _snapHalf(false), _preciseDrag(false), _color(0) {
 	SetStyle(WS_TABSTOP);
+	SetText(title);
 }
 
 void SliderWnd::SetShowValue(bool t) {
@@ -164,22 +165,17 @@ void SliderWnd::Paint(Graphics& g, strong<Theme> theme) {
 	}
 }
 
-LRESULT SliderWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
-	if(msg==WM_MOUSEWHEEL) {
-		int delta = GET_WHEEL_DELTA_WPARAM(wp);
-		if(delta<0) {
-			SetValue(max(0.0f, _value - 0.05f));
-			Repaint();
-		}
-		else {
-			SetValue(min(1.0f,_value+0.05f));
-			Repaint();
-		}
-	}
-	return ChildWnd::Message(msg, wp, lp);
+void SliderWnd::OnSize(const Area& ns) {
+	Repaint();
 }
 
-void SliderWnd::OnSize(const Area& ns) {
+void SliderWnd::OnMouseWheelMove(WheelDirection wd) {
+	if(wd==WheelDirectionDown) {
+		SetValue(max(0.0f, _value - 0.05f));
+	}
+	else {
+		SetValue(min(1.0f,_value + 0.05f));
+	}
 	Repaint();
 }
 

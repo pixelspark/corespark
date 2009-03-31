@@ -5,9 +5,8 @@ namespace tj {
 	namespace shared {
 		class EXPORTED SliderWnd: public ChildWnd {
 			public:
-				SliderWnd(const wchar_t* title);
+				SliderWnd(const String& title = L"");
 				virtual ~SliderWnd();
-				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 				float GetValue() const;
 				void SetValue(float f, bool notify=true);
 				void SetDisplayValue(float f, bool notify);
@@ -32,6 +31,7 @@ namespace tj {
 
 			protected:
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
+				virtual void OnMouseWheelMove(WheelDirection wd);
 				virtual void OnFocus(bool focus);
 				virtual void OnKey(Key k, wchar_t ch, bool down, bool accel);
 				virtual void OnSize(const Area& ns);

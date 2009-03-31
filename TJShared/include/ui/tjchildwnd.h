@@ -5,7 +5,7 @@ namespace tj {
 	namespace shared {
 		class EXPORTED ChildWnd: public Wnd {
 			public:
-				ChildWnd(const wchar_t* title, bool useDoubleBuffering=true);
+				ChildWnd(bool useDoubleBuffering = true);
 				virtual void SetTabStop(bool ts);
 				virtual bool GetTabStop();
 		};

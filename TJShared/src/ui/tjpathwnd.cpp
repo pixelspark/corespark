@@ -77,7 +77,7 @@ ref< std::vector< ref<Crumb> > > BasicCrumb::GetChildren() {
 }
 
 /* PathWnd*/
-PathWnd::PathWnd(PropertyGridWnd* pg): ChildWnd(L""), _separator(Icons::GetIconPath(Icons::IconPathSeparator)) {
+PathWnd::PathWnd(PropertyGridWnd* pg): _separator(Icons::GetIconPath(Icons::IconPathSeparator)) {
 	SetStyle(WS_CLIPSIBLINGS);
 	_propertyGrid = pg;
 	SetWantMouseLeave(true);

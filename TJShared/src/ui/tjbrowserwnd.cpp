@@ -96,7 +96,8 @@ using namespace tj::shared;
 		}
 	}
 
-	BrowserWnd::BrowserWnd(const std::wstring& title): ChildWnd(title.c_str(), false) {
+	BrowserWnd::BrowserWnd(const std::wstring& title): ChildWnd(false) {
+		SetText(title);
 		_Module.Init(ObjectMap, (HINSTANCE)GetModuleHandle(L"tjshared.dll"), &LIBID_ATLLib);
 		_Module.Init(ObjectMap, (HINSTANCE)GetModuleHandle(L"tjshared.dll"), &LIBID_MSHTML);
 		AtlAxWinInit();

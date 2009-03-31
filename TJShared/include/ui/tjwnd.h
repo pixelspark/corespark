@@ -1,6 +1,5 @@
 #ifndef _TJWND_H
 #define _TJWND_H
-#include "../internal/tjplatform.h"
 
 namespace tj {
 	namespace shared {
@@ -8,6 +7,12 @@ namespace tj {
 			ScrollDirectionNone = 0,
 			ScrollDirectionHorizontal = 1,
 			ScrollDirectionVertical,
+		};
+
+		enum WheelDirection {
+			WheelDirectionNone = 0,
+			WheelDirectionUp,
+			WheelDirectionDown,
 		};
 
 		enum MouseEvent {
@@ -111,25 +116,20 @@ namespace tj {
 			private:
 				Area _client;
 				bool _shown;
-
 		};
 
 		class EXPORTED Wnd: public virtual Object {
 			friend class FloatingPane;
 
 			public:
-				#ifdef TJ_OS_WIN
-					Wnd(const wchar_t* title, HWND parent=0, const wchar_t* className=TJ_DEFAULT_CLASS_NAME,  bool useDoubleBuffering=true, int exStyle=0L);
-				#endif
-			
+				Wnd(ref<Wnd> parent = null, bool useDoubleBuffering = true, bool hasDropShadow = false);
 				virtual ~Wnd();
 				
+				// Painting the window
 				virtual void Show(bool s);
 				bool IsShown() const;
 				void Repaint();
-				virtual void Layout();
 				virtual void Update();
-				virtual void SetText(const wchar_t* t);
 
 				// Scrolling
 				void SetHorizontallyScrollable(bool s);
@@ -141,27 +141,30 @@ namespace tj {
 				void SetHorizontalScrollInfo(Range<int> rng, int pageSize);
 				void SetVerticalScrollInfo(Range<int> rng, int pageSize);
 
-				virtual void Move(Pixels x, Pixels y, Pixels w, Pixels h);
-
+				// Window title or text
 				virtual String GetText();
 				virtual void SetText(const String& text);
+				virtual void SetText(const wchar_t* t);
+				virtual String GetTabTitle() const;		// return an empty string if you don't want to override Pane's title
+				virtual ref<Icon> GetTabIcon() const;	// should return 0 when you don't want to override the tab icon set in Pane
+
+				// Layout
+				virtual void Layout();
 				void SetSize(Pixels w, Pixels h);
 				virtual Area GetClientArea() const;
-				Area GetWindowArea();
+				virtual Area GetWindowArea();
 				virtual void Fill(LayoutFlags flags, Area& rect, bool direct = true);
-				void Fill();
-
+				virtual void Fill();
+				virtual void Move(Pixels x, Pixels y, Pixels w, Pixels h);
 				Wnd* GetParent();
 				Wnd* GetRootWindow();
+				virtual void Focus();
+				virtual bool HasFocus(bool childrenToo = false) const;
 
+				// Input handling
 				void SetWantMouseLeave(bool t);
 				bool GetWantMouseLeave() const;
 				bool IsMouseOver();
-
-				virtual String GetTabTitle() const;		// return an empty string if you don't want to override Pane's title
-				virtual ref<Icon> GetTabIcon() const;	// should return 0 when you don't want to override the tab icon set in Pane
-				virtual void Focus();
-				virtual bool HasFocus(bool childrenToo = false) const;
 				static bool IsKeyDown(Key k);
 				virtual void BringToFront();
 				void SetDropTarget(bool d);
@@ -190,6 +193,7 @@ namespace tj {
 				virtual void Paint(graphics::Graphics& g, strong<Theme> theme) = 0;
 				virtual void OnSize(const Area& newSize);
 				virtual void OnScroll(ScrollDirection dir);
+				virtual void OnMouseWheelMove(WheelDirection dir);
 				virtual void OnActivate(bool activate);
 				virtual void OnFocus(bool focus);
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
@@ -231,14 +235,12 @@ namespace tj {
 
 		class EXPORTED TopWnd: public Wnd {
 			public:
-				TopWnd(const wchar_t* title, HWND parent=0, const wchar_t* className=TJ_DEFAULT_CLASS_NAME,  bool useDoubleBuffering=true, int exStyle=0L);
+				TopWnd(const String& title, ref<Wnd> parent = null,  bool useDoubleBuffering = true, bool hasDropShadow = false);
 				virtual ~TopWnd();
 				virtual void SetQuitOnClose(bool t);
 			
 				#ifdef TJ_OS_WIN
 					virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
-				#else
-					#warning Needs Message implementation on non-Windows
 				#endif
 			
 				virtual void GetMinimumSize(Pixels& w, Pixels& h);

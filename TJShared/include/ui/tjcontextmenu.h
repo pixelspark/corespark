@@ -93,24 +93,25 @@ namespace tj {
 
 		class EXPORTED ContextPopupWnd: public PopupWnd {
 			public:
-				ContextPopupWnd(strong<Menu> menu, HWND parent);
+				ContextPopupWnd(strong<Menu> menu, ref<Wnd> parent = null);
 				virtual ~ContextPopupWnd();
 				virtual ref<MenuItem> DoModal(strong<Wnd> parent, Pixels x, Pixels y); // returns null when no command
 				virtual void Paint(graphics::Graphics& g, strong<Theme> theme);
-				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
-				virtual void OnKey(Key k, wchar_t ch, bool down, bool isAccelerator);
+				
 
 			protected:
 				virtual void EndModal(ref<MenuItem> result);
+				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
+				virtual void OnKey(Key k, wchar_t ch, bool down, bool isAccelerator);
 				virtual void OnActivate(bool a);
 				virtual void OnTimer(unsigned int id);
-				int GetItemAt(Pixels y);
-				strong<Menu> GetCurrentMenu();
 				virtual void EnterSubMenu(strong<Menu> menu);
 				virtual void LeaveSubMenu();
 				virtual void OnSelectItem(strong<MenuItem> ci);
 				virtual void DrawMenuItems(graphics::Graphics& g, strong<Theme> theme, strong<Menu> cm, const Area& rc);
 				virtual void UpdateSize();
+				int GetItemAt(Pixels y);
+				strong<Menu> GetCurrentMenu();
 
 				// TODO: move some of these to Theme GetMeasure
 				const static unsigned int KMaxItems;

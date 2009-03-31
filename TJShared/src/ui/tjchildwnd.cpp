@@ -2,7 +2,7 @@
 using namespace tj::shared::graphics;
 using namespace tj::shared;
 
-ChildWnd::ChildWnd(const wchar_t* title, bool useDB): Wnd(title, 0L, TJ_DEFAULT_CLASS_NAME, useDB) {
+ChildWnd::ChildWnd(bool useDB): Wnd(null, useDB) {
 	SetWindowLong(GetWindow(), GWL_STYLE, WS_CHILD);
 	SetWindowLong(GetWindow(), GWL_EXSTYLE, 0);
 
@@ -22,7 +22,7 @@ bool ChildWnd::GetTabStop() {
 	return (GetWindowLong(GetWindow(), GWL_STYLE) & WS_TABSTOP) != 0;
 }
 
-CheckboxWnd::CheckboxWnd(): ChildWnd(L""), _readOnly(false), _checkedIcon(Icons::GetIconPath(Icons::IconChecked)), _checked(false) {
+CheckboxWnd::CheckboxWnd(): _readOnly(false), _checkedIcon(Icons::GetIconPath(Icons::IconChecked)), _checked(false) {
 	_checkAnimation.SetLength(750);
 	_checkAnimation.SetEase(Animation::EasePulse);
 }

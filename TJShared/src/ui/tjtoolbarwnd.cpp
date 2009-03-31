@@ -10,7 +10,7 @@ using namespace tj::shared::graphics;
 using namespace tj::shared;
 
 // ToolbarWnd
-ToolbarWnd::ToolbarWnd(): ChildWnd(L""), _in(false), _bk(false) {
+ToolbarWnd::ToolbarWnd(): _in(false), _bk(false) {
 	UnsetStyle(WS_TABSTOP);
 	SetWantMouseLeave(true);
 	_entryAnimation.SetLength(Time(250));

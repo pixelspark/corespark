@@ -5,7 +5,7 @@ using namespace tj::shared::graphics;
 #include <commdlg.h>
 
 /* DialogWnd */
-DialogWnd::DialogWnd(const std::wstring& title): TopWnd(title.c_str()) {
+DialogWnd::DialogWnd(const std::wstring& title): TopWnd(title) {
 	SetStyle(WS_POPUPWINDOW|WS_THICKFRAME);
 	_ok = GC::Hold(new ButtonWnd(Icons::GetIconPath(Icons::IconOK).c_str(), TL(ok)));
 	Add(_ok, true);

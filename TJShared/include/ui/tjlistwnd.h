@@ -77,12 +77,14 @@ namespace tj {
 				virtual void OnDoubleClickItem(int id, int col);
 				virtual void OnColumnSizeChanged();
 				
+				// Overridden from GridWnd
 				virtual void OnSettingsChanged();
 				virtual void OnFocus(bool f);
 				virtual void OnSize(const Area& ns);
 				virtual void OnKey(Key k, wchar_t t, bool down, bool isAccel);
 				virtual void OnScroll(ScrollDirection dir);
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
+				virtual void OnMouseWheelMove(WheelDirection wd);
 
 				// other handy stuff
 				void DrawCellText(graphics::Graphics& g, graphics::StringFormat* sf, graphics::SolidBrush* br, graphics::Font* font, int col, Area row, const String& str);
@@ -91,12 +93,6 @@ namespace tj {
 
 				int GetRowIDByHeight(int h);
 				virtual Area GetRowArea(int rid);
-			
-				#ifdef TJ_OS_WIN
-					virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
-				#else
-					#warning Needs a Message implementation on non-Windows
-				#endif
 
 			private:
 				String _emptyText;

@@ -13,11 +13,11 @@ const Pixels PropertyGridWnd::KPropertyMargin = 3;
 /// code fixen (en misschien sommige properties die nog niet met Pixels werken even fixen).
 
 /* PropertyGridWnd implementation */
-PropertyGridWnd::PropertyGridWnd(bool withPath): ChildWnd(TL(properties)),
+PropertyGridWnd::PropertyGridWnd(bool withPath): ChildWnd(),
 _expandIcon(Icons::GetIconPath(Icons::IconExpand)), _collapseIcon(Icons::GetIconPath(Icons::IconCollapse)),
 _nameWidth(100), _isDraggingSplitter(false), _showHints(true) {
 	SetStyle(WS_CLIPCHILDREN|WS_CLIPSIBLINGS);
-	SetStyleEx(WS_EX_CONTROLPARENT);
+	SetText(TL(properties));
 	SetVerticallyScrollable(true);
 	_tw = GC::Hold(new TooltipWnd(GetWindow()));
 

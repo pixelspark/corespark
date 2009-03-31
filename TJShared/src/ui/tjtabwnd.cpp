@@ -540,20 +540,15 @@ LRESULT TabWnd::PreMessage(UINT msg, WPARAM wp, LPARAM lp) {
 	return ChildWnd::PreMessage(msg,wp,lp);
 }
 
-LRESULT TabWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
-	if(msg==WM_MOUSEWHEEL) {
-		int delta = GET_WHEEL_DELTA_WPARAM(wp);
-
-		if(delta<0) {
-			_offset += 5;
-		}
-		else {
-			_offset -= 5;
-		}
-		FixScrollerOffset();
-		Repaint();
+void TabWnd::OnMouseWheelMove(WheelDirection wd) {
+	if(wd==WheelDirectionDown) {
+		_offset += 5;
 	}
-	return ChildWnd::Message(msg,wp,lp);
+	else {
+		_offset -= 5;
+	}
+	FixScrollerOffset();
+	Repaint();
 }
 
 Pixels TabWnd::GetTotalTabWidth() {

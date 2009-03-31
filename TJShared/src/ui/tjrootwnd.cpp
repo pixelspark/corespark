@@ -8,8 +8,7 @@ const Pixels RootWnd::KStatusBarHeight = 18;
 WindowManager::~WindowManager() {
 }
 
-RootWnd::RootWnd(std::wstring title, const wchar_t* className, bool usedb): TopWnd(title.c_str(),0, className, usedb), _grabberIcon(Icons::GetIconPath(Icons::IconGrabber)), _showStatusBar(true) {
-	SetStyleEx(WS_EX_CONTROLPARENT);
+RootWnd::RootWnd(const String& title, bool usedb): TopWnd(title.c_str(), null, usedb), _grabberIcon(Icons::GetIconPath(Icons::IconGrabber)), _showStatusBar(true) {
 }
 
 RootWnd::~RootWnd() {

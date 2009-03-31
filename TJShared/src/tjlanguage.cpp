@@ -74,9 +74,9 @@ ref<Property> Language::CreateLanguageProperty(const String& title, LocaleIdenti
 	while(it!=_availableLocales.end()) {
 		std::wostringstream name;
 		name << *it;
-		String key = L"locale_"+(*it);
+		std::string key = "locale_"+Mbs(*it);
 		if(_instance._strings.find(key)!=_instance._strings.end()) {
-			name << L": " << Language::Get(key);
+			name << L": " << Language::GetLiteral(key);
 		}
 		pp->AddOption(name.str(), *it);
 		++it;

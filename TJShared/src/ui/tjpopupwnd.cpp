@@ -2,9 +2,12 @@
 using namespace tj::shared;
 using namespace tj::shared::graphics;
 
-PopupWnd::PopupWnd(HWND parent, bool isDialog): Wnd(L"", parent, TJ_DROPSHADOW_CLASS_NAME, true, WS_EX_TOOLWINDOW|WS_EX_CONTROLPARENT), _isModal(false) {
-	SetStyle(WS_POPUP);
-	UnsetStyle(WS_CAPTION);
+PopupWnd::PopupWnd(ref<Wnd> parent, bool isDialog): Wnd(parent, true, true), _isModal(false) {
+	#ifdef TJ_OS_WIN
+		SetStyle(WS_POPUP);
+		UnsetStyle(WS_CAPTION);
+		SetStyleEx(WS_EX_TOOLWINDOW);
+	#endif
 }
 
 PopupWnd::~PopupWnd() {

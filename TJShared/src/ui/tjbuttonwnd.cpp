@@ -2,7 +2,7 @@
 using namespace tj::shared::graphics;
 using namespace tj::shared;
 
-ButtonWnd::ButtonWnd(const ResourceIdentifier& icon, const std::wstring& text): ChildWnd(L""), _disabled(false), _down(false), _icon(icon), _text(text) {
+ButtonWnd::ButtonWnd(const ResourceIdentifier& icon, const std::wstring& text): _disabled(false), _down(false), _icon(icon), _text(text) {
 	SetWantMouseLeave(true);
 }
 

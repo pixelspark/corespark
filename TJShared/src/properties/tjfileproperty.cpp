@@ -3,7 +3,7 @@ using namespace tj::shared;
 using namespace tj::shared::graphics;
 
 /* FilePropertyWnd */
-FilePropertyWnd::FilePropertyWnd(const std::wstring& name, std::wstring* path, strong<ResourceProvider> rmg, const wchar_t* filter): ChildWnd(L""), _rmg(rmg), _name(name), _filter(filter), _path(path), _linkIcon(Icons::GetIconPath(Icons::IconFile)) {
+FilePropertyWnd::FilePropertyWnd(const std::wstring& name, std::wstring* path, strong<ResourceProvider> rmg, const wchar_t* filter): _rmg(rmg), _name(name), _filter(filter), _path(path), _linkIcon(Icons::GetIconPath(Icons::IconFile)) {
 	assert(path!=0);
 	SetWantMouseLeave(true);
 	SetDropTarget(true);

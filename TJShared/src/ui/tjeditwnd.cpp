@@ -37,11 +37,11 @@ LRESULT CALLBACK EditWndSubclassProc(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM lP
 	return res;
 }
 
-EditWnd::EditWnd(bool multiline): ChildWnd(L"", false), _backBrush(0) {
+EditWnd::EditWnd(bool multiline): ChildWnd(false), _backBrush(0) {
 	Create(multiline);
 }
 
-EditWnd::EditWnd(bool ml, bool db): ChildWnd(L"", db), _backBrush(0) {
+EditWnd::EditWnd(bool ml, bool db): ChildWnd(db), _backBrush(0) {
 	Create(ml);
 }
 

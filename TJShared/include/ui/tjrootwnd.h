@@ -38,7 +38,7 @@ namespace tj {
 			friend class NotificationWnd; 
 
 			public:
-				RootWnd(String title, const wchar_t* className=TJ_DEFAULT_CLASS_NAME, bool useDoubleBuffering=true);
+				RootWnd(const String& title, bool useDoubleBuffering = true);
 				virtual ~RootWnd();
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 				virtual void Update();

@@ -11,6 +11,7 @@ namespace tj {
 				virtual ~VectorProperty();
 				virtual ref<Wnd> GetWindow();
 				virtual void Update();
+				virtual void SetDimensionShown(unsigned int d, bool h);
 
 			protected:
 				Vector* _vec;

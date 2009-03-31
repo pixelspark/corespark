@@ -2,7 +2,7 @@
 using namespace tj::shared;
 using namespace tj::shared::graphics;
 
-GraphWnd::GraphWnd(): ChildWnd(L"") {
+GraphWnd::GraphWnd() {
 }
 
 GraphWnd::~GraphWnd() {

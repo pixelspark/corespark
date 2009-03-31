@@ -20,7 +20,6 @@ namespace tj {
 
 				SplitterWnd(Orientation o);
 				virtual ~SplitterWnd();
-				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 				virtual void Layout();
 				virtual void Update();
 				void SetRatio(float f);
@@ -43,6 +42,8 @@ namespace tj {
 				bool IsCollapsed() const;
 
 			protected:
+				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
+				virtual void OnSize(const Area& ns);
 				virtual void OnSettingsChanged();
 				virtual Area GetBarArea();
 

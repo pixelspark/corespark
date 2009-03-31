@@ -1,25 +1,37 @@
 #include "../../include/ui/tjui.h" 
-#include <commctrl.h>
-#include <shellapi.h>
-#include <windowsx.h>
-#define ISVKKEYDOWN(vk_code) ((GetAsyncKeyState(vk_code) & 0x8000))
+
+#ifdef TJ_OS_WIN
+	#include <commctrl.h>
+	#include <shellapi.h>
+	#include <windowsx.h>
+	#define ISVKKEYDOWN(vk_code) ((GetAsyncKeyState(vk_code) & 0x8000))
+
+	#define TJ_DEFAULT_CLASS_NAME (L"TjWndClass")
+	#define TJ_DROPSHADOW_CLASS_NAME (L"TjDropWndClass")
+#endif
 
 using namespace tj::shared;
 using namespace tj::shared::graphics;
 
 bool Wnd::_classesRegistered = false;
 
-Wnd::Wnd(const wchar_t* title, HWND parent, const wchar_t* className, bool usedb, int exStyle): _horizontalPos(0), _verticalPos(0), _horizontalPageSize(1), _verticalPageSize(1), _buffer(0), _dirty(-1), _doubleBuffered(usedb) {
+Wnd::Wnd(ref<Wnd> parent, bool useDoubleBuffering, bool hasDropShadow): _horizontalPos(0), _verticalPos(0), _horizontalPageSize(1), _verticalPageSize(1), _buffer(0), _dirty(-1), _doubleBuffered(useDoubleBuffering) {
 	RegisterClasses();
-	exStyle |= WS_EX_CONTROLPARENT;
-	_wnd = CreateWindowEx(exStyle, className, title, WS_CLIPCHILDREN|WS_CLIPSIBLINGS, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, parent, (HMENU)0, GetModuleHandle(NULL), (void*)this);
-	if(_wnd==0) Throw(L"Could not create window", ExceptionTypeError);
-
-	UpdateWindow(_wnd);
+	#ifdef TJ_OS_WIN
+		HWND parentWindow = NULL;
+		if(parent) {
+			parentWindow = parent->_wnd;
+		}
+		_wnd = CreateWindowEx(WS_EX_CONTROLPARENT, hasDropShadow ? TJ_DROPSHADOW_CLASS_NAME : TJ_DEFAULT_CLASS_NAME, L"", WS_CLIPCHILDREN|WS_CLIPSIBLINGS, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, parentWindow, (HMENU)0, GetModuleHandle(NULL), (void*)this);
+		if(_wnd==0) Throw(L"Could not create window", ExceptionTypeError);
+		UpdateWindow(_wnd);
+	#endif
 }
 
 void Wnd::SetText(const wchar_t* t) {
-	SetWindowText(_wnd, t);
+	#ifdef TJ_OS_WIN
+		SetWindowText(_wnd, t);
+	#endif
 }
 
 bool Wnd::IsKeyDown(Key k) {
@@ -541,12 +553,7 @@ LRESULT Wnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	}
 	else if(msg==WM_MOUSEWHEEL) {
 		int d = GET_WHEEL_DELTA_WPARAM(wp);
-		if(d<0) {
-			SendMessage(_wnd, WM_VSCROLL, MAKELONG(SB_LINEDOWN, 0), 0L); 
-		}
-		else {
-			SendMessage(_wnd, WM_VSCROLL, MAKELONG(SB_LINEUP, 0), 0L); 
-		}
+		OnMouseWheelMove((d < 0) ? WheelDirectionDown : WheelDirectionUp);
 	}
 	else if(msg==WM_ACTIVATE) {
 		bool activate = LOWORD(wp)!=WA_INACTIVE;
@@ -718,6 +725,15 @@ void Wnd::OnPaste() {
 void Wnd::OnCut() {
 }
 
+void Wnd::OnMouseWheelMove(WheelDirection wd) {
+	if(wd==WheelDirectionDown) {
+		SendMessage(_wnd, WM_VSCROLL, MAKELONG(SB_LINEDOWN, 0), 0L); 
+	}
+	else {
+		SendMessage(_wnd, WM_VSCROLL, MAKELONG(SB_LINEUP, 0), 0L); 
+	}
+}
+
 void Wnd::TranslateKeyCodes(int vk, Key& key, wchar_t& ch) {
 	ch = L'\0';
 
@@ -808,7 +824,7 @@ std::wstring Wnd::GetText() {
 	return text;
 }
 
-void Wnd::SetText(const std::wstring& text) {
+void Wnd::SetText(const String& text) {
 	SetWindowText(_wnd, text.c_str());
 }
 
@@ -936,7 +952,8 @@ RECT Displays::GetDisplayRectangle(int idx) {
 }
 
 /** TopWnd **/
-TopWnd::TopWnd(const wchar_t* title, HWND parent, const wchar_t* className,  bool usedb, int ex): Wnd(title, parent, className, usedb, ex), _quitOnClose(false), _oldStyle(0), _oldStyleEx(0), _fullScreen(false) {
+TopWnd::TopWnd(const String& title, ref<Wnd> parent,  bool useDoubleBuffering, bool hasDropShadow): Wnd(parent,useDoubleBuffering,hasDropShadow) {
+	SetText(title);
 }
 
 TopWnd::~TopWnd() {

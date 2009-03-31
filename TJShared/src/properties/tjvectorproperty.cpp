@@ -7,7 +7,7 @@ namespace tj {
 	namespace shared {
 		class VectorPropertyWnd: public ChildWnd {
 			public:
-				VectorPropertyWnd(Vector* vec): ChildWnd(L"", false), _vec(vec) {
+				VectorPropertyWnd(Vector* vec): ChildWnd(true), _vec(vec) {
 					SetStyleEx(WS_EX_CONTROLPARENT);
 					_x = CreateWindowEx(WS_EX_CLIENTEDGE, L"EDIT", L"", WS_CHILD|WS_TABSTOP|ES_AUTOHSCROLL, 0, 0, 0, 0, GetWindow(), (HMENU)1, GetModuleHandle(NULL), 0L);
 					_y = CreateWindowEx(WS_EX_CLIENTEDGE, L"EDIT", L"", WS_CHILD|WS_TABSTOP|ES_AUTOHSCROLL, 0, 0, 0, 0, GetWindow(), (HMENU)2, GetModuleHandle(NULL), 0L);
@@ -32,7 +32,32 @@ namespace tj {
 					DeleteObject((HGDIOBJ)_font);
 				}
 
+				virtual void SetDimensionShown(unsigned int d, bool h) {
+					HWND editWindow = 0L;
+					
+					switch(d) {
+						case 0:
+							editWindow = _x;
+							break;
+
+						case 1:
+							editWindow = _y;
+							break;
+
+						case 2:
+							editWindow = _z;
+							break;
+					}
+
+					if(editWindow!=0L) {
+						ShowWindow(editWindow, h ? SW_SHOW : SW_HIDE);
+					}
+				}
+
 				virtual void Paint(graphics::Graphics& g, strong<Theme> theme) {
+					SolidBrush back(theme->GetColor(Theme::ColorBackground));
+					Area rc = GetClientArea();
+					g.FillRectangle(&back, rc);
 				}
 
 				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp) {
@@ -106,4 +131,9 @@ void VectorProperty::Update() {
 	if(_wnd) {
 		_wnd->Update();
 	}
+}
+
+void VectorProperty::SetDimensionShown(unsigned int d, bool h) {
+	GetWindow();
+	ref<VectorPropertyWnd>(_wnd)->SetDimensionShown(d,h);
 }
