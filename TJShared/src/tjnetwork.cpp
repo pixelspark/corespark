@@ -1,5 +1,18 @@
 #include "../include/tjcore.h"
-#include <iphlpapi.h>
+
+#ifdef TJ_OS_WIN
+	#include <iphlpapi.h>
+#endif
+
+#ifdef TJ_OS_MAC
+	#include <unistd.h>
+	#include <netdb.h>
+	#include <arpa/inet.h>
+	#include <sys/socket.h>
+
+	typedef int SOCKET;
+	#define INVALID_SOCKET -1
+#endif
 
 using namespace tj::shared;
 
@@ -7,9 +20,18 @@ std::string Networking::GetHostName() {
 	ZoneEntry ze(Zones::NetworkZone);
 
 	char buffer[256];
-	if(gethostname(buffer, 255)!=SOCKET_ERROR) {
-		return std::string(buffer);
-	}
+	
+	#ifdef TJ_OS_WIN
+		if(gethostname(buffer, 255)!=SOCKET_ERROR) {
+			return std::string(buffer);
+		}
+	#endif
+	
+	#ifdef TJ_OS_MAC
+		if(gethostname(buffer,255)==0) {
+			return std::string(buffer);
+		}
+	#endif
 	return "";
 }
 
@@ -60,7 +82,14 @@ void Networking::Wake(const MACAddress& mac) {
 		if(sendto(sock, (const char*)data, 6*17, 0, (sockaddr*)&address, sizeof(address))<=0) {
 			Log::Write(L"TJShared/Networking", L"Sendto returned zero in wake-on-lan attempt");
 		}
-		closesocket(sock);
+		
+		#ifdef TJ_OS_WIN
+			closesocket(sock);
+		#endif
+		
+		#ifdef TJ_OS_MAC
+			shutdown(sock, SHUT_RDWR);
+		#endif
 	}
 	else {
 		Log::Write(L"TJShared/Networking", L"Could not open socket for wake-on-lan");

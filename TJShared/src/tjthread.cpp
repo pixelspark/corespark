@@ -3,6 +3,8 @@ using namespace tj::shared;
 
 #ifdef TJ_OS_MAC
 	#define TJ_USE_PTHREADS
+	#include <pthread.h>
+	#include <sys/time.h>
 #endif
 
 volatile ReferenceCount Thread::_count = 0;
@@ -66,7 +68,10 @@ Thread::~Thread() {
 	#endif
 	
 	#ifdef TJ_USE_PTHREADS
-		#error Not implemented
+		if(_thread!=0) {
+			pthread_detach(_thread);
+		}
+		#warning is this implemented correctly for pthreads?
 	#endif
 }
 
@@ -132,7 +137,7 @@ void Thread::SetPriority(Priority p) {
 	#endif
 	
 	#ifdef TJ_USE_PTHREADS
-		#error Not implemented
+		#warning Not implemented for pthreads
 	#endif
 }
 
@@ -157,7 +162,7 @@ void Thread::Start() {
 	
 	#ifdef TJ_USE_PTHREADS
 		if(_thread==0) {
-			pthread_create(reinterpret_cast<pthread_t*>(&_thread), NULL, ThreadProc, reinterpret_cast<void*>(this));
+			pthread_create(&_thread, NULL, ThreadProc, reinterpret_cast<void*>(this));
 		}
 	#endif
 }
@@ -222,7 +227,7 @@ void Thread::Run() {
 #endif
 
 /* Event; Windows implementation */
-#ifdef _WIN32
+#ifdef TJ_OS_WIN
 	Event::Event() {
 		_event = CreateEvent(NULL, TRUE, FALSE, NULL);
 	}
@@ -248,8 +253,44 @@ void Thread::Run() {
 	}
 #endif
 
+#ifdef TJ_USE_PTHREADS
+Event::Event() {
+	pthread_cond_init(&_event, NULL);
+}
+
+Event::~Event() {
+	pthread_cond_destroy(&_event);
+}
+
+void Event::Signal() {
+	pthread_cond_signal(&_event);
+}
+
+void Event::Pulse() {
+	pthread_cond_signal(&_event);
+}
+
+void Event::Reset() {
+	// TODO: not necessary?
+}
+
+void Event::Wait(int ms) {
+	#error Check to see how this function is called for infinite waiting time and use that
+	pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+	
+	struct timeval now;
+	gettimeofday(&now, NULL);
+	
+	struct timespec abstime;
+	abstime.tv_sec = now.tv_sec + (ms / 1000);
+	abstime.tv_nsec = (now.tv_usec + (ms % 1000));
+	#warning the above is incorrect, we need nanoseconds... look up how to make nanoseconds from milliseconds
+	pthread_cond_timedwait(&_event, &lock, &abstime);
+}
+#endif
+
 /* ThreadLocal; Windows implementation uses TLS */
-#ifdef _WIN32
+#ifdef TJ_OS_WIN
 	ThreadLocal::ThreadLocal() {
 		_tls = TlsAlloc();
 		if(_tls==TLS_OUT_OF_INDEXES) {
@@ -267,6 +308,24 @@ void Thread::Run() {
 
 	void ThreadLocal::SetValue(int v) {
 		TlsSetValue(_tls, (void*)(__int64)v);
+	}
+#endif
+
+#ifdef TJ_USE_PTHREADS
+	ThreadLocal::ThreadLocal() {
+		pthread_key_create(&_tls, NULL);
+	}
+
+	ThreadLocal::~ThreadLocal() {
+		pthread_key_delete(_tls);
+	}
+
+	int ThreadLocal::GetValue() const {
+		return reinterpret_cast<int>(pthread_getspecific(_tls));
+	}
+
+	void ThreadLocal::SetValue(int v) {
+		pthread_setspecific(_tls, reinterpret_cast<const void*>(v));
 	}
 #endif
 
@@ -431,10 +490,11 @@ void PeriodicTimer::Start(const Time& period) {
 
 #ifdef TJ_OS_MAC
 	CriticalSection::CriticalSection() {
-		_cs = PTHREAD_MUTEX_INITIALIZER;
+		pthread_mutex_init(&_cs, NULL);
 	}
 
 	CriticalSection::~CriticalSection() {
+		pthread_mutex_destroy(&_cs);
 	}
 
 	void CriticalSection::Enter() {

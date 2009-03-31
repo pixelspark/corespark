@@ -19,7 +19,9 @@ using namespace tj::shared;
 
 String File::GetDirectory(const String& pathToFile) {
 	#ifdef TJ_OS_MAC
-		#error Not implemented
+		std::string path = Mbs(pathToFile);
+		std::string dirPath(dirname(const_cast<char*>(path.c_str())));
+		return Wcs(dirPath);
 	#endif
 	
 	#ifdef TJ_OS_WIN
@@ -37,13 +39,16 @@ String File::GetFileName(const String& pathToFile) {
 	#endif
 	
 	#ifdef TJ_OS_MAC
-		#error Not implemented
+		std::string path = Mbs(pathToFile);
+		std::string fileName(basename(const_cast<char*>(path.c_str())));
+		return Wcs(fileName);
 	#endif
 }
 
 String File::GetExtension(const String& pathToFile) {
 	#ifdef TJ_OS_MAC
-		#error Not implemented
+		String fileName = File::GetFileName(pathToFile);
+		return std::wstring(fileName,0,fileName.find_last_of(L'.'));
 	#endif
 	
 	#ifdef TJ_OS_WIN
@@ -105,7 +110,7 @@ bool File::Copy(const String& from, const String& to, bool silent) {
 	#endif
 	
 	#ifdef TJ_OS_MAC
-		#error Not implemented
+		#warning Not implemented on Mac
 	#endif
 }
 
@@ -119,7 +124,7 @@ void File::DeleteFiles(const String& dir, const String& pattern) {
 			SHFILEOPSTRUCT shop;
 			shop.hwnd = 0L;
 			shop.fAnyOperationsAborted = FALSE;
-			shop.hNameMappings = NULL;
+			shop.hNameMappings = NULL ;
 			shop.lpszProgressTitle = 0L;
 			shop.wFunc = FO_DELETE;
 			shop.pFrom = wc.c_str();
@@ -130,7 +135,7 @@ void File::DeleteFiles(const String& dir, const String& pattern) {
 	#endif
 	
 	#ifdef TJ_OS_MAC
-		#error Not implemented
+		#warning Not implemented on Mac
 	#endif
 }
 
@@ -196,6 +201,7 @@ Bytes File::GetDirectorySize(const String& dirPath) {
 	#endif
 	
 	#ifdef TJ_OS_MAC
-		#error Not implemented
+		#warning Not implemented on Mac
+		return 0;
 	#endif
 }

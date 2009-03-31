@@ -175,4 +175,3 @@ String SettingsStorage::GetSettingsPath(const String& vendor, const String& app,
 		#error Not implemented
 	#endif
 }
-

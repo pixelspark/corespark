@@ -268,6 +268,7 @@
 						<dict>
 							<key>PBXSmartGroupTreeModuleOutlineStateExpansionKey</key>
 							<array>
+								<string>0867D691FE84028FC02AAC07</string>
 								<string>1C37FABC05509CD000000102</string>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
@@ -307,12 +308,14 @@
 					<key>Dock</key>
 					<array>
 						<dict>
+							<key>BecomeActive</key>
+							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
 								<string>1CE0B20306471E060097A5F4</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>TinyXML_Prefix.pch</string>
+								<string>tinyxml.h</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -320,31 +323,28 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>1CE0B20406471E060097A5F4</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>TinyXML_Prefix.pch</string>
+										<string>tinyxml.h</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>B45483A00F81163D00B2943C</string>
+										<string>B45484270F8138CB00B2943C</string>
 										<key>history</key>
 										<array>
-											<string>B45483910F81163D00B2943C</string>
 											<string>B45483920F81163D00B2943C</string>
 											<string>B45483930F81163D00B2943C</string>
 											<string>B45483940F81163D00B2943C</string>
 											<string>B45483950F81163D00B2943C</string>
-											<string>B45483960F81163D00B2943C</string>
+											<string>B45484240F8138CB00B2943C</string>
+											<string>B45484250F8138CB00B2943C</string>
 										</array>
 										<key>prevStack</key>
 										<array>
 											<string>B45483970F81163D00B2943C</string>
 											<string>B45483980F81163D00B2943C</string>
-											<string>B45483990F81163D00B2943C</string>
 											<string>B454839A0F81163D00B2943C</string>
-											<string>B454839B0F81163D00B2943C</string>
 											<string>B454839C0F81163D00B2943C</string>
 											<string>B454839D0F81163D00B2943C</string>
-											<string>B454839E0F81163D00B2943C</string>
-											<string>B454839F0F81163D00B2943C</string>
+											<string>B45484260F8138CB00B2943C</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -366,8 +366,6 @@
 							<string>682pt</string>
 						</dict>
 						<dict>
-							<key>BecomeActive</key>
-							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
@@ -404,9 +402,9 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>B45483A10F81163D00B2943C</string>
+				<string>B45484280F8138CB00B2943C</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
-				<string>B45483A20F81163D00B2943C</string>
+				<string>B45484290F8138CB00B2943C</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
 			</array>
@@ -565,7 +563,7 @@
 								<key>PBXProjectModuleGUID</key>
 								<string>1CD0528F0623707200166675</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>tinyxml.cpp</string>
+								<string>tinyxml.h</string>
 								<key>StatusBarVisibility</key>
 								<true/>
 							</dict>
@@ -623,7 +621,7 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>B45483840F8115AF00B2943C</string>
-				<string>B45483850F8115AF00B2943C</string>
+				<string>B45483BC0F812F8300B2943C</string>
 				<string>1CD0528F0623707200166675</string>
 				<string>XCMainBuildResultsModuleGUID</string>
 			</array>

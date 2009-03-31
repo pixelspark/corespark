@@ -35,7 +35,7 @@ namespace tj {
 				String ToFriendlyString() const;
 
 			private:
-				#ifdef _WIN32
+				#ifdef TJ_OS_WIN
 					SYSTEMTIME _time;
 				#endif
 		};

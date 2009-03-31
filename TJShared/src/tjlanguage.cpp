@@ -9,7 +9,7 @@ Language::Language() {
 }
 
 Language::~Language() {
-	std::map<String, wchar_t*>::iterator it = _strings.begin();
+	std::map<std::string, wchar_t*>::iterator it = _strings.begin();
 
 	while(it!=_strings.end()) {
 		delete it->second;
@@ -175,12 +175,16 @@ template<typename StringType> std::pair<StringType,StringType> Split (const Stri
 }
 
 const wchar_t* Language::Get(const String& key) {
-	std::map<String, wchar_t*>::const_iterator it = _instance._strings.find(key);
+	return GetLiteral(Mbs(key));
+}
+
+const wchar_t* Language::GetLiteral(const std::string& lit) {
+	std::map<std::string, wchar_t*>::const_iterator it = _instance._strings.find(lit);
 	if(it!=_instance._strings.end()) {
 		return it->second;
 	}
-	//Log::Write(L"TJShared/Language", String(L"String not found: ")+key);
 	return L"...";
+	
 }
 
 void Language::Clear() {
@@ -199,6 +203,6 @@ void Language::Load(const String& file) {
 		fs.getline(line,1023);
 		
 		std::pair<String, String> items = Split<String>(line, L":");
-		_instance._strings[items.first] = Util::CopyString(items.second.c_str());
+		_instance._strings[Mbs(items.first)] = Util::CopyString(items.second.c_str());
 	}
 }

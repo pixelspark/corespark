@@ -11,6 +11,7 @@
 #endif
 
 #ifdef TJ_OS_WIN
+	// When TJ_OS_WIN is defined, we are building for Windows. This means either Windows XP or Vista
 	#define _WIN32_WINNT 0x0700
 	#define _WIN32_IE 0x0700
 	#define _CRT_SECURE_CPP_OVERLOAD_SECURE_NAMES 1
@@ -25,6 +26,8 @@
 #endif
 
 #ifdef TJ_OS_MAC
+	// When TJ_OS_MAC is defined, we are building for Mac OS X from version 10.5 onwards. It assumes that
+	// pthreads and BSD sockets are present.
 	#include <libkern/OSAtomic.h>
 	#include <stdlib.h>
 #endif
@@ -47,7 +50,7 @@
 	#ifdef TJ_OS_WIN
 		#define EXPORTED __declspec(dllexport)
 	#else
-		#define EXPORTED
+		#define EXPORTED __attribute__ ((dllexport))
 	#endif
 #else
 	#define EXPORTED

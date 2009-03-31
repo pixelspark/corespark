@@ -61,9 +61,14 @@ namespace tj {
 				operator int() const;
 
 			protected:
-				#ifdef _WIN32
+				#ifdef TJ_OS_WIN
 					DWORD _tls;
 				#endif
+			
+				#ifdef TJ_OS_MAC
+					pthread_key_t _tls;
+				#endif
+			
 		};
 
 		class EXPORTED Semaphore {
@@ -95,8 +100,12 @@ namespace tj {
 				void Wait(int ms=0);
 
 			protected:
-				#ifdef _WIN32
+				#ifdef TJ_OS_WIN
 					HANDLE _event;
+				#endif
+			
+				#ifdef TJ_OS_MAC
+					pthread_cond_t _event;
 				#endif
 		};
 
@@ -159,7 +168,7 @@ namespace tj {
 				#ifdef _WIN32
 					HANDLE _thread;
 				#else
-					void* _thread;
+					pthread_t _thread;
 				#endif
 				
 				int _id;

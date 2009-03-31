@@ -9,6 +9,7 @@ namespace tj {
 		class EXPORTED Language: public virtual Object {
 			public:
 				static const wchar_t* Get(const String& id);
+				static const wchar_t* GetLiteral(const std::string& lit);
 				static void Load(const String& file);
 				static void LoadDirectory(const String& dir, const LocaleIdentifier& locale);
 
@@ -27,18 +28,11 @@ namespace tj {
 				static void FindLocales(const String& dir);
 
 				static std::vector< LocaleIdentifier > _availableLocales;
-				std::map<String, wchar_t*> _strings;
+				std::map<std::string, wchar_t*> _strings;
 		};
 	}
 }
 
-#ifdef TJ_OS_WIN
-	#define TL(id) (tj::shared::Language::Get(String(L#id)))
-#endif
-
-#ifdef TJ_OS_MAC
-	#define TL(id) (tj::shared::Wcs(std::string(#id)))
-	#warning TL hack on Mac active
-#endif
+#define TL(id) (tj::shared::Language::GetLiteral(std::string(#id)))
 
 #endif
