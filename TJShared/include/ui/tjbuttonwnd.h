@@ -7,7 +7,6 @@ namespace tj {
 			public:
 				ButtonWnd(const ResourceIdentifier& iconRid, const String& text = L"");
 				virtual ~ButtonWnd();
-				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 				virtual void Paint(graphics::Graphics& g, strong<Theme> theme);
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
 				virtual void Fill(LayoutFlags lf, Area& rect, bool direct = true);
@@ -36,7 +35,6 @@ namespace tj {
 				enum ButtonState {On, Off, Other};
 				StateButtonWnd(const ResourceIdentifier& imageOn, const ResourceIdentifier& imageOff, const ResourceIdentifier& imageOther);
 				virtual ~StateButtonWnd();
-				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 				void SetOn(ButtonState o);
 				virtual void Paint(graphics::Graphics& g, strong<Theme> theme);
 				

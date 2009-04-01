@@ -8,8 +8,10 @@ const float SplitterWnd::KSnapMargin = 0.07f;
 const Pixels SplitterWnd::KBarHeight = 6;
 
 SplitterWnd::SplitterWnd(Orientation o): ChildWnd(L"Splitter") {
-	SetStyle(WS_CLIPCHILDREN|WS_CLIPSIBLINGS);
-	SetStyleEx(WS_EX_CONTROLPARENT);
+	#ifdef TJ_OS_WIN
+		SetStyle(WS_CLIPCHILDREN|WS_CLIPSIBLINGS);
+	#endif
+	
 	SetWantMouseLeave(true);
 	_collapse = CollapseNone;
 

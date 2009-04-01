@@ -5,7 +5,11 @@ namespace tj {
 	namespace shared {
 		class EXPORTED TooltipWnd: public virtual Object {
 			public:
-				TooltipWnd(HWND parent);
+				// TODO change this to TooltipWnd(ref<Wnd> parent);
+				#ifdef TJ_OS_WIN
+					TooltipWnd(HWND parent);
+				#endif
+			
 				virtual ~TooltipWnd();
 				virtual void SetTrackEnabled(bool t);
 				virtual void SetTrackPosition(int x, int y);
@@ -13,8 +17,10 @@ namespace tj {
 				virtual void SetTooltip(String text);
 
 			protected:
-				HWND _owner;
-				HWND _wnd;
+				#ifdef TJ_OS_WIN
+					HWND _owner;
+					HWND _wnd;
+				#endif
 		};
 	}
 }

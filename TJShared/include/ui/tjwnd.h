@@ -61,30 +61,6 @@ namespace tj {
 		
 		class Element;
 
-		class EXPORTED Elements {
-			public:
-				template<class T> static ref<T> GetElementAt(std::vector< ref<T> >& elements, Pixels x, Pixels y) {
-					typename std::vector< ref<T> >::iterator it = elements.begin();
-					typename std::vector< ref<T> >::iterator end = elements.end();
-
-					while(it!=end) {
-						ref<T> element = *it;
-						if(element && element.IsCastableTo<Element>()) {
-							ref<Element> elementCasted = element;
-							if(elementCasted && elementCasted->IsShown()) {
-								Area client = elementCasted->GetClientArea();
-								if(client.IsInside(x,y)) {
-									return element;
-								}
-							}
-						}
-						++it;
-					}
-
-					return null;
-				}
-		};
-
 		class EXPORTED Element: public virtual Object {
 			public:
 				virtual ~Element();
@@ -116,6 +92,32 @@ namespace tj {
 			private:
 				Area _client;
 				bool _shown;
+		};
+		
+		class EXPORTED Elements {
+		public:
+			template<class T> static ref<T> GetElementAt(std::vector< ref<T> >& elements, Pixels x, Pixels y) {
+				typename std::vector< ref<T> >::iterator it = elements.begin();
+				typename std::vector< ref<T> >::iterator end = elements.end();
+				
+				while(it!=end) {
+					ref<T> element = *it;
+					if(element) {
+						if(element.IsCastableTo<Element>()) {
+							ref<Element> elementCasted = element;
+							if(elementCasted && elementCasted->IsShown()) {
+								Area client = elementCasted->GetClientArea();
+								if(client.IsInside(x,y)) {
+									return element;
+								}
+							}
+						}
+					}
+					++it;
+				}
+				
+				return null;
+			}
 		};
 
 		class EXPORTED Wnd: public virtual Object {

@@ -16,8 +16,11 @@ namespace tj {
 
 			protected:
 				virtual void OnAfterShowDialog();
-				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 				virtual void EndModal(bool result);
+			
+				#ifdef TJ_OS_WIN
+					virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
+				#endif
 
 			private:
 				ModalLoop _loop;

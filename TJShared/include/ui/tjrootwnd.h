@@ -40,7 +40,6 @@ namespace tj {
 			public:
 				RootWnd(const String& title, bool useDoubleBuffering = true);
 				virtual ~RootWnd();
-				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 				virtual void Update();
 
 				// WindowManager implementation
@@ -75,6 +74,9 @@ namespace tj {
 				virtual bool IsStatusBarShown() const;
 
 			protected:
+				#ifdef TJ_OS_WIN
+					virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
+				#endif
 				bool _showStatusBar;
 				const static Pixels KStatusBarHeight;
 				Icon _grabberIcon;

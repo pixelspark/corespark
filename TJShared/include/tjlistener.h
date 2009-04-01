@@ -48,7 +48,7 @@ namespace tj {
 				inline void AddListener(ref< Listener<NotificationType> > listener) {
 					ThreadLock lock(&_lock);
 					if(listener) {
-						_listeners.push_back(ref <Listener<NotificationType> >(listener));
+						_listeners.push_back(weak <Listener<NotificationType> >(listener));
 					}
 				}
 

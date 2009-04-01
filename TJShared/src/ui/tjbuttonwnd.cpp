@@ -142,6 +142,7 @@ void ButtonWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 		Repaint();
 	}
 	else if(ev==MouseEventMove) {
+		SetWantMouseLeave(true);
 		if(IsKeyDown(KeyMouseLeft)) {
 			_down = true;
 		}
@@ -152,10 +153,6 @@ void ButtonWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 		Repaint();
 	}
 	ChildWnd::OnMouse(ev,x,y);
-}
-
-LRESULT ButtonWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
-	return ChildWnd::Message(msg,wp,lp);
 }
 
 /* StateButtonWnd */
@@ -194,23 +191,6 @@ void StateButtonWnd::Paint(Graphics& g, strong<Theme> theme) {
 		Pixels margin = (rc.GetHeight()-KImgHeight)/2;
 		img->Paint(g, Area(margin,margin,KImgHeight, KImgWidth));
 	}
-}
-
-LRESULT StateButtonWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
-	if(msg==WM_MOUSEMOVE) {
-		TRACKMOUSEEVENT evt;
-		evt.cbSize = sizeof(evt);
-		evt.dwFlags = TME_LEAVE;
-		evt.dwHoverTime = 0;
-		evt.hwndTrack = GetWindow();
-		TrackMouseEvent(&evt);
-		Repaint();
-	}
-	else if(msg==WM_MOUSELEAVE) {
-		Repaint();
-	}
-
-	return ButtonWnd::Message(msg,wp,lp);
 }
 
 void StateButtonWnd::SetOn(ButtonState o) {

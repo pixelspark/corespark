@@ -25,20 +25,26 @@ namespace tj {
 
 			protected:
 				EditWnd(bool multiLine, bool doubleBuffer);
-				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 				virtual void OnSize(const Area& ns);
 				void UpdateColor();
 				virtual void OnFocus(bool f);
+			
+				#ifdef TJ_OS_WIN
+					virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
+				#endif
 
 			private:
 				void Create(bool multiline);
 
 			protected:
-				HFONT _font;
-				HWND _ctrl;
+				#ifdef TJ_OS_WIN
+					HFONT _font;
+					HWND _ctrl;
+					HBRUSH _backBrush;
+				#endif
+
 				graphics::Color _back;
-				HBRUSH _backBrush;
-		};
+			};
 
 		class EXPORTED SuggestionMenuItem: public MenuItem {
 			public:

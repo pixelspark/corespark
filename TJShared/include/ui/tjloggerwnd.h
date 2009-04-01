@@ -8,13 +8,14 @@ namespace tj {
 				LoggerWnd();
 				virtual ~LoggerWnd();
 				void Log(const String& ws);
-				virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 				virtual void Layout();
 				virtual void Paint(graphics::Graphics& g, strong<Theme> theme);
 				virtual String GetContents();
 
 			protected:
 				#ifdef TJ_OS_WIN
+					virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
+			
 					HFONT _font;
 					HWND _list;
 				#endif
