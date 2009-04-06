@@ -112,7 +112,7 @@ bool Networking::GetMACAddress(const String& ip, MACAddress& maca) {
 		}
 		return false;
 	#else
-		#error Not implemented
+		#warning Not implemented
 		return false;
 	#endif
 }

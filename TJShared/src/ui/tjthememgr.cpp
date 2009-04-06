@@ -1,5 +1,4 @@
 #include "../../include/ui/tjui.h" 
-#include <windowsx.h>
 using namespace tj::shared;
 
 std::vector< strong<Theme> > ThemeManager::_themes;

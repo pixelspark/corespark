@@ -5,6 +5,11 @@ using namespace tj::shared;
 #pragma warning(push)
 #pragma warning(disable: 4251)
 
+#ifdef TJ_OS_MAC
+	#warning Implementation of BrowserWnd for Mac is missing; will emit linker errors
+#endif
+
+#ifdef TJ_OS_WIN
 #ifndef TJ_NO_ATL
 	#include <atlbase.h>
 	#include <atlwin.h>
@@ -357,6 +362,7 @@ using namespace tj::shared;
 		SolidBrush br(theme->GetColor(Theme::ColorBackground));
 		g.FillRectangle(&br, rc);
 	}
+#endif
 #endif
 
 #pragma warning(pop)

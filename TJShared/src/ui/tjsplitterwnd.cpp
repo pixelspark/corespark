@@ -1,6 +1,11 @@
 #include "../../include/ui/tjui.h" 
 #include <math.h>
-#include <windowsx.h>
+
+#ifdef TJ_OS_WIN
+	// TODO: is windowsx.h used anyhwere?
+	#include <windowsx.h>
+#endif
+
 using namespace tj::shared::graphics;
 using namespace tj::shared;
 

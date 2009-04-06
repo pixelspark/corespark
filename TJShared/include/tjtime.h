@@ -38,6 +38,10 @@ namespace tj {
 				#ifdef TJ_OS_WIN
 					SYSTEMTIME _time;
 				#endif
+			
+				#ifdef TJ_OS_MAC
+					double _time;
+				#endif
 		};
 
 		struct EXPORTED Time {

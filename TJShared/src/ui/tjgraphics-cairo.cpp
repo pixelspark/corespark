@@ -6,7 +6,7 @@
 using namespace tj::shared;
 using namespace tj::shared::graphics;
 
-#ifdef WIN32
+#ifdef TJ_OS_WIN
 	#include <cairo/cairo-win32.h>
 
 	char* ToUTF8(const wchar_t* text) {

@@ -1,5 +1,9 @@
 #include "../../include/ui/tjui.h" 
-#include <windowsx.h>
+
+#ifdef TJ_OS_WIN
+	#include <windowsx.h>
+#endif
+
 using namespace tj::shared;
 
 LoggerWnd::LoggerWnd(): Wnd(null, false) {

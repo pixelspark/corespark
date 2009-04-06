@@ -55,27 +55,27 @@ void Pane::SetTitle(std::wstring c) {
 	_title = c;
 }
 
-void Pane::OnMove(Pixels x, Pixels y, Pixels w, Pixels h) {
+void Pane::OnMove(const Area& rc) {
 	if(_settings) {
-		_settings->SetValue(L"x", Stringify(x));
-		_settings->SetValue(L"y", Stringify(y));
-		_settings->SetValue(L"w", Stringify(w));
-		_settings->SetValue(L"h", Stringify(h));
+		_settings->SetValue(L"x", Stringify(rc.GetLeft()));
+		_settings->SetValue(L"y", Stringify(rc.GetTop()));
+		_settings->SetValue(L"w", Stringify(rc.GetWidth()));
+		_settings->SetValue(L"h", Stringify(rc.GetHeight()));
 	}
 }
 
-RECT Pane::GetPreferredPosition() {
-	RECT wrc;
-	GetWindowRect(GetWindow()->GetWindow(), &wrc);
+Area Pane::GetPreferredPosition() {
+	ref<Wnd> paneWnd = GetWindow();
+	Area wrc(0,0,0,0);
+	if(paneWnd) {
+		wrc = paneWnd->GetWindowArea();
+	}
 
 	if(_settings) {
-		RECT rc;
-		rc.left = StringTo<int>(_settings->GetValue(L"x", L"?"), wrc.left);
-		rc.top = StringTo<int>(_settings->GetValue(L"y", L"?"), wrc.top);
-		rc.right = rc.left + StringTo<int>(_settings->GetValue(L"w", L"?"), wrc.right-wrc.left);
-		rc.bottom = rc.top + StringTo<int>(_settings->GetValue(L"h", L"?"), wrc.bottom-wrc.top);
-
-		return rc;
+		wrc.SetX(StringTo<Pixels>(_settings->GetValue(L"x", L"?"), wrc.GetLeft()));
+		wrc.SetY(StringTo<Pixels>(_settings->GetValue(L"y", L"?"), wrc.GetTop()));
+		wrc.SetWidth(StringTo<Pixels>(_settings->GetValue(L"w", L"?"), wrc.GetWidth()));
+		wrc.SetHeight(StringTo<Pixels>(_settings->GetValue(L"h", L"?"), wrc.GetHeight()));
 	}
 
 	return wrc;
@@ -139,130 +139,130 @@ FloatingPane::FloatingPane(RootWnd* rw, ref<Pane> p): Wnd(null, false) {
 	assert(p);
 	_pane = p;
 	_root = rw;
-	SetStyleEx(WS_EX_CONTROLPARENT);
-	SetStyle(WS_OVERLAPPEDWINDOW|WS_MINIMIZEBOX|WS_MAXIMIZEBOX|WS_SYSMENU|WS_CAPTION);
+	
+	#ifdef TJ_OS_WIN
+		SetStyle(WS_OVERLAPPEDWINDOW|WS_MINIMIZEBOX|WS_MAXIMIZEBOX|WS_SYSMENU|WS_CAPTION);
+	#endif
 
 	// adapt the window to this pane
 	ref<Wnd> paneWnd = _pane->GetWindow();
-	RECT sz;
-	GetWindowRect(paneWnd->GetWindow(), &sz);
-	SetWindowPos(GetWindow(), 0, sz.left+TabWnd::TearOffLimit, sz.top+TabWnd::TearOffLimit, sz.right-sz.left, sz.bottom-sz.top, SWP_NOZORDER);
-	SetParent(paneWnd->GetWindow(), GetWindow());
-
+	if(paneWnd) {
+		Add(paneWnd);
+		Area childArea = paneWnd->GetWindowArea();
+		Move(childArea.GetLeft()+TabWnd::TearOffLimit, childArea.GetTop()+TabWnd::TearOffLimit, childArea.GetWidth(), childArea.GetHeight());
+		paneWnd->Show(true);
+	}
+	
 	// set window title
 	SetText(p->GetTitle());
 
 	Layout();
-	paneWnd->Show(true);
 	Show(true);
 }
 
 FloatingPane::~FloatingPane() {
 }
 
-LRESULT FloatingPane::Message(UINT msg, WPARAM wp, LPARAM lp) {
-	if(msg==WM_SIZE || msg==WM_MOVE) {
-		if(msg==WM_SIZE) {
-			Layout();
-		}
-		RECT rc;
-		GetWindowRect(GetWindow(),&rc);
-		_pane->OnMove(rc.left, rc.top, rc.right-rc.left, rc.bottom-rc.top);
-	}
-	else if(msg==WM_CLOSE) {
-		ShowWindow(GetWindow(), SW_HIDE);
-		if(_root) {
-			if(!_pane->IsClosable()) {
-				_root->AddOrphanPane(_pane);
+void FloatingPane::OnMove(const Area& rc) {
+	_pane->OnMove(rc);
+}
+
+#ifdef TJ_OS_WIN
+	LRESULT FloatingPane::Message(UINT msg, WPARAM wp, LPARAM lp) {
+		if(msg==WM_CLOSE) {
+			ShowWindow(GetWindow(), SW_HIDE);
+			if(_root) {
+				if(!_pane->IsClosable()) {
+					_root->AddOrphanPane(_pane);
+				}
+				_root->RemoveFloatingPane(_pane);
+				return 0;
 			}
-			_root->RemoveFloatingPane(_pane);
-			return 0;
 		}
-	}
-	else if(msg==WM_ENTERSIZEMOVE) {
-		_dragging = true;
-		SetCursor(LoadCursor(0,IDC_SIZEALL));
-		SetCapture(GetWindow());
-	}
-	else if(msg==WM_EXITSIZEMOVE) {
-		_dragging = false;
-		SetCursor(LoadCursor(0,IDC_ARROW));
-		// find tab window below this window and attach
-		POINT p;
-		GetCursorPos(&p);
-		ref<TabWnd> below = _root->FindTabWindowAt(p.x, p.y);
-		if(below) {
-			below->Attach(_pane);
-			_root->RemoveFloatingPane(_pane);
+		else if(msg==WM_ENTERSIZEMOVE) {
+			_dragging = true;
+			SetCursor(LoadCursor(0,IDC_SIZEALL));
+			SetCapture(GetWindow());
 		}
-		_root->SetDragTarget(null);
-		ReleaseCapture();
-		return 0;
-	}
-	else if(msg==WM_NCMOUSEMOVE||msg==WM_MOUSEMOVE) {
-		if(_dragging) {
+		else if(msg==WM_EXITSIZEMOVE) {
+			_dragging = false;
+			SetCursor(LoadCursor(0,IDC_ARROW));
+			// find tab window below this window and attach
 			POINT p;
 			GetCursorPos(&p);
 			ref<TabWnd> below = _root->FindTabWindowAt(p.x, p.y);
-			_root->SetDragTarget(below);
 			if(below) {
-				below->Repaint();
+				below->Attach(_pane);
+				_root->RemoveFloatingPane(_pane);
+			}
+			_root->SetDragTarget(null);
+			ReleaseCapture();
+			return 0;
+		}
+		else if(msg==WM_NCMOUSEMOVE||msg==WM_MOUSEMOVE) {
+			if(_dragging) {
+				POINT p;
+				GetCursorPos(&p);
+				ref<TabWnd> below = _root->FindTabWindowAt(p.x, p.y);
+				_root->SetDragTarget(below);
+				if(below) {
+					below->Repaint();
+				}
 			}
 		}
-	}
-	else if(msg==WM_GETMINMAXINFO) {
-		return _pane->GetWindow()->Message(msg,wp,lp);
-	}
-	else if(msg==WM_WINDOWPOSCHANGING) {
-        bool isIcon = IsIconic(GetWindow()) == TRUE;
-        bool isZoom = IsZoomed(GetWindow()) == TRUE;
+		else if(msg==WM_GETMINMAXINFO) {
+			return _pane->GetWindow()->Message(msg,wp,lp);
+		}
+		else if(msg==WM_WINDOWPOSCHANGING) {
+			bool isIcon = IsIconic(GetWindow()) == TRUE;
+			bool isZoom = IsZoomed(GetWindow()) == TRUE;
 
-		if(!isIcon && !isZoom) {
-            WINDOWPOS* info = (LPWINDOWPOS)lp;
-            if(info!=0) {
-				RECT wndrc;
-				wndrc.left = info->x;
-				wndrc.top = info->y;
-				wndrc.bottom = wndrc.top + info->cy;
-				wndrc.right = wndrc.left + info->cx;
-				HMONITOR monitor = MonitorFromRect(&wndrc, MONITOR_DEFAULTTONEAREST);
+			if(!isIcon && !isZoom) {
+				WINDOWPOS* info = (LPWINDOWPOS)lp;
+				if(info!=0) {
+					RECT wndrc;
+					wndrc.left = info->x;
+					wndrc.top = info->y;
+					wndrc.bottom = wndrc.top + info->cy;
+					wndrc.right = wndrc.left + info->cx;
+					HMONITOR monitor = MonitorFromRect(&wndrc, MONITOR_DEFAULTTONEAREST);
 
-				MONITORINFO mi;
-				const static int KSnapDistance = 12;
-				mi.cbSize = sizeof(MONITORINFO);
-				if(GetMonitorInfo(monitor, &mi)) {
-					const RECT& rc = mi.rcWork;
+					MONITORINFO mi;
+					const static int KSnapDistance = 12;
+					mi.cbSize = sizeof(MONITORINFO);
+					if(GetMonitorInfo(monitor, &mi)) {
+						const RECT& rc = mi.rcWork;
 
-					if(abs(info->x - rc.left) <= KSnapDistance) {
-						// Snap left edge
-						info->x = rc.left;
-					}
-					else if (abs((info->x + info->cx) - rc.right) <= KSnapDistance) {
-						// Snap right edge
-						info->x = rc.right - info->cx + 1;
-					}
+						if(abs(info->x - rc.left) <= KSnapDistance) {
+							// Snap left edge
+							info->x = rc.left;
+						}
+						else if (abs((info->x + info->cx) - rc.right) <= KSnapDistance) {
+							// Snap right edge
+							info->x = rc.right - info->cx + 1;
+						}
 
-					if (abs(info->y - rc.top) <= KSnapDistance) {
-						// Snap top edge
-						info->y = rc.top;
-					}
-					else if(abs((info->y + info->cy) - rc.bottom) <= KSnapDistance) {
-						// Snap bottom edge
-						info->y = rc.bottom - info->cy + 1;
+						if (abs(info->y - rc.top) <= KSnapDistance) {
+							// Snap top edge
+							info->y = rc.top;
+						}
+						else if(abs((info->y + info->cy) - rc.bottom) <= KSnapDistance) {
+							// Snap bottom edge
+							info->y = rc.bottom - info->cy + 1;
+						}
 					}
 				}
 			}
 		}
+		return Wnd::Message(msg,wp,lp);
 	}
-	return Wnd::Message(msg,wp,lp);
-}
+#endif
 
 void FloatingPane::Layout() {
-	HWND child = _pane->GetWindow()->GetWindow();
-	if(child!=0) {
-		RECT r;
-		GetClientRect(GetWindow(), &r);
-		SetWindowPos(child, 0, 0,0, r.right-r.left, r.bottom-r.top, SWP_NOZORDER);
+	Area rc = GetClientArea();
+	ref<Wnd> child = _pane->GetWindow();
+	if(child) {
+		child->Fill(LayoutFill, rc);
 	}
 }
 

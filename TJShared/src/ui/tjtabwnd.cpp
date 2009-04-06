@@ -1,5 +1,10 @@
 #include "../../include/ui/tjui.h" 
-#include <windowsx.h> 
+
+#ifdef TJ_OS_WIN
+	// TODO: this used?
+	#include <windowsx.h>
+#endif
+
 using namespace tj::shared::graphics;
 using namespace tj::shared;
 
@@ -11,7 +16,6 @@ TabWnd::TabWnd(ref<WindowManager> root, const std::wstring& id): ChildWnd(L"TabW
 	_offset(0) {
 
 	SetStyle(WS_CLIPCHILDREN|WS_CLIPSIBLINGS);
-	SetStyleEx(WS_EX_CONTROLPARENT);
 	_headerHeight = defaultHeaderHeight;
 	_root = root;
 	_detachAttachAllowed = true;

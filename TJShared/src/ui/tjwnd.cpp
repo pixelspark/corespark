@@ -586,6 +586,9 @@ LRESULT Wnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		}
 		return 0;
 	}
+	else if(msg==WM_MOVE) {
+		OnMove(GetWindowArea());
+	}
 	else if(msg==WM_HSCROLL) {
 		SCROLLINFO si;
 		ZeroMemory(&si, sizeof(si));
@@ -725,6 +728,9 @@ void Wnd::OnPaste() {
 void Wnd::OnCut() {
 }
 
+void Wnd::OnMove(const Area& ns) {
+}
+
 void Wnd::OnMouseWheelMove(WheelDirection wd) {
 	if(wd==WheelDirectionDown) {
 		SendMessage(_wnd, WM_VSCROLL, MAKELONG(SB_LINEDOWN, 0), 0L); 
@@ -848,6 +854,9 @@ Area Wnd::GetClientArea() const {
 Area Wnd::GetWindowArea() {
 	RECT r;
 	GetWindowRect(_wnd, &r);
+	strong<Theme> theme = ThemeManager::GetTheme();
+	Area rc(r.left, r.top, r.right-r.left, r.bottom-r.top);
+	rc.MultiplyCeil(1.0f/theme->GetDPIScaleFactor());
 	return Area(r);
 }
 

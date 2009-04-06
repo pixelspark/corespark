@@ -1,7 +1,11 @@
 #include "../../include/ui/tjui.h" 
 #include "../../include/properties/tjproperties.h"
-#include <windowsx.h>
-#include <commctrl.h>
+
+#ifdef TJ_OS_WIN
+	#include <windowsx.h>
+	#include <commctrl.h>
+#endif
+
 using namespace tj::shared;
 using namespace tj::shared::graphics;
 

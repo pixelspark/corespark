@@ -39,10 +39,10 @@ namespace tj {
 				bool HasIcon() const;
 
 			protected:
-				virtual void OnMove(int x, int y, int w, int h); // Called by FloatingPane
+				virtual void OnMove(const Area& rc); // Called by FloatingPane
 				virtual void OnPlacementChange(Placement& p);
 				virtual Placement GetPreferredPlacement();
-				virtual RECT GetPreferredPosition(); // For FloatingPane
+				virtual Area GetPreferredPosition(); // For FloatingPane
 
 				String _title;
 				ref<Wnd> _wnd;
@@ -59,18 +59,17 @@ namespace tj {
 
 			public:
 				FloatingPane(RootWnd* rw, ref<Pane> pane);
-				virtual ~FloatingPane();
-			
-				#ifdef TJ_OS_WIN
-					virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
-				#else
-					#warning Needs a Message implementation on non-Windows
-				#endif
-			
+				virtual ~FloatingPane();			
 				virtual void Layout();
 				virtual void Paint(graphics::Graphics& g, strong<Theme> theme);
-
+		
 			protected:
+				#ifdef TJ_OS_WIN
+					virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
+				#endif
+			
+				virtual void OnMove(const Area& ns);
+				
 				ref<Pane> _pane;
 				RootWnd* _root;
 				bool _dragging;

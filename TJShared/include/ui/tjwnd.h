@@ -103,7 +103,7 @@ namespace tj {
 				while(it!=end) {
 					ref<T> element = *it;
 					if(element) {
-						if(element.IsCastableTo<Element>()) {
+						//if(element.IsCastableTo<class Element>()) {
 							ref<Element> elementCasted = element;
 							if(elementCasted && elementCasted->IsShown()) {
 								Area client = elementCasted->GetClientArea();
@@ -111,7 +111,7 @@ namespace tj {
 									return element;
 								}
 							}
-						}
+						//}
 					}
 					++it;
 				}
@@ -194,6 +194,7 @@ namespace tj {
 				// Messages
 				virtual void Paint(graphics::Graphics& g, strong<Theme> theme) = 0;
 				virtual void OnSize(const Area& newSize);
+				virtual void OnMove(const Area& newArea);
 				virtual void OnScroll(ScrollDirection dir);
 				virtual void OnMouseWheelMove(WheelDirection dir);
 				virtual void OnActivate(bool activate);

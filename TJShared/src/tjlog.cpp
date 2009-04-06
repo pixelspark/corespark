@@ -98,18 +98,29 @@ void Log::Write(const String& source, const String& message) {
 	std::wostringstream wos;
 	wos << std::hex << std::setw(4) << std::uppercase << std::setfill(L'0') << GetCurrentThreadId();
 	
-	if(Zones::IsDebug() || ::IsDebuggerPresent()) {
-		wos << L' ' << Thread::GetCurrentThreadName();
-	}
+	#ifdef TJ_OS_WIN
+		if(Zones::IsDebug() || ::IsDebuggerPresent()) {
+			wos << L' ' << Thread::GetCurrentThreadName();
+		}
+	#endif
+	
+	#ifdef TJ_OS_MAC
+		if(Zones::IsDebug()) {
+			wos << L' ' << Thread::GetCurrentThreadName();
+		}
+	#endif
 	
 	wos << L' ' << source << L' ' << L':' << L' ' << message;
 	String finalMessage = wos.str();
 	_logger.Log(finalMessage);
 
-	if(IsDebuggerPresent()) {
-		OutputDebugString(finalMessage.c_str());
-		OutputDebugString(L"\r\n");
-	}
+	// Under Windows, also log to the debugger console when a debugger is attached
+	#ifdef TJ_OS_WIN
+		if(IsDebuggerPresent()) {
+			OutputDebugString(finalMessage.c_str());
+			OutputDebugString(L"\r\n");
+		}
+	#endif
 }
 
 void Log::Show(bool t) {

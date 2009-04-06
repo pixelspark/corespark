@@ -1,5 +1,10 @@
 #include "../../include/ui/tjui.h" 
-#include <windowsx.h>
+
+#ifdef TJ_OS_WIN
+	// TODO: is this used anywhere?
+	#include <windowsx.h>
+#endif
+
 using namespace tj::shared::graphics;
 using namespace tj::shared;
 

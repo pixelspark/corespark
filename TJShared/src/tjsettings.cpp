@@ -1,6 +1,10 @@
 #include "../include/tjcore.h"
-#include <shlwapi.h>
-#include <shlobj.h>
+
+#ifdef TJ_OS_WIN
+	#include <shlwapi.h>
+	#include <shlobj.h>
+#endif
+
 using namespace tj::shared;
 
 class SettingsNamespace: public Settings {
