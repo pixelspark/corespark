@@ -59,6 +59,7 @@ namespace tj {
 				bool _dragging;
 				CollapseMode _collapse;
 				Orientation _orientation;
+				MouseCapture _capture;
 		};
 	}
 }

@@ -120,7 +120,7 @@ void GridWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 			if(IsColumnResizingAllowed()) {
 				_dragStartX = x;
 				Area r = ChildWnd::GetClientArea();
-				SetCursor(LoadCursor(NULL, IDC_SIZEWE));
+				Mouse::Instance()->SetCursorType(CursorSizeEastWest);
 				int cx = 0;
 				std::map<int, Column>::iterator it = _cols.begin();
 				_draggingCol = -1;
@@ -137,7 +137,7 @@ void GridWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 				}
 
 				if(_draggingCol>=0) {
-					SetCapture(GetWindow());
+					_capture.StartCapturing(Mouse::Instance(), ref<Wnd>(this));
 				}
 			}
 		}
@@ -175,8 +175,8 @@ void GridWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 
 			// Cancel the drag stuff
 			_draggingCol = -1;
-			ReleaseCapture();
-			SetCursor(LoadCursor(NULL, IDC_ARROW));		
+			_capture.StopCapturing();
+			Mouse::Instance()->SetCursorType(CursorDefault);	
 		}
 	}
 }

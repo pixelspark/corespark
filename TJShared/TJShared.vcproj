@@ -440,6 +440,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ui\tjmouse.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ui\tjpane.cpp"
 					>
 				</File>
@@ -843,6 +847,10 @@
 				</File>
 				<File
 					RelativePath=".\include\ui\tjloggerwnd.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\ui\tjmouse.h"
 					>
 				</File>
 				<File

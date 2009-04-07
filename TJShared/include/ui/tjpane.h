@@ -70,6 +70,7 @@ namespace tj {
 			
 				virtual void OnMove(const Area& ns);
 				
+				MouseCapture _capture;
 				ref<Pane> _pane;
 				RootWnd* _root;
 				bool _dragging;

@@ -48,6 +48,7 @@ namespace tj {
 				const static float KMinimumColumnWidth;
 
 				std::map<int,Column> _cols;	
+				MouseCapture _capture;
 				int _draggingCol;
 				int _dragStartX;
 				bool _showHeader;

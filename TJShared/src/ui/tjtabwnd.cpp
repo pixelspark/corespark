@@ -674,7 +674,7 @@ void TabWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 						}
 						else {
 							if(_current==ref<Pane>(pane)) {
-								SetCursor(theme->GetGrabbedCursor());
+								Mouse::Instance()->SetCursorType(CursorHandGrab);
 								SetDraggingPane(pane);
 								_dragStartX = x;
 								_dragStartY = y;
@@ -688,26 +688,26 @@ void TabWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 
 			if(_dragging) {
 				if(ev==MouseEventLDown) {
-					SetCapture(GetWindow());
+					_capture.StartCapturing(Mouse::Instance(), ref<Wnd>(this));
 				}
 				else if(ev==MouseEventLUp) {
 					SetDraggingPane(null);
-					SetCursor(LoadCursor(0,IDC_ARROW));
+					Mouse::Instance()->SetCursorType(CursorDefault);
 					Repaint();
 				}
 			}
 			else {
-				ReleaseCapture();
+				_capture.StopCapturing();
 			}
 		}
 	}
 	else if(ev==MouseEventRDown) {
 		_dragStartX = x;
 		_dragStartY = y;
-		SetCapture(GetWindow());
+		_capture.StartCapturing(Mouse::Instance(), ref<Wnd>(this));
 	}
 	else if(ev==MouseEventRUp) {
-		ReleaseCapture();
+		_capture.StopCapturing();
 		SetDraggingPane(null);
 	}
 	else if(ev==MouseEventLeave) {
@@ -859,7 +859,7 @@ void TabWnd::Detach(ref<Pane> p) {
 	ref<WindowManager> root = _root;
 	if(root) {
 		ref<FloatingPane> fp = root->AddFloatingPane(p);
-		ReleaseCapture();
+		_capture.StopCapturing();
 		SendMessage(fp->GetWindow(), WM_NCLBUTTONDOWN, HTCAPTION, 0);
 	}
 	Update();

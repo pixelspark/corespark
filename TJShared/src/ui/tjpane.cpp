@@ -170,7 +170,7 @@ void FloatingPane::OnMove(const Area& rc) {
 #ifdef TJ_OS_WIN
 	LRESULT FloatingPane::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		if(msg==WM_CLOSE) {
-			ShowWindow(GetWindow(), SW_HIDE);
+			Show(false);
 			if(_root) {
 				if(!_pane->IsClosable()) {
 					_root->AddOrphanPane(_pane);
@@ -181,12 +181,12 @@ void FloatingPane::OnMove(const Area& rc) {
 		}
 		else if(msg==WM_ENTERSIZEMOVE) {
 			_dragging = true;
-			SetCursor(LoadCursor(0,IDC_SIZEALL));
-			SetCapture(GetWindow());
+			Mouse::Instance()->SetCursorType(CursorSizeAll);
+			_capture.StartCapturing(Mouse::Instance(), ref<Wnd>(this));
 		}
 		else if(msg==WM_EXITSIZEMOVE) {
 			_dragging = false;
-			SetCursor(LoadCursor(0,IDC_ARROW));
+			Mouse::Instance()->SetCursorType(CursorDefault);
 			// find tab window below this window and attach
 			POINT p;
 			GetCursorPos(&p);
@@ -196,7 +196,7 @@ void FloatingPane::OnMove(const Area& rc) {
 				_root->RemoveFloatingPane(_pane);
 			}
 			_root->SetDragTarget(null);
-			ReleaseCapture();
+			_capture.StopCapturing();
 			return 0;
 		}
 		else if(msg==WM_NCMOUSEMOVE||msg==WM_MOUSEMOVE) {

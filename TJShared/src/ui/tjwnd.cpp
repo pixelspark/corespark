@@ -856,7 +856,8 @@ Area Wnd::GetWindowArea() {
 	GetWindowRect(_wnd, &r);
 	strong<Theme> theme = ThemeManager::GetTheme();
 	Area rc(r.left, r.top, r.right-r.left, r.bottom-r.top);
-	rc.MultiplyCeil(1.0f/theme->GetDPIScaleFactor());
+	float df = 1.0f/theme->GetDPIScaleFactor();
+	rc.MultiplyCeil(df,df);
 	return Area(r);
 }
 

@@ -344,22 +344,22 @@ void SplitterWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 		else {
 			if(_collapse==CollapseNone) {
 				if(_orientation==OrientationHorizontal) {
-					SetCursor(LoadCursor(0,IDC_SIZENS));
+					Mouse::Instance()->SetCursorType(CursorSizeNorthSouth);
 
 				}
 				else if(_orientation==OrientationVertical) {
-					SetCursor(LoadCursor(0,IDC_SIZEWE));
+					Mouse::Instance()->SetCursorType(CursorSizeEastWest);
 				}
 			}
 			else {
-				SetCursor(LoadCursor(0, IDC_ARROW));
+				Mouse::Instance()->SetCursorType(CursorDefault);
 			}
 		}
 	}
 	else if(ev==MouseEventLDown) {
 		if(_collapse==CollapseNone) {
-			SetCursor(LoadCursor(0,_orientation==OrientationHorizontal?IDC_SIZENS:IDC_SIZEWE));
-			SetCapture(GetWindow());
+			Mouse::Instance()->SetCursorType(_orientation==OrientationHorizontal ? CursorSizeNorthSouth : CursorSizeEastWest);
+			_capture.StartCapturing(Mouse::Instance(), ref<Wnd>(this));
 			_ratioBeforeDragging = _ratio;
 			_dragging = true;
 			Repaint();
@@ -368,21 +368,21 @@ void SplitterWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 	else if(ev==MouseEventLUp) {
 		if(_collapse==CollapseNone) {
 			_dragging = false;
-			ReleaseCapture();
-			SetCursor(LoadCursor(0,IDC_ARROW));
+			_capture.StopCapturing();
+			Mouse::Instance()->SetCursorType(CursorDefault);
 
 			// If we're close to the borders, collapse
 			if(_ratio>(1.0f-KSnapMargin)) {
 				_ratio = _ratioBeforeDragging;
 				Collapse(CollapseFirst);
 				_dragging = false;
-				ReleaseCapture();
+				_capture.StopCapturing();
 			}
 			else if(_ratio<KSnapMargin) {
 				_ratio = _ratioBeforeDragging;
 				Collapse(CollapseSecond);
 				_dragging = false;
-				ReleaseCapture();
+				_capture.StopCapturing();
 			}
 			else {
 				// save ratio as a setting

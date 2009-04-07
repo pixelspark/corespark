@@ -25,13 +25,14 @@ namespace tj {
 				Pixels GetPathHeight() const;
 
 				std::vector< ref<Property> > _properties;
-				Pixels _nameWidth;
+				ref<TooltipWnd> _tw;
 				ref<Inspectable> _subject;
 				ref<PathWnd> _path;
 				bool _isDraggingSplitter;
 				bool _showHints;
+				Pixels _nameWidth;
 				Icon _expandIcon, _collapseIcon;
-				ref<TooltipWnd> _tw;
+				MouseCapture _capture;
 
 				const static Pixels KPathHeight;
 				const static Pixels KMinimumNameColumnWidth;

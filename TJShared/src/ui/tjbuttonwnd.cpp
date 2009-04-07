@@ -47,7 +47,7 @@ void ButtonWnd::SetText(const wchar_t* t) {
 
 void ButtonWnd::OnKey(Key k, wchar_t t, bool down, bool isAccelerator) {
 	if(!isAccelerator) {
-		if(k==KeyCharacter && t==VK_SPACE) {
+		if(k==KeyCharacter && t==L' ') {
 			if(down) {
 				_down = true;
 			}

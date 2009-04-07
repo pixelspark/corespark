@@ -91,6 +91,7 @@ namespace tj {
 				String _id;
 				Animation _entryAnimation;
 				Animation _tabAppearAnimation;
+				MouseCapture _capture;
 
 				const static int TearOffLimit = 15;
 				enum {defaultHeaderHeight = 24};

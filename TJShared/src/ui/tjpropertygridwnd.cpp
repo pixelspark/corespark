@@ -155,7 +155,7 @@ void PropertyGridWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 			}
 
 			Layout();
-			ReleaseCapture();
+			_capture.StopCapturing();
 		}
 	}
 	else if(ev==MouseEventLDown) {
@@ -163,7 +163,7 @@ void PropertyGridWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 
 		if(x>(_nameWidth-5) && x<(_nameWidth+5)) {
 			_isDraggingSplitter = true;
-			SetCapture(GetWindow());
+			_capture.StartCapturing(Mouse::Instance(), ref<Wnd>(this));
 		}
 		else {
 			// Expander/collapse icon
@@ -240,10 +240,10 @@ void PropertyGridWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 		}
 
 		if(x>(_nameWidth-5) && x<(_nameWidth+5)) {
-			SetCursor(LoadCursor(0, IDC_SIZEWE));
+			Mouse::Instance()->SetCursorType(CursorSizeEastWest);
 		}
 		else {
-			SetCursor(LoadCursor(0, IDC_ARROW));
+			Mouse::Instance()->SetCursorType(CursorDefault);
 		}
 	}
 }

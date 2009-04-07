@@ -218,8 +218,8 @@ void SliderWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 
 	if(_preciseDrag) {
 		if(ev==MouseEventLDown) {
-			SetCapture(GetWindow());
-			SetCursor(LoadCursor(NULL, IDC_SIZENS));
+			_capture.StartCapturing(Mouse::Instance(), ref<Wnd>(this));
+			Mouse::Instance()->SetCursorType(CursorSizeNorthSouth);
 		}
 		else if(ev==MouseEventMove && IsKeyDown(KeyMouseLeft)) {
 			Pixels dx = _startX - x;
@@ -237,8 +237,8 @@ void SliderWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 			SetValue(val);
 		}
 		else if(ev==MouseEventLUp) {
-			ReleaseCapture();
-			SetCursor(LoadCursor(NULL, IDC_ARROW));
+			_capture.StopCapturing();
+			Mouse::Instance()->SetCursorType(CursorDefault);
 		}
 
 		_startX = x;

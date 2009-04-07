@@ -44,6 +44,7 @@ namespace tj {
 				bool _snapHalf;
 				Pixels _startX, _startY;
 				bool _preciseDrag;
+				MouseCapture _capture;
 
 				const static int KMinimumWidth = 30;
 				const static int KValueHeight = 25;

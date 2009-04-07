@@ -189,6 +189,7 @@ namespace tj {
 			protected:
 				#ifdef TJ_OS_WIN
 					virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
+					static void TranslateKeyCodes(int vk, Key& key, wchar_t& ch);
 				#endif
 			
 				// Messages
@@ -212,9 +213,6 @@ namespace tj {
 				// Timer
 				virtual void StartTimer(Time interval, unsigned int id);
 				virtual void StopTimer(unsigned int id);
-
-				// Keys
-				static void TranslateKeyCodes(int vk, Key& key, wchar_t& ch);
 			
 			private:
 				static void RegisterClasses();

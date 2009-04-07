@@ -11,6 +11,7 @@
 #include "tjthememgr.h"
 #include "tjappcore.h"
 
+#include "tjmouse.h"
 #include "tjanimation.h"
 #include "tjicon.h"
 #include "tjwnd.h"

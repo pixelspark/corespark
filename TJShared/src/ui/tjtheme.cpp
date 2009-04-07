@@ -1,5 +1,4 @@
 #include "../../include/ui/tjui.h" 
-#include "../../resource.h"
 using namespace tj::shared::graphics;
 using namespace tj::shared;
 
@@ -11,8 +10,6 @@ Theme::Theme(float dpi) {
 	_fontBold = 0;
 	_fontSmall = 0;
 	_fontLink = 0;
-	_grab = LoadCursor(GetModuleHandle(L"TJShared"), MAKEINTRESOURCE(IDC_GRABHAND));
-	_grabbed = LoadCursor(GetModuleHandle(L"TJShared"), MAKEINTRESOURCE(IDC_GRAB));
 }
 
 Theme::~Theme() {
@@ -20,8 +17,6 @@ Theme::~Theme() {
 	delete _fontBold;
 	delete _fontSmall;
 	delete _fontLink;
-	DestroyCursor(_grab);
-	DestroyCursor(_grabbed);
 }
 
 const wchar_t* Icons::_paths[Icons::_IconLast] = {
@@ -301,14 +296,6 @@ Pixels Theme::GetMeasureInPixels(Measure m) const {
 	}
 
 	return -1;
-}
-
-HCURSOR Theme::GetGrabCursor() const {
-	return _grab;
-}
-
-HCURSOR Theme::GetGrabbedCursor() const {
-	return _grabbed;
 }
 
 graphics::Color Theme::ChangeAlpha(const graphics::Color& col, float a) {

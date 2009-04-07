@@ -132,10 +132,7 @@ namespace tj {
 				virtual Area MeasureText(const String& text, graphics::Font* font) const;
 				virtual String GetGUIFontName() const;
 
-				// Cursors
 				#ifdef TJ_OS_WIN
-					virtual HCURSOR GetGrabCursor() const;
-					virtual HCURSOR GetGrabbedCursor() const;
 					virtual graphics::Brush* GetApplicationBackgroundBrush(HWND root, HWND child) const;
 				#endif
 			
@@ -167,10 +164,6 @@ namespace tj {
 				mutable graphics::Font* _fontBold;
 				mutable graphics::Font* _fontSmall;
 				mutable graphics::Font* _fontLink;
-			
-				#ifdef TJ_OS_WIN
-					HCURSOR _grab, _grabbed;
-				#endif
 				float _dpi;
 		};
 	}
