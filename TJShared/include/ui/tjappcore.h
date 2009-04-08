@@ -21,9 +21,8 @@ namespace tj {
 				std::deque< ref<Action> > _undo;
 		};
 
-		class EXPORTED Core {
+		class EXPORTED Core: public Singleton<Core> {
 			public:
-				static strong<Core> Instance();
 				void Run(RunnableApplication* app, ref<Arguments> args);
 				RunnableApplication* GetApplicationPointer();
 				Core();
@@ -32,7 +31,6 @@ namespace tj {
 				void Quit();
 
 			protected:
-				static ref<Core> _instance;
 				RunnableApplication* _app;
 				CriticalSection _actionLock;
 				std::vector< ref<Runnable> > _actions;

@@ -68,7 +68,22 @@ namespace tj {
 				#ifdef TJ_OS_MAC
 					pthread_key_t _tls;
 				#endif
-			
+		};
+
+		template<class T> class Singleton: public virtual Object {
+			public:
+				static inline strong<T> Instance() {
+					static CriticalSection _initializationLock;
+					static ref<T> _instance;
+
+					if(!_instance) {
+						ThreadLock lock(&_initializationLock);
+						if(!_instance) {
+							_instance = GC::Hold(new T());
+						}
+					}
+					return _instance;
+				}
 		};
 
 		class EXPORTED Semaphore {

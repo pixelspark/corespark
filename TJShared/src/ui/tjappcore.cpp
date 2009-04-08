@@ -1,8 +1,6 @@
 #include "../../include/ui/tjui.h"
 using namespace tj::shared;
 
-ref<Core> Core::_instance;
-
 RunnableApplication::~RunnableApplication() {
 }
 
@@ -15,14 +13,6 @@ void RunnableApplication::AddCommandHistory(ref<Action> action) {
 }
 
 Runnable::~Runnable() {
-}
-
-strong<Core> Core::Instance() {
-	if(!_instance) {
-		_instance = GC::Hold(new Core());
-	}
-
-	return _instance;
 }
 
 void Core::Quit() {
