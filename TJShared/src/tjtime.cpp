@@ -190,6 +190,33 @@ Timestamp& Timestamp::operator =(const Timestamp& o) {
 	return *this;
 }
 
+Timestamp Timestamp::Increment(const Time& t) const {
+	Timestamp ret(false);
+
+	#ifdef TJ_OS_WIN
+		LARGE_INTEGER freq;
+		if(QueryPerformanceFrequency(&freq)==FALSE) {
+			// Tickcount used, so our frequency would be 1000
+			freq.QuadPart = 1000;
+		}
+		ret._time = _time + (t.ToInt() * freq.QuadPart) / 1000;
+	#endif
+
+	#ifdef TJ_OS_MAC
+		ret._time = _time + (double(t._time) / 1000.0);
+	#endif
+
+	return ret;
+}
+
+bool Timestamp::IsEarlierThan(const Timestamp& o) const {
+	return _time < o._time;
+}
+
+bool Timestamp::IsLaterThan(const Timestamp& o) const {
+	return _time > o._time;
+}
+
 Timestamp Timestamp::Difference(const Timestamp& other) const {
 	Timestamp t;
 	if(other._time>_time) {

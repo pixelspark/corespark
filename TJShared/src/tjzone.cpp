@@ -21,7 +21,7 @@ void Zone::GlobalDeny() {
 		Throw(L"Zone overflow error!", ExceptionTypeSevere);
 	}
 }
-
+ 
 void Zone::GlobalAllow() {
 	if(_globalBarrier>0) {
 		int old = _globalBarrier;

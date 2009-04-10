@@ -55,8 +55,9 @@ namespace tj {
 			public:
 				ThreadLocal();
 				~ThreadLocal();
-				int GetValue() const;
-				void SetValue(int v);
+				void* GetValue() const;
+				void SetValue(void* v);
+				void operator=(void* v);
 				void operator=(int v);
 				operator int() const;
 
@@ -176,6 +177,7 @@ namespace tj {
 
 			protected:
 				virtual void Run();
+				static void Sleep(double ms);
 				
 				static CriticalSection _nameLock;
 				static std::map<int, String> _names;

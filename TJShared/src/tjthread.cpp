@@ -207,6 +207,16 @@ int Thread::GetID() const {
 void Thread::Run() {
 }
 
+void Thread::Sleep(double ms) {
+	#ifdef TJ_OS_WIN
+	::Sleep(DWORD(ms));
+	#endif
+
+	#ifdef TJ_OS_MAC
+		#error Not implemented, usleep?
+	#endif
+}
+
 /* Semaphore; Windows implementation */
 #ifdef _WIN32
 	Semaphore::Semaphore() {
@@ -302,12 +312,12 @@ void Event::Wait(int ms) {
 		TlsFree(_tls);
 	}
 
-	int ThreadLocal::GetValue() const {
-		return (int)(__int64)TlsGetValue(_tls);
+	void* ThreadLocal::GetValue() const {
+		return TlsGetValue(_tls);
 	}
 
-	void ThreadLocal::SetValue(int v) {
-		TlsSetValue(_tls, (void*)(__int64)v);
+	void ThreadLocal::SetValue(void* v) {
+		TlsSetValue(_tls, v);
 	}
 #endif
 
@@ -320,21 +330,25 @@ void Event::Wait(int ms) {
 		pthread_key_delete(_tls);
 	}
 
-	int ThreadLocal::GetValue() const {
-		return reinterpret_cast<int>(pthread_getspecific(_tls));
+	void* ThreadLocal::GetValue() const {
+		return pthread_getspecific(_tls);
 	}
 
-	void ThreadLocal::SetValue(int v) {
-		pthread_setspecific(_tls, reinterpret_cast<const void*>(v));
+	void ThreadLocal::SetValue(void* v) {
+		pthread_setspecific(_tls, v);
 	}
 #endif
 
 ThreadLocal::operator int() const {
-	return GetValue();
+	return (int)(__int64)(GetValue());
+}
+
+void ThreadLocal::operator=(void* r) {
+	SetValue(r);
 }
 
 void ThreadLocal::operator=(int r) {
-	SetValue(r);
+	SetValue((void*)(__int64)(r));
 }
 
 /** Wait **/

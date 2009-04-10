@@ -9,7 +9,7 @@ TreeVisitor::~TreeVisitor() {
 }
 
 /** TreeNode **/
-TreeNode::TreeNode(): _expanded(false) {
+TreeNode::TreeNode(): _expanded(false), _expandAnimation(this, 0.0) {
 }
 
 TreeNode::~TreeNode() {
@@ -19,8 +19,16 @@ bool TreeNode::IsExpanded() const {
 	return _expanded;
 }
 
+void TreeNode::OnAnimationStep(const Animated& which) {
+	Log::Write(L"TJShared/TreeNode", L"OnAnimationStep; current value = "+Stringify(_expandAnimation.GetValue()));
+}
+
 void TreeNode::SetExpanded(bool t, bool recursive) {
 	_expanded = t;
+
+	AnimationBlock ab;
+	_expandAnimation.SetValue(t ? 1.0 : 0.0);
+	ab.Commit();
 }
 
 /** SimpleTreeNode **/

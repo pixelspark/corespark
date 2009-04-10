@@ -20,7 +20,7 @@ namespace tj {
 				virtual void LeaveChildren() = 0;
 		};
 
-		class EXPORTED TreeNode: public virtual Object {
+		class EXPORTED TreeNode: public virtual Object, public Animatable {
 			public:
 				TreeNode();
 				virtual ~TreeNode();
@@ -32,9 +32,12 @@ namespace tj {
 				virtual void Paint(graphics::Graphics& g, ref<Theme> theme, const Area& row, const TreeColumnInfo& ci) = 0;
 				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y) = 0;
 				virtual void Visit(TreeVisitor& tv) = 0;
-			
+				
+				virtual void OnAnimationStep(const Animated& which);
+
 			private:
 				bool _expanded;
+				Animated _expandAnimation;
 		};
 
 		class EXPORTED SimpleTreeNode: public TreeNode {

@@ -213,11 +213,14 @@ namespace tj {
 				String ToString() const;
 				String ToHexString() const;
 				Timestamp Difference(const Timestamp& other) const;
+				Timestamp Increment(const Time& t) const;
 				long long ToMicroSeconds() const;
 				long double ToMilliSeconds() const;
 				bool operator>(const Timestamp& o) const;
 				bool operator<(const Timestamp& o) const;
 				Timestamp& operator =(const Timestamp& o);
+				bool IsEarlierThan(const Timestamp& o) const;
+				bool IsLaterThan(const Timestamp& o) const;
 
 			protected:
 				long long _time;
