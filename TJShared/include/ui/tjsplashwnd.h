@@ -11,6 +11,8 @@ namespace tj {
 				virtual void Layout();
 
 			protected:
+				virtual void OnCreated();
+				virtual void OnSize(const Area& ns);
 				graphics::Image* _image;
 				ref<ProgressWnd> _progress;
 		};

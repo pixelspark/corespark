@@ -6,6 +6,8 @@ namespace tj {
 		/** This is a 'simple' animation. It helps you determining the value of some animation at a certain point in time,
 		but it doesn't have any functionality for calling you back every now and then for repainting, automatic animation
 		or retargeting **/
+		typedef double (*AnimationEase)(double in);
+
 		class EXPORTED Animation {
 			public:
 				enum Ease {
@@ -14,7 +16,10 @@ namespace tj {
 					EaseCubic,			// f(x) = x^3
 					EasePulse,			// f(x < 0.5) = x*2, f(x > 0.5) = 2*(1-x)
 					EaseBlink,			// f(x) = fmod(x,r) == 0
+					EaseOvershoot,		// 'shoot over' (warning, can exceed 1.0)
 				};
+
+				static AnimationEase GetEase(Ease f);
 
 				Animation();
 				virtual ~Animation();
@@ -68,14 +73,63 @@ namespace tj {
 				Animated(Animatable* parent, const double& initValue);
 				~Animated();
 				double GetValue() const;
+				double GetFutureValue() const;
 				void SetValue(double d);
 				operator double() const;
+				bool IsAnimating() const;
+				const double& operator=(const double& o);
+				const double& operator+=(const double& o);
+				const double& operator-=(const double& o);
 			    
 			  protected:
 				void SetAnimatedValue(double v);
+				void SetAnimating(bool t);
 			    
 				volatile double _value;
+				volatile double _futureValue;
+				volatile bool _isAnimating;
 				Animatable* _parent;
+		};
+
+		template<typename T> class AnimatedValue {
+			public:
+				AnimatedValue(Animatable* parent, const T& initialValue, const T& minValue, const T& maxValue): _animated(parent, double(initialValue-minValue) / double(maxValue-minValue)), _minvalue(minValue), _maxValue(maxValue)  {
+				}
+
+				~AnimatedValue() {
+				}
+
+				T GetValue() const {
+					return T(_animated.GetValue() * double(_maxValue-_minValue)) + _minValue;
+				}
+
+				void SetValue(const T& val) {
+					_animated.SetValue(double(val-_minValue) / double(_maxValue-_minValue));
+				}
+
+				operator T() const {
+					return GetValue();
+				}
+
+				const T& operator=(const T& x) {
+					SetValue(x);
+					return x;
+				}
+
+				bool IsAnimating() const {
+					return _animated.IsAnimating();
+				}
+
+			protected:
+				Animated _animated;
+				T _minValue;
+				T _maxValue;
+		};
+
+		class EXPORTED AnimatedArea: public BasicRectangle<double, Animated> {
+			public:
+				AnimatedArea(Animatable* parent);
+				virtual ~AnimatedArea();
 		};
 
 		class EXPORTED AnimationTarget {
@@ -85,6 +139,7 @@ namespace tj {
 				bool operator==(const AnimationTarget& o) const;
 				bool operator<(const AnimationTarget& o) const;
 				void SetAnimatedValue(double r) const;
+				void SetAnimating(bool t) const;
 		    
 			protected:
 				weak<Animatable> _am;
@@ -96,12 +151,14 @@ namespace tj {
 			friend class tj::shared::intern::AnimationThread;
 
 			public:
-				AnimationTargetValue(double t = 0.0, double tPerSecond = 0.0);
+				AnimationTargetValue(double t = 0.0, double tPerSecond = 0.0, AnimationEase = 0, const Time& duration = Time(0));
 				~AnimationTargetValue();
 
 			protected:
+				AnimationEase _ease;
 				double _value;
 				double _speed;
+				Time _duration;
 		};
 
 		class EXPORTED AnimationManager: public Singleton<AnimationManager> {
@@ -141,12 +198,14 @@ namespace tj {
 			public:
 				AnimationBlock(const Time& duration = 1);
 				~AnimationBlock();
+				void SetEase(AnimationEase e);
 				void Commit();
 
 			protected:
 				void AddTarget(ref<Animatable> am, Animated* val, double currentValue, double futureValue);
 
 				AnimationBlock* _prev;
+				AnimationEase _ease;
 				Time _duration;
 				std::map<AnimationTarget, std::pair<double, double> > _values;
 		};

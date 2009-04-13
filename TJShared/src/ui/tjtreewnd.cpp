@@ -20,15 +20,28 @@ bool TreeNode::IsExpanded() const {
 }
 
 void TreeNode::OnAnimationStep(const Animated& which) {
-	Log::Write(L"TJShared/TreeNode", L"OnAnimationStep; current value = "+Stringify(_expandAnimation.GetValue()));
+	ref<TreeWnd> parent = _parent;
+	if(parent) {
+		parent->Repaint();
+	}
 }
 
 void TreeNode::SetExpanded(bool t, bool recursive) {
 	_expanded = t;
 
-	AnimationBlock ab;
+	ref<TreeWnd> parent = _parent;
+	if(parent) {
+		parent->OnSize(parent->GetClientArea());
+	}
+
+	AnimationBlock ab(Time(300));
+	ab.SetEase(Animation::GetEase(Animation::EaseOvershoot));
 	_expandAnimation.SetValue(t ? 1.0 : 0.0);
 	ab.Commit();
+}
+
+void TreeNode::SetParentWindow(ref<TreeWnd> tw) {
+	_parent = tw;
 }
 
 /** SimpleTreeNode **/
@@ -46,7 +59,18 @@ void SimpleTreeNode::Add(strong<TreeNode> child) {
 	if(ref<TreeNode>(child).GetPointer()==dynamic_cast<TreeNode*>(this)) {
 		Throw(L"Cannot add tree node to itself as a child", ExceptionTypeSevere);
 	}
+	child->SetParentWindow(_parent);
 	_children.push_back(child);
+}
+
+void SimpleTreeNode::SetParentWindow(ref<TreeWnd> tw) {
+	TreeNode::SetParentWindow(tw);
+	std::deque< strong<TreeNode> >::iterator it = _children.begin();
+	while(it!=_children.end()) {
+		strong<TreeNode> kid = *it;
+		kid->SetParentWindow(tw);
+		++it;
+	}
 }
 
 void SimpleTreeNode::SetText(const std::wstring& text) {
@@ -75,12 +99,12 @@ void SimpleTreeNode::Paint(graphics::Graphics& g, ref<Theme> theme, const Area& 
 	StringFormat sf;
 	sf.SetFormatFlags(sf.GetFormatFlags()|StringFormatFlagsLineLimit);
 	sf.SetLineAlignment(StringAlignmentCenter);
-	g.DrawString(_text.c_str(), (int)_text.length(), theme->GetGUIFont(), BasicRectangle<float>(row), &sf, &text);
+	g.DrawString(_text.c_str(), (int)_text.length(), theme->GetGUIFont(), SimpleRectangle<float>(row), &sf, &text);
 }
 
 void SimpleTreeNode::Visit(TreeVisitor& tv) {
 	if(tv.Run(*this)) {
-		tv.EnterChildren();
+		tv.EnterChildren(*this);
 
 		std::deque< strong<TreeNode> >::iterator it = _children.begin();
 		while(it!=_children.end()) {
@@ -88,7 +112,7 @@ void SimpleTreeNode::Visit(TreeVisitor& tv) {
 			kid->Visit(tv);
 			++it;
 		}
-		tv.LeaveChildren();
+		tv.LeaveChildren(*this);
 	}
 }
 
@@ -99,7 +123,7 @@ bool SimpleTreeNode::IsExpandable() const {
 Pixels SimpleTreeNode::GetHeight(bool r) const {
 	if(r) {
 		std::deque< strong<TreeNode> >::const_iterator it = _children.begin();
-		Pixels h = GetHeight(false);
+		Pixels h = 0;
 
 		if(IsExpanded()) {
 			while(it!=_children.end()) {
@@ -108,7 +132,7 @@ Pixels SimpleTreeNode::GetHeight(bool r) const {
 			}
 		}
 
-		return h;
+		return Pixels(double(h) * _expandAnimation.GetValue()) + GetHeight(false);
 	}
 	else {
 		if(_height>0) {
@@ -128,7 +152,12 @@ TreeWnd::~TreeWnd() {
 }
 
 void TreeWnd::SetRoot(ref<TreeNode> root) {
+	if(_root) {
+		_root->SetParentWindow(null);
+	}
+
 	_root = root;
+	_root->SetParentWindow(this);
 	UpdateScrollBars();
 	Update();
 }
@@ -203,11 +232,11 @@ ref<TreeNode> TreeWnd::GetTreeNodeAt(Pixels x, Pixels y, Area& row, HitType& ht)
 				}
 			}
 
-			virtual void EnterChildren() {
+			virtual void EnterChildren(TreeNode& tn) {
 				_rc.Narrow(_indent, 0, 0, 0);
 			}
 
-			virtual void LeaveChildren() {
+			virtual void LeaveChildren(TreeNode& tn) {
 				_rc.Widen(_indent, 0, 0, 0);
 			}
 
@@ -293,20 +322,22 @@ void TreeWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 				Pixels hc = node.GetHeight(true);
 				Area row = _area;
 				_area.Narrow(0, h, 0, 0);
+				_g.TranslateTransform(0.0f, (float)h);
+				row.SetY(0);
 
 				if(row.GetHeight() > 0 && row.GetWidth() > 0) {
 					row.SetHeight(h);
 					
 					if(node.IsExpandable()) {
 						// Draw lines
-						if(node.IsExpanded()) {
+						///if(node.IsExpanded()) {
 							Point start(row.GetLeft() + (_indent/2), row.GetTop() + (h/2));
 							Point end(row.GetLeft() + (_indent)/2, row.GetTop() + hc);
 							Point secondEnd(end._x + 2, end._y);
 							Pen line(_theme->GetColor(Theme::ColorActiveStart), 1.0f);
 							_g.DrawLine(&line, start, end);
 							_g.DrawLine(&line, end, secondEnd);
-						}
+						///}
 
 						// Draw expand/collapse icon
 						Icon& ceIcon = node.IsExpanded() ? _tw._collapseIcon : _tw._expandIcon;
@@ -326,17 +357,23 @@ void TreeWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 					}
 					
 					node.Paint(_g, _theme, row, *this);
-					return node.IsExpanded();
+					return node.IsExpanded() || (node._expandAnimation.IsAnimating() && node._expandAnimation > 0.05);
 				}
 				return false;
 			}
 
-			virtual void EnterChildren() {
+			virtual void EnterChildren(TreeNode& tn) {
 				_area.Narrow(_indent, 0, 0, 0);
+				double sc = tn._expandAnimation;
+				_g.ScaleTransform((float)1.0, (float)sc);
+				_scales.push_back(sc);
 			}
 
-			virtual void LeaveChildren() {
+			virtual void LeaveChildren(TreeNode& tn) {
 				_area.Widen(_indent, 0, 0, 0);
+				double sc = (*_scales.rbegin());
+				_g.ScaleTransform((float)1.0, float(1.0/sc));
+				_scales.pop_back();
 			}
 
 			virtual Area GetFieldArea(const Area& row, int columnID) const {
@@ -360,6 +397,7 @@ void TreeWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 			}
 
 		protected:
+			std::deque<double> _scales;
 			Area _rc;
 			Area _area;
 			graphics::Graphics& _g;
@@ -370,10 +408,11 @@ void TreeWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 	};
 
 	if(_root) {
-		Area scrolled = area;
-		scrolled.Widen(0,GetVerticalPos(),0,0);
-		PaintTreeVisitor painter(g, scrolled, strong<Theme>(theme), *this, *this);
+		PaintTreeVisitor painter(g, Area(0,0,area.GetWidth(), area.GetHeight()), strong<Theme>(theme), *this, *this);
+		GraphicsContainer gc = g.BeginContainer();
+		g.TranslateTransform(0.0f, (float(-GetVerticalPos()))+8.0f);
 		_root->Visit(painter);
+		g.EndContainer(gc);
 	}
 
 	GridWnd::Paint(g,theme);

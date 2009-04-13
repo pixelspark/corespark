@@ -13,18 +13,72 @@ namespace tj {
 				private:
 					weak<AnimationManager> _am;
 			};
+
+			double AnimationEaseLinear(double in) {
+				return in;
+			}
+
+			double AnimationEaseQuadratic(double in) {
+				return in*in;
+			}
+
+			double AnimationEaseCubic(double in) {
+				return in*in*in;
+			}
+
+			double AnimationEasePulse(double in) {
+				if(in<0.5) {
+					return in * 2.0;
+				}
+				else {
+					return 2.0 * (1.0-in);
+				}
+			}
+
+			double AnimationEaseOvershoot(double in) {
+				return sin(in * 0.7 * 3.14159) * 1.236;
+			}
+
+			double AnimationEaseBlink(double in) {
+				return (fmod((float)in, 0.1f) > 0.05f) ? 1.0 : 0.0;
+			}
 		}
 	}
 }
 
 using namespace tj::shared::intern;
 
+/** Animation eases **/
+AnimationEase Animation::GetEase(Animation::Ease f) {
+	switch(f) {
+		case Animation::EaseLinear:
+			return intern::AnimationEaseLinear;
+
+		case Animation::EaseQuadratic:
+			return intern::AnimationEaseQuadratic;
+
+		case Animation::EaseCubic:
+			return intern::AnimationEaseCubic;
+
+		case Animation::EasePulse:
+			return intern::AnimationEasePulse;
+
+		case Animation::EaseOvershoot:
+			return intern::AnimationEaseOvershoot;
+
+		case Animation::EaseBlink:
+			return intern::AnimationEaseBlink;
+	}
+
+	return 0;
+}
+
 /** Animatable **/
 Animatable::~Animatable() {
 }
 
 /** Animated **/
-Animated::Animated(Animatable* parent, const double& initValue): _parent(parent), _value(initValue) {
+Animated::Animated(Animatable* parent, const double& initValue): _parent(parent), _isAnimating(false), _value(initValue), _futureValue(initValue) {
 }
 
 Animated::~Animated() {
@@ -34,10 +88,18 @@ double Animated::GetValue() const {
 	return _value;
 }
 
+double Animated::GetFutureValue() const {
+	return _futureValue;
+}
+
 void Animated::SetValue(double d) {
+	_futureValue = d;
 	AnimationBlock* ab = AnimationManager::Instance()->GetCurrentAnimationBlock();
 	if(ab!=0) {
 		ab->AddTarget(ref<Animatable>(_parent), this, _value, d);
+	}
+	else {
+		_value = d;
 	}
 }
 
@@ -47,6 +109,29 @@ void Animated::SetAnimatedValue(double v) {
 
 Animated::operator double() const {
 	return _value;
+}
+
+const double& Animated::operator=(const double& o) {
+	SetValue(o);
+	return o;
+}
+
+bool Animated::IsAnimating() const {
+	return _isAnimating;
+}
+
+void Animated::SetAnimating(bool t) {
+	_isAnimating = t;
+}
+
+const double& Animated::operator+=(const double& o) {
+	SetValue(_futureValue + o);	
+	return o;
+}
+
+const double& Animated::operator-=(const double& o) {
+	SetValue(_futureValue - o);	
+	return o;
 }
 
 /** AnimationTarget **/
@@ -64,6 +149,13 @@ bool AnimationTarget::operator==(const AnimationTarget& o) const {
 	return o._value == _value;
 }
 
+void AnimationTarget::SetAnimating(bool t) const {
+	ref<Animatable> am = _am;
+	if(am) {
+		_value->SetAnimating(t);
+	}
+}
+
 void AnimationTarget::SetAnimatedValue(double r) const {
 	ref<Animatable> am = _am;
 	if(am) {
@@ -73,7 +165,7 @@ void AnimationTarget::SetAnimatedValue(double r) const {
 }
 
 /** AnimationTargetValue **/
-AnimationTargetValue::AnimationTargetValue(double val, double speed): _value(val), _speed(speed) {
+AnimationTargetValue::AnimationTargetValue(double val, double speed, AnimationEase ease, const Time& duration): _value(val), _speed(speed), _ease(ease), _duration(duration) {
 }
 
 AnimationTargetValue::~AnimationTargetValue() {
@@ -106,9 +198,11 @@ void AnimationManager::SetAnimationEnabled(bool t) {
 			if(vit!=it->second.rend()) {
 				const AnimationTargetValue& targetValue = vit->second;
 				target.SetAnimatedValue(targetValue._value);
+				target.SetAnimating(false);
 			}
 			++it;
 		}
+		_targets.clear();
 	}
 
 	_enabled = t;
@@ -146,10 +240,11 @@ void AnimationManager::CommitBlock(const AnimationBlock& ab) {
 		Timestamp endTime = Timestamp(true).Increment(ab._duration);
 		std::map<AnimationTarget, std::pair<double, double> >::const_iterator it = ab._values.begin();
 		while(it!=ab._values.end()) {
-			AnimationTargetValue targetValue(it->second.second, (it->second.second - it->second.first) / (double(ab._duration.ToInt())/1000.0));
+			AnimationTargetValue targetValue(it->second.second, (it->second.second - it->second.first) / (double(ab._duration.ToInt())/1000.0), ab._ease, ab._duration.ToInt());
 
 			std::map< AnimationTarget, std::map<Timestamp, AnimationTargetValue> >::iterator mit = _targets.find(it->first);
 			if(mit==_targets.end()) {
+				it->first.SetAnimating(true);
 				_targets[it->first] = std::map<Timestamp, AnimationTargetValue>();
 				mit = _targets.find(it->first);
 			}
@@ -198,11 +293,12 @@ void AnimationThread::Run() {
 			std::map< AnimationTarget, std::map<Timestamp, AnimationTargetValue> >::iterator it = am->_targets.begin();
 			while(it!=am->_targets.end()) {
 				std::map<Timestamp, AnimationTargetValue>& timedValues = it->second;
+				const AnimationTarget& target = it->first;
 				if(timedValues.size() < 1) {
+					target.SetAnimating(false);
 					it = am->_targets.erase(it);
 				}
 				else {
-					const AnimationTarget& target = it->first;
 					std::map<Timestamp, AnimationTargetValue>::iterator tit = timedValues.begin();
 					while(tit != timedValues.end()) {
 						const AnimationTargetValue& targetValue = tit->second;
@@ -212,8 +308,12 @@ void AnimationThread::Run() {
 							tit = timedValues.erase(tit);
 						}
 						else {
-							double diffMS = tit->first.Difference(currentTime).ToMilliSeconds();
-							double value = targetValue._value - (targetValue._speed * (diffMS/1000.0));
+							double timeToEnd = tit->first.Difference(currentTime).ToMilliSeconds();
+							double fraction = 1.0 - (timeToEnd / double(targetValue._duration.ToInt()));
+							if(targetValue._ease != 0) {
+								fraction = targetValue._ease(fraction);
+							}
+							double value = targetValue._value - (1.0-fraction) * double(targetValue._duration.ToInt())/1000.0 * targetValue._speed;
 							target.SetAnimatedValue(value);
 							++tit;
 						}
@@ -237,7 +337,7 @@ void AnimationThread::Run() {
 }
 
 /** AnimationBlock **/
-AnimationBlock::AnimationBlock(const Time& duration): _duration(duration) {
+AnimationBlock::AnimationBlock(const Time& duration): _duration(duration), _ease(0) {
 	_prev = AnimationManager::Instance()->PushAnimationBlock(this);
 }
 
@@ -249,6 +349,10 @@ AnimationBlock::~AnimationBlock() {
 void AnimationBlock::Commit() {
 	AnimationManager::Instance()->CommitBlock(*this);
 	_values.clear();
+}
+
+void AnimationBlock::SetEase(AnimationEase e) {
+	_ease = e;
 }
 
 void AnimationBlock::AddTarget(ref<Animatable> am, Animated* val, double currentValue, double futureValue) {
@@ -298,30 +402,12 @@ float Animation::GetFraction() const {
 
 float Animation::GetFraction(Ease ease) const {
 	float p = GetProgress();
-
-	switch(ease) {
-		case EaseQuadratic:
-			return p*p;
-
-		case EaseCubic:
-			return p*p*p;
-
-		case EasePulse: {
-			if(p<=0.5f) {
-				return 2*p;
-			}			
-			else {
-				return 1 - 2*(p-0.5f);
-			}
-		}
-
-		case EaseBlink:
-			return fmod(p, 0.1f) > 0.05f;
-
-		case EaseLinear:
-		default:
-			return p;
+	AnimationEase easeFunction = Animation::GetEase(ease);
+	if(easeFunction!=0) {
+		return (float)easeFunction((double)p);
 	}
+
+	return p;
 }
 
 bool Animation::IsAnimating() const {
@@ -355,4 +441,11 @@ void Animation::SetAnimationsEnabled(bool t) {
 
 bool Animation::IsAnimationsEnabled() {
 	return _animationsEnabled;
+}
+
+/** AnimatedArea **/
+AnimatedArea::AnimatedArea(Animatable* parent): BasicRectangle<double, Animated>(Animated(parent, 0.0), Animated(parent,0.0), Animated(parent,0.0), Animated(parent,0.0)) {
+}
+
+AnimatedArea::~AnimatedArea() {
 }

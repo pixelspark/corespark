@@ -19,24 +19,31 @@ SplashWnd::SplashWnd(std::wstring path, Pixels w, Pixels h) {
 	mi.cbSize = sizeof(mi);
     GetMonitorInfo(mon, &mi);
 
-	RECT nrc;
-	nrc.left   = mi.rcWork.left + (mi.rcWork.right - mi.rcWork.left - w) / 2;
-    nrc.top   = mi.rcWork.top  + (mi.rcWork.bottom - mi.rcWork.top  - h) / 2;
-	SetWindowPos(GetWindow(), HWND_TOPMOST, nrc.left, nrc.top, 0, 0, SWP_NOSIZE);
+	SetWindowPos(GetWindow(), HWND_TOPMOST, (int)(mi.rcWork.left + (mi.rcWork.right - mi.rcWork.left - w) / 2), (int)(mi.rcWork.top  + (mi.rcWork.bottom - mi.rcWork.top  - h) / 2), 0, 0, SWP_NOSIZE);
 	SetSize(w,h);
-	Layout();
 
 	// Make window transparent
 	SetOpacity(0.9f);
+}
+
+void SplashWnd::OnCreated() {
+	PopupWnd::OnCreated();
 }
 
 SplashWnd::~SplashWnd() {
 	delete _image;
 }
 
+void SplashWnd::OnSize(const Area& ns) {
+	PopupWnd::OnSize(ns);
+	Layout();
+	Repaint();
+}
+
 void SplashWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 	Area rc = GetClientArea();
-	
+	SolidBrush back(theme->GetColor(Theme::ColorBackground));
+	g.FillRectangle(&back,rc);
 	g.DrawImage(_image, (RectF)rc);
 }
 

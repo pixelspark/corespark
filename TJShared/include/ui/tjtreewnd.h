@@ -4,6 +4,7 @@
 namespace tj {
 	namespace shared {
 		class TreeNode;
+		class TreeWnd;
 
 		class EXPORTED TreeColumnInfo {
 			public:
@@ -16,11 +17,14 @@ namespace tj {
 			public:
 				virtual ~TreeVisitor();
 				virtual bool Run(TreeNode& t) = 0;
-				virtual void EnterChildren() = 0;
-				virtual void LeaveChildren() = 0;
+				virtual void EnterChildren(TreeNode& t) = 0;
+				virtual void LeaveChildren(TreeNode& t) = 0;
 		};
 
 		class EXPORTED TreeNode: public virtual Object, public Animatable {
+			friend class TreeWnd;
+			friend class SimpleTreeNode;
+
 			public:
 				TreeNode();
 				virtual ~TreeNode();
@@ -34,6 +38,10 @@ namespace tj {
 				virtual void Visit(TreeVisitor& tv) = 0;
 				
 				virtual void OnAnimationStep(const Animated& which);
+
+			protected:
+				virtual void SetParentWindow(ref<TreeWnd> parent);
+				weak<TreeWnd> _parent;
 
 			private:
 				bool _expanded;
@@ -55,6 +63,8 @@ namespace tj {
 				virtual void Visit(TreeVisitor& tv);
 
 			protected:
+				virtual void SetParentWindow(ref<TreeWnd> parent);
+
 				std::deque< strong<TreeNode> > _children;
 				Pixels _height;
 				String _text;

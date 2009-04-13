@@ -139,7 +139,7 @@ void Theme::DrawInsetRectangle(graphics::Graphics& g, const Area& rc) {
 	Pixels halfWidth = highlight.GetWidth()/4;
 	highlight.Widen(halfWidth,highlight.GetHeight()*2,halfWidth,0);
 
-	g.SetClip(BasicRectangle<float>(rc));
+	g.SetClip(SimpleRectangle<float>(rc));
 	DrawHighlightEllipse(g, highlight, 0.61f);
 	g.ResetClip();
 

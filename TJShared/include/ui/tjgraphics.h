@@ -4,8 +4,8 @@
 namespace tj {
 	namespace shared {
 		namespace graphics {
-			typedef tj::shared::BasicRectangle<float> RectF;
-			typedef tj::shared::BasicRectangle<int> Rect;
+			typedef tj::shared::SimpleRectangle<float> RectF;
+			typedef tj::shared::SimpleRectangle<int> Rect;
 			typedef tj::shared::BasicCoord<float> PointF;
 			typedef tj::shared::BasicCoord<int> Point;
 			typedef tj::shared::RGBColor Color;
