@@ -94,11 +94,18 @@ double Animated::GetFutureValue() const {
 
 void Animated::SetValue(double d) {
 	_futureValue = d;
-	AnimationBlock* ab = AnimationManager::Instance()->GetCurrentAnimationBlock();
-	if(ab!=0) {
-		ab->AddTarget(ref<Animatable>(_parent), this, _value, d);
+	try {
+		AnimationBlock* ab = AnimationManager::Instance()->GetCurrentAnimationBlock();
+		if(ab!=0) {
+			ab->AddTarget(ref<Animatable>(_parent), this, _value, d);
+		}
+		else {
+			_value = d;
+		}
 	}
-	else {
+	catch(const Exception&) {
+		// A reference error can occur if SetValue is called from within the constructor of the Animatable object.
+		// At that point, the Animatable object cannot be referenced yet.
 		_value = d;
 	}
 }
@@ -303,19 +310,29 @@ void AnimationThread::Run() {
 					while(tit != timedValues.end()) {
 						const AnimationTargetValue& targetValue = tit->second;
 
-						if(tit->first.IsEarlierThan(currentTime)) {
-							target.SetAnimatedValue(targetValue._value);
-							tit = timedValues.erase(tit);
-						}
-						else {
-							double timeToEnd = tit->first.Difference(currentTime).ToMilliSeconds();
-							double fraction = 1.0 - (timeToEnd / double(targetValue._duration.ToInt()));
-							if(targetValue._ease != 0) {
-								fraction = targetValue._ease(fraction);
+						try {
+							if(tit->first.IsEarlierThan(currentTime)) {
+								target.SetAnimatedValue(targetValue._value);
+								tit = timedValues.erase(tit);
 							}
-							double value = targetValue._value - (1.0-fraction) * double(targetValue._duration.ToInt())/1000.0 * targetValue._speed;
-							target.SetAnimatedValue(value);
-							++tit;
+							else {
+								double timeToEnd = tit->first.Difference(currentTime).ToMilliSeconds();
+								double fraction = 1.0 - (timeToEnd / double(targetValue._duration.ToInt()));
+								if(targetValue._ease != 0) {
+									fraction = targetValue._ease(fraction);
+								}
+								double value = targetValue._value - (1.0-fraction) * double(targetValue._duration.ToInt())/1000.0 * targetValue._speed;
+								target.SetAnimatedValue(value);
+								++tit;
+							}
+						}
+						catch(const Exception& e) {
+							// When exceptions occur in the OnAnimationStep method of an Animatable object, they should not crash
+							// the animation thread.
+							Log::Write(L"TJShared/AnimationThread", L"Exception occurred in AnimationThread, probably in some OnAnimationStep method: "+e.GetMsg());
+						}
+						catch(...) {
+							Log::Write(L"TJShared/AnimationThread", L"An unknown exception has occurred in the AnimationThread (probably within some OnAnimationStep method).");
 						}
 					}
 					++it;

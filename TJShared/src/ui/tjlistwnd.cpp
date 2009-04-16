@@ -52,6 +52,29 @@ void GridWnd::OnSettingsChanged() {
 	}
 }
 
+void GridWnd::CheckAndUpdateColumnWidths() {
+	float totalWidth = 0.0f;
+	std::map<int,Column>::const_iterator it = _cols.begin();
+	while(it!=_cols.end()) {
+		const Column& ci = it->second;
+		if(ci._visible) {
+			totalWidth += ci._width;
+		}
+		++it;
+	}
+
+	if(totalWidth > 1.0f) {
+		std::map<int,Column>::iterator cit = _cols.begin();
+		while(cit!=_cols.end()) {
+			Column& ci = cit->second;
+			if(ci._visible) {
+				ci._width = ci._width / totalWidth;
+			}
+			++cit;
+		}
+	}
+}
+
 Area GridWnd::GetClientArea() const {
 	Area rc = ChildWnd::GetClientArea();
 	rc.Narrow(0, GetHeaderHeight(), 0, 0);
@@ -72,6 +95,7 @@ void GridWnd::SetColumnVisible(int id, bool v) {
 		else {
 			Throw(L"Column could not be found", ExceptionTypeError);
 		}
+		CheckAndUpdateColumnWidths();
 		OnColumnSizeChanged();
 		Repaint();
 	}

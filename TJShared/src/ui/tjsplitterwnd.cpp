@@ -12,19 +12,12 @@ using namespace tj::shared;
 const float SplitterWnd::KSnapMargin = 0.07f;
 const Pixels SplitterWnd::KBarHeight = 6;
 
-SplitterWnd::SplitterWnd(Orientation o): ChildWnd(L"Splitter") {
+SplitterWnd::SplitterWnd(Orientation o): ChildWnd(L"Splitter"), _currentWidth(0), _resizeMode(ResizeModeEqually), _collapse(CollapseNone), _ratio(0.618f), _ratioBeforeDragging(0.618f), _dragging(false), _orientation(o) {
 	#ifdef TJ_OS_WIN
 		SetStyle(WS_CLIPCHILDREN|WS_CLIPSIBLINGS);
 	#endif
 	
 	SetWantMouseLeave(true);
-	_collapse = CollapseNone;
-
-	_ratio = 0.618f; // Fibonacci :-)
-	_ratioBeforeDragging = 0.5f; // Gets changed when dragging
-	_defaultRatio = 0.618f;
-	_dragging = false;
-	_orientation = o;
 	Layout();
 }
 
@@ -38,6 +31,14 @@ Orientation SplitterWnd::GetOrientation() const {
 void SplitterWnd::SetOrientation(Orientation o) {
 	_orientation = o;
 	Layout();
+}
+
+SplitterWnd::ResizeMode SplitterWnd::GetResizeMode() const {
+	return _resizeMode;
+}
+
+void SplitterWnd::SetResizeMode(SplitterWnd::ResizeMode rm) {
+	_resizeMode = rm;
 }
 
 // Do not use, use SetFirst and SetSecond instead (Add will throw an exception)
@@ -140,8 +141,8 @@ void SplitterWnd::Layout() {
 		if(_a) _a->Show(true);
 		if(_b) _b->Show(true);
 		if(_orientation==OrientationHorizontal) {
-			int heightA = (int)floor(_ratio*(rc.GetHeight()));
-			int heightB = rc.GetHeight()-heightA;
+			int heightA = GetWidthOfFirstPane(rc.GetHeight());
+			int heightB = GetWidthOfSecondPane(rc.GetHeight());
 
 			if(_a) {
 				_a->Move(0, 0, rc.GetWidth(), heightA-(KBarHeight/2));
@@ -152,28 +153,52 @@ void SplitterWnd::Layout() {
 			}
 		}
 		else if(_orientation==OrientationVertical) {
-			int widthA = (int)floor(_ratio*(rc.GetWidth()))-KBarHeight;
-			int widthB = rc.GetWidth()-widthA;
+			int widthA = GetWidthOfFirstPane(rc.GetWidth());
+			int widthB = GetWidthOfSecondPane(rc.GetWidth());
 
 			if(_a) {
-				_a->Move(0, 0, widthA, rc.GetHeight());
+				_a->Move(0, 0, widthA-(KBarHeight/2), rc.GetHeight());
 			}
 
 			if(_b) {
-				_b->Move(widthA+KBarHeight-1, 0, widthB-3,rc.GetHeight());
+				_b->Move(widthA+(KBarHeight/2), 0, widthB-3,rc.GetHeight());
 			}
 		}
 	}
 }
 
-void SplitterWnd::SetRatio(float f) {
-	_collapse = CollapseNone;
-	_ratio = f;
-	_defaultRatio = f;
+Pixels SplitterWnd::GetWidthOfFirstPane(Pixels totalWidth) {
+	return (Pixels)floor(_ratio*totalWidth);
+}
 
-	ref<Settings> st = GetSettings();
-	if(st) {
-		st->SetValue(L"ratio", Stringify(_ratio));
+Pixels SplitterWnd::GetWidthOfSecondPane(Pixels totalWidth) {
+	return totalWidth-GetWidthOfFirstPane(totalWidth);
+}
+
+void SplitterWnd::SetWidthOfFirstPane(Pixels paneWidth, Pixels totalWidth) {
+	_ratio = float(paneWidth) / float(totalWidth);
+}
+
+void SplitterWnd::SetWidthOfSecondPane(Pixels paneHeight, Pixels totalWidth) {
+	SetWidthOfFirstPane(totalWidth - paneHeight, totalWidth);
+}
+
+void SplitterWnd::SetRatio(float f) {
+	if(_ratio>(1.0f-KSnapMargin)) {
+		Collapse(CollapseFirst);
+	}
+	else if(_ratio<KSnapMargin) {
+		Collapse(CollapseSecond);
+	}
+	else {
+		_ratio = f;
+		_defaultRatio = f;
+
+		// save ratio as a setting
+		ref<Settings> st = GetSettings();
+		if(st) {
+			st->SetValue(L"ratio", Stringify(_ratio));
+		}
 	}
 
 	Layout();
@@ -311,6 +336,20 @@ std::wstring SplitterWnd::GetTabTitle() const {
 }
 
 void SplitterWnd::OnSize(const Area& ns) {
+	// calculate new ratio if resize mode is not ResizeModeEqually
+	Pixels currentWidth = ((_orientation == OrientationVertical) ? ns.GetWidth() : ns.GetHeight());
+	if(_a && _b && _collapse == CollapseNone) {
+		if(_resizeMode==ResizeModeLeftOrTop) {
+			// right/bottom stays same size
+			SetWidthOfSecondPane(GetWidthOfSecondPane(_currentWidth), currentWidth);
+		}
+		else if(_resizeMode==ResizeModeRightOrBottom) {
+			// left/top stays same size
+			SetWidthOfFirstPane(GetWidthOfFirstPane(_currentWidth), currentWidth);
+		}
+	}
+	
+	_currentWidth = currentWidth;
 	Layout();
 	Repaint();
 }
@@ -357,10 +396,13 @@ void SplitterWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 		}
 	}
 	else if(ev==MouseEventLDown) {
-		if(_collapse==CollapseNone) {
+		if(_collapse!=CollapseNone) {
+			Expand();
+		}
+		else {
+			_ratioBeforeDragging = _ratio;
 			Mouse::Instance()->SetCursorType(_orientation==OrientationHorizontal ? CursorSizeNorthSouth : CursorSizeEastWest);
 			_capture.StartCapturing(Mouse::Instance(), ref<Wnd>(this));
-			_ratioBeforeDragging = _ratio;
 			_dragging = true;
 			Repaint();
 		}
@@ -372,28 +414,7 @@ void SplitterWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 			Mouse::Instance()->SetCursorType(CursorDefault);
 
 			// If we're close to the borders, collapse
-			if(_ratio>(1.0f-KSnapMargin)) {
-				_ratio = _ratioBeforeDragging;
-				Collapse(CollapseFirst);
-				_dragging = false;
-				_capture.StopCapturing();
-			}
-			else if(_ratio<KSnapMargin) {
-				_ratio = _ratioBeforeDragging;
-				Collapse(CollapseSecond);
-				_dragging = false;
-				_capture.StopCapturing();
-			}
-			else {
-				// save ratio as a setting
-				ref<Settings> st = GetSettings();
-				if(st) {
-					st->SetValue(L"ratio", Stringify(_ratio));
-				}
-			}
-		}
-		else {
-			Collapse(CollapseNone);
+			SetRatio(_ratio);
 		}
 	}
 	else if(ev==MouseEventLDouble && _collapse==CollapseNone) {
@@ -414,6 +435,9 @@ void SplitterWnd::Collapse(CollapseMode cm) {
 	}
 	else if(cm==CollapseSecond) {
 		cms = L"second";
+	}
+	else {
+		_ratio = _ratioBeforeDragging;
 	}
 
 	// Save it to settings

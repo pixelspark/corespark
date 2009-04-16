@@ -9,14 +9,25 @@ TreeVisitor::~TreeVisitor() {
 }
 
 /** TreeNode **/
-TreeNode::TreeNode(): _expanded(false), _expandAnimation(this, 0.0) {
+TreeNode::TreeNode(): _expanded(false), _alwaysExpanded(false), _expandAnimation(this, 0.0) {
 }
 
 TreeNode::~TreeNode() {
 }
 
 bool TreeNode::IsExpanded() const {
-	return _expanded;
+	return _expanded || _alwaysExpanded;
+}
+
+bool TreeNode::IsAlwaysExpanded() const {
+	return _alwaysExpanded;
+}
+
+void TreeNode::SetAlwaysExpanded(bool t) {
+	_alwaysExpanded = t;
+	if(t) {
+		SetExpanded(true, false);
+	}
 }
 
 void TreeNode::OnAnimationStep(const Animated& which) {
@@ -27,17 +38,19 @@ void TreeNode::OnAnimationStep(const Animated& which) {
 }
 
 void TreeNode::SetExpanded(bool t, bool recursive) {
-	_expanded = t;
+	if(!_alwaysExpanded) {
+		_expanded = t;
 
-	ref<TreeWnd> parent = _parent;
-	if(parent) {
-		parent->OnSize(parent->GetClientArea());
+		ref<TreeWnd> parent = _parent;
+		if(parent) {
+			parent->OnNodeExpanded(*this, t, recursive);
+		}
+
+		AnimationBlock ab(Time(300));
+		ab.SetEase(Animation::GetEase(Animation::EaseOvershoot));
+		_expandAnimation.SetValue(t ? 1.0 : 0.0);
+		ab.Commit();
 	}
-
-	AnimationBlock ab(Time(300));
-	ab.SetEase(Animation::GetEase(Animation::EaseOvershoot));
-	_expandAnimation.SetValue(t ? 1.0 : 0.0);
-	ab.Commit();
 }
 
 void TreeNode::SetParentWindow(ref<TreeWnd> tw) {
@@ -102,6 +115,9 @@ void SimpleTreeNode::Paint(graphics::Graphics& g, ref<Theme> theme, const Area& 
 	g.DrawString(_text.c_str(), (int)_text.length(), theme->GetGUIFont(), SimpleRectangle<float>(row), &sf, &text);
 }
 
+void SimpleTreeNode::OnKey(Key k, wchar_t t, bool down, bool isAccelerator) {
+}
+
 void SimpleTreeNode::Visit(TreeVisitor& tv) {
 	if(tv.Run(*this)) {
 		tv.EnterChildren(*this);
@@ -132,7 +148,12 @@ Pixels SimpleTreeNode::GetHeight(bool r) const {
 			}
 		}
 
-		return Pixels(double(h) * _expandAnimation.GetValue()) + GetHeight(false);
+		if(IsAlwaysExpanded()) {
+			return h + GetHeight(false);
+		}
+		else {
+			return Pixels(double(h) * _expandAnimation.GetValue()) + GetHeight(false);
+		}
 	}
 	else {
 		if(_height>0) {
@@ -166,9 +187,9 @@ void TreeWnd::UpdateScrollBars() {
 	Pixels h = 0;
 	if(_root) {
 		h = _root->GetHeight(true);
+		Area ns = GetClientArea();
+		SetVerticalScrollInfo(Range<int>(0, h), ns.GetHeight());
 	}
-	Area ns = GetClientArea();
-	SetVerticalScrollInfo(Range<int>(0, h), ns.GetHeight());
 }
 
 void TreeWnd::OnSize(const Area& ns) {
@@ -179,6 +200,10 @@ void TreeWnd::OnSize(const Area& ns) {
 
 void TreeWnd::OnFocus(bool t) {
 	Repaint();
+}
+
+void TreeWnd::OnNodeExpanded(TreeNode& node, bool expanded, bool recursive) {
+	UpdateScrollBars();
 }
 
 void TreeWnd::OnScroll(ScrollDirection dir) {
@@ -233,11 +258,15 @@ ref<TreeNode> TreeWnd::GetTreeNodeAt(Pixels x, Pixels y, Area& row, HitType& ht)
 			}
 
 			virtual void EnterChildren(TreeNode& tn) {
-				_rc.Narrow(_indent, 0, 0, 0);
+				if(!tn.IsAlwaysExpanded()) {
+					_rc.Narrow(_indent, 0, 0, 0);
+				}
 			}
 
 			virtual void LeaveChildren(TreeNode& tn) {
-				_rc.Widen(_indent, 0, 0, 0);
+				if(!tn.IsAlwaysExpanded()) {
+					_rc.Widen(_indent, 0, 0, 0);
+				}
 			}
 
 			Area _rc;
@@ -254,6 +283,83 @@ ref<TreeNode> TreeWnd::GetTreeNodeAt(Pixels x, Pixels y, Area& row, HitType& ht)
 	return htv._hit;
 }
 
+void TreeWnd::SetSelectedNode(ref<TreeNode> t) {
+	_selected = t;
+	OnSelectedNodeChanged(t);
+	Repaint();
+}
+
+void TreeWnd::OnSelectedNodeChanged(ref<TreeNode> tn) {
+}
+
+void TreeWnd::SelectNextNode(ref<TreeNode> current) {
+	if(!current) return;
+
+	class GetNextVisitor: public TreeVisitor {
+		public:
+			GetNextVisitor(ref<TreeNode> cursel): _currentlySelected(cursel) {}
+			virtual ~GetNextVisitor() {}
+
+			virtual bool Run(TreeNode& node) {
+				ref<TreeNode> refNode = &node;
+				if(_previous==_currentlySelected) {
+					_currentlySelected = refNode;
+					return false;
+				}
+				else {
+					_previous = refNode;
+					return node.IsExpanded();
+				}
+			}
+
+			virtual void EnterChildren(TreeNode& tn) {}
+			virtual void LeaveChildren(TreeNode& tn) {}
+
+			ref<TreeNode> _currentlySelected;
+			ref<TreeNode> _previous;
+	};
+
+	GetNextVisitor gtv(current);
+	_root->Visit(gtv);
+	if(gtv._currentlySelected && gtv._currentlySelected!=current) {
+		SetSelectedNode(gtv._currentlySelected);
+	}
+}
+
+void TreeWnd::SelectPreviousNode(ref<TreeNode> current) {
+	if(!current) return;
+
+	class GetPreviousVisitor: public TreeVisitor {
+		public:
+			GetPreviousVisitor(ref<TreeNode> cursel): _currentlySelected(cursel) {}
+			virtual ~GetPreviousVisitor() {}
+
+			virtual bool Run(TreeNode& node) {
+				ref<TreeNode> refNode = &node;
+				if(refNode==_currentlySelected) {
+					_currentlySelected = _previous;
+					return false;
+				}
+				else {
+					_previous = refNode;
+					return node.IsExpanded();
+				}
+			}
+
+			virtual void EnterChildren(TreeNode& tn) {}
+			virtual void LeaveChildren(TreeNode& tn) {}
+
+			ref<TreeNode> _currentlySelected;
+			ref<TreeNode> _previous;
+	};
+
+	GetPreviousVisitor gtv(current);
+	_root->Visit(gtv);
+	if(gtv._currentlySelected && gtv._currentlySelected!=current) {
+		SetSelectedNode(gtv._currentlySelected);
+	}
+}
+
 void TreeWnd::OnKey(Key k, wchar_t ch, bool down, bool accel) {
 	if(k==KeyRight && down) {
 		if(_selected && _selected->IsExpandable()) {
@@ -265,7 +371,20 @@ void TreeWnd::OnKey(Key k, wchar_t ch, bool down, bool accel) {
 			_selected->SetExpanded(false, IsKeyDown(KeyControl));
 		}
 	}
-	GridWnd::OnKey(k,ch,down,accel);
+	else if(k==KeyDown && down && _selected) {
+		SelectNextNode(_selected);
+	}
+	else if(k==KeyUp && down && _selected) {
+		SelectPreviousNode(_selected);
+	}
+	else {
+		if(_selected) {
+			_selected->OnKey(k,ch,down,accel);
+		}
+		else {
+			GridWnd::OnKey(k,ch,down,accel);
+		}
+	}
 }
 
 void TreeWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
@@ -318,6 +437,7 @@ void TreeWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 			}
 
 			virtual bool Run(TreeNode& node) {
+				bool isExpandedOrExpanding = node.IsExpanded() || (node._expandAnimation.IsAnimating() && node._expandAnimation > 0.05);
 				Pixels h = node.GetHeight(false);
 				Pixels hc = node.GetHeight(true);
 				Area row = _area;
@@ -330,20 +450,22 @@ void TreeWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 					
 					if(node.IsExpandable()) {
 						// Draw lines
-						///if(node.IsExpanded()) {
+						if(isExpandedOrExpanding && !node.IsAlwaysExpanded()) {
 							Point start(row.GetLeft() + (_indent/2), row.GetTop() + (h/2));
 							Point end(row.GetLeft() + (_indent)/2, row.GetTop() + hc);
 							Point secondEnd(end._x + 2, end._y);
 							Pen line(_theme->GetColor(Theme::ColorActiveStart), 1.0f);
 							_g.DrawLine(&line, start, end);
 							_g.DrawLine(&line, end, secondEnd);
-						///}
+						}
 
 						// Draw expand/collapse icon
-						Icon& ceIcon = node.IsExpanded() ? _tw._collapseIcon : _tw._expandIcon;
-						Area ceArea(row.GetLeft() + ((_indent-16)/2), row.GetTop() + ((h-16)/2), 16, 16);
-						ceIcon.Paint(_g, ceArea);
-						row.Narrow(_indent, 0, 0, 0);
+						if(!node.IsAlwaysExpanded()) {
+							Icon& ceIcon = node.IsExpanded() ? _tw._collapseIcon : _tw._expandIcon;
+							Area ceArea(row.GetLeft() + ((_indent-16)/2), row.GetTop() + ((h-16)/2), 16, 16);
+							ceIcon.Paint(_g, ceArea);
+							row.Narrow(_indent, 0, 0, 0);
+						}
 					}
 
 					if(_tw._selected.GetPointer()==&node) {
@@ -357,20 +479,24 @@ void TreeWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 					}
 					
 					node.Paint(_g, _theme, row, *this);
-					return node.IsExpanded() || (node._expandAnimation.IsAnimating() && node._expandAnimation > 0.05);
+					return isExpandedOrExpanding;
 				}
 				return false;
 			}
 
 			virtual void EnterChildren(TreeNode& tn) {
-				_area.Narrow(_indent, 0, 0, 0);
+				if(!tn.IsAlwaysExpanded()) {
+					_area.Narrow(_indent, 0, 0, 0);
+				}
 				double sc = tn._expandAnimation;
 				_g.ScaleTransform((float)1.0, (float)sc);
 				_scales.push_back(sc);
 			}
 
 			virtual void LeaveChildren(TreeNode& tn) {
-				_area.Widen(_indent, 0, 0, 0);
+				if(!tn.IsAlwaysExpanded()) {
+					_area.Widen(_indent, 0, 0, 0);
+				}
 				double sc = (*_scales.rbegin());
 				_g.ScaleTransform((float)1.0, float(1.0/sc));
 				_scales.pop_back();
@@ -408,7 +534,7 @@ void TreeWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 	};
 
 	if(_root) {
-		PaintTreeVisitor painter(g, Area(0,0,area.GetWidth(), area.GetHeight()), strong<Theme>(theme), *this, *this);
+		PaintTreeVisitor painter(g, Area(0,0,area.GetWidth(), area.GetHeight()+GetVerticalPos()), strong<Theme>(theme), *this, *this);
 		GraphicsContainer gc = g.BeginContainer();
 		g.TranslateTransform(0.0f, (float(-GetVerticalPos()))+8.0f);
 		_root->Visit(painter);

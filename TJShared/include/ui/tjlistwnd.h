@@ -43,6 +43,7 @@ namespace tj {
 				virtual void OnContextMenu(Pixels x, Pixels y);
 
 			protected:
+				virtual void CheckAndUpdateColumnWidths();
 				virtual void DoContextMenu(Pixels x, Pixels y);
 				virtual Pixels GetHeaderHeight() const;
 				const static float KMinimumColumnWidth;
