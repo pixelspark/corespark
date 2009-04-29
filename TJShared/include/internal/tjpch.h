@@ -34,6 +34,7 @@
 	// pthreads and BSD sockets are present.
 	#include <libkern/OSAtomic.h>
 	#include <stdlib.h>
+	#include <CoreFoundation/CFString.h>
 #endif
 
 #include <map>

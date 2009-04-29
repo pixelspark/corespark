@@ -45,6 +45,8 @@ namespace tj {
 		};
 
 		struct EXPORTED Time {
+			friend class Timestamp;
+			
 			public:
 				inline Time(int time=0) {
 					_time = time;

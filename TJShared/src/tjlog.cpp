@@ -19,62 +19,64 @@ namespace tj {
 				}
 		};
 
-		class LogThread: public Thread {
-			public:
-				LogThread() {
-					_loggerCreatedEvent = CreateEvent(NULL, TRUE, FALSE, 0);
-					Start();
-				}
+		#ifdef TJ_OS_WIN
+			class LogThread: public Thread {
+				public:
+					LogThread() {
+						_loggerCreatedEvent = CreateEvent(NULL, TRUE, FALSE, 0);
+						Start();
+					}
 
-				virtual ~LogThread() {
-					PostThreadMessage(_id, WM_QUIT, 0, 0);
-					WaitForCompletion();
-				}
+					virtual ~LogThread() {
+						PostThreadMessage(_id, WM_QUIT, 0, 0);
+						WaitForCompletion();
+					}
 
-				virtual void Log(const String& msg) {
-					//Start();
-					WaitForSingleObject(_loggerCreatedEvent, INFINITE);
-					_logger->Log(msg);
-				}
+					virtual void Log(const String& msg) {
+						//Start();
+						WaitForSingleObject(_loggerCreatedEvent, INFINITE);
+						_logger->Log(msg);
+					}
 
-				virtual void Show(bool s) {
-					_logger->Show(s);
-				}
+					virtual void Show(bool s) {
+						_logger->Show(s);
+					}
 
-				virtual String GetContents() {
-					WaitForSingleObject(_loggerCreatedEvent, INFINITE);
-					return _logger->GetContents();
-				}
+					virtual String GetContents() {
+						WaitForSingleObject(_loggerCreatedEvent, INFINITE);
+						return _logger->GetContents();
+					}
 
-			protected:
-				virtual void Run() {
-					try {
-						_logger = new LoggerWnd();
-						SetEvent(_loggerCreatedEvent);
+				protected:
+					virtual void Run() {
+						try {
+							_logger = new LoggerWnd();
+							SetEvent(_loggerCreatedEvent);
 
-						MSG msg;
-						while(GetMessage(&msg, 0, 0, 0)!=WM_QUIT) {
-							try {
-								TranslateMessage(&msg);
-								DispatchMessage(&msg);
+							MSG msg;
+							while(GetMessage(&msg, 0, 0, 0)!=WM_QUIT) {
+								try {
+									TranslateMessage(&msg);
+									DispatchMessage(&msg);
+								}
+								catch(Exception& e) {
+									MessageBox(0L, e.GetMsg().c_str(), L"Logger Error", MB_OK|MB_ICONERROR);
+								}
 							}
-							catch(Exception& e) {
-								MessageBox(0L, e.GetMsg().c_str(), L"Logger Error", MB_OK|MB_ICONERROR);
-							}
+
+							delete _logger;
 						}
-
-						delete _logger;
+						catch(Exception& e) {
+							MessageBox(0L, e.GetMsg().c_str(), L"Logger Error", MB_OK|MB_ICONERROR);
+						}
 					}
-					catch(Exception& e) {
-						MessageBox(0L, e.GetMsg().c_str(), L"Logger Error", MB_OK|MB_ICONERROR);
-					}
-				}
 
-				LoggerWnd* _logger;
-				HANDLE _loggerCreatedEvent;
-		};
+					LoggerWnd* _logger;
+					HANDLE _loggerCreatedEvent;
+			};
 
-		LogThread Log::_logger;
+			LogThread Log::_logger;
+		#endif
 	}
 }
 
@@ -96,7 +98,7 @@ void Log::Write(const String& source, const String& message) {
 	}
 
 	std::wostringstream wos;
-	wos << std::hex << std::setw(4) << std::uppercase << std::setfill(L'0') << GetCurrentThreadId();
+	wos << std::hex << std::setw(4) << std::uppercase << std::setfill(L'0') << Thread::GetCurrentThreadID();
 	
 	#ifdef TJ_OS_WIN
 		if(Zones::IsDebug() || ::IsDebuggerPresent()) {
@@ -112,29 +114,46 @@ void Log::Write(const String& source, const String& message) {
 	
 	wos << L' ' << source << L' ' << L':' << L' ' << message;
 	String finalMessage = wos.str();
-	_logger.Log(finalMessage);
-
-	// Under Windows, also log to the debugger console when a debugger is attached
+	
 	#ifdef TJ_OS_WIN
+		_logger.Log(finalMessage);
+
+		// Under Windows, also log to the debugger console when a debugger is attached
 		if(IsDebuggerPresent()) {
 			OutputDebugString(finalMessage.c_str());
 			OutputDebugString(L"\r\n");
 		}
 	#endif
+	
+	#ifdef TJ_OS_MAC
+		std::wcout << finalMessage << std::endl;
+	#endif
 }
 
 void Log::Show(bool t) {
-	_logger.Show(t);
+	#ifdef TJ_OS_WIN
+		_logger.Show(t);
+	#endif
 }
 
 String Log::GetContents() {
 	ZoneEntry ze(Zones::LogZone);
-	return _logger.GetContents();
+	
+	#ifdef TJ_OS_WIN
+		return _logger.GetContents();
+	#endif
+	
+	#ifdef TJ_OS_MAC
+		#warning Not implemented on Mac
+		return L"";
+	#endif
 }
 
 void Log::Stop() {
-	PostThreadMessage(_logger.GetID(), WM_QUIT, 0, 0);
-	_logger.WaitForCompletion();
+	#ifdef TJ_OS_WIN
+		PostThreadMessage(_logger.GetID(), WM_QUIT, 0, 0);
+		_logger.WaitForCompletion();
+	#endif
 }
 
 EventLogger::~EventLogger() {

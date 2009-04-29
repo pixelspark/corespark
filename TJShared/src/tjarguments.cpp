@@ -1,18 +1,16 @@
 #include "../include/tjcore.h"
 using namespace tj::shared;
 
-Arguments::Arguments() {
-    // Save local copy of the command line string, because
-    // ParseCmdLine() modifies this string while parsing it.
-	#ifdef _WIN32
-		const wchar_t* cmdline = GetCommandLine();
-	#else
-		#error Only implemented for Win32
-	#endif
-
-    m_cmdline = new wchar_t[wcslen (cmdline) + 2];
+Arguments::Arguments(const wchar_t* cmdLine) {
+    m_cmdline = new wchar_t[wcslen (cmdLine) + 2];
     if(m_cmdline) {
-		wcscpy_s(m_cmdline, wcslen(cmdline)+1, cmdline);
+		#ifdef TJ_OS_WIN
+			wcscpy_s(m_cmdline, wcslen(cmdLine)+1, cmdLine);
+		#endif
+		
+		#ifdef TJ_OS_MAC
+			wcsncpy(m_cmdline, cmdLine, wcslen(cmdLine)+1);
+		#endif
         Parse();
     }
 }

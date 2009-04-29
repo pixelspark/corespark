@@ -250,4 +250,4 @@ Alert::Result Alert::ShowYesNoCancel(const std::wstring& title, const std::wstri
 			return ResultCancel;
 	}
 }
-#endif
+#endif>>>>>>> .r487

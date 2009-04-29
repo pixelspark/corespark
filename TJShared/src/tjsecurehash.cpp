@@ -359,6 +359,6 @@ void SecureHash::AddFile(const String& path) {
 
 		CloseHandle(file);
 	#else
-		#error Not implemented
+		#warning Not implemented
 	#endif
 }

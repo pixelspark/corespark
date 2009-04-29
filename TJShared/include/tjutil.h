@@ -45,6 +45,11 @@ namespace tj {
 				static String GetSizeString(Bytes bytes);
 				static String IPToString(const in_addr& ip);
 				static String GetModuleName();
+			
+				#ifdef TJ_OS_MAC
+					static CFStringRef StringToMacString(const std::wstring& s);
+					static std::wstring MacStringToString(CFStringRef cr);
+				#endif
 		};
 
 		/* This class takes care of disabling the screensaver */
@@ -82,7 +87,7 @@ namespace tj {
 		/** Command-line argument parser. **/
 		class EXPORTED Arguments: public virtual Object {
 			public:
-				Arguments(); 
+				Arguments(const wchar_t* commandLine); 
 				virtual ~Arguments();
 				std::vector<wchar_t*>* GetOptions();
 				bool IsSet(const String& option);

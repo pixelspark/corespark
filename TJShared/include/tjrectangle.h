@@ -190,7 +190,7 @@ namespace tj {
 				}
 
 				template<typename Q> inline operator SimpleRectangle<Q>() {
-					return SimpleRectangle<Q>((Q)_x, (Q)_y, (Q)_w, (Q)_h);
+					return SimpleRectangle<Q>((Q)BasicRectangle<T,T>::_x, (Q)BasicRectangle<T,T>::_y, (Q)BasicRectangle<T,T>::_w, (Q)BasicRectangle<T,T>::_h);
 				}
 		};
 

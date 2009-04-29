@@ -23,7 +23,7 @@ void GC::Log(const char* tp, bool allocate) {
 	#endif
 	
 	#ifdef TJ_OS_MAC
-		#warning GC::Log not implemented on Mac
+		std::cout << (allocate?"A":"D") << " " << tp << std::endl;
 	#endif
 }
 

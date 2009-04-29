@@ -213,7 +213,7 @@ void Thread::Sleep(double ms) {
 	#endif
 
 	#ifdef TJ_OS_MAC
-		#error Not implemented, usleep?
+		usleep(ms*1000.0);
 	#endif
 }
 
@@ -340,7 +340,7 @@ void Event::Wait(int ms) {
 #endif
 
 ThreadLocal::operator int() const {
-	return (int)(__int64)(GetValue());
+	return (int)(void**)(GetValue());
 }
 
 void ThreadLocal::operator=(void* r) {
@@ -348,7 +348,7 @@ void ThreadLocal::operator=(void* r) {
 }
 
 void ThreadLocal::operator=(int r) {
-	SetValue((void*)(__int64)(r));
+	SetValue((void*)(r));
 }
 
 /** Wait **/

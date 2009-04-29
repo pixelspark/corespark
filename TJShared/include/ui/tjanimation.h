@@ -93,7 +93,7 @@ namespace tj {
 
 		template<typename T> class AnimatedValue {
 			public:
-				AnimatedValue(Animatable* parent, const T& initialValue, const T& minValue, const T& maxValue): _animated(parent, double(initialValue-minValue) / double(maxValue-minValue)), _minvalue(minValue), _maxValue(maxValue)  {
+				AnimatedValue(Animatable* parent, const T& initialValue, const T& minValue, const T& maxValue): _animated(parent, double(initialValue-minValue) / double(maxValue-minValue)), _minValue(minValue), _maxValue(maxValue)  {
 				}
 
 				~AnimatedValue() {

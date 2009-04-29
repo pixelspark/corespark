@@ -176,6 +176,7 @@ String SettingsStorage::GetSettingsPath(const String& vendor, const String& app,
 
 			
 	#ifdef TJ_OS_MAC
-		#error Not implemented
+	return std::wstring(L"~/Library/") + vendor + L"/" + app + L"/" + file + L".xml";
+		#warning Is this implemented correctly for Mac?
 	#endif
 }

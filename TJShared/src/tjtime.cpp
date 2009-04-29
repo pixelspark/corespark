@@ -4,6 +4,7 @@
 #ifdef TJ_OS_MAC
 	#include <CoreFoundation/CFDate.h>
 	#include <CoreFoundation/CFTimeZone.h>
+	#include <CoreFoundation/CFDateFormatter.h>
 #endif
 
 using namespace tj::shared;
@@ -143,7 +144,14 @@ String Date::ToFriendlyString() const {
 	#endif
 	
 	#ifdef TJ_OS_MAC
-		#error Not implemented
+		CFLocaleRef locale = CFLocaleCopyCurrent();
+		CFDateFormatterRef frm = CFDateFormatterCreate(kCFAllocatorDefault, locale, kCFDateFormatterShortStyle, kCFDateFormatterShortStyle);
+		CFStringRef str = CFDateFormatterCreateStringWithAbsoluteTime(kCFAllocatorDefault, frm, _time);
+		String formatted = Util::MacStringToString(str);
+		CFRelease(str);
+		CFRelease(locale);
+		CFRelease(frm);
+		return formatted;
 	#endif
 }
 

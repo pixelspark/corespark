@@ -7,6 +7,14 @@
 	#include <winioctl.h>
 #endif
 
+#ifdef TJ_OS_MAC
+	#include <CoreFoundation/CFBundle.h>
+	#include <unistd.h>
+	#include <limits.h>
+	#include <libgen.h>
+	#include <sys/stat.h>
+#endif
+
 using namespace tj::shared;
 
 ref<ResourceManager> ResourceManager::_instance;
@@ -92,14 +100,20 @@ ResourceIdentifier LocalFileResourceProvider::GetRelative(const String& path) {
 
 	ZoneEntry ze(Zones::LocalFileInfoZone);
 
-	wchar_t relativePath[MAX_PATH+3];
-	if(PathRelativePathTo(relativePath, _searchPath.c_str(), FILE_ATTRIBUTE_DIRECTORY, path.c_str(), FILE_ATTRIBUTE_NORMAL)==TRUE) {
-		// Windows sometimes adds './' in front of relative paths, remove it
-		if(relativePath[0]==L'.' && relativePath[1]==L'\\') {
-			return ResourceIdentifier((const wchar_t*)&(relativePath[2]));
-		} 
-	}
-
+	#ifdef TJ_OS_WIN
+		wchar_t relativePath[MAX_PATH+3];
+		if(PathRelativePathTo(relativePath, _searchPath.c_str(), FILE_ATTRIBUTE_DIRECTORY, path.c_str(), FILE_ATTRIBUTE_NORMAL)==TRUE) {
+			// Windows sometimes adds './' in front of relative paths, remove it
+			if(relativePath[0]==L'.' && relativePath[1]==L'\\') {
+				return ResourceIdentifier((const wchar_t*)&(relativePath[2]));
+			} 
+		}
+	#endif
+	
+	#ifdef TJ_OS_MAC
+		#warning Not implemented on Mac
+	#endif
+	
 	return L"";
 }
 
@@ -173,12 +187,23 @@ strong<ResourceManager> ResourceManager::Instance() {
 	if(!_instance) {
 		_instance = GC::Hold(new ResourceManager());
 
-		/** Add location of tjshared.dll as provider **/
-		wchar_t* buf = new wchar_t[MAX_PATH];
-		memset(buf,0,sizeof(wchar_t)*MAX_PATH);
-		GetModuleFileName(GetModuleHandle(NULL), buf, MAX_PATH);
-		PathRemoveFileSpec(buf);
-		_instance->AddProvider(strong<ResourceProvider>(GC::Hold(new LocalFileResourceProvider(buf))));
+		#ifdef TJ_OS_WIN
+			/** Add location of tjshared.dll as provider **/
+			wchar_t* buf = new wchar_t[MAX_PATH];
+			memset(buf,0,sizeof(wchar_t)*MAX_PATH);
+			GetModuleFileName(GetModuleHandle(NULL), buf, MAX_PATH);
+			PathRemoveFileSpec(buf);
+			_instance->AddProvider(strong<ResourceProvider>(GC::Hold(new LocalFileResourceProvider(buf))));
+		#endif
+		
+		#ifdef TJ_OS_MAC
+			char resourcePath[PATH_MAX+1];
+			CFBundleRef mainBundle = CFBundleGetMainBundle();
+			CFURLRef resourcesDirectoryURL = CFBundleCopyResourcesDirectoryURL(mainBundle);
+			CFURLGetFileSystemRepresentation(resourcesDirectoryURL, true, (UInt8 *) resourcePath, PATH_MAX);
+			CFRelease(resourcesDirectoryURL);
+			_instance->AddProvider(strong<ResourceProvider>(GC::Hold(new LocalFileResourceProvider(Wcs(std::string(resourcePath))))));
+		#endif
 	}
 
 	return _instance;
@@ -217,7 +242,15 @@ bool LocalFileResource::Exists() const {
 }
 
 String LocalFileResource::GetExtension() const {
-	return String(PathFindExtension(_path.c_str()));
+	#ifdef TJ_OS_WIN
+		return String(PathFindExtension(_path.c_str()));
+	#endif
+	
+	#ifdef TJ_OS_MAC
+		std::string mbsPath = Mbs(_path);
+		std::string baseName(basename(const_cast<char*>(mbsPath.c_str())));
+		return Wcs(std::string(baseName,baseName.find_last_of(L'.')+1));
+	#endif
 }
 
 ResourceIdentifier LocalFileResource::GetIdentifier() const {
@@ -229,7 +262,13 @@ String LocalFileResource::GetPath() const {
 }
 
 void LocalFileResource::Open() const {
-	ShellExecute(NULL, L"open", _path.c_str(), L"", L"", SW_SHOW);
+	#ifdef TJ_OS_WIN
+		ShellExecute(NULL, L"open", _path.c_str(), L"", L"", SW_SHOW);
+	#endif
+	
+	#ifdef TJ_OS_MAC
+		#warning Not implemented on Mac
+	#endif
 }
 
 Bytes LocalFileResource::GetSize() {
@@ -237,21 +276,39 @@ Bytes LocalFileResource::GetSize() {
 		return _cachedSize;
 	}
 
-	HANDLE hdl = CreateFile(_path.c_str(), FILE_READ_ACCESS, FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0L, 0L);
-	LARGE_INTEGER size;
-	GetFileSizeEx(hdl, &size);
-	_cachedSize = size.QuadPart;
-	CloseHandle(hdl);
-	return _cachedSize;
+	#ifdef TJ_OS_WIN
+		HANDLE hdl = CreateFile(_path.c_str(), FILE_READ_ACCESS, FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0L, 0L);
+		LARGE_INTEGER size;
+		GetFileSizeEx(hdl, &size);
+		_cachedSize = size.QuadPart;
+		CloseHandle(hdl);
+		return _cachedSize;
+	#endif
+	
+	#ifdef TJ_OS_MAC
+		struct stat64 sts;
+		std::string mbsPath = Mbs(_path);
+		stat64(mbsPath.c_str(), &sts);
+		return sts.st_size;
+		
+	#endif
 }
 
 void LocalFileResource::OpenFolder() const {
-	wchar_t* path = _wcsdup(_path.c_str());
-	PathRemoveFileSpec(path);
-	ShellExecute(NULL, L"explore", path, L"", L"", SW_SHOW);
-	delete[] path;
+	#ifdef TJ_OS_WIN
+		wchar_t* path = _wcsdup(_path.c_str());
+		PathRemoveFileSpec(path);
+		ShellExecute(NULL, L"explore", path, L"", L"", SW_SHOW);
+		delete[] path;
+	#endif
+	
+	#ifdef TJ_OS_MAC
+		#warning Not implemented on Mac
+	#endif
 }
 
 bool LocalFileResource::IsScript() const {
-	return Util::StringToLower(GetExtension()) == L".tss";
+	// TODO: doesn't GetExtension return just tss?
+	String ext = GetExtension();
+	return Util::StringToLower(ext) == L".tss";
 }

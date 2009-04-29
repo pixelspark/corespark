@@ -335,8 +335,29 @@ namespace tj {
 	}
 }
 
+// Mac strings (CFStringRef) utility methods
+#ifdef TJ_OS_MAC
+CFStringRef Util::StringToMacString(const std::wstring& s) {
+	// wchar_t is 32-bits UTF-32 on Mac (whereas it is UTF-16 on Windows...)
+	if(s.length()==0) {
+		return CFSTR("");
+	}
+	
+	return CFStringCreateWithBytes(kCFAllocatorDefault, reinterpret_cast<const unsigned char*>(s.data()), s.size(), kCFStringEncodingUTF32LE, false);
+}
+
+std::wstring Util::MacStringToString(CFStringRef cr) {
+	unsigned int n = CFStringGetLength(cr);
+	wchar_t* buffer = new wchar_t[n+1];
+	CFStringGetBytes(cr,CFRangeMake(0, n), kCFStringEncodingUTF32LE, '?', false, (unsigned char*)buffer, n, NULL);
+	std::wstring val(buffer);
+	delete[] buffer;
+	return val;
+}
+#endif
+
 // Clipboard (Windows implementation)
-#ifdef _WIN32
+#ifdef TJ_OS_WIN
 	void Clipboard::SetClipboardText(const String& text) {
 		ZoneEntry ze(Zones::ClipboardZone);
 		if(OpenClipboard(NULL)) {

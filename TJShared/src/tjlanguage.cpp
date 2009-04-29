@@ -116,7 +116,7 @@ void Language::FindLocales(const String& dir) {
 	#endif
 	
 	#ifdef TJ_OS_MAC
-		#error Not implemented
+		#warning Not implemented
 	#endif
 }
 
@@ -164,7 +164,7 @@ void Language::LoadDirectory(const String& locdir, const LocaleIdentifier& lang)
 	#endif
 	
 	#ifdef TJ_OS_MAC
-		#error Not implemented
+		#warning Not implemented
 	#endif
 }
 
@@ -196,7 +196,7 @@ void Language::Load(const String& file) {
 	ZoneEntry zeb(Zones::LocalFileReadZone);
 	ZoneEntry zec(Zones::ModifyLocaleZone);
 
-	std::wifstream fs(file.c_str());
+	std::wifstream fs(Mbs(file).c_str());
 	wchar_t line[1024];
 
 	while(!fs.eof() && fs.good()) {	
