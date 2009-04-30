@@ -340,7 +340,7 @@ void Event::Wait(int ms) {
 #endif
 
 ThreadLocal::operator int() const {
-	return (int)(void**)(GetValue());
+	return (int)(void*)(GetValue());
 }
 
 void ThreadLocal::operator=(void* r) {
