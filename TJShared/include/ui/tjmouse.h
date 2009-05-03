@@ -32,11 +32,19 @@ namespace tj {
 			friend class MouseCapture;
 
 			public:
+				enum Button {
+					ButtonLeft = 0,
+					ButtonRight,
+					ButtonMiddle,
+				};
+
 				static strong<Mouse> Instance();
 				virtual ~Mouse();
 				virtual void SetCursorType(const Cursor& c) = 0;
 				virtual void SetCursorHidden(bool t) = 0;
 				virtual bool IsCursorHidden() const = 0;
+				virtual bool IsButtonDown(Button b) = 0;
+				virtual Coord GetCursorPosition(ref<Wnd> w) = 0;
 
 			protected:
 				static ref<Mouse> _mouse;

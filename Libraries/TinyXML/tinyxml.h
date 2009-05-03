@@ -47,7 +47,7 @@ distribution.
 #endif
 
 #ifdef _MSC_VER
-	#ifdef TIXML_EXPORTED
+	#ifdef TIXML_EXPORTS
 		#define TIXML_EXPORTED __declspec(dllexport)
 	#else
 		#define TIXML_EXPORTED __declspec(dllimport)

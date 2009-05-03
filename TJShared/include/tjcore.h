@@ -20,7 +20,6 @@
 #include "tjrectangle.h"
 #include "tjcolor.h"
 #include "tjfile.h"
-#include "tjflags.h"
 #include "tjrange.h"
 #include "tjthread.h"
 #include "tjzone.h"

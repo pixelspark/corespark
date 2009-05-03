@@ -103,8 +103,10 @@ void GridWnd::SetColumnVisible(int id, bool v) {
 
 bool GridWnd::IsColumnVisible(int id) const {
 	if(_cols.size()<2) {
-		return true;
+		const std::pair<int,Column>& first = *(_cols.begin());
+		return first.first == id;
 	}
+
 	std::map<int, Column>::const_iterator it = _cols.find(id);
 	if(it!=_cols.end()) {
 		return it->second._visible;

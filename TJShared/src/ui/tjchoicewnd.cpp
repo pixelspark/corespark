@@ -69,7 +69,7 @@ void ChoiceListWnd::PaintItem(int id, graphics::Graphics &g, tj::shared::Area &r
 	if(choice) {
 		Pixels iw = choice->GetWidth();
 		Pixels ih = choice->GetHeight();
-		g.DrawImage(choice->GetImage().GetBitmap(), RectF(row.GetLeft()+2.0f, row.GetTop()+2.0f, float(iw), float(ih)));
+		choice->GetImage().Paint(g, Area(row.GetLeft()+2, row.GetTop()+2, iw, ih), true);
 
 		SolidBrush tbr(theme->GetColor(Theme::ColorText));
 		const std::wstring& title = choice->GetTitle();

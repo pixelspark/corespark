@@ -83,7 +83,6 @@ void PropertyGridWnd::Paint(Graphics& g, strong<Theme> theme) {
 	int hI = 0;
 	std::vector< ref<Property> >::iterator it = _properties.begin();
 
-	// TODO: cache theme colors over here
 	float stringLeft = 5.0f;
 	bool previousCollapsed = false;
 

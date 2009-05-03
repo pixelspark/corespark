@@ -562,3 +562,28 @@ ScreensaverOff::ScreensaverOff() {
 ScreensaverOff::~ScreensaverOff() {
 }
 #endif
+
+Flags<Power::Status> Power::GetStatus() {
+	#ifdef TJ_OS_MAC
+		return Flags<Status>();
+	#endif
+
+	#ifdef TJ_OS_WIN
+		Flags<Status> status;
+		SYSTEM_POWER_STATUS sp;
+		GetSystemPowerStatus(&sp);
+		if((sp.BatteryFlag & BATTERY_FLAG_NO_BATTERY)==0) {
+			// We have a battery
+			status.Set(PowerHasBattery, true);
+		}
+
+		if(sp.ACLineStatus == AC_LINE_ONLINE) {
+			status.Set(PowerHasAC, true);
+		}
+		else if(sp.ACLineStatus == AC_LINE_BACKUP_POWER) {
+			status.Set(PowerIsOnACBackup, true);
+		}
+
+		return status;
+	#endif
+}

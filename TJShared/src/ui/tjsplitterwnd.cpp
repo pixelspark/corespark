@@ -98,9 +98,11 @@ void SplitterWnd::OnSettingsChanged() {
 	std::wstring cm = st->GetValue(L"collapse", L"");
 	if(cm==L"first") {
 		_collapse = CollapseFirst;
+		_ratioBeforeDragging = _ratio;
 	}
 	else if(cm==L"second") {
 		_collapse = CollapseSecond;
+		_ratioBeforeDragging = _ratio;
 	}
 	else {
 		_collapse = CollapseNone;
@@ -396,10 +398,7 @@ void SplitterWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 		}
 	}
 	else if(ev==MouseEventLDown) {
-		if(_collapse!=CollapseNone) {
-			Expand();
-		}
-		else {
+		if(_collapse==CollapseNone) {
 			_ratioBeforeDragging = _ratio;
 			Mouse::Instance()->SetCursorType(_orientation==OrientationHorizontal ? CursorSizeNorthSouth : CursorSizeEastWest);
 			_capture.StartCapturing(Mouse::Instance(), ref<Wnd>(this));
@@ -416,6 +415,9 @@ void SplitterWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 			// If we're close to the borders, collapse
 			SetRatio(_ratio);
 		}
+		else {
+			Expand();
+		}
 	}
 	else if(ev==MouseEventLDouble && _collapse==CollapseNone) {
 		Collapse(CollapseFirst);
@@ -431,9 +433,11 @@ void SplitterWnd::Collapse(CollapseMode cm) {
 	// Stringify collapse mode
 	std::wstring cms = L"none";
 	if(cm==CollapseFirst) {
+		_ratioBeforeDragging = _ratio;
 		cms = L"first";
 	}
 	else if(cm==CollapseSecond) {
+		_ratioBeforeDragging = _ratio;
 		cms = L"second";
 	}
 	else {
@@ -453,4 +457,144 @@ void SplitterWnd::Collapse(CollapseMode cm) {
 void SplitterWnd::Update() {
 	if(_a) _a->Update();
 	if(_b) _b->Update();
+}
+
+/** SidebarWnd **/
+SidebarWnd::SidebarWnd(ref<Wnd> child): 
+	_child(child),
+	_closeIcon(Icons::GetIconPath(Icons::IconTabClose)), 
+	_closeIconActive(Icons::GetIconPath(Icons::IconTabCloseActive)) {
+
+}
+
+SidebarWnd::~SidebarWnd() {
+}
+
+void SidebarWnd::OnCreated() {
+	Add(_child);
+	Layout();
+}
+
+void SidebarWnd::Layout() {
+	Area rc = GetClientArea();
+	strong<Theme> theme = ThemeManager::GetTheme();
+	Pixels barHeight = theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
+
+	ref<Wnd> parent = GetParent();
+	if(parent && parent.IsCastableTo<SplitterWnd>()) {
+		ref<SplitterWnd> splitter = parent;
+		if(splitter) {
+			rc.Narrow(0,barHeight,0,0);
+		}
+	}
+
+	if(_child) {
+		_child->Fill(LayoutFill, rc, true);
+	}
+}
+
+std::wstring SidebarWnd::GetTabTitle() const {
+	if(_child) {
+		return _child->GetTabTitle();
+	}
+	return L"";
+}
+
+ref<Icon> SidebarWnd::GetTabIcon() const {
+	if(_child) {
+		return _child->GetTabIcon();
+	}
+	return null;
+}
+
+void SidebarWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
+	if(ev==MouseEventLUp) {
+		ref<Wnd> parent = GetParent();
+		if(parent && parent.IsCastableTo<SplitterWnd>()) {
+			ref<SplitterWnd> splitter = parent;
+			if(splitter) {
+				if(splitter->_a==ref<Wnd>(this)) {
+					splitter->Collapse(SplitterWnd::CollapseSecond);
+				}
+				else if(splitter->_b==ref<Wnd>(this)) {
+					splitter->Collapse(SplitterWnd::CollapseFirst);
+				}
+			}
+		}
+	}
+	else if(ev==MouseEventMove||ev==MouseEventLDown) {
+		Repaint();
+		SetWantMouseLeave(true);
+	}
+	else if(ev==MouseEventLeave) {
+		Repaint();
+	}
+	ChildWnd::OnMouse(ev,x,y);
+}
+
+void SidebarWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
+	Pixels barHeight = theme->GetMeasureInPixels(Theme::MeasureToolbarHeight);
+	Area rc = GetClientArea();
+	Area bar = rc;
+	bar.SetHeight(barHeight);
+
+	bool leftDown = Mouse::Instance()->IsButtonDown(Mouse::ButtonLeft);
+
+	// Draw background
+	LinearGradientBrush lbr(PointF(0.0f, 0.0f), PointF(0.0f, barHeight+1.0f), theme->GetColor(leftDown ? Theme::ColorActiveStart : Theme::ColorActiveEnd), theme->GetColor(leftDown ? Theme::ColorActiveEnd : Theme::ColorActiveStart));
+	g.FillRectangle(&lbr, bar);
+	Area dbrRC = bar;
+	dbrRC.Narrow(0,0,0,1);
+	SolidBrush dbr(theme->GetColor(Theme::ColorDisabledOverlay));
+	g.FillRectangle(&dbr, dbrRC);
+
+	if(_child) {
+		// Draw icon
+		Area titleRC = bar;
+		titleRC.Narrow(4,4,4,4);
+		
+		ref<Icon> tabIcon = _child->GetTabIcon();
+		if(tabIcon) {
+			tabIcon->Paint(g, Area(rc.GetLeft()+2, rc.GetTop()+2, 14, 14));
+			titleRC.Narrow(20,0,0,0);
+		}
+
+		// Draw title
+		std::wstring title = GetTabTitle();
+		SolidBrush tbr(theme->GetColor(Theme::ColorText));
+		StringFormat sf;
+		sf.SetAlignment(StringAlignmentNear);
+		sf.SetTrimming(StringTrimmingEllipsisPath);
+		AreaF titleShadowRC = titleRC;
+		titleShadowRC.Translate(0.8f, 0.8f);
+		SolidBrush shadowBrush(Theme::ChangeAlpha(theme->GetColor(Theme::ColorBackground),172));
+		g.DrawString(title.c_str(), (size_t)title.length(), theme->GetGUIFontBold(), titleShadowRC, &sf, &shadowBrush);
+		g.DrawString(title.c_str(), (size_t)title.length(), theme->GetGUIFontBold(), titleRC, &sf, &tbr);
+	}
+
+	// Draw close icon
+	Area iconRC = bar;
+	iconRC.Narrow(bar.GetWidth()-19, 0, 0, 0);
+	iconRC.SetHeight(19);
+	iconRC.SetWidth(19);
+
+	Coord mouse = Mouse::Instance()->GetCursorPosition(this);
+	if(IsMouseOver() && mouse._y < barHeight) {
+		_closeIconActive.Paint(g,iconRC);
+	}
+	else {
+		_closeIcon.Paint(g, iconRC);
+	}
+}
+
+void SidebarWnd::OnSize(const Area& ns) {
+	Layout();
+	Repaint();
+}
+
+void SidebarWnd::OnSettingsChanged() {
+	ref<Settings> st = GetSettings();
+	if(_child) {
+		_child->SetSettings(st);
+	}
 }

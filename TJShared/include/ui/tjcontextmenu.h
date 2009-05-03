@@ -97,7 +97,6 @@ namespace tj {
 				virtual ~ContextPopupWnd();
 				virtual ref<MenuItem> DoModal(strong<Wnd> parent, Pixels x, Pixels y); // returns null when no command
 				virtual void Paint(graphics::Graphics& g, strong<Theme> theme);
-				
 
 			protected:
 				virtual void EndModal(ref<MenuItem> result);
@@ -105,6 +104,7 @@ namespace tj {
 				virtual void OnKey(Key k, wchar_t ch, bool down, bool isAccelerator);
 				virtual void OnActivate(bool a);
 				virtual void OnTimer(unsigned int id);
+				virtual void OnSize(const Area& ns);
 				virtual void EnterSubMenu(strong<Menu> menu);
 				virtual void LeaveSubMenu();
 				virtual void OnSelectItem(strong<MenuItem> ci);
@@ -113,7 +113,6 @@ namespace tj {
 				int GetItemAt(Pixels y);
 				strong<Menu> GetCurrentMenu();
 
-				// TODO: move some of these to Theme GetMeasure
 				const static unsigned int KMaxItems;
 
 			private:

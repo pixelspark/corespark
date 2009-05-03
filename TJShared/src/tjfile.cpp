@@ -6,7 +6,6 @@
 	#include <shobjidl.h>
 	#include <shlguid.h>
 	#include <shlwapi.h>
-	#include <atlbase.h>
 #endif
 
 #ifdef TJ_OS_MAC

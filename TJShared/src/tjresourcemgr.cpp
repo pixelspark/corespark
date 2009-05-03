@@ -85,7 +85,6 @@ bool LocalFileResourceProvider::GetPathToLocalResource(const ResourceIdentifier&
 	String myPath = _searchPath + File::PathSeparator + rid;
 
 	// check if that file exists
-	
 	if(File::Exists(myPath)) {
 		path = myPath;
 		return true;
@@ -168,12 +167,17 @@ ref<Resource> ResourceManager::GetResource(const ResourceIdentifier& ident) {
 }
 
 bool ResourceManager::GetPathToLocalResource(const ResourceIdentifier& rid, String& path) {
+	std::wstring ridCopy = rid;
+	#ifdef TJ_OS_WIN
+		std::replace(ridCopy.begin(), ridCopy.end(), L'/', File::PathSeparator);
+	#endif
+
 	std::deque< strong<ResourceProvider> >::iterator it = _paths.begin();
 
 	while(it!=_paths.end()) {
 		strong<ResourceProvider> rp = *it;
 		
-		if(rp->GetPathToLocalResource(rid, path)) {
+		if(rp->GetPathToLocalResource(ridCopy, path)) {
 			return true;
 		}
 		++it;

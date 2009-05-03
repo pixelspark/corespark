@@ -120,13 +120,21 @@ ref<MenuItem> ContextPopupWnd::DoModal(strong<Wnd> parent, Pixels x, Pixels y) {
 }
 
 void ContextPopupWnd::EnterSubMenu(strong<Menu> cm) {
-	_menu.push_front(cm);
-	UpdateSize();
-
 	// Start animation
 	StartTimer(Time(50), 1);
 	_openAnimation.Start();
 
+	if(_menu.size()==0) {
+		// Root menu
+		_menu.push_front(cm);
+		UpdateSize();
+	}
+	else {
+		AnimationBlock ab(Time(100));
+		_menu.push_front(cm);
+		UpdateSize();
+		ab.Commit();
+	}
 	Repaint();
 }
 
@@ -137,9 +145,15 @@ void ContextPopupWnd::LeaveSubMenu() {
 		EndModal(null);
 	}
 	else {
+		AnimationBlock ab(Time(100));
 		UpdateSize();
+		ab.Commit();
 	}
 	Repaint();
+}
+
+void ContextPopupWnd::OnSize(const Area& ns) {
+	PopupWnd::OnSize(ns);
 }
 
 void ContextPopupWnd::UpdateSize() {

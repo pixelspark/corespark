@@ -3,7 +3,7 @@
 
 namespace tj {
 	namespace shared {
-		class EXPORTED PopupWnd: public Wnd {
+		class EXPORTED PopupWnd: public Wnd, public Animatable {
 			public:
 				PopupWnd(ref<Wnd> parent = 0, bool isDialog = true);
 				virtual ~PopupWnd();
@@ -18,12 +18,15 @@ namespace tj {
 				virtual void SetModal(bool m);
 
 			protected:
+				virtual void OnAnimationStep(const Animated& member);
+
 				#ifdef TJ_OS_WIN
 					virtual LRESULT Message(UINT msg, WPARAM wp, LPARAM lp);
 					virtual void FitToMonitor(POINT& p);
 				#endif
 				virtual void OnActivate(bool activate);
-				Pixels _w, _h;
+				Animated _w; // Pixels
+				Animated _h; // Pixels
 				bool _isModal;
 		};
 	}

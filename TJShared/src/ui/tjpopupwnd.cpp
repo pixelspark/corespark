@@ -2,7 +2,9 @@
 using namespace tj::shared;
 using namespace tj::shared::graphics;
 
-PopupWnd::PopupWnd(ref<Wnd> parent, bool isDialog): Wnd(parent, true, true), _isModal(false) {
+#pragma warning(disable: 4355) // 'this' used in initializer list (needed for Animated)
+
+PopupWnd::PopupWnd(ref<Wnd> parent, bool isDialog): Wnd(parent, true, true), _isModal(false), _w(this,0.0), _h(this,0.0) {
 	#ifdef TJ_OS_WIN
 		SetStyle(WS_POPUP);
 		UnsetStyle(WS_CAPTION);
@@ -16,12 +18,19 @@ PopupWnd::~PopupWnd() {
 void PopupWnd::SetSize(Pixels w, Pixels h) {
 	_w = w;
 	_h = h;
-	Wnd::SetSize(w,h);
+	Wnd::SetSize((Pixels)_w, (Pixels)_h);
+}
+
+void PopupWnd::OnAnimationStep(const Animated& member) {
+	if(member==_w || member==_h) {
+		Wnd::SetSize((Pixels)_w, (Pixels)_h);
+		Repaint();
+	}
 }
 
 void PopupWnd::OnActivate(bool activate) {
 	if(activate) {
-		Wnd::SetSize(_w,_h);
+		Wnd::SetSize((Pixels)_w, (Pixels)_h);
 	}
 	else {
 		bool disabled = (GetWindowLong(GetWindow(), GWL_STYLE) & WS_DISABLED) != 0;

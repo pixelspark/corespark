@@ -10,6 +10,7 @@ namespace tj {
 
 		class EXPORTED SplitterWnd: public ChildWnd {
 			friend class ChildEnumerator;
+			friend class SidebarWnd;
 
 			public:
 				enum CollapseMode {
@@ -74,6 +75,26 @@ namespace tj {
 				Orientation _orientation;
 				ResizeMode _resizeMode;
 				MouseCapture _capture;
+		};
+
+		class EXPORTED SidebarWnd: public ChildWnd {
+			public:
+				SidebarWnd(ref<Wnd> child);
+				virtual ~SidebarWnd();
+				virtual void Layout();
+				virtual std::wstring GetTabTitle() const;
+				virtual ref<Icon> GetTabIcon() const;
+				virtual void Paint(graphics::Graphics& g, strong<Theme> theme);
+
+			protected:
+				virtual void OnCreated();
+				virtual void OnSize(const Area& ns);
+				virtual void OnSettingsChanged();
+				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
+
+				ref<Wnd> _child;
+				Icon _closeIcon;
+				Icon _closeIconActive;
 		};
 	}
 }

@@ -23,7 +23,7 @@ SplashWnd::SplashWnd(std::wstring path, Pixels w, Pixels h) {
 	SetSize(w,h);
 
 	// Make window transparent
-	SetOpacity(0.9f);
+	///SetOpacity(0.9f);
 }
 
 void SplashWnd::OnCreated() {

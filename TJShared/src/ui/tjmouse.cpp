@@ -14,6 +14,8 @@ class WindowsMouse: public Mouse {
 		virtual void SetCursorType(const Cursor& c);
 		virtual void SetCursorHidden(bool t);
 		virtual bool IsCursorHidden() const;
+		virtual bool IsButtonDown(Button b);
+		virtual Coord GetCursorPosition(ref<Wnd> w);
 
 	protected:
 		bool _cursorHidden;
@@ -34,6 +36,39 @@ WindowsMouse::WindowsMouse(): _cursorHidden(false) {
 WindowsMouse::~WindowsMouse() {
 	DestroyCursor(_cursors[CursorHand]);
 	DestroyCursor(_cursors[CursorHandGrab]);
+}
+
+bool WindowsMouse::IsButtonDown(Button b) {
+	int vk = 0;
+	switch(b) {
+		case Mouse::ButtonMiddle:
+			vk = VK_MBUTTON;
+			break;
+
+		case Mouse::ButtonRight:
+			vk = VK_RBUTTON;
+			break;
+
+		default:
+		case Mouse::ButtonLeft:
+			vk = VK_LBUTTON;
+			break;
+	}
+
+	return ((GetAsyncKeyState(vk) & 0x8000) == 0x8000);
+}
+
+Coord WindowsMouse::GetCursorPosition(ref<Wnd> w) {
+	POINT p;
+	if(GetCursorPos(&p)) {
+		if(w) {
+			ScreenToClient(w->GetWindow(), &p);
+		}
+		strong<Theme> theme = ThemeManager::GetTheme();
+		float df = theme->GetDPIScaleFactor();
+		return Coord(Pixels(p.x / df), Pixels(p.y / df));
+	}
+	return Coord(-1,-1);
 }
 
 void WindowsMouse::SetCursorHidden(bool t) {

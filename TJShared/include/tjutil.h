@@ -7,12 +7,68 @@ namespace tj {
 	namespace shared {
 		typedef String String;
 		class Serializable;
-		typedef long long Bytes; // This is equivalent to __int64 on MSVC++
+		typedef long long int64; // This is equivalent to __int64 on MSVC++
+		typedef int64 Bytes; 
 
 		class EXPORTED Bool {
 			public:
 				static const wchar_t* KTrue;
 				static const wchar_t* KFalse;
+		};
+
+		template<typename T, typename IntType=int> class Flags {
+			public:
+				Flags(T flags) {
+					_data = flags;
+				}
+
+				Flags() {
+					_data = (T)0;
+				}
+
+				bool IsSet(T flag) const {
+					return (IntType(_data) & IntType(flag)) != 0;
+				}
+
+				void Set(T flag, bool active) {
+					if(active) {
+						_data = (T)(IntType(flag)|IntType(_data));
+					}
+					else {
+						_data = (T)(IntType(_data) & (~IntType(flag)));
+					}
+				}
+
+				const T GetValue() const {
+					return _data;
+				}
+
+				inline void operator += (T flag) {
+					Set(flag, true);
+				}
+
+				inline void operator -= (T flag) {
+					Set(flag, false);
+				}
+
+				inline bool operator[](T flag) {
+					return IsSet(flag);
+				}
+
+			protected:
+				T _data;
+		};
+
+		class EXPORTED Power {
+			public:
+				enum Status {
+					PowerUnknown = 0,
+					PowerHasAC = 1,
+					PowerIsOnACBackup = 2,
+					PowerHasBattery = 4,
+				};
+
+				static Flags<Status> GetStatus();
 		};
 
 		class EXPORTED Clipboard {

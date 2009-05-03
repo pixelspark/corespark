@@ -836,7 +836,7 @@ void Wnd::SetText(const String& text) {
 
 void Wnd::SetSize(Pixels w, Pixels h) {
 	strong<Theme> theme = ThemeManager::GetTheme();
-	SetWindowPos(_wnd, 0L, 0, 0, int(w*theme->GetDPIScaleFactor()), int(h*theme->GetDPIScaleFactor()), SWP_NOZORDER|SWP_NOMOVE|SWP_NOACTIVATE);
+	SetWindowPos(_wnd, 0L, 0, 0, int(w*theme->GetDPIScaleFactor()), int(h*theme->GetDPIScaleFactor()), SWP_NOZORDER|SWP_NOMOVE|SWP_NOACTIVATE|SWP_ASYNCWINDOWPOS);
 }
 
 Area Wnd::GetClientArea() const {

@@ -2,11 +2,7 @@
 using namespace tj::shared;
 using namespace tj::shared::graphics;
 
-TreeColumnInfo::~TreeColumnInfo() {
-}
-
-TreeVisitor::~TreeVisitor() {
-}
+#pragma warning(disable: 4355) // 'this' used in initializer list (needed for Animated)
 
 /** TreeNode **/
 TreeNode::TreeNode(): _expanded(false), _alwaysExpanded(false), _expandAnimation(this, 0.0) {
@@ -442,7 +438,6 @@ void TreeWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 				Pixels hc = node.GetHeight(true);
 				Area row = _area;
 				_area.Narrow(0, h, 0, 0);
-				_g.TranslateTransform(0.0f, (float)h);
 				row.SetY(0);
 
 				if(row.GetHeight() > 0 && row.GetWidth() > 0) {
@@ -479,8 +474,10 @@ void TreeWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 					}
 					
 					node.Paint(_g, _theme, row, *this);
+					_g.TranslateTransform(0.0f, (float)h);
 					return isExpandedOrExpanding;
 				}
+				_g.TranslateTransform(0.0f, (float)h);
 				return false;
 			}
 
@@ -536,11 +533,17 @@ void TreeWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 	if(_root) {
 		PaintTreeVisitor painter(g, Area(0,0,area.GetWidth(), area.GetHeight()+GetVerticalPos()), strong<Theme>(theme), *this, *this);
 		GraphicsContainer gc = g.BeginContainer();
-		g.TranslateTransform(0.0f, (float(-GetVerticalPos()))+8.0f);
+		g.TranslateTransform(0.0f, (float(-GetVerticalPos()))+3.0f+area.GetTop());
 		_root->Visit(painter);
 		g.EndContainer(gc);
 	}
 
 	GridWnd::Paint(g,theme);
 	theme->DrawInsetRectangleLight(g, area);
+}
+
+TreeColumnInfo::~TreeColumnInfo() {
+}
+
+TreeVisitor::~TreeVisitor() {
 }

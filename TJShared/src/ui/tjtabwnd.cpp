@@ -287,16 +287,12 @@ void TabWnd::Paint(Graphics& g, strong<Theme> theme) {
 		}
 
 		// Get current mouse position
-		POINT lp;
-		GetCursorPos(&lp);
-		if(ScreenToClient(GetWindow(), &lp)) {
-			lp.x = long(lp.x / theme->GetDPIScaleFactor());
-			lp.y = long(lp.y / theme->GetDPIScaleFactor());
-		}
+		// TODO: use newer methods
+		Coord lp = Mouse::Instance()->GetCursorPosition(this);
 
 		// Draw the pane that is being dragged
 		if(draggingPane != 0) {
-			Area tab(lp.x - draggingPane->GetWidth()/2, rect.GetTop()+scrollerHeight+1, draggingPane->GetWidth() + 2, _headerHeight - scrollerHeight - 1);
+			Area tab(lp._x - draggingPane->GetWidth()/2, rect.GetTop()+scrollerHeight+1, draggingPane->GetWidth() + 2, _headerHeight - scrollerHeight - 1);
 			ref<Pane> pane = draggingPane->GetPane();
 			if(pane) {
 				draggingPane->Paint(g, theme, tab, _current && pane==_current, true, _childStyle, entryFraction);
@@ -315,7 +311,7 @@ void TabWnd::Paint(Graphics& g, strong<Theme> theme) {
 			}
 
 			Area addArea(buttonsLeft, rect.GetTop(), 19, 19);
-			if(addArea.IsInside(lp.x, lp.y)) {
+			if(addArea.IsInside(lp._x, lp._y)) {
 				_addActiveIcon.Paint(g, addArea, 0.5f + (_entryAnimation.GetFraction()/2.0f));
 			}
 			else {
@@ -324,7 +320,7 @@ void TabWnd::Paint(Graphics& g, strong<Theme> theme) {
 
 			if(_current) {
 				Area closeArea(buttonsLeft+19, rect.GetTop(), 19, 19);
-				if(closeArea.IsInside(lp.x, lp.y)) {
+				if(closeArea.IsInside(lp._x, lp._y)) {
 					_closeActiveIcon.Paint(g, Area(rect.GetWidth()-_headerHeight, 0, 19, 19), 0.5f + (_entryAnimation.GetFraction()/2.0f));
 				}
 				else {
