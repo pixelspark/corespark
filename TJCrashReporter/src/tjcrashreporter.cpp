@@ -18,7 +18,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrev, LPSTR cmd, int nShow) {
 	// Find out in what language TJShow was used
 	std::wstring settingsPath = SettingsStorage::GetSettingsPath(L"TJ", L"TJShow", L"settings");
 	ref<SettingsStorage> st = GC::Hold(new SettingsStorage());
-	st->Load(settingsPath);
+	st->LoadFile(settingsPath);
 	Language::Load(programDir + L"\\locale\\"+st->GetValue(L"locale", L"en")+L"\\tjcrashreporter.tjs");
 
 	// Get arguments

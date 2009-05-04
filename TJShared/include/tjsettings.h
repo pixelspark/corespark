@@ -21,8 +21,10 @@ namespace tj {
 			public:
 				SettingsStorage();
 				virtual ~SettingsStorage();
-				virtual void Load(const String& path);
-				virtual void Save(const String& path) const;
+				virtual void LoadFile(const String& path);
+				virtual void SaveFile(const String& path) const;
+				virtual void Load(TiXmlElement* you);
+				virtual void Save(TiXmlElement* parent) const;
 
 				// Settings implementation
 				virtual bool GetFlag(const String& key) const;

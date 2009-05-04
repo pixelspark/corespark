@@ -58,10 +58,24 @@ SettingsStorage::SettingsStorage() {
 SettingsStorage::~SettingsStorage() {
 }
 
-void SettingsStorage::Save(const String& path) const {
-	TiXmlDocument doc;
+void SettingsStorage::Load(TiXmlElement* you) {
+	TiXmlElement* pref = you->FirstChildElement("pref");
+	while(pref!=0) {
+		const char* aKey = pref->Attribute("key");
+		if(aKey!=0) {
+			TiXmlNode* textNode = pref->FirstChild();
+			if(textNode!=0) {
+				const char* aValue = textNode->Value();
+				if(aValue!=0) {
+					_data[Wcs(aKey)] = Wcs(aValue);
+				}
+			}
+		}
+		pref = pref->NextSiblingElement("pref");
+	}
+}
 
-	TiXmlElement root("settings");
+void SettingsStorage::Save(TiXmlElement* parent) const {
 	std::map< String, String >::const_iterator it = _data.begin();
 	while(it!=_data.end()) {
 		TiXmlElement pref("pref");
@@ -69,15 +83,22 @@ void SettingsStorage::Save(const String& path) const {
 
 		TiXmlText text(Mbs(it->second).c_str());
 		pref.InsertEndChild(text);
-		root.InsertEndChild(pref);
+		parent->InsertEndChild(pref);
 		++it;
 	}
+}
+
+void SettingsStorage::SaveFile(const String& path) const {
+	TiXmlDocument doc;
+
+	TiXmlElement root("settings");
+	Save(&root);
 	doc.InsertEndChild(root);
 
 	doc.SaveFile(Mbs(path).c_str());
 }
 
-void SettingsStorage::Load(const String& path) {
+void SettingsStorage::LoadFile(const String& path) {
 	ThreadLock lock(&_lock);
 	TiXmlDocument doc;
 	doc.LoadFile(Mbs(path).c_str());
@@ -85,20 +106,7 @@ void SettingsStorage::Load(const String& path) {
 	if(!doc.Error()) {
 		TiXmlElement* root = doc.FirstChildElement();
 		if(root!=0) {
-			TiXmlElement* pref = root->FirstChildElement("pref");
-			while(pref!=0) {
-				const char* aKey = pref->Attribute("key");
-				if(aKey!=0) {
-					TiXmlNode* textNode = pref->FirstChild();
-					if(textNode!=0) {
-						const char* aValue = textNode->Value();
-						if(aValue!=0) {
-							_data[Wcs(aKey)] = Wcs(aValue);
-						}
-					}
-				}
-				pref = pref->NextSiblingElement("pref");
-			}
+			Load(root);
 		}
 	}
 	else {
