@@ -73,8 +73,19 @@ bool Wnd::IsKeyDown(Key k) {
 			vk = VK_DELETE;
 			break;
 
+		case KeyBackspace:
+			vk = L'\b';
+
 		case KeyInsert:
 			vk = VK_INSERT;
+			break;
+
+		case KeyHome:
+			vk = VK_HOME;
+			break;
+
+		case KeyEnd:
+			vk = VK_END;
 			break;
 
 		case KeyMouseLeft: {
@@ -672,6 +683,9 @@ LRESULT Wnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 			Repaint();
 		}
 	}
+	else if(msg==WM_CHAR) {
+		OnCharacter(wp);
+	}
 	else if(msg==WM_KEYDOWN || msg==WM_KEYUP || msg==WM_SYSKEYDOWN || msg==WM_SYSKEYUP) {
 		if(msg==WM_KEYDOWN && LOWORD(wp)==VK_TAB) {
 			HWND root = ::GetAncestor(GetWindow(), GA_ROOT);
@@ -760,6 +774,14 @@ void Wnd::TranslateKeyCodes(int vk, Key& key, wchar_t& ch) {
 			key = KeyUp;
 			break;
 
+		case VK_HOME:
+			key = KeyHome;
+			break;
+
+		case VK_END:
+			key = KeyEnd;
+			break;
+
 		case VK_NEXT:
 			key = KeyPageDown;
 			break;
@@ -780,6 +802,10 @@ void Wnd::TranslateKeyCodes(int vk, Key& key, wchar_t& ch) {
 			key = KeyDelete;
 			break;
 
+		case L'\b':
+			key = KeyBackspace;
+			break;
+
 		default:
 			key = KeyCharacter;
 			ch = (wchar_t)vk;
@@ -792,6 +818,9 @@ void Wnd::OnSize(const Area& newSize) {
 
 void Wnd::OnTimer(unsigned int id) {
 	Repaint();
+}
+
+void Wnd::OnCharacter(wchar_t t) {
 }
 
 void Wnd::OnScroll(ScrollDirection dir) {

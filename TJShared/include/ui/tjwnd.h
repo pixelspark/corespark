@@ -48,6 +48,9 @@ namespace tj {
 			KeyAlt,
 			KeyDelete,
 			KeyInsert,
+			KeyHome,
+			KeyEnd,
+			KeyBackspace,
 		};
 
 		enum LayoutFlags {
@@ -205,6 +208,7 @@ namespace tj {
 				virtual void OnDropFiles(const std::vector<String>& files);
 				virtual void OnTimer(unsigned int id);
 				virtual void OnKey(Key k, wchar_t t, bool down, bool isAccelerator);
+				virtual void OnCharacter(wchar_t t);
 				virtual void OnContextMenu(Pixels x, Pixels y);
 				virtual void OnCopy();
 				virtual void OnPaste();
