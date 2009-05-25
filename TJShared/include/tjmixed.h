@@ -18,6 +18,10 @@ namespace tj {
 				~Mixed() {
 				}
 
+				inline bool HasMixValues() const {
+					return _mixValues.size() > 0;
+				}
+
 				inline void SetMixValue(const String& ident, T value) {
 					_mixValues[ident] = value;
 				}

@@ -96,8 +96,12 @@ namespace tj {
 				void Release(int n = 1);
 				bool Wait();
 
+				#ifdef TJ_OS_WIN
+					HANDLE GetHandle();
+				#endif
+
 			private:
-				#ifdef _WIN32
+				#ifdef TJ_OS_WIN
 					HANDLE _sema;
 				#endif
 		};
@@ -114,6 +118,10 @@ namespace tj {
 				void Pulse();
 				void Reset();
 				void Wait(int ms=0);
+
+				#ifdef TJ_OS_WIN
+					HANDLE GetHandle();
+				#endif
 
 			protected:
 				#ifdef TJ_OS_WIN

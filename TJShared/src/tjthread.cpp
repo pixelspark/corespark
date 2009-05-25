@@ -218,7 +218,7 @@ void Thread::Sleep(double ms) {
 }
 
 /* Semaphore; Windows implementation */
-#ifdef _WIN32
+#ifdef TJ_OS_WIN
 	Semaphore::Semaphore() {
 		_sema = CreateSemaphore(NULL, 0, LONG_MAX, 0);
 	}
@@ -233,6 +233,10 @@ void Thread::Sleep(double ms) {
 
 	bool Semaphore::Wait() {
 		return WaitForSingleObject(_sema, INFINITE) == WAIT_OBJECT_0;
+	}
+
+	HANDLE Semaphore::GetHandle() {
+		return _sema;
 	}
 #endif
 
@@ -260,6 +264,10 @@ void Thread::Sleep(double ms) {
 
 	void Event::Wait(int ms) {
 		WaitForSingleObject(_event, ms);
+	}
+
+	HANDLE Event::GetHandle() {
+		return _event;
 	}
 #endif
 
