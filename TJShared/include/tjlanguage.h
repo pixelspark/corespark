@@ -5,6 +5,7 @@ namespace tj {
 	namespace shared {
 		typedef String LocaleIdentifier;
 		class Property;
+		class Inspectable;
 
 		class EXPORTED Language: public virtual Object {
 			public:
@@ -22,7 +23,7 @@ namespace tj {
 				virtual ~Language();
 				static void Clear();
 				Language();
-				static ref<Property> CreateLanguageProperty(const String& title, LocaleIdentifier* loc);
+				static ref<Property> CreateLanguageProperty(const String& title, ref<Inspectable> holder, LocaleIdentifier* loc);
 
 			protected:
 				static void FindLocales(const String& dir);

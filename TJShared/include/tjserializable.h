@@ -62,8 +62,8 @@ namespace tj {
 					_mapping[value] = vi;
 				}
 
-				ref<Property> CreateSelectionProperty(const String& title, T* value) {
-					ref< GenericListProperty<T> > gp = GC::Hold(new GenericListProperty<T>(title, value, 0, *value));
+				ref<Property> CreateSelectionProperty(const String& title, ref<Inspectable> holder, T* value) {
+					ref< GenericListProperty<T> > gp = GC::Hold(new GenericListProperty<T>(title, holder, value, *value));
 					typename std::map<T, ValueInfo>::const_iterator it = _mapping.begin();
 					while(it!=_mapping.end()) {
 						const ValueInfo& vi = it->second;

@@ -87,13 +87,13 @@ namespace tj {
 				bool _on;
 		};
 
-		class EXPORTED SearchToolbarWnd: public ToolbarWnd, public Listener<EditWnd::NotificationTextChanged> {
+		class EXPORTED SearchToolbarWnd: public ToolbarWnd, public Listener<EditWnd::EditingNotification> {
 			public:
 				SearchToolbarWnd();
 				virtual ~SearchToolbarWnd();
 				virtual void Layout();
 				virtual void Paint(graphics::Graphics& g, strong<Theme> theme);
-				virtual void Notify(ref<Object> src, const EditWnd::NotificationTextChanged& data);
+				virtual void Notify(ref<Object> src, const EditWnd::EditingNotification& data);
 
 			protected:
 				virtual void SetSearchBoxRightMargin(Pixels r);

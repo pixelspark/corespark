@@ -3,7 +3,7 @@ using namespace tj::shared;
 using namespace tj::shared::graphics;
 
 /* FilePropertyWnd */
-FilePropertyWnd::FilePropertyWnd(const std::wstring& name, std::wstring* path, strong<ResourceProvider> rmg, const wchar_t* filter): _rmg(rmg), _name(name), _filter(filter), _path(path), _linkIcon(Icons::GetIconPath(Icons::IconFile)) {
+FilePropertyWnd::FilePropertyWnd(const std::wstring& name, ref<Inspectable> holder, std::wstring* path, strong<ResourceProvider> rmg, const wchar_t* filter): _rmg(rmg), _name(name), _filter(filter), _path(path), _linkIcon(Icons::GetIconPath(Icons::IconFile)), _holder(holder) {
 	assert(path!=0);
 	SetWantMouseLeave(true);
 	SetDropTarget(true);
@@ -103,12 +103,15 @@ void FilePropertyWnd::Layout() {
 }
 
 void FilePropertyWnd::SetFile(const std::wstring& file) {
-	*_path = _rmg->GetRelative(file);
-	Repaint();
+	ref<Inspectable> holder = _holder;
+	if(holder && _path!=0L) {
+		UndoBlock::AddAndDoChange(GC::Hold(new PropertyChange<ResourceIdentifier>(holder, L"", _path, *_path, _rmg->GetRelative(file))));
+		Repaint();
+	}
 }
 
 /* FileProperty */
-FileProperty::FileProperty(const std::wstring& name, ResourceIdentifier* path, strong<ResourceProvider> rmg, const wchar_t* filter): Property(name), _rmg(rmg), _path(path), _filter(filter) {
+FileProperty::FileProperty(const std::wstring& name, ref<Inspectable> holder, ResourceIdentifier* path, strong<ResourceProvider> rmg, const wchar_t* filter): Property(name), _rmg(rmg), _path(path), _filter(filter), _holder(holder) {
 }
 
 FileProperty::~FileProperty() {
@@ -116,7 +119,7 @@ FileProperty::~FileProperty() {
 
 ref<Wnd> FileProperty::GetWindow() {
 	if(!_pw) {
-		_pw = GC::Hold(new FilePropertyWnd(_name, _path, _rmg, _filter));
+		_pw = GC::Hold(new FilePropertyWnd(_name, _holder, _path, _rmg, _filter));
 	}
 
 	return _pw;

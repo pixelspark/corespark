@@ -167,10 +167,7 @@ namespace tj {
 						Icon _icon;
 				};
 
-				GenericListProperty(String name, T* value, T* also, T def, const String& icon = L""): Property(name), _icon(icon) {
-					_value = value;
-					_alsoSet = also;
-					_default = def;
+				GenericListProperty(String name, ref<Inspectable> holder, T* value, T def, const String& icon = L""): Property(name), _icon(icon), _holder(holder), _value(value), _default(def) {
 				}
 
 				virtual ~GenericListProperty() {
@@ -207,17 +204,13 @@ namespace tj {
 			protected:
 				void Set(const T& value) {
 					if(_value!=0) {
-						*_value = value;
-					}
-
-					if(_alsoSet!=0) {
-						*_alsoSet = value;
+						UndoBlock::AddAndDoChange(GC::Hold(new PropertyChange<T>(_holder, GetName(), _value, *_value, value)));
 					}
 				}
 
 				T* _value;
 				T _default;
-				T* _alsoSet;
+				ref<Inspectable> _holder;
 				ref<PropertyWnd> _pw;
 				std::vector<Item> _options;
 				String _icon;

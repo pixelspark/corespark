@@ -478,7 +478,7 @@ SearchToolbarWnd::SearchToolbarWnd(): _searchIcon(Icons::GetIconPath(Icons::Icon
 }
 
 void SearchToolbarWnd::OnCreated() {
-	_edit->EventTextChanged.AddListener(ref<Listener<EditWnd::NotificationTextChanged> >(this));
+	_edit->EventEditing.AddListener(ref<Listener<EditWnd::EditingNotification> >(this));
 }
 
 SearchToolbarWnd::~SearchToolbarWnd() {
@@ -553,8 +553,8 @@ void SearchToolbarWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 	}
 }
 
-void SearchToolbarWnd::Notify(ref<Object> src, const EditWnd::NotificationTextChanged& data) {
-	if(src==ref<Object>(_edit)) {
+void SearchToolbarWnd::Notify(ref<Object> src, const EditWnd::EditingNotification& data) {
+	if(src==ref<Object>(_edit) && data.GetType() == EditWnd::EditingTextChanged) {
 		OnSearchChange(_edit->GetText());
 	}
 }

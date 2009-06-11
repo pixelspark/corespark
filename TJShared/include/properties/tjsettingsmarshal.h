@@ -27,8 +27,8 @@ namespace tj {
 				return StringTo<T>(_settings->GetValue(_key), _value)!=_value;
 			}
 			
-			inline ref<Property> CreateProperty(const String& title, const String& hint = L"") {
-				ref<Property> p = GC::Hold(new GenericProperty<T>(title, &_value, 0, _value));
+			inline ref<Property> CreateProperty(const String& title, ref<Inspectable> holder, const String& hint = L"") {
+				ref<Property> p = GC::Hold(new GenericProperty<T>(title, holder, &_value, _value));
 				if(hint.length()>0) {
 					p->SetHint(hint);
 				}

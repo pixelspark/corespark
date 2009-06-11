@@ -67,9 +67,16 @@ bool Property::IsExpanded() {
 Inspectable::~Inspectable() {
 }
 
+ref<PropertySet> Inspectable::GetProperties() {
+	return null;
+}
+
+void Inspectable::OnPropertyChanged(void* member) {
+}
+
 class PropertyCheckBoxWnd: public CheckboxWnd {
 	public:
-		PropertyCheckBoxWnd(bool* value, bool* also): _value(value), _also(also) {
+		PropertyCheckBoxWnd(ref<Inspectable> holder, bool* value): _holder(holder), _value(value) {
 			assert(value!=0);
 		}
 
@@ -77,10 +84,10 @@ class PropertyCheckBoxWnd: public CheckboxWnd {
 		}
 
 		virtual void SetChecked(bool t) {
-			CheckboxWnd::SetChecked(t);
-			*_value = t;
-			if(_also!=0) {
-				*_also = t;
+			ref<Inspectable> holder = _holder;
+			if(holder && _value!=0L) {
+				CheckboxWnd::SetChecked(t);
+				UndoBlock::AddAndDoChange(GC::Hold(new PropertyChange<bool>(holder, L"", _value, *_value, t)));
 			}
 		}
 
@@ -91,23 +98,25 @@ class PropertyCheckBoxWnd: public CheckboxWnd {
 
 	protected:
 		bool* _value;
-		bool* _also;
+		weak<Inspectable> _holder;
 };
 
 /** GenericProperty specializations **/
 ref<Wnd> GenericProperty<bool>::GetWindow() {
 	if(!_wnd) {
-		_wnd = GC::Hold(new PropertyCheckBoxWnd(_value, _alsoSet));
+		_wnd = GC::Hold(new PropertyCheckBoxWnd(_holder, _value));
 	}
 	return _wnd;
 }
 
 void GenericProperty<bool>::Update() {
 	ref<CheckboxWnd> cb = _wnd;
-
 	if(cb) {
-		cb->SetChecked(*_value);
-		cb->Update();
+		ref<Inspectable> is = _holder;
+		if(is) {
+			cb->SetChecked(*_value);
+			cb->Update();
+		}
 	}
 }
 

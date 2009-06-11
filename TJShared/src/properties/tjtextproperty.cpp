@@ -2,7 +2,7 @@
 using namespace tj::shared;
 using namespace tj::shared::graphics;
 
-TextProperty::TextProperty(const std::wstring& name, std::wstring* value, Pixels height): GenericProperty<std::wstring>(name, value, 0, L"") {
+TextProperty::TextProperty(const std::wstring& name, ref<Inspectable> holder, std::wstring* value, Pixels height): GenericProperty<std::wstring>(name, holder, value, L"") {
 	_height = height;
 	SetExpandable(true);
 	SetMultiline(true);
@@ -16,7 +16,7 @@ Pixels TextProperty::GetHeight() {
 }
 
 /** SuggestionProperty **/
-SuggestionProperty::SuggestionProperty(const std::wstring& name, std::wstring* value, bool multiLine): Property(name), _multiLine(multiLine), _value(value) {
+SuggestionProperty::SuggestionProperty(const std::wstring& name, ref<Inspectable> holder, std::wstring* value, bool multiLine): Property(name), _holder(holder), _multiLine(multiLine), _value(value) {
 	if(value==0) Throw(L"Property value pointer cannot be null", ExceptionTypeWarning);
 	SetExpandable(multiLine);
 }
@@ -25,16 +25,27 @@ SuggestionProperty::~SuggestionProperty() {
 	_value = 0;
 }
 
-void SuggestionProperty::Notify(ref<Object> source, const EditWnd::NotificationTextChanged& ev) {
-	if(_wnd && _value!=0) {
-		*_value = _wnd->GetText();
+void SuggestionProperty::Notify(ref<Object> source, const EditWnd::EditingNotification& ev) {
+	ref<Inspectable> is = _holder;
+	if(is && _value!=0L && _wnd) {
+		EditWnd::EditingType type = ev.GetType();
+		if(type==EditWnd::EditingTextChanged) {
+			*_value = _wnd->GetText();
+			is->OnPropertyChanged(reinterpret_cast<void*>(_value));
+		}
+		else if(type==EditWnd::EditingStarted) {
+			_oldValue = *_value;
+		}
+		else if(type==EditWnd::EditingEnded) {
+			UndoBlock::AddChange(GC::Hold(new PropertyChange<String>(is, GetName(), _value, _oldValue, *_value)));
+		}
 	}
 }
 
 ref<Wnd> SuggestionProperty::GetWindow() {
 	if(!_wnd) {
 		ref<SuggestionEditWnd> ew = GC::Hold(new SuggestionEditWnd(_multiLine));
-		ew->EventTextChanged.AddListener(this);
+		ew->EventEditing.AddListener(this);
 		ew->SetBorder(true);
 		_wnd = ew;
 		Update();

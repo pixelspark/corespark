@@ -322,7 +322,7 @@ void ColorChooserWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 	}
 }
 
-ColorProperty::ColorProperty(const std::wstring& name, RGBColor* color, RGBColor* tc): Property(name), _color(color), _tcolor(tc)  {
+ColorProperty::ColorProperty(const std::wstring& name, ref<Inspectable> holder, RGBColor* color, RGBColor* tc): Property(name), _color(color), _tcolor(tc), _holder(holder)  {
 }
 
 ColorProperty::~ColorProperty() {

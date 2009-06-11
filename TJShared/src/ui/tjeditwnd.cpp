@@ -25,6 +25,11 @@ LRESULT CALLBACK EditWndSubclassProc(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM lP
 		HWND parent = ::GetParent(hWnd);
 		SendMessage(parent, WM_PARENTNOTIFY, WM_SETFOCUS, 0);
 	}
+	else if(uMsg==WM_KILLFOCUS) {
+		// Send message to parent (this is useful for PropertyGridWnd, for example
+		HWND parent = ::GetParent(hWnd);
+		SendMessage(parent, WM_PARENTNOTIFY, WM_KILLFOCUS, 0);
+	}
 	
 	LRESULT res = DefSubclassProc(hWnd, uMsg, wParam, lParam);
 	if(uMsg==WM_KEYUP && LOWORD(wParam)==VK_RETURN) {
@@ -129,7 +134,7 @@ LRESULT EditWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 	}
 	else if(msg==WM_COMMAND) {
 		if(HIWORD(wp)==EN_CHANGE) {
-			EventTextChanged.Fire(ref<Object>(this), NotificationTextChanged());
+			EventEditing.Fire(ref<Object>(this), EditingNotification(EditingTextChanged));
 			UpdateWindow(_ctrl);
 		}
 		else {
@@ -143,6 +148,12 @@ LRESULT EditWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		if(wp==WM_SETFOCUS) {
 			HWND parent = ::GetParent(GetWindow());
 			SendMessage(parent, WM_PARENTNOTIFY, WM_SETFOCUS, 0);
+			EventEditing.Fire(ref<Object>(this), EditingNotification(EditingStarted));
+		}
+		else if(wp==WM_KILLFOCUS) {
+			HWND parent = ::GetParent(GetWindow());
+			SendMessage(parent, WM_PARENTNOTIFY, WM_KILLFOCUS, 0);
+			EventEditing.Fire(ref<Object>(this), EditingNotification(EditingEnded));
 		}
 	}
 	return ChildWnd::Message(msg,wp,lp);
@@ -184,6 +195,13 @@ std::wstring EditWnd::GetText() {
 	return txt;
 }
 
+EditWnd::EditingNotification::EditingNotification(EditingType type): _type(type) {
+}
+
+EditWnd::EditingType EditWnd::EditingNotification::GetType() const {
+	return _type;
+}
+
 /** SuggestionEditWnd **/
 SuggestionEditWnd::SuggestionEditWnd(bool ml): EditWnd(ml, true), _arrowIcon(Icons::GetIconPath(Icons::IconDownArrow)), _sm(SuggestionModeReplace) {
 	SetWantMouseLeave(true);
@@ -219,7 +237,7 @@ ref<MenuItem> SuggestionEditWnd::DoSuggestionMenu() {
 					break;
 			}
 
-			EventTextChanged.Fire(this, NotificationTextChanged());
+			EventEditing.Fire(this, EditingNotification(EditingTextChanged));
 		}
 		
 		return mi;

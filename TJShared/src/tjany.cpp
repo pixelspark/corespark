@@ -596,9 +596,9 @@ void Any::Load(TiXmlElement* you) {
 	}
 }
 
-ref<Property> Any::CreateTypeProperty(const String& name, Type* type) {
+ref<Property> Any::CreateTypeProperty(const String& name, ref<Inspectable> holder, Type* type) {
 	assert(type!=0);
-	ref< GenericListProperty<Type> > pt = GC::Hold(new GenericListProperty<Type>(name, type, 0, *type));
+	ref< GenericListProperty<Type> > pt = GC::Hold(new GenericListProperty<Type>(name, holder, type, *type));
 	pt->AddOption(TL(type_null), TypeNull);
 	pt->AddOption(TL(type_integer), TypeInteger);
 	pt->AddOption(TL(type_double), TypeDouble);

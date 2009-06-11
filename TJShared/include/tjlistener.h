@@ -4,7 +4,7 @@
 namespace tj {
 	namespace shared {
 		/** Listener **/
-		template<typename NotificationType> class Listener {
+		template<typename NotificationType> class EXPORTED Listener {
 			public:
 				virtual ~Listener() {
 				}
@@ -12,7 +12,7 @@ namespace tj {
 				virtual void Notify(ref<Object> source, const NotificationType& data) = 0;
 		};
 
-		template<typename NotificationType> class Listenable {
+		template<typename NotificationType> class EXPORTED Listenable {
 			public:
 				inline Listenable() {
 				}

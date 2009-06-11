@@ -66,9 +66,9 @@ Language::~Language() {
 	}
 #endif
 
-ref<Property> Language::CreateLanguageProperty(const String& title, LocaleIdentifier* lang) {
+ref<Property> Language::CreateLanguageProperty(const String& title, ref<Inspectable> holder, LocaleIdentifier* lang) {
 	assert(lang!=0);
-	ref< GenericListProperty<LocaleIdentifier> > pp = GC::Hold(new GenericListProperty<LocaleIdentifier>(title, lang, 0, *lang));
+	ref< GenericListProperty<LocaleIdentifier> > pp = GC::Hold(new GenericListProperty<LocaleIdentifier>(title, holder, lang, *lang));
 
 	std::vector<LocaleIdentifier>::const_iterator it = _availableLocales.begin();
 	while(it!=_availableLocales.end()) {

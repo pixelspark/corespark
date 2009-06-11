@@ -41,10 +41,11 @@ namespace tj {
 				std::vector< ref<Property> > _properties;
 		};
 
-		class EXPORTED Inspectable {
+		class EXPORTED Inspectable: public virtual Object {
 			public:
 				virtual ~Inspectable();
-				virtual ref<PropertySet> GetProperties()=0;
+				virtual ref<PropertySet> GetProperties();
+				virtual void OnPropertyChanged(void* member);
 		};
 	}
 }

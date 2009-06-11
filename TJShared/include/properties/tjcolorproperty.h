@@ -75,7 +75,7 @@ namespace tj {
 
 		class EXPORTED ColorProperty: public Property {
 			public:
-				ColorProperty(const String& name, RGBColor* color, RGBColor* tooColor = 0);
+				ColorProperty(const String& name, ref<Inspectable> holder, RGBColor* color, RGBColor* tooColor = 0);
 				virtual ~ColorProperty();
 				virtual ref<Wnd> GetWindow();
 				virtual void Update();
@@ -83,6 +83,7 @@ namespace tj {
 			protected:
 				RGBColor* _color;
 				RGBColor* _tcolor;
+				ref<Inspectable> _holder;
 				ref<ColorChooserWnd> _wnd;
 		};
 	}

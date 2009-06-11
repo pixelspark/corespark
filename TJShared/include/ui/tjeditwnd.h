@@ -17,11 +17,21 @@ namespace tj {
 				virtual bool HasFocus(bool childrenToo) const;
 				virtual void Show(bool s);
 				virtual void Focus();
-
-				struct NotificationTextChanged {
+				
+				enum EditingType {
+					EditingNone = 0,
+					EditingStarted,
+					EditingEnded,
+					EditingTextChanged,
 				};
 
-				Listenable<NotificationTextChanged> EventTextChanged;
+				struct EXPORTED EditingNotification {
+					EditingNotification(EditingType type);
+					EditingType GetType() const;
+					EditingType _type;
+				};
+
+				Listenable<EditingNotification> EventEditing;
 
 			protected:
 				EditWnd(bool multiLine, bool doubleBuffer);

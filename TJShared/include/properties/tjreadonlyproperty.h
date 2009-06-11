@@ -5,7 +5,7 @@ namespace tj {
 	namespace shared {
 		template<typename T> class GenericReadOnlyProperty: public GenericProperty<T> {
 			public:
-				GenericReadOnlyProperty(const String& name, T* value): GenericProperty<T>(name,value,0, *value) {
+				GenericReadOnlyProperty(const String& name, ref<Inspectable> holder, T* value): GenericProperty<T>(name, holder, value, *value) {
 				}
 
 				virtual ~GenericReadOnlyProperty() {
