@@ -572,6 +572,7 @@ LRESULT Wnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		return 0;
 	}
 	else if(msg==WM_DROPFILES) {
+		UndoBlock ub;
 		std::vector<std::wstring> files;
 
 		HDROP drop = (HDROP)wp;
@@ -695,12 +696,15 @@ LRESULT Wnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		}
 		else if(msg==WM_KEYDOWN && IsKeyDown(KeyControl)) {
 			if(wp==L'C'||wp==L'c') {
+				UndoBlock ub;
 				OnCopy();
 			}
 			else if(wp==L'V'||wp==L'v') {
+				UndoBlock ub;
 				OnPaste();
 			}
 			else if(wp==L'X'||wp==L'x') {
+				UndoBlock ub;
 				OnCut();
 			}
 		}
@@ -712,12 +716,15 @@ LRESULT Wnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		}
 	}
 	else if(msg==WM_COPY) {
+		UndoBlock ub;
 		OnCopy();
 	}
 	else if(msg==WM_PASTE) {
+		UndoBlock ub;
 		OnPaste();
 	}
 	else if(msg==WM_CUT) {
+		UndoBlock ub;
 		OnCut();
 	}
 	else if(msg==WM_NOTIFY) {
