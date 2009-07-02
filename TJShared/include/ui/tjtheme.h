@@ -35,6 +35,7 @@ namespace tj {
 					IconSubMenu,
 					IconTabAddActive,
 					IconTabCloseActive,
+					IconKeyboard,
 					_IconLast,
 				};
 
@@ -165,6 +166,24 @@ namespace tj {
 				mutable graphics::Font* _fontSmall;
 				mutable graphics::Font* _fontLink;
 				float _dpi;
+		};
+
+		class EXPORTED TokenizedTextPainter {
+			public:
+				TokenizedTextPainter(const Area& rc, strong<Theme> theme);
+				~TokenizedTextPainter();
+				void DrawToken(graphics::Graphics& g, const std::wstring& txt, bool bold, graphics::Brush* textBrush, graphics::Brush* backgroundBrush = 0, graphics::Pen* borderPen = 0, bool shadow = false);
+				void DrawToken(graphics::Graphics& g, const std::wstring& txt, graphics::Font* font, graphics::Brush* textBrush, graphics::Brush* backgroundBrush = 0, graphics::Pen* borderPen = 0, graphics::Brush* shadowBrush = 0);
+				void SetMargin(const Pixels& m);
+				Pixels GetMargin() const;
+
+			protected:
+				Area _rc;
+				strong<Theme> _theme;
+				Pixels _margin;
+
+			private:
+				const static Pixels KDefaultMargin;
 		};
 	}
 }

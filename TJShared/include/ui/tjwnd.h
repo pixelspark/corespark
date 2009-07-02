@@ -7,12 +7,14 @@ namespace tj {
 			ScrollDirectionNone = 0,
 			ScrollDirectionHorizontal = 1,
 			ScrollDirectionVertical,
+			_ScrollDirectionLast,
 		};
 
 		enum WheelDirection {
 			WheelDirectionNone = 0,
 			WheelDirectionUp,
 			WheelDirectionDown,
+			_WheelDirectionLast,
 		};
 
 		enum MouseEvent {
@@ -27,6 +29,7 @@ namespace tj {
 			MouseEventLeave,
 			MouseEventMDown,
 			MouseEventMUp,
+			_MouseEventLast,
 		};
 
 		enum Key {
@@ -51,6 +54,36 @@ namespace tj {
 			KeyHome,
 			KeyEnd,
 			KeyBackspace,
+			KeyReturn,
+			KeySpace,
+
+			/* Function keys - these have to be consecutive */
+			KeyF1,
+			KeyF2,
+			KeyF3,
+			KeyF4,
+			KeyF5,
+			KeyF6,
+			KeyF7,
+			KeyF8,
+			KeyF9,
+			KeyF10,
+			KeyF11,
+			KeyF12,
+
+			_KeyLast,
+		};
+		
+
+		struct EXPORTED Accelerator {
+			Accelerator();
+			Accelerator(Key k, const std::wstring& keyName, const std::wstring& desc, bool isModifier = false, Key needsModifier = KeyNone);
+
+			Key _needsModifier;
+			bool _isModifier;
+			Key _key;
+			std::wstring _keyName;
+			std::wstring _description;
 		};
 
 		enum LayoutFlags {
@@ -60,6 +93,7 @@ namespace tj {
 			LayoutLeft,
 			LayoutRight,
 			LayoutFill,
+			_LayoutLast,
 		};
 		
 		class Element;
@@ -152,6 +186,7 @@ namespace tj {
 				virtual void SetText(const wchar_t* t);
 				virtual String GetTabTitle() const;		// return an empty string if you don't want to override Pane's title
 				virtual ref<Icon> GetTabIcon() const;	// should return 0 when you don't want to override the tab icon set in Pane
+				virtual void GetAccelerators(std::vector<Accelerator>& alist);
 
 				// Layout
 				virtual void Layout();

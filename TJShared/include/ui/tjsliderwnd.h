@@ -19,6 +19,7 @@ namespace tj {
 				void SetShowValue(bool show);
 				void SetSnapToHalf(bool snap);
 				virtual void Fill(LayoutFlags flags, Area& rect, bool direct = true);
+				virtual void GetAccelerators(std::vector<Accelerator>& alist);
 
 				struct NotificationUpdate {
 				};

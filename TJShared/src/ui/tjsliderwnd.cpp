@@ -93,6 +93,11 @@ void SliderWnd::SetValue(float f, bool notify) {
 SliderWnd::~SliderWnd() {
 }
 
+void SliderWnd::GetAccelerators(std::vector<Accelerator>& alist) {
+	alist.push_back(Accelerator(KeyHome, TL(key_home), TL(key_home_slider), false, KeyNone));
+	alist.push_back(Accelerator(KeyEnd, TL(key_end), TL(key_end_slider), false, KeyNone));
+}
+
 void SliderWnd::Paint(Graphics& g, strong<Theme> theme) {
 	EventUpdate.Fire(ref<Wnd>(this), NotificationUpdate());
 
@@ -195,6 +200,12 @@ void SliderWnd::OnKey(Key k, wchar_t ch, bool down, bool isaccel) {
 		SetValue(0.0f);
 	}
 	else if(k==KeyPageUp) {
+		SetValue(1.0f);
+	}
+	else if(k==KeyHome) {
+		SetValue(0.0f);
+	}
+	else if(k==KeyEnd) {
 		SetValue(1.0f);
 	}
 	else if(k==KeyCharacter && (ch>=L'0'&& ch <= L'9') || ch == VK_OEM_3) {

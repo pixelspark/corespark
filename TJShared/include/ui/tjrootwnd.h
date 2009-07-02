@@ -68,6 +68,7 @@ namespace tj {
 				virtual void Layout();
 				virtual Area GetClientArea() const;
 				virtual void Paint(graphics::Graphics& g, strong<Theme> theme);
+				virtual void PaintStatusBar(graphics::Graphics& g, strong<Theme> theme, const Area& statusBarArea);
 				virtual void OnSize(const Area& ns);
 
 				virtual void SetShowStatusBar(bool s);

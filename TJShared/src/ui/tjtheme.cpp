@@ -49,6 +49,7 @@ const wchar_t* Icons::_paths[Icons::_IconLast] = {
 	L"icons/shared/submenu.png",
 	L"icons/shared/tab-add-active.png",
 	L"icons/shared/tab-close-active.png",
+	L"icons/shared/keyboard.png",
 };
 
 std::wstring Icons::GetIconPath(IconIdentifier i) {
@@ -503,4 +504,63 @@ Brush* Theme::GetApplicationBackgroundBrush(HWND root, HWND child) const {
 	graphics::LinearGradientBrush* lbr = new graphics::LinearGradientBrush(PointF(0.0f, -float(childrc.top-rootrc.top)), PointF(0.0f,-float(childrc.top-rootrc.bottom)), Color(90,90,90), Color(0,0,0));
 	lbr->SetBlendPosition(0.1f);
 	return lbr;
+}
+
+/** TokenizedPainter **/
+const Pixels TokenizedTextPainter::KDefaultMargin = 5;
+
+TokenizedTextPainter::TokenizedTextPainter(const Area& rc, strong<Theme> theme): _rc(rc), _theme(theme), _margin(KDefaultMargin) {
+}
+
+TokenizedTextPainter::~TokenizedTextPainter() {
+}
+
+void TokenizedTextPainter::DrawToken(graphics::Graphics& g, const std::wstring& txt, graphics::Font* font, graphics::Brush* textBrush, graphics::Brush* backgroundBrush, graphics::Pen* borderPen, graphics::Brush* shadowBrush) {
+	RectF bound;
+	StringFormat sf;
+	sf.SetAlignment(StringAlignmentNear);
+
+	g.MeasureString(txt.c_str(), (int)txt.length(), font, _rc, &sf, &bound);
+
+	if(borderPen!=0) {
+		RectF borderBound = bound;
+		if(shadowBrush!=0) {
+			borderBound.SetX(borderBound.GetX()+0.5f);
+			borderBound.SetY(borderBound.GetY()+0.5f);
+		}
+
+		g.DrawRectangle(borderPen, borderBound);
+	}
+
+	if(backgroundBrush!=0) {
+		g.FillRectangle(backgroundBrush, bound);
+	}
+
+	if(shadowBrush!=0) {
+		AreaF shadowRC = _rc;
+		shadowRC.Translate(0.8f, 0.8f);
+		g.DrawString(txt.c_str(), (size_t)txt.length(), font, shadowRC, &sf, shadowBrush);
+	}
+
+	g.DrawString(txt.c_str(), (int)txt.length(), font, _rc, &sf, textBrush);
+	_rc.Narrow(Pixels(bound.GetWidth()) + _margin,0,0,0);
+}
+
+void TokenizedTextPainter::DrawToken(graphics::Graphics& g, const std::wstring& txt, bool bold, Brush* textBrush, Brush* backgroundBrush, Pen* borderPen, bool shadow) {
+	Font* font = bold ? _theme->GetGUIFontBold() : _theme->GetGUIFont();
+
+	Brush* shadowBrush = 0;
+	SolidBrush shadowBrushReal(Theme::ChangeAlpha(_theme->GetColor(Theme::ColorBackground),172));
+	if(shadow) {
+		shadowBrush = &shadowBrushReal;
+	}
+	DrawToken(g, txt, font, textBrush, backgroundBrush, borderPen, shadowBrush);
+}
+
+Pixels TokenizedTextPainter::GetMargin() const {
+	return _margin;
+}
+
+void TokenizedTextPainter::SetMargin(const Pixels& m) {
+	_margin = m;
 }

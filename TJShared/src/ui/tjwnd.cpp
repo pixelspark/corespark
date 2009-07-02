@@ -277,7 +277,16 @@ Wnd* Wnd::GetRootWindow() {
 		if(wp!=0) return wp;
 	}
 
+	HWND ancestor = ::GetAncestor(_wnd, GA_ROOT);
+	if(ancestor!=0) {
+		Wnd* wp = reinterpret_cast<Wnd*>((long long)GetWindowLong(ancestor,GWL_USERDATA));
+		if(wp!=0) return wp;
+	}
+
 	return 0;
+}
+
+void Wnd::GetAccelerators(std::vector<Accelerator>& alist) {
 }
 
 bool Wnd::IsMouseOver() {
@@ -673,6 +682,9 @@ LRESULT Wnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 		// Send message to parent (this is useful for PropertyGridWnd, for example
 		HWND parent = ::GetParent(GetWindow());
 		SendMessage(parent, WM_PARENTNOTIFY, WM_SETFOCUS, 0);
+
+		HWND root = ::GetAncestor(GetWindow(), GA_ROOT);
+		SendMessage(root, WM_PARENTNOTIFY, WM_SETFOCUS, 0);
 		OnFocus(true);
 	}
 	else if(msg==WM_KILLFOCUS) {
@@ -764,58 +776,71 @@ void Wnd::OnMouseWheelMove(WheelDirection wd) {
 void Wnd::TranslateKeyCodes(int vk, Key& key, wchar_t& ch) {
 	ch = L'\0';
 
-	switch(vk) {
-		case VK_LEFT:
-			key = KeyLeft;
-			break;
+	if(vk>=VK_F1 && vk <=VK_F12) {
+		key = (Key)((int)KeyF1 + (vk-VK_F1));
+	}
+	else {
+		switch(vk) {
+			case VK_LEFT:
+				key = KeyLeft;
+				break;
 
-		case VK_RIGHT:
-			key = KeyRight;
-			break;
+			case VK_RIGHT:
+				key = KeyRight;
+				break;
 
-		case VK_DOWN:
-			key = KeyDown;
-			break;
+			case VK_DOWN:
+				key = KeyDown;
+				break;
 
-		case VK_UP:
-			key = KeyUp;
-			break;
+			case VK_UP:
+				key = KeyUp;
+				break;
 
-		case VK_HOME:
-			key = KeyHome;
-			break;
+			case VK_HOME:
+				key = KeyHome;
+				break;
 
-		case VK_END:
-			key = KeyEnd;
-			break;
+			case VK_END:
+				key = KeyEnd;
+				break;
 
-		case VK_NEXT:
-			key = KeyPageDown;
-			break;
+			case VK_NEXT:
+				key = KeyPageDown;
+				break;
 
-		case VK_PRIOR:
-			key = KeyPageUp;
-			break;
+			case VK_PRIOR:
+				key = KeyPageUp;
+				break;
 
-		case VK_MENU:
-			key = KeyAlt;
-			break;
+			case VK_MENU:
+				key = KeyAlt;
+				break;
 
-		case VK_INSERT:
-			key = KeyInsert;
-			break;
+			case VK_INSERT:
+				key = KeyInsert;
+				break;
 
-		case VK_DELETE:
-			key = KeyDelete;
-			break;
+			case VK_DELETE:
+				key = KeyDelete;
+				break;
 
-		case L'\b':
-			key = KeyBackspace;
-			break;
+			case VK_RETURN:
+				key = KeyReturn;
+				break;
 
-		default:
-			key = KeyCharacter;
-			ch = (wchar_t)vk;
+			case VK_SPACE:
+				key = KeySpace;
+				break;
+
+			case L'\b':
+				key = KeyBackspace;
+				break;
+
+			default:
+				key = KeyCharacter;
+				ch = (wchar_t)vk;
+		};
 	}
 }
 
@@ -1188,4 +1213,11 @@ bool Element::IsShown() const {
 }
 
 Element::ShowNotification::ShowNotification(bool shown): _shown(shown) {
+}
+
+/* Accelerator */
+Accelerator::Accelerator(): _key(KeyNone), _needsModifier(KeyNone), _isModifier(false) {
+}
+
+Accelerator::Accelerator(Key k, const std::wstring& keyName, const std::wstring& desc, bool isMod, Key needsModifier): _key(k), _isModifier(isMod), _needsModifier(needsModifier), _keyName(keyName), _description(desc) {
 }

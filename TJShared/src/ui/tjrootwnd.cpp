@@ -61,6 +61,62 @@ Area RootWnd::GetClientArea() const {
 	return rc;
 }
 
+void RootWnd::PaintStatusBar(graphics::Graphics& g, strong<Theme> theme, const Area& statusBarArea) {
+	// Get accelerators of focused window
+	std::vector<Accelerator> accels;
+	HWND focused = GetFocus();
+	if(focused!=0) {
+		wchar_t buffer[100];
+		GetClassName(focused, buffer, 99);
+		// TODO: this of course has to be TJ_DEFAULT_WINDOW_CLASS, but that's in tjwnd.cpp
+		if(wcscmp(buffer, L"TjWndClass")==0) {
+			Wnd* wp = reinterpret_cast<Wnd*>((long long)GetWindowLong(focused, GWL_USERDATA));
+			if(wp!=0) {
+				wp->GetAccelerators(accels);
+			}
+		}
+	}
+
+	if(accels.size()>0) {
+		Area rc = statusBarArea;
+
+		Icon keyboardIcon(Icons::GetIconPath(Icons::IconKeyboard));
+		keyboardIcon.Paint(g, Area(rc.GetLeft()+3, rc.GetTop()+1, 16, 16));
+		rc.Narrow(20,0,0,0);
+		SolidBrush activeTextBrush(theme->GetColor(Theme::ColorText));
+		SolidBrush inactiveTextBrush(Theme::ChangeAlpha(theme->GetColor(Theme::ColorText), 127));
+		SolidBrush redTextBrush(theme->GetColor(Theme::ColorCommandMarker));
+		SolidBrush bbr(Theme::ChangeAlpha(theme->GetColor(Theme::ColorBackground),127));
+		Pen borderPen(&bbr, 1.0f);
+		LinearGradientBrush activeBackgroundBrush(PointF(0.0f, (float)statusBarArea.GetTop()), PointF(0.0f, (float)statusBarArea.GetBottom()), theme->GetColor(Theme::ColorActiveStart), theme->GetColor(theme->ColorActiveEnd));
+		LinearGradientBrush inactiveBackgroundBrush(PointF(0.0f, (float)statusBarArea.GetTop()), PointF(0.0f, (float)statusBarArea.GetBottom()), Theme::ChangeAlpha(theme->GetColor(Theme::ColorActiveStart),127), Theme::ChangeAlpha(theme->GetColor(theme->ColorActiveEnd), 127));
+		
+		rc.Narrow(2,2,1,1);
+		TokenizedTextPainter ttp(rc, theme);
+
+		// Accelerators for which _key==KeyNone will only be drawn if a previous accelerator in the list is currently pressed
+		bool anyKeyDown = false;
+
+		std::vector<Accelerator>::const_iterator it = accels.begin();
+		while(it!=accels.end()) {
+			const Accelerator& acc = *it;
+			bool modifierDown = IsKeyDown(acc._needsModifier);
+			if(acc._needsModifier==KeyNone || modifierDown) {
+				bool realKey = acc._key != KeyNone;
+				if(realKey || anyKeyDown) {
+					bool down = IsKeyDown(acc._key);
+					ttp.DrawToken(g, acc._keyName, true, down ? &activeTextBrush : (realKey ? &inactiveTextBrush : &redTextBrush), realKey ? (down? &activeBackgroundBrush : &inactiveBackgroundBrush) : 0, realKey ? &borderPen : 0, realKey);
+					if((realKey && down) || (acc._needsModifier!=KeyNone && modifierDown) || (acc._needsModifier==KeyNone && !acc._isModifier)) {
+						anyKeyDown = true;
+						ttp.DrawToken(g, acc._description, false, down ? &activeTextBrush : &inactiveTextBrush, 0, 0, false);
+					}
+				}
+			}
+			++it;
+		}
+	}
+}
+
 void RootWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 	if(IsStatusBarShown()) {
 		Area wrc = Wnd::GetClientArea();
@@ -68,6 +124,8 @@ void RootWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 		SolidBrush back(theme->GetColor(Theme::ColorBackground));
 		g.FillRectangle(&back, rc);
 		theme->DrawInsetRectangle(g, rc);
+
+		PaintStatusBar(g, theme, rc);
 
 		WINDOWPLACEMENT wp;
 		wp.length = sizeof(wp);
@@ -164,6 +222,9 @@ LRESULT RootWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 					return HTBOTTOMRIGHT;
 				}
 			}
+		}
+		else if(msg==WM_PARENTNOTIFY && wp==WM_SETFOCUS) {
+			Repaint();
 		}
 	}
 	

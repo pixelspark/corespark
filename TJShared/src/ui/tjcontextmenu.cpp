@@ -295,22 +295,21 @@ void ContextPopupWnd::OnKey(Key k, wchar_t ch, bool down, bool accelerator) {
 					LeaveSubMenu();
 				}
 				break;
-			case KeyCharacter:
-				if(ch==VK_SPACE) {
-					if(down) {
-						_mouseDown = _mouseOver;
-					}
-					else {
-						if(_mouseDown >= 0 && _mouseDown < int(cm->GetItemCount())) {
-							ref<MenuItem> ci = cm->GetItemByIndex(_mouseOver);
-							if(ci) {
-								OnSelectItem(ci);
-							}
+
+			case KeySpace:
+				if(down) {
+					_mouseDown = _mouseOver;
+				}
+				else {
+					if(_mouseDown >= 0 && _mouseDown < int(cm->GetItemCount())) {
+						ref<MenuItem> ci = cm->GetItemByIndex(_mouseOver);
+						if(ci) {
+							OnSelectItem(ci);
 						}
 					}
 				}
 				break;
-		}
+		};
 	}
 	Repaint();
 }
