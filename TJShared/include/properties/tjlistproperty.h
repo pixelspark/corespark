@@ -203,7 +203,7 @@ namespace tj {
 
 			protected:
 				void Set(const T& value) {
-					if(_value!=0) {
+					if(_value!=0 && *_value!=value) {
 						UndoBlock::AddAndDoChange(GC::Hold(new PropertyChange<T>(_holder, GetName(), _value, *_value, value)));
 					}
 				}

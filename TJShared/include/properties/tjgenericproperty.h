@@ -5,7 +5,10 @@ namespace tj {
 	namespace shared {
 		template<typename T> class PropertyChange: public Change {
 			public:
-				PropertyChange(ref<Inspectable> is, const std::wstring& name, T* value, const T& oldValue, const T& newValue): Change(name), _holder(is), _value(value), _oldValue(oldValue), _newValue(newValue) {
+				PropertyChange(ref<Inspectable> is, const std::wstring& name, T* value, const T& oldValue, const T& newValue): Change(L""), _holder(is), _value(value), _oldValue(oldValue), _newValue(newValue) {
+					std::wostringstream wos;
+					wos << name << L": '" << oldValue << L"' => '" << newValue << L"'";
+					this->_description = wos.str();
 				}
 
 				virtual ~PropertyChange() {
@@ -66,7 +69,9 @@ namespace tj {
 								_oldValue = *_value;
 							}
 							else if(type==EditWnd::EditingEnded) {
-								UndoBlock::AddChange(GC::Hold(new PropertyChange<T>(is, GetName(), _value, _oldValue, *_value)));
+								if(_oldValue!=*_value) {
+									UndoBlock::AddChange(GC::Hold(new PropertyChange<T>(is, GetName(), _value, _oldValue, *_value)));
+								}
 							}
 						}
 					}

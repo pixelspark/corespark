@@ -104,8 +104,9 @@ void FilePropertyWnd::Layout() {
 
 void FilePropertyWnd::SetFile(const std::wstring& file) {
 	ref<Inspectable> holder = _holder;
-	if(holder && _path!=0L) {
-		UndoBlock::AddAndDoChange(GC::Hold(new PropertyChange<ResourceIdentifier>(holder, L"", _path, *_path, _rmg->GetRelative(file))));
+	ResourceIdentifier newPath = _rmg->GetRelative(file);
+	if(holder && _path!=0L && newPath!=(*_path)) {
+		UndoBlock::AddAndDoChange(GC::Hold(new PropertyChange<ResourceIdentifier>(holder, L"", _path, *_path, newPath)));
 		Repaint();
 	}
 }

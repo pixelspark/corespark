@@ -165,6 +165,28 @@ void RGBColor::Load(TiXmlElement* you) {
 RGBColor::~RGBColor() {
 }
 
+namespace tj {
+	namespace shared {
+		std::wostream& operator<<(std::wostream& strm, const RGBColor& col) {
+			strm.fill(L'0');
+			strm << std::hex << std::setw(2) << std::uppercase << int(col.GetR()) <<
+					std::hex << std::setw(2) << std::uppercase << int(col.GetG()) <<
+					std::hex << std::setw(2) << std::uppercase << int(col.GetB());
+
+			return strm;
+		}
+
+		std::ostream& operator<<(std::ostream& strm, const RGBColor& col) {
+			strm.fill(L'0');
+			strm << std::hex << std::setw(2) << std::uppercase << int(col.GetR()) <<
+					std::hex << std::setw(2) << std::uppercase << int(col.GetG()) <<
+					std::hex << std::setw(2) << std::uppercase << int(col.GetB());
+
+			return strm;
+		}
+	}
+}
+
 ColorWnd::ColorWnd(unsigned char r, unsigned char g, unsigned char b): ChildWnd(L"Color") {
 	_r = r;
 	_g = g;

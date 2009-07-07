@@ -253,7 +253,7 @@ void ColorPopupWnd::SetColor(const HSVColor& hsv) {
 }
 
 /* ColorChooserWnd */
-ColorChooserWnd::ColorChooserWnd(RGBColor* c, RGBColor* tc): _colorsIcon(Icons::GetIconPath(Icons::IconColorChooser)), _color(c), _tcolor(tc) {
+ColorChooserWnd::ColorChooserWnd(RGBColor* c, RGBColor* tc, ref<Inspectable> holder): _holder(holder), _colorsIcon(Icons::GetIconPath(Icons::IconColorChooser)), _color(c), _tcolor(tc) {
 }
 
 ColorChooserWnd::~ColorChooserWnd() {
@@ -274,8 +274,16 @@ void ColorChooserWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 
 void ColorChooserWnd::Notify(ref<Object> source, const ColorPopupWnd::NotificationChanged& data) {
 	if(source==ref<Object>(_cpw)) {
+		RGBColor oldColor = *_color;
 		*_color = _cpw->GetColor();
 		if(_tcolor!=0) *_tcolor = *_color;
+
+		// TODO: check here if colors actually differ (the compiler complains about the fact that there is no operator!=
+		// for RGBColor, or something...
+		if(_holder /*&& oldColor!=(*_color)*/) {
+			// TODO: add property name somehow
+			UndoBlock::AddChange(GC::Hold(new PropertyChange<RGBColor>(_holder, L"", _color, oldColor, *_color)));
+		}
 		Repaint();
 	}
 }
@@ -330,7 +338,7 @@ ColorProperty::~ColorProperty() {
 
 ref<Wnd> ColorProperty::GetWindow() {
 	if(!_wnd) {
-		_wnd = GC::Hold(new ColorChooserWnd(_color, _tcolor));
+		_wnd = GC::Hold(new ColorChooserWnd(_color, _tcolor, _holder));
 	}
 
 	return _wnd;

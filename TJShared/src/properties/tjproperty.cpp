@@ -85,7 +85,7 @@ class PropertyCheckBoxWnd: public CheckboxWnd {
 
 		virtual void SetChecked(bool t) {
 			ref<Inspectable> holder = _holder;
-			if(holder && _value!=0L) {
+			if(holder && _value!=0L && (*_value)!=t) {
 				CheckboxWnd::SetChecked(t);
 				UndoBlock::AddAndDoChange(GC::Hold(new PropertyChange<bool>(holder, L"", _value, *_value, t)));
 			}

@@ -37,7 +37,9 @@ void SuggestionProperty::Notify(ref<Object> source, const EditWnd::EditingNotifi
 			_oldValue = *_value;
 		}
 		else if(type==EditWnd::EditingEnded) {
-			UndoBlock::AddChange(GC::Hold(new PropertyChange<String>(is, GetName(), _value, _oldValue, *_value)));
+			if((*_value) != _oldValue) {
+				UndoBlock::AddChange(GC::Hold(new PropertyChange<String>(is, GetName(), _value, _oldValue, *_value)));
+			}
 		}
 	}
 }

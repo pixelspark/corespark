@@ -3,18 +3,35 @@
 
 namespace tj {
 	namespace shared {
+		class Change;
+
+		// A ChangeDelegate object can be used if you want to get notified when a change,
+		// once queued by your code, has executed.
+		class EXPORTED ChangeDelegate: public virtual tj::shared::Object {
+			public:
+				virtual ~ChangeDelegate();
+				virtual void OnChangeOccurred(ref<Change> change, bool wasUndo) = 0;
+		};
+
 		class EXPORTED Change: public virtual tj::shared::Object {
 			public:
-				Change(const std::wstring& description = L"");
+				Change(const std::wstring& description = L"", ref<ChangeDelegate> dlg = null);
 				virtual ~Change();
+				void UndoAndNotify();
+				void RedoAndNotify();
 				virtual void Redo() = 0;
 				virtual void Undo() = 0;
 				virtual const std::wstring& GetDescription();
 				virtual bool CanUndo() = 0;
 				virtual bool CanRedo() = 0;
+				virtual void SetChangeDelegate(ref<ChangeDelegate> cdg);
+				virtual ref<ChangeDelegate> GetChangeDelegate();
+
+			protected:
+				std::wstring _description;
 
 			private:
-				std::wstring _description;
+				weak<ChangeDelegate> _delegate;
 		};
 
 		class EXPORTED UndoChanges {
@@ -79,6 +96,8 @@ namespace tj {
 				
 		};
 
+		/** The VariableChange class represents an undoable change to the value of a variable. It records both the old and the new value,
+		and uses it to allow undo and redo. **/
 		template<class O, typename V> class VariableChange: public Change {
 			public:
 				inline VariableChange(ref<O> object, V& member, const V& newValue, const std::wstring& description = L""): Change(description), _object(object), _newValue(newValue), _member(member) {
@@ -122,14 +141,28 @@ namespace tj {
 				V _oldValue;
 		};
 
+		/** The Undoable class allows for simple and straightforward notation of undo-able actions. The Undoable class wraps
+		member variables of an object, and records the change in value as undo change when it is destructed. Thus, where you would
+		normally do something like this:
+		
+		void MyObject::Change(int value) { this->mValue = value; }
+
+		You can now do the following:
+
+		void MyObject::Change(int value) { Undoable(this, &(this->mValue), L"Change value of MyObject") = value;  }
+
+		This will queue a VariableChange in the current UndoBlock (and, of course, also execute the assignment).
+		**/
 		template<class O, typename V> class Undoable {
 			public:
-				inline Undoable(ref<O> object, V& member, const std::wstring& description = L""): _object(object), _member(member), _oldValue(_member), _description(description) {
+				inline Undoable(ref<O> object, V& member, ref<ChangeDelegate> dlg = null, const std::wstring& description = L""): _object(object), _delegate(dlg), _member(member), _oldValue(_member), _description(description) {
 				}
 
 				~Undoable() {
 					if(_member!=_oldValue) {
-						UndoBlock::AddChange(GC::Hold(new VariableChange<O, V>(_object, _member, _member, _oldValue, _description)));
+						ref<Change> vc = GC::Hold(new VariableChange<O, V>(_object, _member, _member, _oldValue, _description));
+						vc->SetChangeDelegate(_delegate);
+						UndoBlock::AddChange(vc);
 					}
 				}
 
@@ -164,6 +197,7 @@ namespace tj {
 
 			private:
 				ref<O> _object;
+				weak<ChangeDelegate> _delegate;
 				V& _member;
 				V _oldValue;
 				const std::wstring& _description;

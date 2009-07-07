@@ -58,7 +58,7 @@ namespace tj {
 
 		class EXPORTED ColorChooserWnd: public ChildWnd, public Listener<ColorPopupWnd::NotificationChanged> {
 			public:
-				ColorChooserWnd(RGBColor* c, RGBColor* tc);
+				ColorChooserWnd(RGBColor* c, RGBColor* tc, ref<Inspectable> holder = null);
 				virtual ~ColorChooserWnd();
 				virtual void Paint(graphics::Graphics& g, strong<Theme> theme);
 				virtual void Notify(ref<Object> source, const ColorPopupWnd::NotificationChanged& data);
@@ -71,6 +71,7 @@ namespace tj {
 				RGBColor* _tcolor;
 				Icon _colorsIcon;
 				ref<ColorPopupWnd> _cpw;
+				ref<Inspectable> _holder;
 		};
 
 		class EXPORTED ColorProperty: public Property {

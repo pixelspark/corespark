@@ -43,6 +43,10 @@ namespace tj {
 					return (unsigned char)(min(1.0, max(0.0, _a)) * 255.0);
 				}
 
+				inline bool operator==(const RGBColor& o) const {
+					return o._a == _a && o._r == _r && o._g == _g && o._b == _b;
+				}
+
 				inline unsigned char GetR() const { return GetRed(); }
 				inline unsigned char GetG() const { return GetGreen(); }
 				inline unsigned char GetB() const { return GetBlue(); }
@@ -57,6 +61,9 @@ namespace tj {
 				double _g;
 				double _b;
 		};
+
+		EXPORTED std::wostream& operator<<(std::wostream& strm, const RGBColor& col);
+		EXPORTED std::ostream& operator<<(std::ostream& strm, const RGBColor& col);
 
 		class EXPORTED ColorSpaces {
 			public:

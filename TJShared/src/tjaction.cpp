@@ -80,11 +80,39 @@ void UndoStack::AddBlock(UndoChanges& ub) {
 	EventUndoChange.Fire(ref<UndoStack>(this), UndoNotification());
 }
 
+/** ChangeDelegate **/
+ChangeDelegate::~ChangeDelegate() {
+}
+
 /** Change **/
 Change::~Change() {
 }
 
-Change::Change(const std::wstring& desc): _description(desc) {
+Change::Change(const std::wstring& desc, ref<ChangeDelegate> dlg): _description(desc), _delegate(dlg) {
+}
+
+void Change::SetChangeDelegate(ref<ChangeDelegate> cd) {
+	_delegate = cd;
+}
+
+ref<ChangeDelegate> Change::GetChangeDelegate() {
+	return _delegate;
+}
+
+void Change::UndoAndNotify() {
+	this->Undo();
+	ref<ChangeDelegate> dlg = GetChangeDelegate();
+	if(dlg) {
+		dlg->OnChangeOccurred(this, true);
+	}
+}
+
+void Change::RedoAndNotify() {
+	this->Redo();
+	ref<ChangeDelegate> dlg = GetChangeDelegate();
+	if(dlg) {
+		dlg->OnChangeOccurred(this, false);
+	}
 }
 
 const std::wstring& Change::GetDescription() {
@@ -136,7 +164,7 @@ void UndoBlock::AddChange(ref<Change> change) {
 void UndoBlock::AddAndDoChange(ref<Change> change) {
 	if(change) {
 		AddChange(change);
-		change->Redo();
+		change->Redo(); // Does not notify delegate, which is good
 	}
 }
 
@@ -178,7 +206,7 @@ void UndoChanges::Undo() {
 		while(it!=_changes.rend()) {
 			ref<Change> change = *it;
 			if(change && change->CanUndo()) {
-				change->Undo();
+				change->UndoAndNotify();
 			}
 			++it;
 		}
@@ -195,7 +223,7 @@ void UndoChanges::Redo() {
 		while(it!=_changes.end()) {
 			ref<Change> change = *it;
 			if(change && change->CanUndo()) {
-				change->Redo();
+				change->RedoAndNotify();
 			}
 			++it;
 		}
