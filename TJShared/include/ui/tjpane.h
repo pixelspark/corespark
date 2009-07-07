@@ -69,6 +69,7 @@ namespace tj {
 				#endif
 			
 				virtual void OnMove(const Area& ns);
+				virtual void OnSize(const Area& ns);
 				
 				MouseCapture _capture;
 				ref<Pane> _pane;

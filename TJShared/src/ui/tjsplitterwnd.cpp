@@ -360,11 +360,12 @@ void SplitterWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 	if(ev==MouseEventMove) {
 		if(_dragging) {
 			Area rc = GetClientArea();
+			float limit = KSnapMargin / 2.0f;
 			if(_orientation==OrientationHorizontal) {
-				_ratio = float(y)/float(rc.GetHeight());
+				_ratio = Clamp(float(y)/float(rc.GetHeight()), 0.0f + limit, 1.0f - limit);
 			}
 			else if(_orientation==OrientationVertical) {
-				_ratio = float(x)/float(rc.GetWidth());
+				_ratio = Clamp(float(x)/float(rc.GetWidth()), 0.0f + limit, 1.0f - limit);
 			}
 
 			Layout();
@@ -433,16 +434,12 @@ void SplitterWnd::Collapse(CollapseMode cm) {
 	// Stringify collapse mode
 	std::wstring cms = L"none";
 	if(cm==CollapseFirst) {
-		_ratioBeforeDragging = _ratio;
 		cms = L"first";
 	}
 	else if(cm==CollapseSecond) {
-		_ratioBeforeDragging = _ratio;
 		cms = L"second";
 	}
-	else {
-		_ratio = _ratioBeforeDragging;
-	}
+	_ratio = _ratioBeforeDragging;
 
 	// Save it to settings
 	ref<Settings> st = GetSettings();

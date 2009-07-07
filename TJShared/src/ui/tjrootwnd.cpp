@@ -65,6 +65,7 @@ void RootWnd::PaintStatusBar(graphics::Graphics& g, strong<Theme> theme, const A
 	// Get accelerators of focused window
 	std::vector<Accelerator> accels;
 	HWND focused = GetFocus();
+	
 	if(focused!=0) {
 		wchar_t buffer[100];
 		GetClassName(focused, buffer, 99);
@@ -75,6 +76,11 @@ void RootWnd::PaintStatusBar(graphics::Graphics& g, strong<Theme> theme, const A
 				wp->GetAccelerators(accels);
 			}
 		}
+	}
+
+	// Show global accelerators when the focused window does not accelerators or is not one of our windows
+	if(accels.size()==0) {
+		GetAccelerators(accels);
 	}
 
 	if(accels.size()>0) {
@@ -224,6 +230,9 @@ LRESULT RootWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 			}
 		}
 		else if(msg==WM_PARENTNOTIFY && wp==WM_SETFOCUS) {
+			Repaint();
+		}
+		else if(msg==WM_KEYDOWN) {
 			Repaint();
 		}
 	}

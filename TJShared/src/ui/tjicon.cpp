@@ -23,12 +23,15 @@ SlicedIcon::~SlicedIcon() {
 
 Area SlicedIcon::GetMinimumSize() const {
 	float df = ThemeManager::GetTheme()->GetDPIScaleFactor();
-	return Area(0,0,(_ml+_mr)/df, (_mt+_mb)/df);
+	return Area(0,0,int((_ml+_mr)/df), int((_mt+_mb)/df));
 }
 
 Area SlicedIcon::GetContentAreaAtSize(const Area& size) const {
 	float df = ThemeManager::GetTheme()->GetDPIScaleFactor();
-	return Area(size).Narrow(_ml/df, _mt/df, _mr/df, _mb/df);
+	
+	Area ns = size;
+	ns.Narrow(int(_ml/df), int(_mt/df), int(_mr/df), int(_mb/df));
+	return ns;
 }
 
 void SlicedIcon::PaintSliced(graphics::Graphics& g, const Area& rc) {
@@ -41,10 +44,10 @@ void SlicedIcon::PaintSliced(graphics::Graphics& g, const Area& rc) {
 	g.DrawImage(_bitmap, int(rc.GetLeft()+(_ml/df)), int(rc.GetTop()+(_mt/df)), (int)_ml, (int)_mt, bitmapWidth-_ml-_mr, bitmapHeight-_mb-_mt);
 
 	// Edges
-	g.DrawImage(_bitmap, int(rc.GetLeft()), int(rc.GetTop()+(_mt/df)), 0, _mt, _ml, rc.GetHeight()-(_mb/df)-(_mt/df)); // left
-	g.DrawImage(_bitmap, int(rc.GetRight()-(_mr/df)), int(rc.GetTop()+(_mt/df)), bitmapWidth-_mr, _mt, _mr, rc.GetHeight()-(_mb/df)-(_mt/df)); // right
-	g.DrawImage(_bitmap, int(rc.GetLeft()+(_ml/df)), int(rc.GetTop()), _ml, 0, rc.GetWidth()-(_mr/df)-(_ml/df), _mt); // top
-	g.DrawImage(_bitmap, int(rc.GetLeft()+(_ml/df)), int(rc.GetBottom()-(_mb/df)), _ml, bitmapHeight-_mb, rc.GetWidth()-(_mr/df)-(_ml/df), _mb); // bottom
+	g.DrawImage(_bitmap, int(rc.GetLeft()), int(rc.GetTop()+(_mt/df)), 0, _mt, _ml, int(rc.GetHeight()-(_mb/df)-(_mt/df))); // left
+	g.DrawImage(_bitmap, int(rc.GetRight()-(_mr/df)), int(rc.GetTop()+(_mt/df)), bitmapWidth-_mr, _mt, _mr, int(rc.GetHeight()-(_mb/df)-(_mt/df))); // right
+	g.DrawImage(_bitmap, int(rc.GetLeft()+(_ml/df)), int(rc.GetTop()), _ml, 0, int(rc.GetWidth()-(_mr/df)-(_ml/df)), _mt); // top
+	g.DrawImage(_bitmap, int(rc.GetLeft()+(_ml/df)), int(rc.GetBottom()-(_mb/df)), _ml, bitmapHeight-_mb, int(rc.GetWidth()-(_mr/df)-(_ml/df)), _mb); // bottom
 
 	// Corners
 	g.DrawImage(_bitmap, int(rc.GetLeft()), int(rc.GetTop()), 0, 0, _ml, _mt); // Top-left slice

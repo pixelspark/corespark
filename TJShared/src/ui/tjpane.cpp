@@ -163,6 +163,10 @@ FloatingPane::FloatingPane(RootWnd* rw, ref<Pane> p): Wnd(null, false) {
 FloatingPane::~FloatingPane() {
 }
 
+void FloatingPane::OnSize(const Area& ns) {
+	Layout();
+}
+
 void FloatingPane::OnMove(const Area& rc) {
 	_pane->OnMove(rc);
 }
