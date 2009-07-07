@@ -8,6 +8,54 @@
 using namespace tj::shared::graphics;
 using namespace tj::shared;
 
+class SliderValueChange: public Change {
+	public:
+		SliderValueChange(ref<SliderWnd> sliderWindow, float oldValue, float newValue);
+		virtual ~SliderValueChange();
+		virtual void Redo();
+		virtual void Undo();
+		virtual bool CanUndo();
+		virtual bool CanRedo();
+
+	private:
+		weak<SliderWnd> _slider;
+		float _oldValue;
+		float _newValue;
+};
+
+/** SliderValueChange **/
+SliderValueChange::SliderValueChange(ref<SliderWnd> sw, float old, float nw): _slider(sw), _oldValue(old), _newValue(nw) {
+}
+
+SliderValueChange::~SliderValueChange() {
+}
+
+void SliderValueChange::Redo() {
+	ref<SliderWnd> sw = _slider;
+	if(sw) {
+		sw->SetValue(_newValue);
+	}
+}
+
+void SliderValueChange::Undo() {
+	ref<SliderWnd> sw = _slider;
+	if(sw) {
+		sw->SetValue(_oldValue);
+	}
+}
+
+bool SliderValueChange::CanRedo() {
+	return CanUndo();
+}
+
+bool SliderValueChange::CanUndo() {
+	ref<SliderWnd> sw = _slider;
+	if(sw) {
+		return true;
+	}
+	return false;
+}
+
 SliderWnd::SliderWnd(const String& title): _value(0.0f), _displayValue(0.0f), _mark(-1.0f), _showValue(true), _snapHalf(false), _preciseDrag(false), _color(0) {
 	SetStyle(WS_TABSTOP);
 	SetText(title);
@@ -190,34 +238,37 @@ void SliderWnd::OnMouseWheelMove(WheelDirection wd) {
 }
 
 void SliderWnd::OnKey(Key k, wchar_t ch, bool down, bool isaccel) {	
+	float nv = -1.0f;
 	if(k==KeyDown) {
-		SetValue(_value - (1.0f/255.0f));
+		nv = _value - (1.0f/255.0f);
 	}
 	else if(k==KeyUp) {
-		SetValue(_value+(1.0f/255.0f));
+		nv = _value+(1.0f/255.0f);
 	}
 	else if(k==KeyPageDown) {
-		SetValue(0.0f);
+		nv = 0.0f;
 	}
 	else if(k==KeyPageUp) {
-		SetValue(1.0f);
+		nv = 1.0f;
 	}
 	else if(k==KeyHome) {
-		SetValue(0.0f);
+		nv = 0.0f;
 	}
 	else if(k==KeyEnd) {
-		SetValue(1.0f);
+		nv = 1.0f;
 	}
 	else if(k==KeyCharacter && (ch>=L'0'&& ch <= L'9') || ch == VK_OEM_3) {
 		float v = (ch - L'0')*0.1f;
 		if(ch==L'0') {
-			v = 1.0f;
+			nv = 1.0f;
 		}
 		else if(ch==VK_OEM_3) {
-			v = 0.0f;
+			nv = 0.0f;
 		}
+	}
 
-		SetValue(v);
+	if(nv>0.0f) {
+		UndoBlock::AddAndDoChange(GC::Hold(new SliderValueChange(this, _value, nv)));
 	}
 }
 
@@ -245,7 +296,7 @@ void SliderWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 			float val = _value + (dy * ratio);
 			val = max(0.0f, val);
 			val = min(1.0f, val);
-			SetValue(val);
+			UndoBlock::AddAndDoChange(GC::Hold(new SliderValueChange(this, _value, val)));
 		}
 		else if(ev==MouseEventLUp) {
 			_capture.StopCapturing();
@@ -265,10 +316,10 @@ void SliderWnd::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
 				float val = float(y)/rc.GetHeight();
 				
 				if(_snapHalf && val<0.51f && val>0.49f) {
-					SetValue(0.5f);
+					UndoBlock::AddAndDoChange(GC::Hold(new SliderValueChange(this, _value, 0.5f)));
 				}
 				else {
-					SetValue(1.0f - val);
+					UndoBlock::AddAndDoChange(GC::Hold(new SliderValueChange(this, _value, 1.0f - val)));
 				}
 			}
 		}

@@ -99,8 +99,19 @@ UndoBlock::UndoBlock(ref<Object> blockObject): _uc(blockObject), _previousBlock(
 
 UndoBlock::~UndoBlock() {
 	if(_uc.HasChanges()) {
-		strong<UndoStack> us = UndoStack::Instance();
-		us->AddBlock(_uc);
+		// If there is no previous block, add the changes to the undo stack as block
+		if(_previousBlock==0) {
+			strong<UndoStack> us = UndoStack::Instance();
+			us->AddBlock(_uc);
+		}
+		else {
+			// Merge into upper block
+			std::deque< ref<Change> >::iterator it = _uc._changes.begin();
+			while(it!=_uc._changes.end()) {
+				_previousBlock->AddChange(*it);
+				++it;
+			}
+		}
 	}
 	_currentBlock.SetValue(reinterpret_cast<void*>(_previousBlock));
 }

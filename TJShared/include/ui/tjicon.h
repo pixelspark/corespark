@@ -11,9 +11,9 @@ namespace tj {
 				operator graphics::Image*();
 				graphics::Image* GetBitmap();
 				bool IsLoaded() const;
-				void Paint(graphics::Graphics& g, const Area& rc, bool enabled = true);
-				void Paint(graphics::Graphics& g, const Area& rc, float alpha);
-				void Paint(graphics::Graphics& g, const Area& rc, bool enabled, float alpha);
+				virtual void Paint(graphics::Graphics& g, const Area& rc, bool enabled = true);
+				virtual void Paint(graphics::Graphics& g, const Area& rc, float alpha);
+				virtual void Paint(graphics::Graphics& g, const Area& rc, bool enabled, float alpha);
 
 			protected:
 				graphics::Image* _bitmap;

@@ -2,6 +2,57 @@
 using namespace tj::shared;
 using namespace tj::shared::graphics;
 
+class SlicedIcon: public Icon {
+	public:
+		SlicedIcon(const ResourceIdentifier& rid, int marginLeft, int marginTop, int marginRight, int marginBottom);
+		virtual ~SlicedIcon();
+		Area GetMinimumSize() const;
+		Area GetContentAreaAtSize(const Area& size) const;
+		virtual void PaintSliced(graphics::Graphics& g, const Area& rc);
+
+	protected:
+		
+		int _mr, _ml, _mt, _mb;
+};
+
+SlicedIcon::SlicedIcon(const ResourceIdentifier& rid, int marginLeft, int marginTop, int marginRight, int marginBottom): Icon(rid), _ml(marginLeft), _mr(marginRight), _mt(marginTop), _mb(marginBottom) {
+}
+
+SlicedIcon::~SlicedIcon() {
+}
+
+Area SlicedIcon::GetMinimumSize() const {
+	float df = ThemeManager::GetTheme()->GetDPIScaleFactor();
+	return Area(0,0,(_ml+_mr)/df, (_mt+_mb)/df);
+}
+
+Area SlicedIcon::GetContentAreaAtSize(const Area& size) const {
+	float df = ThemeManager::GetTheme()->GetDPIScaleFactor();
+	return Area(size).Narrow(_ml/df, _mt/df, _mr/df, _mb/df);
+}
+
+void SlicedIcon::PaintSliced(graphics::Graphics& g, const Area& rc) {
+	strong<Theme> theme = ThemeManager::GetTheme();
+	float df = theme->GetDPIScaleFactor();
+	int bitmapWidth = _bitmap->GetWidth();
+	int bitmapHeight = _bitmap->GetHeight();
+
+	// Center
+	g.DrawImage(_bitmap, int(rc.GetLeft()+(_ml/df)), int(rc.GetTop()+(_mt/df)), (int)_ml, (int)_mt, bitmapWidth-_ml-_mr, bitmapHeight-_mb-_mt);
+
+	// Edges
+	g.DrawImage(_bitmap, int(rc.GetLeft()), int(rc.GetTop()+(_mt/df)), 0, _mt, _ml, rc.GetHeight()-(_mb/df)-(_mt/df)); // left
+	g.DrawImage(_bitmap, int(rc.GetRight()-(_mr/df)), int(rc.GetTop()+(_mt/df)), bitmapWidth-_mr, _mt, _mr, rc.GetHeight()-(_mb/df)-(_mt/df)); // right
+	g.DrawImage(_bitmap, int(rc.GetLeft()+(_ml/df)), int(rc.GetTop()), _ml, 0, rc.GetWidth()-(_mr/df)-(_ml/df), _mt); // top
+	g.DrawImage(_bitmap, int(rc.GetLeft()+(_ml/df)), int(rc.GetBottom()-(_mb/df)), _ml, bitmapHeight-_mb, rc.GetWidth()-(_mr/df)-(_ml/df), _mb); // bottom
+
+	// Corners
+	g.DrawImage(_bitmap, int(rc.GetLeft()), int(rc.GetTop()), 0, 0, _ml, _mt); // Top-left slice
+	g.DrawImage(_bitmap, int(rc.GetRight()-(_mr/df)), int(rc.GetTop()), bitmapWidth-_mr, 0, _mr, _mt); // Top-right slice
+	g.DrawImage(_bitmap, int(rc.GetLeft()), int(rc.GetBottom()-(_mb/df)), 0, bitmapHeight-_mb, _ml, _mb); // bottom left slice
+	g.DrawImage(_bitmap, int(rc.GetRight()-(_mr/df)), int(rc.GetBottom()-(_mb/df)), bitmapWidth-_mr, bitmapHeight-_mb, _mr, _mb);
+}
+
 Icon::Icon(const ResourceIdentifier& rid): _bitmap(0) {
 	if(rid!=L"") {
 		std::wstring path;
