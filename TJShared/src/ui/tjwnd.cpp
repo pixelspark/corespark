@@ -1159,7 +1159,7 @@ void TopWnd::SetFullScreen(bool fs, int d) {
 }
 
 /** Element **/
-Element::Element() {
+Element::Element(): _shown(false) {
 }
 
 Element::~Element() {
@@ -1220,4 +1220,20 @@ Accelerator::Accelerator(): _key(KeyNone), _needsModifier(KeyNone), _isModifier(
 }
 
 Accelerator::Accelerator(Key k, const std::wstring& keyName, const std::wstring& desc, bool isMod, Key needsModifier): _key(k), _isModifier(isMod), _needsModifier(needsModifier), _keyName(keyName), _description(desc) {
+}
+
+/** SupportsMouseInteraction **/
+SupportsMouseInteraction::~SupportsMouseInteraction() {
+}
+
+void SupportsMouseInteraction::OnScroll(ScrollDirection dir) {
+}
+
+void SupportsMouseInteraction::OnMouseWheelMove(WheelDirection dir) {
+}
+
+void SupportsMouseInteraction::OnMouse(MouseEvent ev, Pixels x, Pixels y) {
+}
+
+void SupportsMouseInteraction::OnContextMenu(Pixels x, Pixels y) {
 }

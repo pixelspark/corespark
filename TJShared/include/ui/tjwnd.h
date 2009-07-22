@@ -96,7 +96,14 @@ namespace tj {
 			_LayoutLast,
 		};
 		
-		class Element;
+		class EXPORTED SupportsMouseInteraction {
+			public:
+				virtual ~SupportsMouseInteraction();
+				virtual void OnScroll(ScrollDirection dir);
+				virtual void OnMouseWheelMove(WheelDirection dir);
+				virtual void OnMouse(MouseEvent ev, Pixels x, Pixels y);
+				virtual void OnContextMenu(Pixels x, Pixels y);
+		};
 
 		class EXPORTED Element: public virtual Object {
 			public:
@@ -157,7 +164,7 @@ namespace tj {
 			}
 		};
 
-		class EXPORTED Wnd: public virtual Object {
+		class EXPORTED Wnd: public virtual Object, public SupportsMouseInteraction {
 			friend class FloatingPane;
 
 			public:
