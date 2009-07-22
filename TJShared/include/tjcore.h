@@ -32,6 +32,7 @@
 #include "tjcode.h"
 #include "tjsettings.h"
 #include "tjendpoint.h"
+#include "tjprototype.h"
 
 
 #pragma warning(pop)

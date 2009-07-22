@@ -85,7 +85,7 @@ Color BrightTheme::GetColor(const Theme::ColorIdentifier& ci) const {
 			return Color(0,0,0);
 
 		case ColorFocus:
-			return Color(200, 0,0,255);
+			return Color(255,0,0,255);
 
 		case ColorTimeSelectionEnd:
 			return Color(100,0,0,100);

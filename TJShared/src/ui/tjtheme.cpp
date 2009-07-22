@@ -178,10 +178,10 @@ void Theme::DrawShadowRectangle(graphics::Graphics& g, const Area& c, float alph
 }
 
 void Theme::DrawFocusRectangle(graphics::Graphics& g, const Area& c, float alpha) {
-	static float blendPositions[3] = {0.0f, 0.2f, 1.0f};
+	static float blendPositions[3] = {0.0f, 0.05f, 1.0f};
 	static float blendFactors[3] = {1.0f, 0.0f, 0.0f};
 	static const Pixels KFocusRectangleWidth = 6;
-	static Color KSurroundColors[1] = { Color() };
+	static Color KSurroundColors[1] = { ChangeAlpha(GetColor(ColorFocus), 0) };
 
 	// try to escape the clipping
 	GraphicsContainer gcc = g.BeginContainer();
@@ -200,8 +200,9 @@ void Theme::DrawFocusRectangle(graphics::Graphics& g, const Area& c, float alpha
 	gbrush.SetFocusScales(fx,fy);
 	
 	rc.Narrow(KFocusRectangleWidth,KFocusRectangleWidth,KFocusRectangleWidth,KFocusRectangleWidth);
-	Pen focusPen(&gbrush, 3.0f);
-	g.DrawRectangle(&focusPen, rc);
+	Pen focusPen(&gbrush, float(KFocusRectangleWidth/2));
+	//g.DrawRectangle(&focusPen, rc);
+	g.DrawRoundRectangle(&focusPen, rc, 5.0f);
 	g.EndContainer(gcc);
 }
 
