@@ -78,6 +78,14 @@ namespace tj {
 					_w += w;
 				}
 
+				inline bool operator==(const BasicRectangle<T,Storage>& o) const {
+					return (_x == o._x) && (_y == o._y) && (_w == o._w) && (_h == o._h);
+				}
+
+				inline bool operator!=(const BasicRectangle<T,Storage>& o) const {
+					return !this->operator==(o);
+				}
+
 				inline bool IsInside(T x, T y) const {
 					return (x > _x && y > _y && x < (_x+_w) && y < (_y+_h));
 				}
