@@ -201,12 +201,12 @@ void Theme::DrawFocusRectangle(graphics::Graphics& g, const Area& c, float alpha
 	
 	rc.Narrow(KFocusRectangleWidth,KFocusRectangleWidth,KFocusRectangleWidth,KFocusRectangleWidth);
 	Pen focusPen(&gbrush, float(KFocusRectangleWidth/2));
-	//g.DrawRectangle(&focusPen, rc);
+
 	if(rc.GetWidth()>5 && rc.GetHeight()>5) {
 		g.DrawRoundRectangle(&focusPen, rc, 5.0f);
 	}
 	else {
-		g.DrawRect(&focusPen, rc);
+		g.DrawRectangle(&focusPen, rc);
 	}
 	g.EndContainer(gcc);
 }
