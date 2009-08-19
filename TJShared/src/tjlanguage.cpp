@@ -1,5 +1,4 @@
-#include "../include/tjcore.h"
-#include "../include/properties/tjproperties.h"
+#include "../include/tjshared.h"
 using namespace tj::shared;
 
 Language _instance;
@@ -66,23 +65,12 @@ Language::~Language() {
 	}
 #endif
 
-ref<Property> Language::CreateLanguageProperty(const String& title, ref<Inspectable> holder, LocaleIdentifier* lang) {
-	assert(lang!=0);
-	ref< GenericListProperty<LocaleIdentifier> > pp = GC::Hold(new GenericListProperty<LocaleIdentifier>(title, holder, lang, *lang));
-
+void Language::GetAvailableLocales(std::deque<LocaleIdentifier>& lst) {
 	std::vector<LocaleIdentifier>::const_iterator it = _availableLocales.begin();
 	while(it!=_availableLocales.end()) {
-		std::wostringstream name;
-		name << *it;
-		std::string key = "locale_"+Mbs(*it);
-		if(_instance._strings.find(key)!=_instance._strings.end()) {
-			name << L": " << Language::GetLiteral(key);
-		}
-		pp->AddOption(name.str(), *it);
+		lst.push_back(*it);
 		++it;
 	}
-
-	return pp;
 }
 
 void Language::FindLocales(const String& dir) {

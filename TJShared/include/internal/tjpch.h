@@ -58,7 +58,11 @@
 		#define EXPORTED __attribute__ ((dllexport))
 	#endif
 #else
-	#define EXPORTED
+	#ifdef TJ_OS_WIN
+		#define EXPORTED
+	#else
+		#define EXPORTED
+	#endif
 #endif
 
 // define TJSHARED_MEMORY_TRACE if you want to get a log of allocations/deallocations

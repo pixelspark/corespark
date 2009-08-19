@@ -18,7 +18,7 @@
 #include <vector>
 #include <deque>
 
-#include "../../TJShared/include/tjcore.h"
+#include "../../TJShared/include/tjshared.h"
 #include "tjscriptexception.h"
 #include "tjscriptable.h"
 #include "tjscriptvalue.h"

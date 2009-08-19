@@ -132,7 +132,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="$(SolutionDir)\Libraries\Breakpad\src\client\windows\release\crash_report_sender.lib wininet.lib $(SolutionDir)\Release\tjshared.lib shlwapi.lib"
+				AdditionalDependencies="$(SolutionDir)\Libraries\Breakpad\src\client\windows\release\crash_report_sender.lib wininet.lib $(SolutionDir)\Release\tjshared.lib $(SolutionDir)\Release\tjsharedui.lib shlwapi.lib"
 				OutputFile="$(OutDir)\..\Release\$(ProjectName).exe"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"

@@ -13,6 +13,7 @@ namespace tj {
 				static const wchar_t* GetLiteral(const std::string& lit);
 				static void Load(const String& file);
 				static void LoadDirectory(const String& dir, const LocaleIdentifier& locale);
+				static void GetAvailableLocales(std::deque<LocaleIdentifier>& lst);
 
 				/** Translates menus for a window to the language **/
 				#ifdef _WIN32
@@ -23,8 +24,7 @@ namespace tj {
 				virtual ~Language();
 				static void Clear();
 				Language();
-				static ref<Property> CreateLanguageProperty(const String& title, ref<Inspectable> holder, LocaleIdentifier* loc);
-
+				
 			protected:
 				static void FindLocales(const String& dir);
 

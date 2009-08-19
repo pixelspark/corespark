@@ -17,14 +17,10 @@ namespace tj {
 		class EXPORTED Log: public virtual Object {
 			public:
 				static void Write(const String& source, const String& message);
-				static void Show(bool s);
-				static String GetContents();
 				static strong<EventLogger> GetEventLogger();
-				static void Stop();
+				static void SetEventLogger(strong<EventLogger> se);
 
 			protected:
-				static LogThread _logger;
-				static bool _writeToFile;
 				static ref<EventLogger> _eventLogger;
 		};
 	}

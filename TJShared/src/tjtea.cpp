@@ -1,4 +1,4 @@
-#include "../include/tjcore.h"
+#include "../include/tjshared.h"
 #include <cstdlib>
 #include <iostream>
 #include <string>

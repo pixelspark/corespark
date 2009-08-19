@@ -1,4 +1,4 @@
-#include "../include/tjcore.h"
+#include "../include/tjshared.h"
 #include <time.h>
 
 #ifdef TJ_OS_MAC

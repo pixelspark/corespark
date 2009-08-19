@@ -1,4 +1,4 @@
-#include "../include/tjcore.h"
+#include "../include/tjshared.h"
 using namespace tj::shared;
 
 #ifdef TJ_OS_MAC
@@ -551,4 +551,8 @@ Lockable::Lockable() {
 }
 
 Lockable::~Lockable() {
+}
+
+/** Runnable **/
+Runnable::~Runnable() {
 }

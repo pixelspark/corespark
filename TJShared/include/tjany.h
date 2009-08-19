@@ -59,7 +59,7 @@ namespace tj {
 				virtual void Save(TiXmlElement* you);
 				virtual void Load(TiXmlElement* you);
 
-				static ref<Property> CreateTypeProperty(const String& name, ref<Inspectable> holder, Type* type);
+				///static ref<Property> CreateTypeProperty(const String& name, ref<Inspectable> holder, Type* type);
 				static String GetTypeName(Type t);
 
 			private:

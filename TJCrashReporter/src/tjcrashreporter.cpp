@@ -1,4 +1,5 @@
 #include "../../TJShared/include/tjshared.h"
+#include "../../TJSharedUI/include/tjsharedui.h"
 #include "../../Libraries/Breakpad/src/client/windows/sender/crash_report_sender.h"
 #include <shlwapi.h> 
 using namespace tj::shared;

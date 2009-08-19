@@ -1,9 +1,5 @@
-#include "../include/tjcore.h"
-#include "../include/properties/tjproperties.h"
+#include "../include/tjshared.h"
 using namespace tj::shared;
-using namespace tj::shared::graphics;
-
-const Pixels ColorPopupWnd::KWheelMargin = 5;
 
 /** Black   = minimum(1-Red,1-Green,1-Blue)
     Cyan    = (1-Red-Black)/(1-Black)
@@ -21,6 +17,12 @@ CMYKColor ColorSpaces::RGBToCMYK(double r, double g, double b) {
 	}
 
 	return cmyk;
+}
+
+CMYKColor::CMYKColor(double c, double m, double y, double k): _c(c), _m(m), _y(y), _k(k) {
+}
+
+HSVColor::HSVColor(double h, double s, double v): _h(h), _s(s), _v(v) {
 }
 
 HSVColor ColorSpaces::RGBToHSV(double r, double g, double b) {
@@ -185,13 +187,4 @@ namespace tj {
 			return strm;
 		}
 	}
-}
-
-ColorWnd::ColorWnd(unsigned char r, unsigned char g, unsigned char b): ChildWnd(L"Color") {
-	_r = r;
-	_g = g;
-	_b = b;
-}
-
-ColorWnd::~ColorWnd() {
 }

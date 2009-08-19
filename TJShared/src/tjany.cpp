@@ -1,5 +1,4 @@
-#include "../include/tjcore.h"
-#include "../include/properties/tjproperties.h"
+#include "../include/tjshared.h"
 #include <limits>
 using namespace tj::shared;
 
@@ -594,19 +593,6 @@ void Any::Load(TiXmlElement* you) {
 				break;
 		}
 	}
-}
-
-ref<Property> Any::CreateTypeProperty(const String& name, ref<Inspectable> holder, Type* type) {
-	assert(type!=0);
-	ref< GenericListProperty<Type> > pt = GC::Hold(new GenericListProperty<Type>(name, holder, type, *type));
-	pt->AddOption(TL(type_null), TypeNull);
-	pt->AddOption(TL(type_integer), TypeInteger);
-	pt->AddOption(TL(type_double), TypeDouble);
-	pt->AddOption(TL(type_string), TypeString);
-	pt->AddOption(TL(type_bool), TypeBool);
-	pt->AddOption(TL(type_object), TypeObject);
-	pt->AddOption(TL(type_tuple), TypeTuple);
-	return pt;
 }
 
 String Any::GetTypeName(Type t) {

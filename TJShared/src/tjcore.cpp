@@ -1,4 +1,4 @@
-#include "../include/tjcore.h"
+#include "../include/tjshared.h"
 
 #ifdef TJ_OS_MAC
 	#include <CoreFoundation/CoreFoundation.h>

@@ -1,4 +1,4 @@
-#include "../include/tjcore.h"
+#include "../include/tjshared.h"
 #include <math.h>
 #include <iomanip>
 

@@ -1,4 +1,4 @@
-#include "../include/tjcore.h"
+#include "../include/tjshared.h"
 using namespace tj::shared;
 
 Code::Code(const char* code, unsigned int size) {

@@ -1,6 +1,5 @@
-#include "../include/tjcore.h"
+#include "../include/tjshared.h"
 using namespace tj::shared;
-
 
 void XML::GetElementHash(const TiXmlNode* root, SecureHash& sh) {
 	if(root!=0) {
