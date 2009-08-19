@@ -37,6 +37,10 @@ void Wnd::SetText(const wchar_t* t) {
 bool Wnd::IsKeyDown(Key k) {
 	int vk = 0;
 	switch(k) {
+		case KeyEscape:
+			vk = VK_ESCAPE;
+			break;
+
 		case KeyLeft:
 			vk = VK_LEFT;
 			break;
@@ -781,6 +785,10 @@ void Wnd::TranslateKeyCodes(int vk, Key& key, wchar_t& ch) {
 	}
 	else {
 		switch(vk) {
+			case VK_ESCAPE:
+				key = KeyEscape;
+				break;
+
 			case VK_LEFT:
 				key = KeyLeft;
 				break;

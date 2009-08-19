@@ -23,6 +23,7 @@ namespace tj {
 					EditingStarted,
 					EditingEnded,
 					EditingTextChanged,
+					EditingCommit,
 				};
 
 				struct EXPORTED EditingNotification {

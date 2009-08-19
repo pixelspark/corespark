@@ -98,6 +98,7 @@ namespace tj {
 			protected:
 				virtual void SetSearchBoxRightMargin(Pixels r);
 				virtual void OnSearchChange(const String& q);
+				virtual void OnSearchCommit();
 				virtual void OnCreated();
 				Area GetSearchBoxArea() const;
 				bool IsSearchBoxVisible() const;
@@ -105,6 +106,7 @@ namespace tj {
 				virtual void SetSearchBoxHint(const String& txt);
 				virtual void SetSearchBoxText(const String& txt);
 				virtual bool CanShowHints();
+				virtual void FocusSearchBox();
 
 			private:
 				const static Pixels KDefaultBoxWidth = 100;

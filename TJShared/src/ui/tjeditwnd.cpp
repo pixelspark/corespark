@@ -20,6 +20,18 @@ LRESULT CALLBACK EditWndSubclassProc(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM lP
 			return 0;
 		}
 	}
+	else if((uMsg==WM_KEYDOWN || uMsg==WM_KEYUP || uMsg==WM_CHAR) && (wParam==VK_RETURN || wParam==VK_DOWN)) {
+		if(uMsg==WM_KEYDOWN) {
+			HWND parent = ::GetParent(hWnd);
+			SendMessage(parent, WM_PARENTNOTIFY, WM_KEYDOWN, (LPARAM)wParam);
+		}
+
+		// consume; EditWnd will send an EditingCommit notification
+		// The edit control doesn't do anything with the return key press, but it does
+		// play a system beep to indicate that the key is disabled. This of course is
+		// undesired in applications like TJingle.
+		return 0; 
+	}
 	else if(uMsg==WM_SETFOCUS) {
 		// Send message to parent (this is useful for PropertyGridWnd, for example
 		HWND parent = ::GetParent(hWnd);
@@ -154,6 +166,11 @@ LRESULT EditWnd::Message(UINT msg, WPARAM wp, LPARAM lp) {
 			HWND parent = ::GetParent(GetWindow());
 			SendMessage(parent, WM_PARENTNOTIFY, WM_KILLFOCUS, 0);
 			EventEditing.Fire(ref<Object>(this), EditingNotification(EditingEnded));
+		}
+		else if(wp==WM_KEYDOWN) {
+			if(lp==VK_DOWN || lp==VK_RETURN) {
+				EventEditing.Fire(ref<Object>(this), EditingNotification(EditingCommit));
+			}
 		}
 	}
 	return ChildWnd::Message(msg,wp,lp);

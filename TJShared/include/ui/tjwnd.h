@@ -56,6 +56,7 @@ namespace tj {
 			KeyBackspace,
 			KeyReturn,
 			KeySpace,
+			KeyEscape,
 
 			/* Function keys - these have to be consecutive */
 			KeyF1,

@@ -537,6 +537,10 @@ void SearchToolbarWnd::SetSearchBoxText(const std::wstring& txt) {
 	_edit->SetText(txt);
 }
 
+void SearchToolbarWnd::FocusSearchBox() {
+	_edit->Focus();
+}
+
 void SearchToolbarWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 	ToolbarWnd::Paint(g,theme);
 	Area search = GetSearchBoxArea();
@@ -554,9 +558,18 @@ void SearchToolbarWnd::Paint(graphics::Graphics& g, strong<Theme> theme) {
 }
 
 void SearchToolbarWnd::Notify(ref<Object> src, const EditWnd::EditingNotification& data) {
-	if(src==ref<Object>(_edit) && data.GetType() == EditWnd::EditingTextChanged) {
-		OnSearchChange(_edit->GetText());
+	if(src==ref<Object>(_edit)) {
+		if(data.GetType() == EditWnd::EditingTextChanged) {
+			OnSearchChange(_edit->GetText());
+		}
+		else if(data.GetType()==EditWnd::EditingCommit) {
+			OnSearchCommit();
+		}
 	}
+}
+
+// Called when the search is 'committed' - the user pressed VK_RETURN or VK_DOWN in the edit window
+void SearchToolbarWnd::OnSearchCommit() {
 }
 
 bool SearchToolbarWnd::CanShowHints() {
