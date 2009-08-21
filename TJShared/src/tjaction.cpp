@@ -200,7 +200,7 @@ void UndoChanges::Add(ref<Change> change) {
 
 void UndoChanges::Undo() {
 	ref<Object> blockObject = _blockObject;
-	if(_blockObject==weak<Object>(ref<Object>(null)) || blockObject) {
+	if(blockObject) {
 		// Undo is executed in reverse order
 		std::deque< ref<Change> >::reverse_iterator it = _changes.rbegin();
 		while(it!=_changes.rend()) {
@@ -218,7 +218,7 @@ void UndoChanges::Undo() {
 
 void UndoChanges::Redo() {
 	ref<Object> blockObject = _blockObject;
-	if(_blockObject==weak<Object>(ref<Object>(null)) || blockObject) {
+	if(blockObject) {
 		std::deque< ref<Change> >::iterator it = _changes.begin();
 		while(it!=_changes.end()) {
 			ref<Change> change = *it;

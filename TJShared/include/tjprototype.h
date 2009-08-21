@@ -36,7 +36,7 @@ namespace tj {
 
 			template<class P, class S> class SubclassedPrototype: public Prototype<S> {
 				public:
-					SubclassedPrototype(const std::wstring& friendlyName): Prototype(friendlyName) {
+					SubclassedPrototype(const std::wstring& friendlyName): Prototype<S>(friendlyName) {
 					}
 
 					virtual ~SubclassedPrototype() {
@@ -54,7 +54,7 @@ namespace tj {
 			template<class T, typename PN = PrototypeName> class PrototypeBasedFactory {
 				public:
 					inline ref<T> CreateObjectOfType(const PN& wt) {
-						std::map<PN, ref< Prototype<T> > >::iterator it = _prototypes.find(wt);
+						typename std::map<PN, ref< Prototype<T> > >::iterator it = _prototypes.find(wt);
 						if(it!=_prototypes.end()) {
 							ref< Prototype<T> > pr = it->second;
 							if(pr) {
@@ -65,7 +65,7 @@ namespace tj {
 					}
 
 					inline PN GetTypeOfObject(ref<T> wt) {
-						std::map<PN, ref< Prototype<T> > >::iterator it = _prototypes.begin();
+						typename std::map<PN, ref< Prototype<T> > >::iterator it = _prototypes.begin();
 						while(it!=_prototypes.end()) {
 							ref<Prototype<T> > pr = it->second;
 							if(pr && pr->Matches(wt)) {
