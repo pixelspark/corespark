@@ -136,7 +136,7 @@ UndoBlock::~UndoBlock() {
 			// Merge into upper block
 			std::deque< ref<Change> >::iterator it = _uc._changes.begin();
 			while(it!=_uc._changes.end()) {
-				_previousBlock->AddChange(*it);
+				_previousBlock->_uc.Add(*it);
 				++it;
 			}
 		}
