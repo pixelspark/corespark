@@ -12,17 +12,6 @@ namespace tj {
 				}
 
 				virtual void AddEvent(const String& message, ExceptionType e, bool read) {
-					#ifdef TJ_OS_WIN
-						// Under Windows, also log to the debugger console when a debugger is attached
-						if(IsDebuggerPresent()) {
-							OutputDebugString(message.c_str());
-							OutputDebugString(L"\r\n");
-						}
-					#endif
-					
-					#ifdef TJ_OS_MAC
-						std::wcout << message << std::endl;
-					#endif
 				}
 		};
 	}
@@ -62,6 +51,18 @@ void Log::Write(const String& source, const String& message) {
 	
 	wos << L' ' << source << L' ' << L':' << L' ' << message;
 	String finalMessage = wos.str();
+
+	#ifdef TJ_OS_WIN
+		if(IsDebuggerPresent()) {
+			OutputDebugString(finalMessage.c_str());
+			OutputDebugString(L"\r\n");
+		}
+	#endif
+
+	#ifdef TJ_OS_MAC
+		std::wcout << message << std::endl;
+	#endif
+
 	GetEventLogger()->AddEvent(finalMessage, ExceptionTypeMessage, false);
 }
 
