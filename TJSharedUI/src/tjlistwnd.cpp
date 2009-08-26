@@ -334,6 +334,19 @@ void ListWnd::OnSettingsChanged() {
 	GridWnd::OnSettingsChanged();
 }
 
+void ListWnd::DrawTag(Graphics& g, Area rc, const std::wstring& text, strong<Theme> theme) {
+	LinearGradientBrush tag(PointF(0.0f, (float)rc.GetTop()-1.0f), PointF(0.0f, (float)rc.GetBottom()+1.0f), theme->GetColor(Theme::ColorActiveStart), theme->GetColor(Theme::ColorActiveEnd));
+	g.FillRectangle(&tag, rc);
+	Pen border(theme->GetColor(Theme::ColorActiveStart), 1.0f);
+	g.DrawRectangle(&border, rc);
+
+	StringFormat sf;
+	sf.SetAlignment(StringAlignmentCenter);
+	sf.SetLineAlignment(StringAlignmentCenter);
+	SolidBrush tbr(theme->GetColor(Theme::ColorBackground));
+	g.DrawString(text.c_str(), (int)text.length(), theme->GetGUIFontSmall(), rc, &sf, &tbr);
+}
+
 void ListWnd::DrawCellText(graphics::Graphics& g, graphics::StringFormat* sf, graphics::SolidBrush* br, graphics::Font* font, int col, Area row, const std::wstring& str) {
 	Column& column = _cols[col];
 	if(column._visible) {

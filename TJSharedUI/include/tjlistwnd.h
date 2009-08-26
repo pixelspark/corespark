@@ -89,6 +89,7 @@ namespace tj {
 				virtual void OnMouseWheelMove(WheelDirection wd);
 
 				// other handy stuff
+				void DrawTag(graphics::Graphics& g, Area rc, const String& text, strong<Theme> theme);
 				void DrawCellText(graphics::Graphics& g, graphics::StringFormat* sf, graphics::SolidBrush* br, graphics::Font* font, int col, Area row, const String& str);
 				void DrawCellDownArrow(graphics::Graphics& g, int col, const Area& row);
 				void DrawCellIcon(graphics::Graphics& g, int col, Area row, Icon& icon);

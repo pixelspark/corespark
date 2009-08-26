@@ -33,7 +33,7 @@ namespace tj {
 			friend class DNSSDBrowserThread;
 
 			public:
-				DNSSDResolveRequest(ref<ResolveRequest> rr);
+				DNSSDResolveRequest(ref<ResolveRequest> rr, const std::wstring& type);
 				virtual ~DNSSDResolveRequest();
 				virtual ref<ResolveRequest> GetOriginalRequest();
 

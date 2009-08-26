@@ -3,14 +3,14 @@ using namespace tj::shared;
 using namespace tj::scout;
 
 /** ResolveRequest **/
-ResolveRequest::ResolveRequest(const std::wstring& type): _type(type) {
+ResolveRequest::ResolveRequest(const ServiceDescription& type): _sd(type) {
 }
 
 ResolveRequest::~ResolveRequest() {
 }
 
-std::wstring ResolveRequest::GetDesiredServiceType() const {
-	return _type;
+const ServiceDescription& ResolveRequest::GetDesiredServiceType() const {
+	return _sd;
 }
 
 void ResolveRequest::Cancel() {
@@ -51,4 +51,24 @@ Resolver::~Resolver() {
 
 /** RequestResolver **/
 RequestResolver::~RequestResolver() {
+}
+
+/** ServiceDescription **/
+ServiceDescription::ServiceDescription() {
+}
+
+ServiceDescription::~ServiceDescription() {
+}
+
+void ServiceDescription::AddType(const ServiceType& type, const std::wstring& data) {
+	_description[type] = data;
+}
+
+bool ServiceDescription::GetDescriptionOfType(const ServiceType& type, std::wstring& data) const {
+	std::map<ServiceType,std::wstring>::const_iterator it = _description.find(type);
+	if(it!=_description.end()) {
+		data = it->second;
+		return true;
+	}
+	return false;
 }

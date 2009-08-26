@@ -23,16 +23,31 @@ namespace tj {
 				virtual ~RequestResolver();
 		};
 
+		enum ServiceType {
+			ServiceTypeDNSSD = 1,
+		};
+
+		class SCOUT_EXPORTED ServiceDescription {
+			public:
+				ServiceDescription();
+				~ServiceDescription();
+				void AddType(const ServiceType& type, const std::wstring& data);
+				bool GetDescriptionOfType(const ServiceType& type, std::wstring& data) const;
+
+			protected:
+				std::map<ServiceType, std::wstring> _description;
+		};
+
 		class SCOUT_EXPORTED ResolveRequest: public virtual Object {
 			friend class Scout;
 
 			public:
-				ResolveRequest(const std::wstring& desiredType);
+				ResolveRequest(const ServiceDescription& desc);
 				virtual ~ResolveRequest();
 				virtual void Cancel();
 				virtual void OnServiceFound(strong<Service> service);
 				virtual void OnServiceDisappeared(const std::wstring& serviceID);
-				virtual std::wstring GetDesiredServiceType() const;
+				virtual const ServiceDescription& GetDesiredServiceType() const;
 
 				struct CancelNotification {
 				};
@@ -51,7 +66,7 @@ namespace tj {
 				CriticalSection _lock;
 				std::map< std::wstring, ref<Service> > _services;
 				std::deque< ref<RequestResolver> > _requestResolvers;
-				std::wstring _type;
+				ServiceDescription _sd;
 		};
 
 		class SCOUT_EXPORTED Resolver: public virtual Object {
