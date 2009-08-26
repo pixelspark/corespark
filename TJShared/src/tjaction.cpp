@@ -199,8 +199,8 @@ void UndoChanges::Add(ref<Change> change) {
 }
 
 void UndoChanges::Undo() {
-	ref<Object> blockObject = _blockObject;
-	if(blockObject) {
+	//ref<Object> blockObject = _blockObject;
+	//if(blockObject) {
 		// Undo is executed in reverse order
 		std::deque< ref<Change> >::reverse_iterator it = _changes.rbegin();
 		while(it!=_changes.rend()) {
@@ -210,15 +210,15 @@ void UndoChanges::Undo() {
 			}
 			++it;
 		}
-	}
-	else {
-		Log::Write(L"TJShared/UndoChanges", L"Could not undo changes block, parent block object was deleted");
-	}
+	//}
+	//else {
+	//	Log::Write(L"TJShared/UndoChanges", L"Could not undo changes block, parent block object was deleted");
+	//}
 }
 
 void UndoChanges::Redo() {
-	ref<Object> blockObject = _blockObject;
-	if(blockObject) {
+	///ref<Object> blockObject = _blockObject;
+	///if(blockObject) {
 		std::deque< ref<Change> >::iterator it = _changes.begin();
 		while(it!=_changes.end()) {
 			ref<Change> change = *it;
@@ -227,10 +227,10 @@ void UndoChanges::Redo() {
 			}
 			++it;
 		}
-	}
-	else {
-		Log::Write(L"TJShared/UndoChanges", L"Could not redo changes block, parent block object was deleted");
-	}
+	///}
+	///else {
+	///	Log::Write(L"TJShared/UndoChanges", L"Could not redo changes block, parent block object was deleted");
+	///}
 }
 
 /** Action **/
