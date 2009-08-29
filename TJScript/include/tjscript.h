@@ -3,9 +3,17 @@
 
 #undef SCRIPT_EXPORTED
 #ifdef TJSCRIPT_EXPORTS 
-	#define SCRIPT_EXPORTED __declspec(dllexport)
+	#ifdef TJ_OS_WIN
+		#define SCRIPT_EXPORTED __declspec(dllexport)
+	#else
+		#define SCRIPT_EXPORTED __attribute__((visibility("default")))
+	#endif
 #else
-	#define SCRIPT_EXPORTED __declspec(dllimport)
+	#ifdef TJ_OS_WIN
+		#define SCRIPT_EXPORTED __declspec(dllimport)
+	#else
+		#define SCRIPT_EXPORTED
+	#endif
 #endif
 
 #pragma warning(push)

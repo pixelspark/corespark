@@ -40,7 +40,7 @@ namespace tj {
 
 		template<class T> struct ScriptTypeRegistration {
 			inline ScriptTypeRegistration(const std::wstring& n) {
-				ScriptContext::AddStaticType(n, GC::Hold(new T()));
+				ScriptContext::AddStaticType(n, tj::shared::GC::Hold(new T()));
 			}
 		};
 

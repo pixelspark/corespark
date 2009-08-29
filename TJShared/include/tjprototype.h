@@ -46,8 +46,10 @@ namespace tj {
 						return GC::Hold(new P());
 					}
 
-					virtual bool Matches(ref<S> object) {
-						return object.IsCastableTo<P>();
+					inline bool Matches(ref<S> object) {
+						// IsCastableTo<P> gives some compiler warnings in GCC (not in MSVC though). The dynamic_cast below is equivalent.
+						//return object.IsCastableTo<P>();
+						return dynamic_cast<P>(object.GetPointer())!=0;
 					}
 			};
 

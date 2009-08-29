@@ -55,7 +55,7 @@
 	#ifdef TJ_OS_WIN
 		#define EXPORTED __declspec(dllexport)
 	#else
-		#define EXPORTED __attribute__ ((dllexport))
+		#define EXPORTED __attribute__ ((visibility("default")))
 	#endif
 #else
 	#ifdef TJ_OS_WIN

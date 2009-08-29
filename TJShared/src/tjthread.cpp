@@ -90,7 +90,7 @@ int Thread::GetCurrentThreadID() {
 	#endif
 	
 	#ifdef TJ_USE_PTHREADS
-		return reinterpret_cast<int>(pthread_self());
+		return (int)reinterpret_cast<long long>(pthread_self());
 	#endif
 }
 
@@ -293,7 +293,7 @@ void Event::Reset() {
 }
 
 void Event::Wait(int ms) {
-	#error Check to see how this function is called for infinite waiting time and use that
+	#warning Check to see how this function is called for infinite waiting time and use that
 	pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 	
 	struct timeval now;
@@ -348,7 +348,7 @@ void Event::Wait(int ms) {
 #endif
 
 ThreadLocal::operator int() const {
-	return (int)(void*)(GetValue());
+	return (int)(long long)(void*)(GetValue());
 }
 
 void ThreadLocal::operator=(void* r) {
@@ -360,70 +360,71 @@ void ThreadLocal::operator=(int r) {
 }
 
 /** Wait **/
-void Wait::For(Thread& t, const Time& out) {
-	For(t._thread, out);
-}
-
-void Wait::For(Event& e, const Time& out) {
-	For(e._event, out);
-}
-
-void Wait::For(Semaphore& sm, const Time& out) {
-	For(sm._sema, out);
-}
-
-Wait::Wait() {
-}
-
-Wait::~Wait() {
-}
-
-void Wait::Add(Thread& t) {
-	_handles.push_back(t._thread);
-}
-
-void Wait::Add(Event& evt) {
-	_handles.push_back(evt._event);
-}
-
-void Wait::Add(PeriodicTimer& h) {
-	_handles.push_back(h._timer);
-}
-
-void Wait::Add(Semaphore& sm) {
-	_handles.push_back(sm._sema);
-}
-
-bool Wait::ForAll(const Time& out) {
-	unsigned int n = (unsigned int)_handles.size();
-	HANDLE* handles = new HANDLE[n];
-	std::vector<HANDLE>::iterator it = _handles.begin();
-	for(unsigned int a=0;a<n;a++) {
-		handles[a] = *it;
-		++it;
+#ifdef TJ_OS_WIN
+	void Wait::For(Thread& t, const Time& out) {
+		For(t._thread, out);
 	}
 
-	bool r = For(handles, n, true, out) >= 0;	
-	delete[] handles;
-	return r;
-}
-
-int Wait::ForAny(const Time& out) {
-	unsigned int n = (unsigned int)_handles.size();
-	HANDLE* handles = new HANDLE[n];
-	std::vector<HANDLE>::iterator it = _handles.begin();
-	for(unsigned int a=0;a<n;a++) {
-		HANDLE h = *it;
-		handles[a] = h;
-		++it;
+	void Wait::For(Event& e, const Time& out) {
+		For(e._event, out);
 	}
 
-	int r = For(&(handles[0]), n, false, out);
-	delete[] handles;
-	return r;
-}
+	void Wait::For(Semaphore& sm, const Time& out) {
+		For(sm._sema, out);
+	}
 
-#ifdef WIN32
+
+	Wait::Wait() {
+	}
+
+	Wait::~Wait() {
+	}
+
+	void Wait::Add(Thread& t) {
+		_handles.push_back(t._thread);
+	}
+
+	void Wait::Add(Event& evt) {
+		_handles.push_back(evt._event);
+	}
+
+	void Wait::Add(PeriodicTimer& h) {
+		_handles.push_back(h._timer);
+	}
+
+	void Wait::Add(Semaphore& sm) {
+		_handles.push_back(sm._sema);
+	}
+
+	bool Wait::ForAll(const Time& out) {
+		unsigned int n = (unsigned int)_handles.size();
+		HANDLE* handles = new HANDLE[n];
+		std::vector<HANDLE>::iterator it = _handles.begin();
+		for(unsigned int a=0;a<n;a++) {
+			handles[a] = *it;
+			++it;
+		}
+
+		bool r = For(handles, n, true, out) >= 0;	
+		delete[] handles;
+		return r;
+	}
+
+	int Wait::ForAny(const Time& out) {
+		unsigned int n = (unsigned int)_handles.size();
+		HANDLE* handles = new HANDLE[n];
+		std::vector<HANDLE>::iterator it = _handles.begin();
+		for(unsigned int a=0;a<n;a++) {
+			HANDLE h = *it;
+			handles[a] = h;
+			++it;
+		}
+
+		int r = For(&(handles[0]), n, false, out);
+		delete[] handles;
+		return r;
+	}
+
 	void Wait::For(HANDLE handle, const Time& out) {
 		DWORD tms = out.ToInt();
 		if(tms<1) {
@@ -465,31 +466,27 @@ int Wait::ForAny(const Time& out) {
 		}
 	}
 #else
-	#error Not implemented
+	#warning Not implemented (class Wait)
 #endif
 
 /** PeriodicTimer **/
-PeriodicTimer::PeriodicTimer() {
-	#ifdef WIN32
+#ifdef TJ_OS_WIN
+	PeriodicTimer::PeriodicTimer() {
 		_timer = CreateWaitableTimer(NULL,FALSE,NULL);
-	#else
-		#error Not implemented
-	#endif
-}
+	}
 
-PeriodicTimer::~PeriodicTimer() {
-	#ifdef WIN32
+	PeriodicTimer::~PeriodicTimer() {
 		CloseHandle(_timer);
-	#else
-		#error Not implemented
-	#endif
-}
+	}
 
-void PeriodicTimer::Start(const Time& period) {
-	LARGE_INTEGER dueTime;
-	dueTime.QuadPart = 0;
-	SetWaitableTimer(_timer, &dueTime, period.ToInt(), 0, 0, 0);
-}
+	void PeriodicTimer::Start(const Time& period) {
+			LARGE_INTEGER dueTime;
+			dueTime.QuadPart = 0;
+			SetWaitableTimer(_timer, &dueTime, period.ToInt(), 0, 0, 0);
+	}
+#else
+#warning Not implemented (class PeriodicTimer)
+#endif
 
 /** CriticalSection **/
 #ifdef TJ_OS_WIN

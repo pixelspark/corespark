@@ -72,7 +72,7 @@ namespace tj {
 		}
 
 		template<typename T> tj::shared::ref<Scriptable> ScriptObject<T>::Execute(Command c, tj::shared::ref<ParameterList> p) {
-			MemberMap::const_iterator it = _members.find(c);
+			typename MemberMap::const_iterator it = _members.find(c);
 			if(it!=_members.end()) {
 				Member m = it->second;
 				return (static_cast<T*>(this)->*m)(p);
