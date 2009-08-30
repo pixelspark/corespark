@@ -9,7 +9,7 @@ using namespace tj::shared;
 
 /** Transaction **/
 Transaction::Transaction(tj::shared::Time out) {
-	#ifdef _WIN32
+	#ifdef TJ_OS_WIN
 		_expires = GetTickCount() + out.ToInt();
 	#else
 		#error Not implemented

@@ -13,8 +13,16 @@ namespace tj {
 				void Initialize();
 
 			protected:
-				void* _data;
+				#ifdef TJ_OS_WIN
+					void* _data;
+				#endif
 		};
+
+		#ifdef TJ_OS_WIN
+			typedef SOCKET NativeSocket;
+		#else
+			typedef int NativeSocket;
+		#endif
 
 		class NP_EXPORTED Socket {
 			public:
@@ -61,9 +69,12 @@ namespace tj {
 				
 				static NetworkInitializer _initializer;
 
-				HWND _window;
-				SOCKET _server;
-				SOCKET _client;
+				#ifdef TJ_OS_WIN
+					HWND _window;
+				#endif
+			
+				NativeSocket _server;
+				NativeSocket _client;
 				char* _recieveBuffer;
 				char* _bcastAddress;
 				int _port;

@@ -2,7 +2,15 @@
 #include "../../Libraries/TinyXML/tinyxml.h"
 #include <time.h>
 #include <sstream>
-#include <ws2tcpip.h>
+
+#ifdef TJ_OS_WIN
+	#include <ws2tcpip.h>
+#endif
+
+#ifdef TJ_OS_MAC
+	#include <sys/socket.h>
+	#include <arpa/inet.h>
+#endif
 
 using namespace tj::np;
 using namespace tj::shared;
@@ -51,10 +59,16 @@ std::wstring BasicClient::GetHostName(const std::wstring& ip) {
 	host.sin_family = AF_INET;
 	host.sin_addr.s_addr = inet_addr(Mbs(ip).c_str());
 	host.sin_port = 0;
-
+	
 	char hostName[255];
 	memset(hostName, 0, sizeof(char)*255);
-	GetNameInfoA((const sockaddr*)&host, sizeof(host), hostName, sizeof(char)*254, 0, 0, 0);
+
+	#ifdef TJ_OS_WIN
+		GetNameInfoA((const sockaddr*)&host, sizeof(host), hostName, sizeof(char)*254, 0, 0, 0);
+	#else
+		#error Not implemented (BasicClient::GetHostName(ip))
+	#endif
+	
 	return Wcs(std::string(hostName));
 }
 
@@ -134,6 +148,12 @@ std::wstring BasicClient::GetHostName(const in_addr& addr) {
 
 	char hostName[255];
 	memset(hostName, 0, sizeof(char)*255);
-	getnameinfo((const sockaddr*)&host, sizeof(host), hostName, sizeof(char)*254, 0, 0, 0);
+	
+	#ifdef TJ_OS_WIN
+		getnameinfo((const sockaddr*)&host, sizeof(host), hostName, sizeof(char)*254, 0, 0, 0);
+	#else
+		#error Not implemented (BasicClient::GetHostName(in_addr))
+	#endif
+	
 	return Wcs(std::string(hostName));
 }

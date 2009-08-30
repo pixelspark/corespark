@@ -3,14 +3,26 @@
 #include <time.h>
 #include <sstream>
 
+#ifndef TJ_OS_WIN
+	#include <sys/socket.h>
+	#include <arpa/inet.h>
+	#define INVALID_SOCKET -1
+	#define SOCKET_ERROR -1
+	#define _strdup strdup
+#else
+	typedef int socklen_t;
+#endif
+
 using namespace tj::shared;
 using namespace tj::np;
 
 #pragma pack(push,1)
 
-LRESULT CALLBACK SocketMessageWindowProc(HWND, UINT, WPARAM, LPARAM);
-#define TJSOCKET_MESSAGE_CLASS (L"TjSocketMessageWnd")
-#define TJSOCKET_MESSAGE (WM_USER+1338)
+#ifdef TJ_OS_WIN
+	LRESULT CALLBACK SocketMessageWindowProc(HWND, UINT, WPARAM, LPARAM);
+	#define TJSOCKET_MESSAGE_CLASS (L"TjSocketMessageWnd")
+	#define TJSOCKET_MESSAGE (WM_USER+1338)
+#endif
 
 NetworkInitializer Socket::_initializer;
 
@@ -23,14 +35,8 @@ Socket::Socket(int port, const char* address, ref<Node> nw): _lastPacketID(0), _
 
 	_port = port;
 	_bcastAddress = _strdup(address);
-	
-	_window = CreateWindow(TJSOCKET_MESSAGE_CLASS, L"SocketWnd", 0, 0, 0, 0, 0, 0, 0, GetModuleHandle(NULL), 0);
-	if(!_window) {
-		Throw(L"Couldn't create message window for socket.", ExceptionTypeError);
-	}
-	SetWindowLong(_window, GWL_USERDATA, LONG((long long)this));
 
-	SOCKADDR_IN addr;
+	sockaddr_in addr;
 	_client = 0;
 	_server = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 
@@ -58,7 +64,16 @@ Socket::Socket(int port, const char* address, ref<Node> nw): _lastPacketID(0), _
 	mreq.imr_interface.s_addr = INADDR_ANY;
 	setsockopt(_server, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char*)&mreq, sizeof(mreq));
 
-	WSAAsyncSelect(_server,_window,TJSOCKET_MESSAGE,FD_READ);
+	#ifdef TJ_OS_WIN
+		_window = CreateWindow(TJSOCKET_MESSAGE_CLASS, L"SocketWnd", 0, 0, 0, 0, 0, 0, 0, GetModuleHandle(NULL), 0);
+		if(!_window) {
+			Throw(L"Couldn't create message window for socket.", ExceptionTypeError);
+		}
+		SetWindowLong(_window, GWL_USERDATA, LONG((long long)this));
+		WSAAsyncSelect(_server,_window,TJSOCKET_MESSAGE,FD_READ);
+	#else
+		#error Not implemented (socket select operation)
+	#endif
 
 	_client = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 	if(_client == INVALID_SOCKET) {
@@ -68,12 +83,18 @@ Socket::Socket(int port, const char* address, ref<Node> nw): _lastPacketID(0), _
 
 	setsockopt(_client,SOL_SOCKET,SO_BROADCAST,(const char*)&on, sizeof(int));
 	setsockopt(_client,SOL_SOCKET,SO_REUSEADDR,(const char*)&on, sizeof(int));
-	//ioctlsocket(_client, FIONBIO, (u_long*)1);
 }
 
 Socket::~Socket() {
-	closesocket(_client);
-	DestroyWindow(_window);
+	#ifdef TJ_OS_WIN
+		closesocket(_client);
+		closesocket(_server);
+		DestroyWindow(_window);
+	#else
+		close(_client);
+		close(_server);
+	#endif
+	
 	delete[] _recieveBuffer;
 	delete _bcastAddress;
 }
@@ -125,9 +146,15 @@ void Socket::Receive() {
 	{
 		ThreadLock lock(&_lock);
 		memset(_recieveBuffer,0,sizeof(char)*Packet::maximumSize);
-		int size = (int)sizeof(from);
+		socklen_t size = (int)sizeof(from);
 		int ret = recvfrom(_server, _recieveBuffer, Packet::maximumSize-1, 0, (sockaddr*)&from, &size);
-		WSAAsyncSelect(_server,_window,TJSOCKET_MESSAGE,FD_READ);
+		
+		#ifdef TJ_OS_WIN
+			WSAAsyncSelect(_server,_window,TJSOCKET_MESSAGE,FD_READ);
+		#else
+			#warning Not implemented (part of socket select stuff)
+		#endif
+		
 		if(ret == SOCKET_ERROR) {
 			// This seems to happen on packets that come from us
 			return;
@@ -564,17 +591,19 @@ unsigned int Socket::GetWishListSize() const {
 	return (unsigned int)_reliableWishList.size();
 }
 
-LRESULT CALLBACK SocketMessageWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) {
-	if(msg==WM_CREATE) {
-		return 1;
-	}
-	else if(msg==TJSOCKET_MESSAGE) {
-		Socket* sock = reinterpret_cast<Socket*>((long long)GetWindowLong(wnd, GWL_USERDATA));
-		if(sock) sock->Receive();
-	}
+#ifdef TJ_OS_WIN
+	LRESULT CALLBACK SocketMessageWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) {
+		if(msg==WM_CREATE) {
+			return 1;
+		}
+		else if(msg==TJSOCKET_MESSAGE) {
+			Socket* sock = reinterpret_cast<Socket*>((long long)GetWindowLong(wnd, GWL_USERDATA));
+			if(sock) sock->Receive();
+		}
 
-	return DefWindowProc(wnd,msg,wp,lp);
-}
+		return DefWindowProc(wnd,msg,wp,lp);
+	}
+#endif
 
 int Socket::GetBytesSent() const {
 	return _bytesSent;
@@ -585,27 +614,31 @@ int Socket::GetBytesReceived() const {
 }
 
 NetworkInitializer::NetworkInitializer() {
-	_data = 0;
+	#ifdef TJ_OS_WIN
+		_data = 0;
+	#endif
 }
 
 void NetworkInitializer::Initialize() {
-	if(InterlockedExchange((volatile long*)&_data, 1)==0) {
-		_data = (void*)new WSADATA();
+	#ifdef TJ_OS_WIN
+		if(InterlockedExchange((volatile long*)&_data, 1)==0) {
+			_data = (void*)new WSADATA();
 
-		WNDCLASS wc;
-		memset(&wc,0,sizeof(WNDCLASS));
-		wc.hInstance = GetModuleHandle(NULL);
-		wc.lpszClassName = TJSOCKET_MESSAGE_CLASS;
-		wc.lpfnWndProc = SocketMessageWindowProc;
-		
-		if(!RegisterClass(&wc)) {
-			Throw(L"Could not register socket message listener class", ExceptionTypeError);
+			WNDCLASS wc;
+			memset(&wc,0,sizeof(WNDCLASS));
+			wc.hInstance = GetModuleHandle(NULL);
+			wc.lpszClassName = TJSOCKET_MESSAGE_CLASS;
+			wc.lpfnWndProc = SocketMessageWindowProc;
+			
+			if(!RegisterClass(&wc)) {
+				Throw(L"Could not register socket message listener class", ExceptionTypeError);
+			}
+			
+			if(WSAStartup(MAKEWORD(1,1), (WSADATA*)&_data)!=0) {
+				Throw(L"WSAStartup failed, usually means your computer doesn't have a network or something is really wrong.", ExceptionTypeError);	
+			}
 		}
-		
-		if(WSAStartup(MAKEWORD(1,1), (WSADATA*)&_data)!=0) {
-			Throw(L"WSAStartup failed, usually means your computer doesn't have a network or something is really wrong.", ExceptionTypeError);	
-		}
-	}
+	#endif
 }
 
 NetworkInitializer::~NetworkInitializer() {

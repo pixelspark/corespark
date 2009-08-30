@@ -2,9 +2,17 @@
 #define _TJNP_H
 
 #ifdef TJNP_EXPORTS
-	#define NP_EXPORTED __declspec(dllexport)
+	#ifdef TJ_OS_WIN
+		#define NP_EXPORTED __declspec(dllexport)
+	#else
+		#define NP_EXPORTED __attribute__ ((visibility("default")))
+	#endif
 #else
-	#define NP_EXPORTED __declspec(dllimport)
+	#ifdef TJ_OS_WIN
+		#define NP_EXPORTED __declspec(dllimport)
+	#else
+		#define NP_EXPORTED
+	#endif
 #endif
 
 #pragma warning(push)
