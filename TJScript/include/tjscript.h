@@ -1,6 +1,8 @@
 #ifndef _TJSCRIPT_H
 #define _TJSCRIPT_H
 
+#include "../../TJShared/include/tjshared.h"
+
 #undef SCRIPT_EXPORTED
 #ifdef TJSCRIPT_EXPORTS 
 	#ifdef TJ_OS_WIN
@@ -26,7 +28,6 @@
 #include <vector>
 #include <deque>
 
-#include "../../TJShared/include/tjshared.h"
 #include "tjscriptexception.h"
 #include "tjscriptable.h"
 #include "tjscriptvalue.h"
