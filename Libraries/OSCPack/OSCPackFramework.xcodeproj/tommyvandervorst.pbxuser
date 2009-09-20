@@ -52,20 +52,22 @@
 					PBXFileDataSource_Warnings_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 275132104;
-			PBXWorkspaceStateSaveDate = 275132104;
+			PBXPerProjectTemplateStateSaveDate = 275135559;
+			PBXWorkspaceStateSaveDate = 275135559;
 		};
 		perUserProjectItems = {
+			B41DD47110663C58000742DD /* PBXTextBookmark */ = B41DD47110663C58000742DD /* PBXTextBookmark */;
+			B41DD47210663C58000742DD /* PBXBookmark */ = B41DD47210663C58000742DD /* PBXBookmark */;
+			B41DD47310663C58000742DD /* PBXTextBookmark */ = B41DD47310663C58000742DD /* PBXTextBookmark */;
+			B41DD4D110663E97000742DD /* PlistBookmark */ = B41DD4D110663E97000742DD /* PlistBookmark */;
 			B486E9BC10662F290043CE5D /* PBXTextBookmark */ = B486E9BC10662F290043CE5D /* PBXTextBookmark */;
 			B486E9BD10662F290043CE5D /* PBXTextBookmark */ = B486E9BD10662F290043CE5D /* PBXTextBookmark */;
 			B486E9BE10662F290043CE5D /* PBXTextBookmark */ = B486E9BE10662F290043CE5D /* PBXTextBookmark */;
 			B486E9BF10662F290043CE5D /* PBXTextBookmark */ = B486E9BF10662F290043CE5D /* PBXTextBookmark */;
-			B486E9C010662F290043CE5D /* PBXBookmark */ = B486E9C010662F290043CE5D /* PBXBookmark */;
 			B486E9C110662F290043CE5D /* PBXTextBookmark */ = B486E9C110662F290043CE5D /* PBXTextBookmark */;
 			B486E9C210662F290043CE5D /* PBXTextBookmark */ = B486E9C210662F290043CE5D /* PBXTextBookmark */;
 			B486E9C310662F290043CE5D /* PBXTextBookmark */ = B486E9C310662F290043CE5D /* PBXTextBookmark */;
 			B486E9C410662F290043CE5D /* PBXTextBookmark */ = B486E9C410662F290043CE5D /* PBXTextBookmark */;
-			B486E9C510662F290043CE5D /* PBXTextBookmark */ = B486E9C510662F290043CE5D /* PBXTextBookmark */;
 		};
 		sourceControlManager = B486E97D10662EB70043CE5D /* Source Control */;
 		userBuildSettings = {
@@ -73,6 +75,42 @@
 	};
 	8DC2EF4F0486A6940098B216 /* OSCPackFramework */ = {
 		activeExec = 0;
+	};
+	B41DD47110663C58000742DD /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = B486E99410662EF40043CE5D /* UdpSocket.h */;
+		name = "UdpSocket.h: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 371;
+		vrLoc = 0;
+	};
+	B41DD47210663C58000742DD /* PBXBookmark */ = {
+		isa = PBXBookmark;
+		fRef = 8DC2EF5A0486A6940098B216 /* Info.plist */;
+	};
+	B41DD47310663C58000742DD /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = B486E99410662EF40043CE5D /* UdpSocket.h */;
+		name = "UdpSocket.h: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 371;
+		vrLoc = 0;
+	};
+	B41DD4D110663E97000742DD /* PlistBookmark */ = {
+		isa = PlistBookmark;
+		fRef = 8DC2EF5A0486A6940098B216 /* Info.plist */;
+		fallbackIsa = PBXBookmark;
+		isK = 0;
+		kPath = (
+			CFBundleInfoDictionaryVersion,
+		);
+		name = /Users/tommyvandervorst/Documents/Projecten/tj/Libraries/OSCPack/Info.plist;
+		rLen = 0;
+		rLoc = 2147483647;
 	};
 	B486E97D10662EB70043CE5D /* Source Control */ = {
 		isa = PBXSourceControlManager;
@@ -160,10 +198,6 @@
 		vrLen = 371;
 		vrLoc = 0;
 	};
-	B486E9C010662F290043CE5D /* PBXBookmark */ = {
-		isa = PBXBookmark;
-		fRef = B486E99410662EF40043CE5D /* UdpSocket.h */;
-	};
 	B486E9C110662F290043CE5D /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
 		fRef = B486E99910662EF40043CE5D /* MessageMappingOscPacketListener.h */;
@@ -198,16 +232,6 @@
 		isa = PBXTextBookmark;
 		fRef = B486E98F10662EF40043CE5D /* PacketListener.h */;
 		name = "PacketListener.h: 1";
-		rLen = 0;
-		rLoc = 0;
-		rType = 0;
-		vrLen = 371;
-		vrLoc = 0;
-	};
-	B486E9C510662F290043CE5D /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = B486E99410662EF40043CE5D /* UdpSocket.h */;
-		name = "UdpSocket.h: 1";
 		rLen = 0;
 		rLoc = 0;
 		rType = 0;

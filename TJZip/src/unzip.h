@@ -7,16 +7,7 @@
 // copyright notice may be found in unzip.cpp. The repackaging was done
 // by Lucian Wischik to simplify and extend its use in Windows/C++. Also
 // encryption and unicode filenames have been added.
-
-
-#ifndef HZIP_DECLARED
-#define HZIP_DECLARED
-DECLARE_HANDLE(HZIP);
-#endif
 // An HZIP identifies a zip file that has been opened
-
-typedef DWORD ZRESULT;
-// return codes from any of the zip functions. Listed later.
 
 typedef struct
 { int index;                 // index of this file within the zip
@@ -30,7 +21,11 @@ typedef struct
 
 HZIP OpenZip(const TCHAR *fn, const char *password);
 HZIP OpenZip(void *z,unsigned int len, const char *password);
-HZIP OpenZipHandle(HANDLE h, const char *password);
+
+#ifdef TJ_OS_WIN
+	HZIP OpenZipHandle(HANDLE h, const char *password);
+#endif
+
 // OpenZip - opens a zip file and returns a handle with which you can
 // subsequently examine its contents. You can open a zip file from:
 // from a pipe:             OpenZipHandle(hpipe_read,0);

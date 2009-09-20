@@ -151,12 +151,11 @@
 		0867D691FE84028FC02AAC07 /* TJSharedFramework */ = {
 			isa = PBXGroup;
 			children = (
-				08FB77AEFE84172EC02AAC07 /* Classes */,
-				32C88DFF0371C24200C91783 /* Other Sources */,
+				B486E803106628710043CE5D /* include */,
+				B486E823106628710043CE5D /* src */,
 				089C1665FE841158C02AAC07 /* Resources */,
 				0867D69AFE84028FC02AAC07 /* External Frameworks and Libraries */,
 				034768DFFF38A50411DB9C8B /* Products */,
-				B486E8C110662A170043CE5D /* CoreFoundation.framework */,
 			);
 			name = TJSharedFramework;
 			sourceTree = "<group>";
@@ -179,18 +178,12 @@
 			name = Resources;
 			sourceTree = "<group>";
 		};
-		08FB77AEFE84172EC02AAC07 /* Classes */ = {
-			isa = PBXGroup;
-			children = (
-				B486E803106628710043CE5D /* include */,
-				B486E823106628710043CE5D /* src */,
-			);
-			name = Classes;
-			sourceTree = "<group>";
-		};
 		1058C7B0FEA5585E11CA2CBB /* Linked Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B486E8C110662A170043CE5D /* CoreFoundation.framework */,
+				B486E8BD106629E00043CE5D /* TinyXMLFramework.framework */,
+				0867D69BFE84028FC02AAC07 /* Foundation.framework */,
 			);
 			name = "Linked Frameworks";
 			sourceTree = "<group>";
@@ -198,17 +191,8 @@
 		1058C7B2FEA5585E11CA2CBB /* Other Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				B486E8BD106629E00043CE5D /* TinyXMLFramework.framework */,
-				0867D69BFE84028FC02AAC07 /* Foundation.framework */,
 			);
 			name = "Other Frameworks";
-			sourceTree = "<group>";
-		};
-		32C88DFF0371C24200C91783 /* Other Sources */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = "Other Sources";
 			sourceTree = "<group>";
 		};
 		B486E803106628710043CE5D /* include */ = {

@@ -1,0 +1,344 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		8DC2EF530486A6940098B216 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C1666FE841158C02AAC07 /* InfoPlist.strings */; };
+		B41DD49B10663D01000742DD /* tjpackage.h in Headers */ = {isa = PBXBuildFile; fileRef = B41DD49310663D01000742DD /* tjpackage.h */; };
+		B41DD49C10663D01000742DD /* tjzip.h in Headers */ = {isa = PBXBuildFile; fileRef = B41DD49410663D01000742DD /* tjzip.h */; };
+		B41DD49D10663D01000742DD /* tjpackage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B41DD49610663D01000742DD /* tjpackage.cpp */; };
+		B41DD49E10663D01000742DD /* unzip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B41DD49710663D01000742DD /* unzip.cpp */; };
+		B41DD49F10663D01000742DD /* unzip.h in Headers */ = {isa = PBXBuildFile; fileRef = B41DD49810663D01000742DD /* unzip.h */; };
+		B41DD4A010663D01000742DD /* zip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B41DD49910663D01000742DD /* zip.cpp */; };
+		B41DD4A110663D01000742DD /* zip.h in Headers */ = {isa = PBXBuildFile; fileRef = B41DD49A10663D01000742DD /* zip.h */; };
+		B41DD4A810663D11000742DD /* TJSharedFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B41DD4A710663D0F000742DD /* TJSharedFramework.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		B41DD4A610663D0F000742DD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B41DD4A210663D0F000742DD /* TJSharedFramework.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8DC2EF5B0486A6940098B216 /* TJSharedFramework.framework */;
+			remoteInfo = TJSharedFramework;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0867D69BFE84028FC02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+		0867D6A5FE840307C02AAC07 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
+		089C1667FE841158C02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		8DC2EF5A0486A6940098B216 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8DC2EF5B0486A6940098B216 /* TJZipFramework.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = TJZipFramework.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B41DD49310663D01000742DD /* tjpackage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tjpackage.h; path = include/tjpackage.h; sourceTree = SOURCE_ROOT; };
+		B41DD49410663D01000742DD /* tjzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tjzip.h; path = include/tjzip.h; sourceTree = SOURCE_ROOT; };
+		B41DD49610663D01000742DD /* tjpackage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tjpackage.cpp; path = src/tjpackage.cpp; sourceTree = SOURCE_ROOT; };
+		B41DD49710663D01000742DD /* unzip.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = unzip.cpp; path = src/unzip.cpp; sourceTree = SOURCE_ROOT; };
+		B41DD49810663D01000742DD /* unzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = unzip.h; path = src/unzip.h; sourceTree = SOURCE_ROOT; };
+		B41DD49910663D01000742DD /* zip.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = zip.cpp; path = src/zip.cpp; sourceTree = SOURCE_ROOT; };
+		B41DD49A10663D01000742DD /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = zip.h; path = src/zip.h; sourceTree = SOURCE_ROOT; };
+		B41DD4A210663D0F000742DD /* TJSharedFramework.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TJSharedFramework.xcodeproj; path = ../TJShared/TJSharedFramework.xcodeproj; sourceTree = SOURCE_ROOT; };
+		D2F7E79907B2D74100F64583 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		8DC2EF560486A6940098B216 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B41DD4A810663D11000742DD /* TJSharedFramework.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		034768DFFF38A50411DB9C8B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8DC2EF5B0486A6940098B216 /* TJZipFramework.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0867D691FE84028FC02AAC07 /* TJZipFramework */ = {
+			isa = PBXGroup;
+			children = (
+				B41DD4A210663D0F000742DD /* TJSharedFramework.xcodeproj */,
+				B41DD49210663D01000742DD /* include */,
+				B41DD49510663D01000742DD /* src */,
+				089C1665FE841158C02AAC07 /* Resources */,
+				0867D69AFE84028FC02AAC07 /* External Frameworks and Libraries */,
+				034768DFFF38A50411DB9C8B /* Products */,
+			);
+			name = TJZipFramework;
+			sourceTree = "<group>";
+		};
+		0867D69AFE84028FC02AAC07 /* External Frameworks and Libraries */ = {
+			isa = PBXGroup;
+			children = (
+				1058C7B0FEA5585E11CA2CBB /* Linked Frameworks */,
+				1058C7B2FEA5585E11CA2CBB /* Other Frameworks */,
+			);
+			name = "External Frameworks and Libraries";
+			sourceTree = "<group>";
+		};
+		089C1665FE841158C02AAC07 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				8DC2EF5A0486A6940098B216 /* Info.plist */,
+				089C1666FE841158C02AAC07 /* InfoPlist.strings */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		1058C7B0FEA5585E11CA2CBB /* Linked Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */,
+			);
+			name = "Linked Frameworks";
+			sourceTree = "<group>";
+		};
+		1058C7B2FEA5585E11CA2CBB /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				0867D6A5FE840307C02AAC07 /* AppKit.framework */,
+				D2F7E79907B2D74100F64583 /* CoreData.framework */,
+				0867D69BFE84028FC02AAC07 /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		B41DD49210663D01000742DD /* include */ = {
+			isa = PBXGroup;
+			children = (
+				B41DD49310663D01000742DD /* tjpackage.h */,
+				B41DD49410663D01000742DD /* tjzip.h */,
+			);
+			path = include;
+			sourceTree = SOURCE_ROOT;
+		};
+		B41DD49510663D01000742DD /* src */ = {
+			isa = PBXGroup;
+			children = (
+				B41DD49610663D01000742DD /* tjpackage.cpp */,
+				B41DD49710663D01000742DD /* unzip.cpp */,
+				B41DD49810663D01000742DD /* unzip.h */,
+				B41DD49910663D01000742DD /* zip.cpp */,
+				B41DD49A10663D01000742DD /* zip.h */,
+			);
+			path = src;
+			sourceTree = SOURCE_ROOT;
+		};
+		B41DD4A310663D0F000742DD /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B41DD4A710663D0F000742DD /* TJSharedFramework.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		8DC2EF500486A6940098B216 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B41DD49B10663D01000742DD /* tjpackage.h in Headers */,
+				B41DD49C10663D01000742DD /* tjzip.h in Headers */,
+				B41DD49F10663D01000742DD /* unzip.h in Headers */,
+				B41DD4A110663D01000742DD /* zip.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		8DC2EF4F0486A6940098B216 /* TJZipFramework */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1DEB91AD08733DA50010E9CD /* Build configuration list for PBXNativeTarget "TJZipFramework" */;
+			buildPhases = (
+				8DC2EF500486A6940098B216 /* Headers */,
+				8DC2EF520486A6940098B216 /* Resources */,
+				8DC2EF540486A6940098B216 /* Sources */,
+				8DC2EF560486A6940098B216 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TJZipFramework;
+			productInstallPath = "$(HOME)/Library/Frameworks";
+			productName = TJZipFramework;
+			productReference = 8DC2EF5B0486A6940098B216 /* TJZipFramework.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		0867D690FE84028FC02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 1DEB91B108733DA50010E9CD /* Build configuration list for PBXProject "TJZipFramework" */;
+			compatibilityVersion = "Xcode 3.1";
+			hasScannedForEncodings = 1;
+			mainGroup = 0867D691FE84028FC02AAC07 /* TJZipFramework */;
+			productRefGroup = 034768DFFF38A50411DB9C8B /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = B41DD4A310663D0F000742DD /* Products */;
+					ProjectRef = B41DD4A210663D0F000742DD /* TJSharedFramework.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				8DC2EF4F0486A6940098B216 /* TJZipFramework */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		B41DD4A710663D0F000742DD /* TJSharedFramework.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = TJSharedFramework.framework;
+			remoteRef = B41DD4A610663D0F000742DD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		8DC2EF520486A6940098B216 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8DC2EF530486A6940098B216 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		8DC2EF540486A6940098B216 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B41DD49D10663D01000742DD /* tjpackage.cpp in Sources */,
+				B41DD49E10663D01000742DD /* unzip.cpp in Sources */,
+				B41DD4A010663D01000742DD /* zip.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		089C1666FE841158C02AAC07 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				089C1667FE841158C02AAC07 /* English */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		1DEB91AE08733DA50010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_VERSION = A;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "";
+				INFOPLIST_FILE = Info.plist;
+				INSTALL_PATH = .;
+				PRODUCT_NAME = TJZipFramework;
+				WRAPPER_EXTENSION = framework;
+			};
+			name = Debug;
+		};
+		1DEB91AF08733DA50010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_VERSION = A;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "";
+				INFOPLIST_FILE = Info.plist;
+				INSTALL_PATH = .;
+				PRODUCT_NAME = TJZipFramework;
+				WRAPPER_EXTENSION = framework;
+			};
+			name = Release;
+		};
+		1DEB91B208733DA50010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PREBINDING = NO;
+				SDKROOT = macosx10.5;
+				SYMROOT = ../build;
+			};
+			name = Debug;
+		};
+		1DEB91B308733DA50010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				PREBINDING = NO;
+				SDKROOT = macosx10.5;
+				SYMROOT = ../build;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1DEB91AD08733DA50010E9CD /* Build configuration list for PBXNativeTarget "TJZipFramework" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB91AE08733DA50010E9CD /* Debug */,
+				1DEB91AF08733DA50010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1DEB91B108733DA50010E9CD /* Build configuration list for PBXProject "TJZipFramework" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB91B208733DA50010E9CD /* Debug */,
+				1DEB91B308733DA50010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 0867D690FE84028FC02AAC07 /* Project object */;
+}

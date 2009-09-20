@@ -2,9 +2,17 @@
 #define _TJZIP_H
 
 #ifdef TJZIP_EXPORTS
-#define TJZIP_EXPORTED __declspec(dllexport)
+	#ifdef TJ_OS_WIN
+		#define TJZIP_EXPORTED __declspec(dllexport)
+	#else
+		#define TJZIP_EXPORTED
+	#endif
 #else
-#define TJZIP_EXPORTED __declspec(dllimport)
+	#ifdef TJ_OS_WIN
+		#define TJZIP_EXPORTED __declspec(dllimport)
+	#else
+		#define TJZIP_EXPORTED
+	#endif
 #endif
 
 #pragma warning(push)
@@ -12,9 +20,14 @@
 
 #include "../../TJShared/include/tjshared.h"
 
-#ifndef HZIP_DECLARED
-#define HZIP_DECLARED
-DECLARE_HANDLE(HZIP);
+#ifdef TJ_OS_WIN
+	#ifndef HZIP_DECLARED
+	#define HZIP_DECLARED
+	DECLARE_HANDLE(HZIP);
+	#endif
+#else
+	typedef void* HZIP;
+	typedef int ZRESULT;
 #endif
 
 #include "tjpackage.h"

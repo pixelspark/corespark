@@ -1,4 +1,7 @@
-#include <windows.h>
+#ifdef TJ_OS_WIN
+	#include <windows.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

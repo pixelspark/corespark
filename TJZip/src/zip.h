@@ -8,16 +8,27 @@
 // zip.cpp. The repackaging was done by Lucian Wischik to simplify and
 // extend its use in Windows/C++. Also to add encryption and unicode.
 
-typedef DWORD ZRESULT;
-// return codes from any of the zip functions. Listed later.
-#ifndef HZIP_DECLARED
-#define HZIP_DECLARED
-DECLARE_HANDLE(HZIP);
+#ifdef TJ_OS_WIN
+	typedef DWORD ZRESULT;
+	// return codes from any of the zip functions. Listed later.
+	#ifndef HZIP_DECLARED
+	#define HZIP_DECLARED
+	DECLARE_HANDLE(HZIP);
+	#endif
+#else
+	typedef int DWORD;
+	typedef int ZRESULT;
+	typedef void* HZIP;
+	typedef char TCHAR;
 #endif
 
 HZIP CreateZip(const TCHAR *fn, const char *password);
 HZIP CreateZip(void *buf,unsigned int len, const char *password);
-HZIP CreateZipHandle(HANDLE h, const char *password);
+
+#ifdef TJ_OS_WIN
+	HZIP CreateZipHandle(HANDLE h, const char *password);
+#endif
+
 // CreateZip - call this to start the creation of a zip file.
 // As the zip is being created, it will be stored somewhere:
 // to a pipe:              CreateZipHandle(hpipe_write);
@@ -51,8 +62,12 @@ HZIP CreateZipHandle(HANDLE h, const char *password);
 
 ZRESULT ZipAdd(HZIP hz,const TCHAR *dstzn, const TCHAR *fn);
 ZRESULT ZipAdd(HZIP hz,const TCHAR *dstzn, void *src,unsigned int len);
-ZRESULT ZipAddHandle(HZIP hz,const TCHAR *dstzn, HANDLE h);
-ZRESULT ZipAddHandle(HZIP hz,const TCHAR *dstzn, HANDLE h, unsigned int len);
+
+#ifdef TJ_OS_WIN
+	ZRESULT ZipAddHandle(HZIP hz,const TCHAR *dstzn, HANDLE h);
+	ZRESULT ZipAddHandle(HZIP hz,const TCHAR *dstzn, HANDLE h, unsigned int len);
+#endif
+
 ZRESULT ZipAddFolder(HZIP hz,const TCHAR *dstzn);
 // ZipAdd - call this for each file to be added to the zip.
 // dstzn is the name that the file will be stored as in the zip file.
