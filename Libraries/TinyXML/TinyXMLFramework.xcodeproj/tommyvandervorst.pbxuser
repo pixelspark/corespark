@@ -66,14 +66,15 @@
 					PBXFileDataSource_Warnings_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 275135526;
-			PBXWorkspaceStateSaveDate = 275135526;
+			PBXPerProjectTemplateStateSaveDate = 275172130;
+			PBXWorkspaceStateSaveDate = 275172130;
 		};
 		perUserProjectItems = {
-			B41DD45E10663C38000742DD /* PBXTextBookmark */ = B41DD45E10663C38000742DD /* PBXTextBookmark */;
-			B41DD45F10663C38000742DD /* PBXBookmark */ = B41DD45F10663C38000742DD /* PBXBookmark */;
 			B41DD46010663C38000742DD /* PBXTextBookmark */ = B41DD46010663C38000742DD /* PBXTextBookmark */;
-			B41DD46110663C38000742DD /* PlistBookmark */ = B41DD46110663C38000742DD /* PlistBookmark */;
+			B45F58AF1066CB3E00FEDA6B /* PlistBookmark */ = B45F58AF1066CB3E00FEDA6B /* PlistBookmark */;
+			B45F58B01066CB3E00FEDA6B /* PBXTextBookmark */ = B45F58B01066CB3E00FEDA6B /* PBXTextBookmark */;
+			B45F58B11066CB3E00FEDA6B /* PlistBookmark */ = B45F58B11066CB3E00FEDA6B /* PlistBookmark */;
+			B45F58B21066CB3E00FEDA6B /* PBXTextBookmark */ = B45F58B21066CB3E00FEDA6B /* PBXTextBookmark */;
 			B486E8E610662B880043CE5D /* PBXTextBookmark */ = B486E8E610662B880043CE5D /* PBXTextBookmark */;
 			B486E8E710662B880043CE5D /* PBXTextBookmark */ = B486E8E710662B880043CE5D /* PBXTextBookmark */;
 			B486E8E910662B880043CE5D /* PBXTextBookmark */ = B486E8E910662B880043CE5D /* PBXTextBookmark */;
@@ -86,20 +87,6 @@
 	8DC2EF4F0486A6940098B216 /* TinyXMLFramework */ = {
 		activeExec = 0;
 	};
-	B41DD45E10663C38000742DD /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = B486E8AB106629700043CE5D /* tinystr.cpp */;
-		name = "tinystr.cpp: 1";
-		rLen = 0;
-		rLoc = 0;
-		rType = 0;
-		vrLen = 309;
-		vrLoc = 0;
-	};
-	B41DD45F10663C38000742DD /* PBXBookmark */ = {
-		isa = PBXBookmark;
-		fRef = 8DC2EF5A0486A6940098B216 /* Info.plist */;
-	};
 	B41DD46010663C38000742DD /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
 		fRef = B486E8AB106629700043CE5D /* tinystr.cpp */;
@@ -110,7 +97,7 @@
 		vrLen = 309;
 		vrLoc = 0;
 	};
-	B41DD46110663C38000742DD /* PlistBookmark */ = {
+	B45F58AF1066CB3E00FEDA6B /* PlistBookmark */ = {
 		isa = PlistBookmark;
 		fRef = 8DC2EF5A0486A6940098B216 /* Info.plist */;
 		fallbackIsa = PBXBookmark;
@@ -121,6 +108,38 @@
 		name = /Users/tommyvandervorst/Documents/Projecten/tj/Libraries/TinyXML/Info.plist;
 		rLen = 0;
 		rLoc = 2147483647;
+	};
+	B45F58B01066CB3E00FEDA6B /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = B486E8AB106629700043CE5D /* tinystr.cpp */;
+		name = "tinystr.cpp: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 309;
+		vrLoc = 0;
+	};
+	B45F58B11066CB3E00FEDA6B /* PlistBookmark */ = {
+		isa = PlistBookmark;
+		fRef = 8DC2EF5A0486A6940098B216 /* Info.plist */;
+		fallbackIsa = PBXBookmark;
+		isK = 0;
+		kPath = (
+			CFBundleInfoDictionaryVersion,
+		);
+		name = /Users/tommyvandervorst/Documents/Projecten/tj/Libraries/TinyXML/Info.plist;
+		rLen = 0;
+		rLoc = 2147483647;
+	};
+	B45F58B21066CB3E00FEDA6B /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = B486E8AB106629700043CE5D /* tinystr.cpp */;
+		name = "tinystr.cpp: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 309;
+		vrLoc = 0;
 	};
 	B486E89E1066294A0043CE5D /* Source Control */ = {
 		isa = PBXSourceControlManager;

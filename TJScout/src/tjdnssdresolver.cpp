@@ -1,5 +1,19 @@
 #include "../include/tjdnssdresolver.h"
-#include "../../Libraries/mDNS/include/dns_sd.h"
+
+#ifdef TJ_OS_WIN
+	#include "../../Libraries/mDNS/include/dns_sd.h"
+#endif
+
+#ifdef TJ_OS_MAC
+	#include <dns_sd.h>
+	#include <arpa/inet.h>
+	#include <sys/socket.h>
+	#include <sys/time.h>
+	#include <netdb.h>
+	#define SOCKET_ERROR -1
+	#define TIMEVAL struct timeval
+#endif
+
 using namespace tj::shared;
 using namespace tj::scout;
 
@@ -33,7 +47,7 @@ DNSSDBrowserThread::~DNSSDBrowserThread() {
 void DNSSDBrowserThread::Run() {
 	int fd = DNSServiceRefSockFD(_service);
 
-	while(WaitForSingleObject(_cancelledEvent.GetHandle(), 1000)==WAIT_TIMEOUT) {
+	while(!_cancelledEvent.Wait(Time(1000))) {
 		TIMEVAL tv;
 		tv.tv_sec = 0;
 		tv.tv_usec = 1;
@@ -116,6 +130,7 @@ ref<RequestResolver> DNSSDResolver::Resolve(strong<ResolveRequest> rr) {
 	if(sd.GetDescriptionOfType(ServiceTypeDNSSD,data)) {
 		return GC::Hold(new DNSSDResolveRequest(rr,data));
 	}
+	return null;
 }
 
 /** DNSSDAddressResolver **/

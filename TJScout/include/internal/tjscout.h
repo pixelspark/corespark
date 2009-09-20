@@ -7,6 +7,6 @@
 	#define SCOUT_EXPORTED
 #endif
 
-#include "../../TJShared/include/tjshared.h"
+#include "../../../TJShared/include/tjshared.h"
 
 #endif

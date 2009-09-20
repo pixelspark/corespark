@@ -137,7 +137,7 @@ namespace tj {
 				void Signal();
 				void Pulse();
 				void Reset();
-				void Wait(int ms=0);
+				bool Wait(int ms=0);
 
 				#ifdef TJ_OS_WIN
 					HANDLE GetHandle();

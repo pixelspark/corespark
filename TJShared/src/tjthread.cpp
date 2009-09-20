@@ -354,11 +354,12 @@ void Event::Reset() {
 	// TODO: not necessary?
 }
 
-void Event::Wait(int ms) {
+bool Event::Wait(int ms) {
 	pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 	
 	if(ms==0) {
 		pthread_cond_wait(&_event, &lock);
+		return true;
 	}
 	else {
 		struct timeval now;
@@ -368,7 +369,7 @@ void Event::Wait(int ms) {
 		abstime.tv_sec = now.tv_sec + (ms / 1000);
 		abstime.tv_nsec = (now.tv_usec + (ms % 1000));
 		#warning the above is incorrect, we need nanoseconds... look up how to make nanoseconds from milliseconds
-		pthread_cond_timedwait(&_event, &lock, &abstime);
+		return pthread_cond_timedwait(&_event, &lock, &abstime)==0; /* When timing out, pthread_cond_timedwait returns ETIMEOUT */
 	}
 }
 #endif

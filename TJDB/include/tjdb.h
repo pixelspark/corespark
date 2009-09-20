@@ -5,9 +5,17 @@
 using tj::shared::ref;
 
 #ifdef TJDB_EXPORTS
-	#define DB_EXPORTED __declspec(dllexport)
+	#ifdef TJ_OS_WIN
+		#define DB_EXPORTED __declspec(dllexport)
+	#else
+		#define DB_EXPORTED
+	#endif
 #else
-	#define DB_EXPORTED __declspec(dllimport)
+	#ifdef TJ_OS_WIN
+		#define DB_EXPORTED __declspec(dllimport)
+	#else
+		#define DB_EXPORTED
+	#endif
 #endif
 
 #pragma warning(push)

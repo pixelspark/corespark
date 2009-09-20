@@ -8,13 +8,25 @@
 
 /* Begin PBXBuildFile section */
 		8DC2EF530486A6940098B216 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C1666FE841158C02AAC07 /* InfoPlist.strings */; };
-		B486E8B1106629700043CE5D /* tinystr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B486E8AB106629700043CE5D /* tinystr.cpp */; };
-		B486E8B2106629700043CE5D /* tinystr.h in Headers */ = {isa = PBXBuildFile; fileRef = B486E8AC106629700043CE5D /* tinystr.h */; };
-		B486E8B3106629700043CE5D /* tinyxml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B486E8AD106629700043CE5D /* tinyxml.cpp */; };
-		B486E8B4106629700043CE5D /* tinyxml.h in Headers */ = {isa = PBXBuildFile; fileRef = B486E8AE106629700043CE5D /* tinyxml.h */; };
-		B486E8B5106629700043CE5D /* tinyxmlerror.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B486E8AF106629700043CE5D /* tinyxmlerror.cpp */; };
-		B486E8B6106629700043CE5D /* tinyxmlparser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B486E8B0106629700043CE5D /* tinyxmlparser.cpp */; };
+		B45F580A1066C53600FEDA6B /* tjscout.h in Headers */ = {isa = PBXBuildFile; fileRef = B45F58021066C53600FEDA6B /* tjscout.h */; };
+		B45F580B1066C53600FEDA6B /* tjdnssdresolver.h in Headers */ = {isa = PBXBuildFile; fileRef = B45F58031066C53600FEDA6B /* tjdnssdresolver.h */; };
+		B45F580C1066C53600FEDA6B /* tjresolver.h in Headers */ = {isa = PBXBuildFile; fileRef = B45F58041066C53600FEDA6B /* tjresolver.h */; };
+		B45F580D1066C53600FEDA6B /* tjscout.h in Headers */ = {isa = PBXBuildFile; fileRef = B45F58051066C53600FEDA6B /* tjscout.h */; };
+		B45F580E1066C53600FEDA6B /* tjdnssdresolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B45F58071066C53600FEDA6B /* tjdnssdresolver.cpp */; };
+		B45F580F1066C53600FEDA6B /* tjresolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B45F58081066C53600FEDA6B /* tjresolver.cpp */; };
+		B45F58101066C53600FEDA6B /* tjscout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B45F58091066C53600FEDA6B /* tjscout.cpp */; };
+		B45F581D1066C6E500FEDA6B /* TJSharedFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B45F581C1066C6E100FEDA6B /* TJSharedFramework.framework */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		B45F581B1066C6E100FEDA6B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B45F58171066C6E100FEDA6B /* TJSharedFramework.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8DC2EF5B0486A6940098B216 /* TJSharedFramework.framework */;
+			remoteInfo = TJSharedFramework;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		0867D69BFE84028FC02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
@@ -22,13 +34,15 @@
 		089C1667FE841158C02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		8DC2EF5A0486A6940098B216 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		8DC2EF5B0486A6940098B216 /* TinyXMLFramework.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = TinyXMLFramework.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		B486E8AB106629700043CE5D /* tinystr.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tinystr.cpp; sourceTree = "<group>"; };
-		B486E8AC106629700043CE5D /* tinystr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tinystr.h; sourceTree = "<group>"; };
-		B486E8AD106629700043CE5D /* tinyxml.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tinyxml.cpp; sourceTree = "<group>"; };
-		B486E8AE106629700043CE5D /* tinyxml.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tinyxml.h; sourceTree = "<group>"; };
-		B486E8AF106629700043CE5D /* tinyxmlerror.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tinyxmlerror.cpp; sourceTree = "<group>"; };
-		B486E8B0106629700043CE5D /* tinyxmlparser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tinyxmlparser.cpp; sourceTree = "<group>"; };
+		8DC2EF5B0486A6940098B216 /* TJScoutFramework.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = TJScoutFramework.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B45F58021066C53600FEDA6B /* tjscout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tjscout.h; sourceTree = "<group>"; };
+		B45F58031066C53600FEDA6B /* tjdnssdresolver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tjdnssdresolver.h; sourceTree = "<group>"; };
+		B45F58041066C53600FEDA6B /* tjresolver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tjresolver.h; sourceTree = "<group>"; };
+		B45F58051066C53600FEDA6B /* tjscout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tjscout.h; sourceTree = "<group>"; };
+		B45F58071066C53600FEDA6B /* tjdnssdresolver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tjdnssdresolver.cpp; sourceTree = "<group>"; };
+		B45F58081066C53600FEDA6B /* tjresolver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tjresolver.cpp; sourceTree = "<group>"; };
+		B45F58091066C53600FEDA6B /* tjscout.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tjscout.cpp; sourceTree = "<group>"; };
+		B45F58171066C6E100FEDA6B /* TJSharedFramework.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TJSharedFramework.xcodeproj; path = ../TJShared/TJSharedFramework.xcodeproj; sourceTree = SOURCE_ROOT; };
 		D2F7E79907B2D74100F64583 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
@@ -37,6 +51,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B45F581D1066C6E500FEDA6B /* TJSharedFramework.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -46,20 +61,22 @@
 		034768DFFF38A50411DB9C8B /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8DC2EF5B0486A6940098B216 /* TinyXMLFramework.framework */,
+				8DC2EF5B0486A6940098B216 /* TJScoutFramework.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		0867D691FE84028FC02AAC07 /* TinyXMLFramework */ = {
+		0867D691FE84028FC02AAC07 /* TJScoutFramework */ = {
 			isa = PBXGroup;
 			children = (
-				08FB77AEFE84172EC02AAC07 /* Classes */,
+				B45F58171066C6E100FEDA6B /* TJSharedFramework.xcodeproj */,
+				B45F58001066C53600FEDA6B /* include */,
+				B45F58061066C53600FEDA6B /* src */,
 				089C1665FE841158C02AAC07 /* Resources */,
 				0867D69AFE84028FC02AAC07 /* External Frameworks and Libraries */,
 				034768DFFF38A50411DB9C8B /* Products */,
 			);
-			name = TinyXMLFramework;
+			name = TJScoutFramework;
 			sourceTree = "<group>";
 		};
 		0867D69AFE84028FC02AAC07 /* External Frameworks and Libraries */ = {
@@ -80,19 +97,6 @@
 			name = Resources;
 			sourceTree = "<group>";
 		};
-		08FB77AEFE84172EC02AAC07 /* Classes */ = {
-			isa = PBXGroup;
-			children = (
-				B486E8AB106629700043CE5D /* tinystr.cpp */,
-				B486E8AC106629700043CE5D /* tinystr.h */,
-				B486E8AD106629700043CE5D /* tinyxml.cpp */,
-				B486E8AE106629700043CE5D /* tinyxml.h */,
-				B486E8AF106629700043CE5D /* tinyxmlerror.cpp */,
-				B486E8B0106629700043CE5D /* tinyxmlparser.cpp */,
-			);
-			name = Classes;
-			sourceTree = "<group>";
-		};
 		1058C7B0FEA5585E11CA2CBB /* Linked Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -111,6 +115,43 @@
 			name = "Other Frameworks";
 			sourceTree = "<group>";
 		};
+		B45F58001066C53600FEDA6B /* include */ = {
+			isa = PBXGroup;
+			children = (
+				B45F58011066C53600FEDA6B /* internal */,
+				B45F58031066C53600FEDA6B /* tjdnssdresolver.h */,
+				B45F58041066C53600FEDA6B /* tjresolver.h */,
+				B45F58051066C53600FEDA6B /* tjscout.h */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
+		B45F58011066C53600FEDA6B /* internal */ = {
+			isa = PBXGroup;
+			children = (
+				B45F58021066C53600FEDA6B /* tjscout.h */,
+			);
+			path = internal;
+			sourceTree = "<group>";
+		};
+		B45F58061066C53600FEDA6B /* src */ = {
+			isa = PBXGroup;
+			children = (
+				B45F58071066C53600FEDA6B /* tjdnssdresolver.cpp */,
+				B45F58081066C53600FEDA6B /* tjresolver.cpp */,
+				B45F58091066C53600FEDA6B /* tjscout.cpp */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
+		B45F58181066C6E100FEDA6B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B45F581C1066C6E100FEDA6B /* TJSharedFramework.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -118,17 +159,19 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B486E8B2106629700043CE5D /* tinystr.h in Headers */,
-				B486E8B4106629700043CE5D /* tinyxml.h in Headers */,
+				B45F580A1066C53600FEDA6B /* tjscout.h in Headers */,
+				B45F580B1066C53600FEDA6B /* tjdnssdresolver.h in Headers */,
+				B45F580C1066C53600FEDA6B /* tjresolver.h in Headers */,
+				B45F580D1066C53600FEDA6B /* tjscout.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		8DC2EF4F0486A6940098B216 /* TinyXMLFramework */ = {
+		8DC2EF4F0486A6940098B216 /* TJScoutFramework */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1DEB91AD08733DA50010E9CD /* Build configuration list for PBXNativeTarget "TinyXMLFramework" */;
+			buildConfigurationList = 1DEB91AD08733DA50010E9CD /* Build configuration list for PBXNativeTarget "TJScoutFramework" */;
 			buildPhases = (
 				8DC2EF500486A6940098B216 /* Headers */,
 				8DC2EF520486A6940098B216 /* Resources */,
@@ -139,10 +182,10 @@
 			);
 			dependencies = (
 			);
-			name = TinyXMLFramework;
+			name = TJScoutFramework;
 			productInstallPath = "$(HOME)/Library/Frameworks";
-			productName = TinyXMLFramework;
-			productReference = 8DC2EF5B0486A6940098B216 /* TinyXMLFramework.framework */;
+			productName = TJScoutFramework;
+			productReference = 8DC2EF5B0486A6940098B216 /* TJScoutFramework.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 /* End PBXNativeTarget section */
@@ -150,18 +193,34 @@
 /* Begin PBXProject section */
 		0867D690FE84028FC02AAC07 /* Project object */ = {
 			isa = PBXProject;
-			buildConfigurationList = 1DEB91B108733DA50010E9CD /* Build configuration list for PBXProject "TinyXMLFramework" */;
+			buildConfigurationList = 1DEB91B108733DA50010E9CD /* Build configuration list for PBXProject "TJScoutFramework" */;
 			compatibilityVersion = "Xcode 3.1";
 			hasScannedForEncodings = 1;
-			mainGroup = 0867D691FE84028FC02AAC07 /* TinyXMLFramework */;
+			mainGroup = 0867D691FE84028FC02AAC07 /* TJScoutFramework */;
 			productRefGroup = 034768DFFF38A50411DB9C8B /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = B45F58181066C6E100FEDA6B /* Products */;
+					ProjectRef = B45F58171066C6E100FEDA6B /* TJSharedFramework.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
-				8DC2EF4F0486A6940098B216 /* TinyXMLFramework */,
+				8DC2EF4F0486A6940098B216 /* TJScoutFramework */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		B45F581C1066C6E100FEDA6B /* TJSharedFramework.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = TJSharedFramework.framework;
+			remoteRef = B45F581B1066C6E100FEDA6B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		8DC2EF520486A6940098B216 /* Resources */ = {
@@ -179,10 +238,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B486E8B1106629700043CE5D /* tinystr.cpp in Sources */,
-				B486E8B3106629700043CE5D /* tinyxml.cpp in Sources */,
-				B486E8B5106629700043CE5D /* tinyxmlerror.cpp in Sources */,
-				B486E8B6106629700043CE5D /* tinyxmlparser.cpp in Sources */,
+				B45F580E1066C53600FEDA6B /* tjdnssdresolver.cpp in Sources */,
+				B45F580F1066C53600FEDA6B /* tjresolver.cpp in Sources */,
+				B45F58101066C53600FEDA6B /* tjscout.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -208,6 +266,10 @@
 				COPY_PHASE_STRIP = NO;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../build/Release\"",
+				);
 				FRAMEWORK_VERSION = A;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
@@ -217,8 +279,8 @@
 				GCC_PREFIX_HEADER = "";
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = .;
-				PRODUCT_NAME = TinyXMLFramework;
-				SYMROOT = ../../build;
+				PRODUCT_NAME = TJScoutFramework;
+				SYMROOT = ../build;
 				WRAPPER_EXTENSION = framework;
 			};
 			name = Debug;
@@ -231,14 +293,18 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../build/Release\"",
+				);
 				FRAMEWORK_VERSION = A;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "";
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = .;
-				PRODUCT_NAME = TinyXMLFramework;
-				SYMROOT = ../../build;
+				PRODUCT_NAME = TJScoutFramework;
+				SYMROOT = ../build;
 				WRAPPER_EXTENSION = framework;
 			};
 			name = Release;
@@ -272,7 +338,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		1DEB91AD08733DA50010E9CD /* Build configuration list for PBXNativeTarget "TinyXMLFramework" */ = {
+		1DEB91AD08733DA50010E9CD /* Build configuration list for PBXNativeTarget "TJScoutFramework" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1DEB91AE08733DA50010E9CD /* Debug */,
@@ -281,7 +347,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		1DEB91B108733DA50010E9CD /* Build configuration list for PBXProject "TinyXMLFramework" */ = {
+		1DEB91B108733DA50010E9CD /* Build configuration list for PBXProject "TJScoutFramework" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1DEB91B208733DA50010E9CD /* Debug */,

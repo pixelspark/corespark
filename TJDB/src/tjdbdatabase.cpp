@@ -47,13 +47,13 @@ namespace tj {
 					virtual void Set(const std::wstring& param, int i);
 					virtual void Set(const std::wstring& param, double v);
 					virtual void Set(const std::wstring& param, bool t);
-					virtual void Set(const std::wstring& param, __int64 i);
+					virtual void Set(const std::wstring& param, tj::shared::int64 i);
 
 					virtual void Set(int param, const std::wstring& str);
 					virtual void Set(int param, int i);
 					virtual void Set(int param, double v);
 					virtual void Set(int, bool t);
-					virtual void Set(int, __int64 i);
+					virtual void Set(int, tj::shared::int64 i);
 
 					virtual void Reset();
 					virtual void Execute();
@@ -64,7 +64,7 @@ namespace tj {
 
 					virtual int GetInt(int col);
 					virtual std::wstring GetText(int col);
-					virtual __int64 GetInt64(int col);
+					virtual tj::shared::int64 GetInt64(int col);
 					virtual bool GetBool(int col);
 					virtual double GetDouble(int col);
 					virtual Any GetAny(int col);
@@ -175,7 +175,7 @@ void SQLiteQuery::Set(const std::wstring& param, bool t) {
 	Set(i, t);
 }
 
-void SQLiteQuery::Set(const std::wstring& param, __int64 v) {
+void SQLiteQuery::Set(const std::wstring& param, tj::shared::int64 v) {
 	std::string par = ':' + Mbs(param);
 	int i = sqlite3_bind_parameter_index(_st, par.c_str());
 	if(i==0) {
@@ -206,7 +206,7 @@ void SQLiteQuery::Set(int param, double v) {
 void SQLiteQuery::Set(int p, bool t) {
 	Set(p, t ? 1 : 0);
 }
-void SQLiteQuery::Set(int p, __int64 i) {
+void SQLiteQuery::Set(int p, tj::shared::int64 i) {
 	if(sqlite3_bind_int64(_st, p, i)!=0) {
 		_db->Error();
 	}
@@ -216,7 +216,7 @@ unsigned int SQLiteQuery::GetColumnCount() {
 	if(_hasRow) {
 		int rn = sqlite3_column_count(_st);
 		if(rn>0) {
-			return unsigned int(rn);
+			return (unsigned int)(rn);
 		}
 		return 0;
 	}
@@ -287,12 +287,12 @@ std::wstring SQLiteQuery::GetText(int col) {
 	return std::wstring((const wchar_t*)sqlite3_column_text16(_st, col));
 }
 
-__int64 SQLiteQuery::GetInt64(int col) {
+tj::shared::int64 SQLiteQuery::GetInt64(int col) {
 	if(!_hasRow) {
 		Throw(L"Cannot fetch result data when there is no current row", ExceptionTypeError);
 	}
 
-	return (__int64)sqlite3_column_int64(_st, col);
+	return (tj::shared::int64)sqlite3_column_int64(_st, col);
 }
 
 bool SQLiteQuery::GetBool(int col) {
