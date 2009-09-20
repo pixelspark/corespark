@@ -153,20 +153,6 @@ namespace tj {
 				#endif
 		};
 
-		class EXPORTED PeriodicTimer {
-			friend class Wait;
-
-			public:
-				PeriodicTimer();
-				~PeriodicTimer();
-				void Start(const Time& period);
-
-			protected:
-				#ifdef WIN32
-					HANDLE _timer;
-				#endif
-		};
-
 		class EXPORTED Thread: public virtual Object {
 			friend class Wait;
 
@@ -233,7 +219,6 @@ namespace tj {
 				void Add(Thread& t);
 				void Add(Event& evt);
 				void Add(Semaphore& smp);
-				void Add(PeriodicTimer& pt);
 
 				bool ForAll(const Time& out = Time(-1));
 				int ForAny(const Time& out = Time(-1));

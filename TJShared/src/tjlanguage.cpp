@@ -1,6 +1,10 @@
 #include "../include/tjshared.h"
 using namespace tj::shared;
 
+#ifdef TJ_OS_MAC
+	#include <dirent.h>
+#endif
+
 Language _instance;
 std::vector<String> Language::_availableLocales;
 
@@ -104,7 +108,25 @@ void Language::FindLocales(const String& dir) {
 	#endif
 	
 	#ifdef TJ_OS_MAC
-		#warning Not implemented
+		// Enumerate directories in this directory
+		std::string localeDir = Mbs(dir);
+		DIR* dirInfo = opendir(localeDir.c_str());
+		dirent* fileInfo = NULL;
+		while((fileInfo = readdir(dirInfo))!=NULL) {
+			if(fileInfo->d_type==DT_DIR) {
+				// Directory found
+				std::string foundName(fileInfo->d_name, fileInfo->d_namlen);
+				std::cout << "[" << foundName << "]";
+				if(foundName.length()==0 || foundName.at(0)=='.') {
+					continue;
+				}
+				else {
+					Log::Write(L"TJShared/Language", Wcs(foundName));
+					_availableLocales.push_back(Wcs(foundName));
+				}
+			}
+		}
+		closedir(dirInfo);
 	#endif
 }
 

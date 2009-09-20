@@ -49,7 +49,7 @@ void Log::Write(const String& source, const String& message) {
 		}
 	#endif
 	
-	wos << L' ' << source << L' ' << L':' << L' ' << message;
+	wos << L' ' << source << L':' << L' ' << message;
 	String finalMessage = wos.str();
 
 	#ifdef TJ_OS_WIN
@@ -60,7 +60,7 @@ void Log::Write(const String& source, const String& message) {
 	#endif
 
 	#ifdef TJ_OS_MAC
-		std::wcout << message << std::endl;
+	std::wcout << std::hex << Thread::GetCurrentThreadID() << L' ' << source << L' ' << L':' << L' ' << message << std::endl;
 	#endif
 
 	GetEventLogger()->AddEvent(finalMessage, ExceptionTypeMessage, false);

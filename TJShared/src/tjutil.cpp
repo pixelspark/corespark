@@ -4,10 +4,14 @@
 
 #ifdef TJ_OS_WIN
 	#include <dshow.h>
+	#include <shlwapi.h>
 #endif
 
 #ifdef TJ_OS_MAC
 	#include <arpa/inet.h>
+	#include <CoreFoundation/CFURL.h>
+	#include <CoreFoundation/CFBundle.h>
+	#include <CoreFoundation/CFString.h>
 #endif
 
 using namespace tj::shared;
@@ -160,15 +164,24 @@ wchar_t* Util::IntToWide(int x) {
 	#endif
 }
 
-String Util::GetModuleName() {
-	#ifdef _WIN32
+String Util::GetApplicationDirectory() {
+	#ifdef TJ_OS_WIN
 		HMODULE mod = (HMODULE)GetModuleHandle(NULL);
 		wchar_t mfn[MAX_PATH+1];
 		GetModuleFileName(mod, mfn, MAX_PATH);
+		PathRemoveFileSpec(mfn);
 		return String(mfn);
-	#else
-		#warning Not correctly implemented on Mac
-		return L"";
+	#endif
+	
+	#ifdef TJ_OS_MAC
+		CFBundleRef mainBundle = CFBundleGetMainBundle();
+		CFURLRef mainBundleURL = CFBundleCopyBundleURL(mainBundle);
+		CFStringRef mainBundlePath = CFURLCopyFileSystemPath( mainBundleURL, kCFURLPOSIXPathStyle);
+		std::wstring moduleName = Util::MacStringToString(mainBundlePath);
+		//CFRelease(mainBundle);
+		CFRelease(mainBundleURL);
+		CFRelease(mainBundlePath);
+		return moduleName;
 	#endif
 }
 
@@ -348,9 +361,11 @@ CFStringRef Util::StringToMacString(const std::wstring& s) {
 
 std::wstring Util::MacStringToString(CFStringRef cr) {
 	unsigned int n = CFStringGetLength(cr);
-	wchar_t* buffer = new wchar_t[n+1];
-	CFStringGetBytes(cr,CFRangeMake(0, n), kCFStringEncodingUTF32LE, '?', false, (unsigned char*)buffer, n, NULL);
-	std::wstring val(buffer);
+	CFIndex bufferSizeNeeded = 0;
+	CFStringGetBytes(cr, CFRangeMake(0,n), kCFStringEncodingUTF32LE, '?', false, NULL, 0, &bufferSizeNeeded);
+	wchar_t* buffer = new wchar_t[bufferSizeNeeded+1];
+	CFIndex convertedCharacters = CFStringGetBytes(cr,CFRangeMake(0, n), kCFStringEncodingUTF32LE, '?', false, (unsigned char*)buffer, bufferSizeNeeded, NULL);
+	std::wstring val(buffer, convertedCharacters);
 	delete[] buffer;
 	return val;
 }

@@ -100,7 +100,7 @@ namespace tj {
 				static String& StringToLower(String& r);
 				static String GetSizeString(Bytes bytes);
 				static String IPToString(const in_addr& ip);
-				static String GetModuleName();
+				static String GetApplicationDirectory();
 			
 				#ifdef TJ_OS_MAC
 					static CFStringRef StringToMacString(const std::wstring& s);

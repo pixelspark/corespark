@@ -298,6 +298,8 @@ void Thread::Sleep(double ms) {
 	HANDLE Semaphore::GetHandle() {
 		return _sema;
 	}
+#else
+	#warning Not implemented on this platform: class Semaphore
 #endif
 
 /* Event; Windows implementation */
@@ -353,17 +355,21 @@ void Event::Reset() {
 }
 
 void Event::Wait(int ms) {
-	#warning Check to see how this function is called for infinite waiting time and use that
 	pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 	
-	struct timeval now;
-	gettimeofday(&now, NULL);
-	
-	struct timespec abstime;
-	abstime.tv_sec = now.tv_sec + (ms / 1000);
-	abstime.tv_nsec = (now.tv_usec + (ms % 1000));
-	#warning the above is incorrect, we need nanoseconds... look up how to make nanoseconds from milliseconds
-	pthread_cond_timedwait(&_event, &lock, &abstime);
+	if(ms==0) {
+		pthread_cond_wait(&_event, &lock);
+	}
+	else {
+		struct timeval now;
+		gettimeofday(&now, NULL);
+		
+		struct timespec abstime;
+		abstime.tv_sec = now.tv_sec + (ms / 1000);
+		abstime.tv_nsec = (now.tv_usec + (ms % 1000));
+		#warning the above is incorrect, we need nanoseconds... look up how to make nanoseconds from milliseconds
+		pthread_cond_timedwait(&_event, &lock, &abstime);
+	}
 }
 #endif
 
@@ -527,25 +533,6 @@ void ThreadLocal::operator=(int r) {
 	}
 #else
 	#warning Not implemented (class Wait)
-#endif
-
-/** PeriodicTimer **/
-#ifdef TJ_OS_WIN
-	PeriodicTimer::PeriodicTimer() {
-		_timer = CreateWaitableTimer(NULL,FALSE,NULL);
-	}
-
-	PeriodicTimer::~PeriodicTimer() {
-		CloseHandle(_timer);
-	}
-
-	void PeriodicTimer::Start(const Time& period) {
-			LARGE_INTEGER dueTime;
-			dueTime.QuadPart = 0;
-			SetWaitableTimer(_timer, &dueTime, period.ToInt(), 0, 0, 0);
-	}
-#else
-#warning Not implemented (class PeriodicTimer)
 #endif
 
 /** CriticalSection **/
