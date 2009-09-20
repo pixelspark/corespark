@@ -5,6 +5,26 @@
 
 namespace tj {
 	namespace shared {
+		class EXPORTED Atomic {
+			public:
+				static inline long Exchange(volatile long* target, long value) {
+					#ifdef TJ_OS_WIN
+						return InterlockedExchange(target, value);
+					#endif
+					
+					#ifdef TJ_OS_MAC
+						// Capture the old value, and then atomically compare-and-swap
+						// If the value has changed in the mean time, try again
+						while(true) {
+							long oldValue = *target;
+							if(OSAtomicCompareAndSwapLong(oldValue, value, target)) {
+								return oldValue;
+							}
+						}
+					#endif
+				}
+		};
+		
 		class EXPORTED Runnable {
 			public:
 				virtual ~Runnable();

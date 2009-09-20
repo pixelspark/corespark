@@ -67,7 +67,7 @@ namespace tj {
 				ref<Scriptable> str = s->Execute(L"toString", 0);
 				if(str && str.IsCastableTo< ScriptValue<std::wstring> >()) {
 					ref<ScriptValue<std::wstring> > value = str;
-					return StringTo<T>(value->GetValue(), defaultValue);
+					return tj::shared::StringTo<T>(value->GetValue(), defaultValue);
 				}
 				return defaultValue;
 			}

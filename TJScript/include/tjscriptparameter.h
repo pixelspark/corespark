@@ -14,13 +14,13 @@ namespace tj {
 				inline Parameter(Field name, int namelessIndex = -1) {	
 					if(namelessIndex>=0) {
 						_hasNamelessIndex = true;
-						_namelessIndex = Stringify(namelessIndex);
+						_namelessIndex = tj::shared::Stringify(namelessIndex);
 					}
 					
 					_name = name;
 				}
 
-				T Require(tj::shared::ref<ParameterList> p, T defaultValue) const {
+				inline T Require(tj::shared::ref<ParameterList> p, T defaultValue) const {
 					if(!p) {
 						throw ParameterException(_name);
 					}

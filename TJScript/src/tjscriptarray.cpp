@@ -50,13 +50,13 @@ ScriptArray::~ScriptArray() {
 }
 
 void ScriptArray::Initialize() {
-	Bind(L"toString", &SToString);
-	Bind(L"push", &SPush);
-	Bind(L"pop", &SPop);
-	Bind(L"get", &SGet);
-	Bind(L"count", &SCount);
-	Bind(L"implode", &SImplode);
-	Bind(L"values", &SValues);
+	Bind(L"toString", &ScriptArray::SToString);
+	Bind(L"push", &ScriptArray::SPush);
+	Bind(L"pop", &ScriptArray::SPop);
+	Bind(L"get", &ScriptArray::SGet);
+	Bind(L"count", &ScriptArray::SCount);
+	Bind(L"implode", &ScriptArray::SImplode);
+	Bind(L"values", &ScriptArray::SValues);
 }
 
 ref<Scriptable> ScriptArray::SValues(ref<ParameterList> p) {

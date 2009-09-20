@@ -175,7 +175,7 @@ ref<Scriptable> VM::Execute(ref<ScriptContext> c, ref<CompiledScript> script, re
 		}
 
 		_script = 0;
-		_context = ref<ScriptContext>(0);
+		//_context = null;
 		_scope = 0;
 		
 		// delete frames
@@ -190,7 +190,7 @@ ref<Scriptable> VM::Execute(ref<ScriptContext> c, ref<CompiledScript> script, re
 	}
 
 	_script = 0;
-	_context = ref<ScriptContext>(0);
+	//_context = null;
 	_scope = 0;
 
 	ref<Scriptable> ret;

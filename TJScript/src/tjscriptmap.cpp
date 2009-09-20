@@ -68,11 +68,11 @@ std::map<std::wstring, tj::shared::ref<Scriptable> >::iterator ScriptMap::GetEnd
 }
 
 void ScriptMap::Initialize() {
-	Bind(L"size", &Size);
-	Bind(L"get", &Get);
-	Bind(L"toString", &ToString);
-	Bind(L"keys", &Keys);
-	Bind(L"values", &Values);
+	Bind(L"size", &ScriptMap::Size);
+	Bind(L"get", &ScriptMap::Get);
+	Bind(L"toString", &ScriptMap::ToString);
+	Bind(L"keys", &ScriptMap::Keys);
+	Bind(L"values", &ScriptMap::Values);
 }
 
 ref<Scriptable> ScriptMap::Size(ref<ParameterList> p) {

@@ -14,7 +14,7 @@ ScriptFunction::~ScriptFunction() {
 }
 
 void ScriptFunction::Initialize() {
-	Bind(L"toString", &SToString);
+	Bind(L"toString", &ScriptFunction::SToString);
 }
 
 ref<Scriptable> ScriptDelegate::SToString(ref<ParameterList> p) {
@@ -22,5 +22,5 @@ ref<Scriptable> ScriptDelegate::SToString(ref<ParameterList> p) {
 }
 
 void ScriptDelegate::Initialize() {
-	Bind(L"toString", &SToString);
+	Bind(L"toString", &ScriptDelegate::SToString);
 }

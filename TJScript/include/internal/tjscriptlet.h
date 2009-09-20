@@ -63,7 +63,7 @@ namespace tj {
 
 				template<typename T> inline T Get(unsigned int& pc) const {
 					unsigned int size = sizeof(T)/sizeof(char);
-					if((pc+(size-1))>_used) Throw(L"Array index out of bounds in scriptlet code reader", ExceptionTypeError);
+					if((pc+(size-1))>_used) Throw(L"Array index out of bounds in scriptlet code reader", tj::shared::ExceptionTypeError);
 
 					T* tp = (T*)&(_code[pc]);
 					pc += size;

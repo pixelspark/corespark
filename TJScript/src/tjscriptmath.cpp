@@ -32,18 +32,18 @@ ScriptMath::ScriptMath() {
 }
 
 void ScriptMath::Initialize() {
-	Bind(L"sin", &Sin);
-	Bind(L"cos", &Cos);
-	Bind(L"tan", &Tan);
-	Bind(L"atan", &Atan);
-	Bind(L"atan2", &Atan2);
-	Bind(L"acos", &Acos);
-	Bind(L"asin", &Asin);
-	Bind(L"random", &Random);
-	Bind(L"pi", &Pi);
-	Bind(L"pow", &Pow);
-	Bind(L"fmod", &Fmod);
-	Bind(L"e", &E);
+	Bind(L"sin", &ScriptMath::Sin);
+	Bind(L"cos", &ScriptMath::Cos);
+	Bind(L"tan", &ScriptMath::Tan);
+	Bind(L"atan", &ScriptMath::Atan);
+	Bind(L"atan2", &ScriptMath::Atan2);
+	Bind(L"acos", &ScriptMath::Acos);
+	Bind(L"asin", &ScriptMath::Asin);
+	Bind(L"random", &ScriptMath::Random);
+	Bind(L"pi", &ScriptMath::Pi);
+	Bind(L"pow", &ScriptMath::Pow);
+	Bind(L"fmod", &ScriptMath::Fmod);
+	Bind(L"e", &ScriptMath::E);
 }
 
 ref<Scriptable> ScriptMath::Sin(ref<ParameterList> p) {

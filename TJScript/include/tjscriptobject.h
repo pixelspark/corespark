@@ -16,7 +16,7 @@ namespace tj {
 				ScriptObject();
 				static void Bind(Command c, Member p);
 
-				static typename MemberMap _members;
+				static typename ScriptObject<T>::MemberMap _members;
 				static volatile long _initialized;
 
 			public:
@@ -58,7 +58,7 @@ namespace tj {
 			/** InterlockedExchange is the thread-safe way to set the lock to 1
 			and return the previous value. If the previous value was 0, initialize
 			the object **/
-			long lockVal = InterlockedExchange(&_initialized, 1);
+			long lockVal = tj::shared::Atomic::Exchange(&_initialized, 1);
 			if(lockVal==0L) {
 				T::Initialize();
 			}

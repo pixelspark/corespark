@@ -33,7 +33,7 @@ namespace tj {
 						return tj::shared::GC::Hold(new ScriptValue<std::wstring>(tj::shared::Stringify(_value)));
 					}
 					else if(command==L"class") {
-						return tj::shared::GC::Hold(new ScriptString(Wcs(typeid(T).name())));
+						return tj::shared::GC::Hold(new ScriptValue<std::wstring>(Wcs(typeid(T).name())));
 					}
 					return 0;
 				}

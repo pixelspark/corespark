@@ -26,12 +26,12 @@ ScriptRange::ScriptRange(int a, int b): _a(a), _b(b) {
 }
 
 void ScriptRange::Initialize() {
-	Bind(L"next", &Next);
-	Bind(L"toString", &ToString);
-	Bind(L"isInside", &IsInside);
-	Bind(L"size", &Size);
-	Bind(L"from", &From);
-	Bind(L"to", &To);
+	Bind(L"next", &ScriptRange::Next);
+	Bind(L"toString", &ScriptRange::ToString);
+	Bind(L"isInside", &ScriptRange::IsInside);
+	Bind(L"size", &ScriptRange::Size);
+	Bind(L"from", &ScriptRange::From);
+	Bind(L"to", &ScriptRange::To);
 }
 
 ref<Scriptable> ScriptRange::Size(ref<ParameterList> p) {

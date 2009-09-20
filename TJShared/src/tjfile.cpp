@@ -110,6 +110,7 @@ bool File::Copy(const String& from, const String& to, bool silent) {
 	
 	#ifdef TJ_OS_MAC
 		#warning Not implemented on Mac
+		return false;
 	#endif
 }
 
