@@ -150,9 +150,11 @@ namespace tj {
 		class EXPORTED Thread: public virtual Object {
 			friend class Wait;
 
-			#ifdef _WIN32
+			#ifdef TJ_OS_WIN
 				friend DWORD WINAPI ThreadProc(LPVOID);
 			#endif
+			
+			friend void* ThreadProc(void* arg);
 
 			public:
 

@@ -5,6 +5,7 @@
 #ifdef __APPLE__
 	#ifndef TJ_OS_WIN
 		#define TJ_OS_MAC
+		#define TJ_OS_POSIX
 	#endif
 #endif
 

@@ -1,0 +1,217 @@
+// !$*UTF8*$!
+{
+	0867D690FE84028FC02AAC07 /* Project object */ = {
+		activeBuildConfigurationName = Debug;
+		activeTarget = 8DC2EF4F0486A6940098B216 /* OSCPackFramework */;
+		addToTargets = (
+			8DC2EF4F0486A6940098B216 /* OSCPackFramework */,
+		);
+		codeSenseManager = B486E97E10662EB70043CE5D /* Code sense */;
+		perUserDictionary = {
+			PBXConfiguration.PBXFileTableDataSource3.PBXFileTableDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					364,
+					20,
+					48,
+					43,
+					43,
+					20,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXFileDataSource_FiletypeID,
+					PBXFileDataSource_Filename_ColumnID,
+					PBXFileDataSource_Built_ColumnID,
+					PBXFileDataSource_ObjectSize_ColumnID,
+					PBXFileDataSource_Errors_ColumnID,
+					PBXFileDataSource_Warnings_ColumnID,
+					PBXFileDataSource_Target_ColumnID,
+				);
+			};
+			PBXConfiguration.PBXTargetDataSource.PBXTargetDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					324,
+					60,
+					20,
+					48.16259765625,
+					43,
+					43,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXFileDataSource_FiletypeID,
+					PBXFileDataSource_Filename_ColumnID,
+					PBXTargetDataSource_PrimaryAttribute,
+					PBXFileDataSource_Built_ColumnID,
+					PBXFileDataSource_ObjectSize_ColumnID,
+					PBXFileDataSource_Errors_ColumnID,
+					PBXFileDataSource_Warnings_ColumnID,
+				);
+			};
+			PBXPerProjectTemplateStateSaveDate = 275132104;
+			PBXWorkspaceStateSaveDate = 275132104;
+		};
+		perUserProjectItems = {
+			B486E9BC10662F290043CE5D /* PBXTextBookmark */ = B486E9BC10662F290043CE5D /* PBXTextBookmark */;
+			B486E9BD10662F290043CE5D /* PBXTextBookmark */ = B486E9BD10662F290043CE5D /* PBXTextBookmark */;
+			B486E9BE10662F290043CE5D /* PBXTextBookmark */ = B486E9BE10662F290043CE5D /* PBXTextBookmark */;
+			B486E9BF10662F290043CE5D /* PBXTextBookmark */ = B486E9BF10662F290043CE5D /* PBXTextBookmark */;
+			B486E9C010662F290043CE5D /* PBXBookmark */ = B486E9C010662F290043CE5D /* PBXBookmark */;
+			B486E9C110662F290043CE5D /* PBXTextBookmark */ = B486E9C110662F290043CE5D /* PBXTextBookmark */;
+			B486E9C210662F290043CE5D /* PBXTextBookmark */ = B486E9C210662F290043CE5D /* PBXTextBookmark */;
+			B486E9C310662F290043CE5D /* PBXTextBookmark */ = B486E9C310662F290043CE5D /* PBXTextBookmark */;
+			B486E9C410662F290043CE5D /* PBXTextBookmark */ = B486E9C410662F290043CE5D /* PBXTextBookmark */;
+			B486E9C510662F290043CE5D /* PBXTextBookmark */ = B486E9C510662F290043CE5D /* PBXTextBookmark */;
+		};
+		sourceControlManager = B486E97D10662EB70043CE5D /* Source Control */;
+		userBuildSettings = {
+		};
+	};
+	8DC2EF4F0486A6940098B216 /* OSCPackFramework */ = {
+		activeExec = 0;
+	};
+	B486E97D10662EB70043CE5D /* Source Control */ = {
+		isa = PBXSourceControlManager;
+		fallbackIsa = XCSourceControlManager;
+		isSCMEnabled = 0;
+		scmConfiguration = {
+		};
+	};
+	B486E97E10662EB70043CE5D /* Code sense */ = {
+		isa = PBXCodeSenseManager;
+		indexTemplatePath = "";
+	};
+	B486E98C10662EF30043CE5D /* IpEndpointName.cpp */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {542, 936}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRange = "{0, 371}";
+		};
+	};
+	B486E98D10662EF30043CE5D /* IpEndpointName.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {542, 900}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRange = "{0, 371}";
+		};
+	};
+	B486E98F10662EF40043CE5D /* PacketListener.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {542, 516}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRange = "{0, 371}";
+		};
+	};
+	B486E99410662EF40043CE5D /* UdpSocket.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {542, 1884}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRange = "{0, 371}";
+		};
+	};
+	B486E99910662EF40043CE5D /* MessageMappingOscPacketListener.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {542, 840}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRange = "{0, 371}";
+		};
+	};
+	B486E9BC10662F290043CE5D /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = B486E99910662EF40043CE5D /* MessageMappingOscPacketListener.h */;
+		name = "MessageMappingOscPacketListener.h: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 371;
+		vrLoc = 0;
+	};
+	B486E9BD10662F290043CE5D /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = B486E98C10662EF30043CE5D /* IpEndpointName.cpp */;
+		name = "IpEndpointName.cpp: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 371;
+		vrLoc = 0;
+	};
+	B486E9BE10662F290043CE5D /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = B486E98D10662EF30043CE5D /* IpEndpointName.h */;
+		name = "IpEndpointName.h: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 371;
+		vrLoc = 0;
+	};
+	B486E9BF10662F290043CE5D /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = B486E98F10662EF40043CE5D /* PacketListener.h */;
+		name = "PacketListener.h: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 371;
+		vrLoc = 0;
+	};
+	B486E9C010662F290043CE5D /* PBXBookmark */ = {
+		isa = PBXBookmark;
+		fRef = B486E99410662EF40043CE5D /* UdpSocket.h */;
+	};
+	B486E9C110662F290043CE5D /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = B486E99910662EF40043CE5D /* MessageMappingOscPacketListener.h */;
+		name = "MessageMappingOscPacketListener.h: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 371;
+		vrLoc = 0;
+	};
+	B486E9C210662F290043CE5D /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = B486E98C10662EF30043CE5D /* IpEndpointName.cpp */;
+		name = "IpEndpointName.cpp: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 371;
+		vrLoc = 0;
+	};
+	B486E9C310662F290043CE5D /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = B486E98D10662EF30043CE5D /* IpEndpointName.h */;
+		name = "IpEndpointName.h: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 371;
+		vrLoc = 0;
+	};
+	B486E9C410662F290043CE5D /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = B486E98F10662EF40043CE5D /* PacketListener.h */;
+		name = "PacketListener.h: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 371;
+		vrLoc = 0;
+	};
+	B486E9C510662F290043CE5D /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = B486E99410662EF40043CE5D /* UdpSocket.h */;
+		name = "UdpSocket.h: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 371;
+		vrLoc = 0;
+	};
+}

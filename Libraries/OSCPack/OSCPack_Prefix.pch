@@ -1,6 +1,0 @@
-//
-// Prefix header for all source files of the 'OSCPack' target in the 'OSCPack' project.
-//
-
-
-#include <iostream>

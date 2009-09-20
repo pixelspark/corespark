@@ -35,12 +35,22 @@ namespace tj {
 		#ifdef TJ_USE_PTHREADS
 			void* ThreadProc(void* arg) {
 				try {
-					OSAtomicAdd32(1, &Thread::_count);
+					#ifdef TJ_OS_MAC
+						OSAtomicAdd32(1, &Thread::_count);
+					#endif
+					
+					Thread* tr = (Thread*)arg;
+					if(tr!=0) {
+						srand(time(NULL));
+						tr->Run();
+					}
 				}
 				catch(...) {
 				}
 				
-				OSAtomicAdd32(-1, &Thread::_count);
+				#ifdef TJ_OS_MAC
+					OSAtomicAdd32(-1, &Thread::_count);
+				#endif
 				return NULL;
 			}
 		#endif
@@ -71,7 +81,6 @@ Thread::~Thread() {
 		if(_thread!=0) {
 			pthread_detach(_thread);
 		}
-		#warning is this implemented correctly for pthreads?
 	#endif
 }
 
@@ -137,7 +146,39 @@ void Thread::SetPriority(Priority p) {
 	#endif
 	
 	#ifdef TJ_USE_PTHREADS
-		#warning Not implemented for pthreads
+		sched_param sp;
+		int sched_policy = 0;
+		if(pthread_getschedparam(_thread, &sched_policy, &sp)==0) {
+			int minPriority = sched_get_priority_min(sched_policy);
+			int maxPriority = sched_get_priority_max(sched_policy);
+			int priorityQuantum = (maxPriority-minPriority)/6;
+			int normalPriority = (maxPriority-minPriority)/2;
+			
+			switch(p) {
+				case PriorityAboveNormal:
+				case PriorityHigh:
+					sp.sched_priority = normalPriority+priorityQuantum;
+					break;
+					
+				case PriorityIdle:
+					sp.sched_priority = minPriority;
+					break;
+					
+				case PriorityBelowNormal:
+				case PriorityLow:
+					sp.sched_priority = normalPriority-priorityQuantum;
+					break;
+					
+				case PriorityTimeCritical:
+					sp.sched_priority = maxPriority;
+					break;
+					
+				default:
+				case PriorityNormal:
+					sp.sched_priority = normalPriority;
+			}
+			pthread_setschedparam(_thread, sched_policy, &sp);
+		}
 	#endif
 }
 
@@ -162,7 +203,19 @@ void Thread::Start() {
 	
 	#ifdef TJ_USE_PTHREADS
 		if(_thread==0) {
-			pthread_create(&_thread, NULL, ThreadProc, reinterpret_cast<void*>(this));
+			pthread_attr_t  attr;
+			if(pthread_attr_init(&attr)) {
+				Throw(L"Could not initialize pthread attribute structure", ExceptionTypeError);
+			}
+			
+			if(pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE)) {
+				Throw(L"Could not set detach state in thread attribute structure", ExceptionTypeError);
+			}
+			
+			if(pthread_create(&_thread, &attr, ThreadProc, reinterpret_cast<void*>(this))) {
+				Throw(L"pthread_create failed", ExceptionTypeError);
+			}
+			_started = true;
 		}
 	#endif
 }
@@ -186,7 +239,14 @@ void Thread::WaitForCompletion() {
 			return; // Cannot wait on yourself
 		}
 	
-		pthread_join(*reinterpret_cast<pthread_t*>(_thread), NULL);
+		void* returnValue = 0L;
+		int r = pthread_join(_thread, &returnValue);
+		if(r!=0) {
+			std::wostringstream wos;
+			wos << L"pthread_join failed: " << r;
+			std::wstring emsg = wos.str();
+			Throw(emsg.c_str(), ExceptionTypeError);
+		}
 	#endif	
 }
 

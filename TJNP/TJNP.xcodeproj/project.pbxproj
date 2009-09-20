@@ -18,6 +18,7 @@
 		B4FB022E104A7CD2000F66F0 /* tjsocket.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B4FB0223104A7CD2000F66F0 /* tjsocket.cpp */; };
 		B4FB022F104A7CD2000F66F0 /* tjstream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B4FB0224104A7CD2000F66F0 /* tjstream.cpp */; };
 		B4FB0230104A7CD2000F66F0 /* tjtransaction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B4FB0225104A7CD2000F66F0 /* tjtransaction.cpp */; };
+		B4FB030A104A8409000F66F0 /* libTJShared.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B4FB0309104A8409000F66F0 /* libTJShared.dylib */; };
 		D2AAC0B105546B7500DB518D /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08FB77AAFE841565C02AAC07 /* Carbon.framework */; };
 /* End PBXBuildFile section */
 
@@ -36,6 +37,7 @@
 		B4FB0223104A7CD2000F66F0 /* tjsocket.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tjsocket.cpp; sourceTree = "<group>"; };
 		B4FB0224104A7CD2000F66F0 /* tjstream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tjstream.cpp; sourceTree = "<group>"; };
 		B4FB0225104A7CD2000F66F0 /* tjtransaction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tjtransaction.cpp; sourceTree = "<group>"; };
+		B4FB0309104A8409000F66F0 /* libTJShared.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libTJShared.dylib; path = ../TJShared/build/Release/libTJShared.dylib; sourceTree = SOURCE_ROOT; };
 		D2AAC09D05546B4700DB518D /* libTJNP.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libTJNP.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -45,6 +47,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D2AAC0B105546B7500DB518D /* Carbon.framework in Frameworks */,
+				B4FB030A104A8409000F66F0 /* libTJShared.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -73,6 +76,7 @@
 		0867D69AFE84028FC02AAC07 /* External Frameworks and Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				B4FB0309104A8409000F66F0 /* libTJShared.dylib */,
 				08FB77AAFE841565C02AAC07 /* Carbon.framework */,
 			);
 			name = "External Frameworks and Libraries";
@@ -207,6 +211,10 @@
 					"_GLIBCXX_DEBUG=1",
 					"_GLIBCXX_DEBUG_PEDANTIC=1",
 				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../TJShared/build/Release\"",
+				);
 			};
 			name = Debug;
 		};
@@ -220,6 +228,10 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../TJShared/build/Release\"",
+				);
 				STRIP_INSTALLED_PRODUCT = YES;
 				STRIP_STYLE = "non-global";
 			};
