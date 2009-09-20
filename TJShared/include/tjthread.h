@@ -172,9 +172,9 @@ namespace tj {
 
 			#ifdef TJ_OS_WIN
 				friend DWORD WINAPI ThreadProc(LPVOID);
+			#else
+				friend void* ThreadProc(void* arg);
 			#endif
-			
-			friend void* ThreadProc(void* arg);
 
 			public:
 

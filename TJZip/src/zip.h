@@ -1,26 +1,13 @@
 #ifndef _zip_H
 #define _zip_H
 
+#include "ziptypes.h"
 
 // ZIP functions -- for creating zip files
 // This file is a repackaged form of the Info-Zip source code available
 // at www.info-zip.org. The original copyright notice may be found in
 // zip.cpp. The repackaging was done by Lucian Wischik to simplify and
 // extend its use in Windows/C++. Also to add encryption and unicode.
-
-#ifdef TJ_OS_WIN
-	typedef DWORD ZRESULT;
-	// return codes from any of the zip functions. Listed later.
-	#ifndef HZIP_DECLARED
-	#define HZIP_DECLARED
-	DECLARE_HANDLE(HZIP);
-	#endif
-#else
-	typedef int DWORD;
-	typedef int ZRESULT;
-	typedef void* HZIP;
-	typedef char TCHAR;
-#endif
 
 HZIP CreateZip(const TCHAR *fn, const char *password);
 HZIP CreateZip(void *buf,unsigned int len, const char *password);

@@ -115,7 +115,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;TJZIP_EXPORTS"
+				PreprocessorDefinitions="WIN32;TJ_OS_WIN;NDEBUG;_WINDOWS;_USRDLL;TJZIP_EXPORTS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -358,6 +358,10 @@
 			</File>
 			<File
 				RelativePath=".\src\zip.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\ziptypes.h"
 				>
 			</File>
 		</Filter>

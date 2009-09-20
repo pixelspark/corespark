@@ -158,13 +158,76 @@ class DNSSDAddressResolver {
 			}
 			return false;
 		}
+};
 
+/** DNSSDAddressResolver **/
+class DNSSDAttributeResolver {
+	public:
+		struct ResolvedInfo {
+			ResolvedInfo(std::map<std::wstring, std::wstring>& a): attributes(a), succeeded(false) {
+			}
+
+			std::map<std::wstring, std::wstring>& attributes;
+			bool succeeded;
+		};
+
+		static void Reply(DNSServiceRef DNSServiceRef, DNSServiceFlags flags, uint32_t interfaceIndex, DNSServiceErrorType errorCode, const char* fullname, uint16_t rrtype, uint16_t rrclass, uint16_t rdlen, const void* rdata, uint32_t ttl, void* context) {
+			ResolvedInfo* ri = (ResolvedInfo*)context;
+			if(ri!=0) {
+				ri->succeeded = true;
+				const char* rdataChar = (const char*)rdata;
+				const unsigned char* rdataUChar = (const unsigned char*)rdata;
+
+				// Parse attribute data
+				unsigned int index = 0;
+				while(index < rdlen) {
+					unsigned int length = rdataUChar[index];
+					if(length==0) {
+						return;
+					}
+
+					unsigned int valueIndex = index;
+
+					while(valueIndex < rdlen) {
+						++valueIndex;
+						if(rdataChar[valueIndex]=='=') {
+							++valueIndex;
+							break;
+						}
+					}
+					
+					if(valueIndex>index && valueIndex<rdlen && valueIndex < (index+length-1)) {
+						std::string key(&(rdataChar[index+1]), valueIndex-index-2);
+						std::string value(&rdataChar[valueIndex], length-(valueIndex-index)+1);
+						ri->attributes[Wcs(key)] = Wcs(value);
+					}
+					index += length + 1;
+				}
+			}
+		}
+
+		static bool ResolveAttributesForService(unsigned int iface, const std::wstring& name, std::map<std::wstring,std::wstring>& al) {
+			DNSServiceRef service = 0;
+			ResolvedInfo ri(al);
+			std::string fqdn = Mbs(name);
+			DNSServiceQueryRecord(&service, 0, iface, fqdn.c_str(), kDNSServiceType_TXT, kDNSServiceClass_IN, (DNSServiceQueryRecordReply)Reply, &ri);
+			DNSServiceProcessResult(service);
+			DNSServiceRefDeallocate(service);
+			return ri.succeeded;
+		}
 };
 
 /** DNSSDService **/
 DNSSDService::DNSSDService(const std::wstring& friendly, const std::wstring& type, const std::wstring& domain, unsigned int iface): _friendly(friendly), _type(type), _domain(domain), _interface(iface), _port(0) {
 	if(!DNSSDAddressResolver::ResolveAddressForService(_address, _port, iface, Mbs(friendly).c_str(), Mbs(type).c_str(), Mbs(domain).c_str())) {
 		Log::Write(L"TJScout/DNSSDService", L"Could not resolve address for service "+GetID());
+	}
+
+	/* Query TXT record containing attributes (a TXT record MUST always be present, hence we can use a blocking query here,
+	this also means that non-conforming mDNS responders can block us...) */
+	std::wstring name = friendly + L"." + _type + _domain;
+	if(!DNSSDAttributeResolver::ResolveAttributesForService(iface, name, _attributes)) {
+		Log::Write(L"TJScout/DNSSDService", L"Could not resolve attributes for service"+GetID());
 	}
 }
 

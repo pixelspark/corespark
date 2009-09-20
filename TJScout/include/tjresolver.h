@@ -16,6 +16,11 @@ namespace tj {
 				virtual std::wstring GetType() const = 0;
 				virtual std::wstring GetAddress() const = 0;
 				virtual unsigned short GetPort() const = 0;
+				virtual bool GetAttribute(const std::wstring& key, std::wstring& value);
+
+			protected:
+				virtual void SetAttribute(const std::wstring& key, const std::wstring& value);
+				std::map< std::wstring, std::wstring > _attributes;
 		};
 
 		class SCOUT_EXPORTED RequestResolver: public virtual Object {

@@ -72,3 +72,17 @@ bool ServiceDescription::GetDescriptionOfType(const ServiceType& type, std::wstr
 	}
 	return false;
 }
+
+/** Service **/
+bool Service::GetAttribute(const std::wstring& key, std::wstring& value) {
+	std::map<std::wstring, std::wstring>::const_iterator it = _attributes.find(key);
+	if(it!=_attributes.end()) {
+		value = it->second;
+		return true;
+	}
+	return false;
+}
+
+void Service::SetAttribute(const std::wstring& key, const std::wstring& value) {
+	_attributes[key] = value;
+}
