@@ -2,7 +2,7 @@
 #define _TJ_NP_INTERNAL_H
 
 
-#include "../../TJShared/include/tjshared.h"
+#include "../../../TJShared/include/tjshared.h"
 
 #ifdef TJNP_EXPORTS
 	#ifdef TJ_OS_WIN

@@ -156,7 +156,7 @@
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1012, 511}}";
 			sepNavSelRange = "{0, 0}";
-			sepNavVisRange = "{0, 679}";
+			sepNavVisRange = "{0, 264}";
 		};
 	};
 	B41DD3D910663B65000742DD /* tjprotocol.h */ = {
@@ -168,9 +168,9 @@
 	};
 	B41DD3DA10663B65000742DD /* tjsocket.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1153, 1898}}";
-			sepNavSelRange = "{1181, 0}";
-			sepNavVisRange = "{409, 1242}";
+			sepNavIntBoundsRect = "{{0, 0}, {1153, 1664}}";
+			sepNavSelRange = "{1454, 87}";
+			sepNavVisRange = "{951, 2134}";
 		};
 	};
 	B41DD3DE10663B65000742DD /* tjclient.cpp */ = {
@@ -412,5 +412,12 @@
 		rType = 0;
 		vrLen = 1135;
 		vrLoc = 430;
+	};
+	B4F6F2BE1067ECBA00B137C0 /* tjnp.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1012, 511}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRange = "{0, 398}";
+		};
 	};
 }

@@ -10,6 +10,7 @@ namespace tj {
 				SLIPFrameDecoder();
 				virtual ~SLIPFrameDecoder();
 				virtual void Append(const unsigned char* data, unsigned int length);
+				static void EncodeSLIPFrame(const unsigned char* data, unsigned int length, tj::shared::strong<tj::shared::CodeWriter> cw);
 
 			protected:
 				virtual void OnPacketReceived(const unsigned char* data, unsigned int length);
@@ -18,6 +19,7 @@ namespace tj {
 
 			private:
 				bool _isReceivingPacket;
+				bool _isDiscardingPacket;
 				bool _lastCharacterWasEscape;
 				const static unsigned char KSLIPEndCharacter;
 				const static unsigned char KSLIPEscapeCharacter;

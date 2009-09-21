@@ -21,6 +21,9 @@
 		B41DD3ED10663B65000742DD /* tjtransaction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B41DD3E210663B65000742DD /* tjtransaction.cpp */; };
 		B41DD40010663BC0000742DD /* TJSharedFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B41DD3FE10663BB2000742DD /* TJSharedFramework.framework */; };
 		B41DD40110663BC4000742DD /* TinyXMLFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B41DD3F810663BA7000742DD /* TinyXMLFramework.framework */; };
+		B4F6F2BF1067ECBA00B137C0 /* tjnp.h in Headers */ = {isa = PBXBuildFile; fileRef = B4F6F2BE1067ECBA00B137C0 /* tjnp.h */; };
+		B4F6F2C21067ECD100B137C0 /* tjslip.h in Headers */ = {isa = PBXBuildFile; fileRef = B4F6F2C11067ECD100B137C0 /* tjslip.h */; };
+		B4F6F2C41067ECDC00B137C0 /* tjslip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B4F6F2C31067ECDC00B137C0 /* tjslip.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,6 +60,9 @@
 		B41DD3E210663B65000742DD /* tjtransaction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tjtransaction.cpp; sourceTree = "<group>"; };
 		B41DD3F010663BA7000742DD /* TinyXMLFramework.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TinyXMLFramework.xcodeproj; path = ../Libraries/TinyXML/TinyXMLFramework.xcodeproj; sourceTree = SOURCE_ROOT; };
 		B41DD3F910663BB2000742DD /* TJSharedFramework.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TJSharedFramework.xcodeproj; path = ../TJShared/TJSharedFramework.xcodeproj; sourceTree = SOURCE_ROOT; };
+		B4F6F2BE1067ECBA00B137C0 /* tjnp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tjnp.h; path = internal/tjnp.h; sourceTree = "<group>"; };
+		B4F6F2C11067ECD100B137C0 /* tjslip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tjslip.h; path = include/tjslip.h; sourceTree = SOURCE_ROOT; };
+		B4F6F2C31067ECDC00B137C0 /* tjslip.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tjslip.cpp; path = src/tjslip.cpp; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -129,6 +135,8 @@
 		B41DD3D610663B65000742DD /* include */ = {
 			isa = PBXGroup;
 			children = (
+				B4F6F2C01067ECC000B137C0 /* internal */,
+				B4F6F2C11067ECD100B137C0 /* tjslip.h */,
 				B41DD3D710663B65000742DD /* tjclient.h */,
 				B41DD3D810663B65000742DD /* tjnp.h */,
 				B41DD3D910663B65000742DD /* tjprotocol.h */,
@@ -142,6 +150,7 @@
 		B41DD3DD10663B65000742DD /* src */ = {
 			isa = PBXGroup;
 			children = (
+				B4F6F2C31067ECDC00B137C0 /* tjslip.cpp */,
 				B41DD3DE10663B65000742DD /* tjclient.cpp */,
 				B41DD3DF10663B65000742DD /* tjprotocol.cpp */,
 				B41DD3E010663B65000742DD /* tjsocket.cpp */,
@@ -167,6 +176,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		B4F6F2C01067ECC000B137C0 /* internal */ = {
+			isa = PBXGroup;
+			children = (
+				B4F6F2BE1067ECBA00B137C0 /* tjnp.h */,
+			);
+			name = internal;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -180,6 +197,8 @@
 				B41DD3E610663B65000742DD /* tjsocket.h in Headers */,
 				B41DD3E710663B65000742DD /* tjstream.h in Headers */,
 				B41DD3E810663B65000742DD /* tjtransaction.h in Headers */,
+				B4F6F2BF1067ECBA00B137C0 /* tjnp.h in Headers */,
+				B4F6F2C21067ECD100B137C0 /* tjslip.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -271,6 +290,7 @@
 				B41DD3EB10663B65000742DD /* tjsocket.cpp in Sources */,
 				B41DD3EC10663B65000742DD /* tjstream.cpp in Sources */,
 				B41DD3ED10663B65000742DD /* tjtransaction.cpp in Sources */,
+				B4F6F2C41067ECDC00B137C0 /* tjslip.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

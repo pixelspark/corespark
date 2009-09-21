@@ -7,10 +7,41 @@ const unsigned char SLIPFrameDecoder::KSLIPEscapeCharacter = 0xDB;
 const unsigned char SLIPFrameDecoder::KSLIPEscapeEscapeCharacter = 0xDD;
 const unsigned char SLIPFrameDecoder::KSLIPEscapeEndCharacter = 0xDC;
 
-SLIPFrameDecoder::SLIPFrameDecoder(): _isReceivingPacket(false), _lastCharacterWasEscape(false) {
+SLIPFrameDecoder::SLIPFrameDecoder(): _isReceivingPacket(false), _lastCharacterWasEscape(false), _isDiscardingPacket(false) {
 }
 
 SLIPFrameDecoder::~SLIPFrameDecoder() {
+}
+
+void SLIPFrameDecoder::EncodeSLIPFrame(const unsigned char* data, unsigned int length, strong<CodeWriter> cw) {
+	cw->Add(KSLIPEndCharacter);
+	unsigned int index = 0;
+	while(index<length) {
+		if(data[index]==KSLIPEndCharacter) {
+			cw->Add(KSLIPEscapeCharacter);
+			cw->Add(KSLIPEscapeEndCharacter);
+		}
+		else if(data[index]==KSLIPEscapeCharacter) {
+			cw->Add(KSLIPEscapeCharacter);
+			cw->Add(KSLIPEscapeEscapeCharacter);
+		}
+		else {
+			unsigned int endIndex = index+1;
+			while(endIndex < length) {
+				if(data[endIndex]==KSLIPEscapeCharacter || data[endIndex]==KSLIPEndCharacter) {
+					break;
+				}
+				endIndex++;
+			}
+			unsigned int dataLength = endIndex-index;
+			if(dataLength>0) {
+				cw->Append((const char*)&(data[index]), dataLength);
+			}
+			index = endIndex-1;
+		}
+		++index;
+	}
+	cw->Add(KSLIPEndCharacter);
 }
 
 void SLIPFrameDecoder::Append(const unsigned char* data, unsigned int length) {
@@ -28,8 +59,8 @@ void SLIPFrameDecoder::Append(const unsigned char* data, unsigned int length) {
 				_buffer->Add((unsigned char)KSLIPEndCharacter);
 			}
 			else {
-				Log::Write(L"TJNP/SLIPFrameDecoder", L"Invalid code after escape character, dropping packet");
-				_isReceivingPacket = false;
+				Log::Write(L"TJNP/SLIPFrameDecoder", L"Invalid code after escape character (idx="+Stringify(index)+L"), dropping packet");
+				_isDiscardingPacket = true;
 				_buffer->Reset();
 			}
 			_lastCharacterWasEscape = false;
@@ -37,13 +68,17 @@ void SLIPFrameDecoder::Append(const unsigned char* data, unsigned int length) {
 		else if(data[index]==KSLIPEndCharacter) {
 			if(_isReceivingPacket) {
 				// A message was being received and has now ended
-				if(_buffer->GetSize()>0) {
+				if(!_isDiscardingPacket && _buffer->GetSize()>0) {
+					// End of a (valid) packet
 					OnPacketReceived((const unsigned char*)_buffer->GetBuffer(), _buffer->GetSize());
 				}
 				_isReceivingPacket = false;
+				_isDiscardingPacket = false;
 			}
 			else {
+				// Start of new packet
 				_isReceivingPacket = true;
+				_isDiscardingPacket = false;
 			}
 
 			_buffer->Reset();
@@ -59,19 +94,21 @@ void SLIPFrameDecoder::Append(const unsigned char* data, unsigned int length) {
 			}
 		}
 		else if(_isReceivingPacket) {
-			// Read characters until we encounter either the ESC or END character
-			unsigned int endIndex = index+1;
-			while(endIndex < length) {
-				if(data[endIndex]==KSLIPEscapeCharacter || data[endIndex]==KSLIPEndCharacter) {
-					break;
+			if(!_isDiscardingPacket) {
+				// Read characters until we encounter either the ESC or END character
+				unsigned int endIndex = index+1;
+				while(endIndex < length) {
+					if(data[endIndex]==KSLIPEscapeCharacter || data[endIndex]==KSLIPEndCharacter) {
+						break;
+					}
+					endIndex++;
 				}
-				endIndex++;
+				unsigned int dataLength = endIndex-index;
+				if(dataLength>0) {
+					_buffer->Append((const char*)&(data[index]), dataLength);
+				}
+				index = endIndex-1;
 			}
-			unsigned int dataLength = endIndex-1-index;
-			if(dataLength>0) {
-				_buffer->Append((const char*)&(data[index]), dataLength);
-			}
-			index = endIndex;
 		}
 		else {
 			Log::Write(L"TJNP/SLIPFrameDecoder", L"Spurious characters outside packet, ignoring");
