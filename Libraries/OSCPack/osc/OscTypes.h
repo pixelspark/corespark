@@ -120,6 +120,7 @@ extern MessageTerminator EndMessage;
 struct NilType{
 };
 
+	#undef Nil
 extern NilType Nil;
 
 
