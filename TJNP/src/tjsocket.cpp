@@ -12,14 +12,7 @@
 	#define _strdup strdup
 #else
 	typedef int socklen_t;
-#endif
 
-using namespace tj::shared;
-using namespace tj::np;
-
-#pragma pack(push,1)
-
-#ifdef TJ_OS_WIN
 	namespace tj {
 		namespace np {
 			LRESULT CALLBACK SocketListenerWindowProc(HWND, UINT, WPARAM, LPARAM);
@@ -30,105 +23,10 @@ using namespace tj::np;
 	#define TJSOCKET_MESSAGE (WM_USER+1338)
 #endif
 
-/** SocketListener **/
-SocketListener::~SocketListener() {
-}
+using namespace tj::shared;
+using namespace tj::np;
 
-/** SocketListenerThread **/
-SocketListenerThread::SocketListenerThread(NativeSocket ns, ref<SocketListener> sl): _sock(ns), _listener(sl) {
-	#ifdef TJ_OS_POSIX
-		if(socketpair(AF_UNIX, SOCK_STREAM, 0, _controlSocket)!=0) {
-			Log::Write(L"TJNP/SocketListenerThread", L"Could not create control socket pair");
-		}
-	#endif
-}
-
-SocketListenerThread::~SocketListenerThread() {
-	Stop();
-	WaitForCompletion();
-	
-	#ifdef TJ_OS_POSIX
-		close(_controlSocket[0]);
-		close(_controlSocket[1]);
-	#endif
-}
-
-void SocketListenerThread::Stop() {
-	#ifdef TJ_OS_WIN
-		PostThreadMessage(GetID(), WM_QUIT, 0, 0);
-	#endif
-		
-	#ifdef TJ_OS_POSIX
-		char quit[1] = {'Q'};
-		if(write(_controlSocket[0], quit, 1)==-1) {
-			Log::Write(L"TJNP/SocketListenerThread", L"Could not send quit message to listener thread");
-		}
-	#endif
-}
-
-void SocketListenerThread::OnReceive() {
-	ref<SocketListener> sl = _listener;
-	if(sl) {
-		sl->OnReceive(_sock);
-	}
-	
-	#ifdef TJ_OS_WIN
-		// Restart the asynchronous select, since it stops whenever the socket is readable
-		WSAAsyncSelect(_server, _window,TJSOCKET_MESSAGE,FD_READ);
-	#endif
-}
-
-void SocketListenerThread::Run() {
-	#ifdef TJ_OS_WIN
-		_window = CreateWindow(TJSOCKET_MESSAGE_CLASS, L"SocketWnd", 0, 0, 0, 0, 0, 0, 0, GetModuleHandle(NULL), 0);
-		if(!_window) {
-			Throw(L"Couldn't create message window for socket.", ExceptionTypeError);
-		}
-		SetWindowLong(_window, GWL_USERDATA, LONG((long long)this));
-		WSAAsyncSelect(_server,_window,TJSOCKET_MESSAGE,FD_READ);
-	
-		MSG msg;
-		while(GetMessage(&msg,0,0,0)) {
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-		}
-	
-		DestroyWindow(_window);
-	#endif	
-	
-	#ifdef TJ_OS_POSIX
-		while(true) {
-			fd_set fds;
-			FD_ZERO(&fds);
-			FD_SET(_controlSocket[1], &fds);
-			FD_SET(_sock, &fds);
-			
-			select(_controlSocket[1]+_sock, &fds, NULL, NULL, NULL);
-			if(FD_ISSET(_controlSocket[1], &fds)) {
-				// End the thread, a control message was sent to us
-				Log::Write(L"TJNP/SocketListenerThread", L"End thread, quit control message received");
-				return;
-			}
-			else if(FD_ISSET(_sock, &fds)) {
-				OnReceive();
-			}
-		}
-	#endif
-}
-
-#ifdef TJ_OS_WIN
-	LRESULT CALLBACK SocketMessageWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) {
-		if(msg==WM_CREATE) {
-			return 1;
-		}
-		else if(msg==TJSOCKET_MESSAGE) {
-			SocketListenerThread* sock = reinterpret_cast<SocketListenerThread*>((long long)GetWindowLong(wnd, GWL_USERDATA));
-			if(sock) sock->OnReceive();
-		}
-		
-		return DefWindowProc(wnd,msg,wp,lp);
-	}
-#endif
+#pragma pack(push,1)
 
 NetworkInitializer Socket::_initializer;
 
@@ -191,7 +89,6 @@ Socket::~Socket() {
 	#ifdef TJ_OS_WIN
 		closesocket(_client);
 		closesocket(_server);
-		DestroyWindow(_window);
 	#else
 		close(_client);
 		close(_server);
@@ -710,7 +607,7 @@ void NetworkInitializer::Initialize() {
 			memset(&wc,0,sizeof(WNDCLASS));
 			wc.hInstance = GetModuleHandle(NULL);
 			wc.lpszClassName = TJSOCKET_MESSAGE_CLASS;
-			wc.lpfnWndProc = SocketMessageWindowProc;
+			wc.lpfnWndProc = SocketListenerWindowProc;
 			
 			if(!RegisterClass(&wc)) {
 				Throw(L"Could not register socket message listener class", ExceptionTypeError);
@@ -730,5 +627,114 @@ NetworkInitializer::~NetworkInitializer() {
 		_data = 0;
 	}*/
 }
+
+/** SocketListener **/
+SocketListener::~SocketListener() {
+}
+
+/** SocketListenerThread **/
+SocketListenerThread::SocketListenerThread(NativeSocket ns, ref<SocketListener> sl): _sock(ns), _listener(sl) {
+	#ifdef TJ_OS_POSIX
+		if(socketpair(AF_UNIX, SOCK_STREAM, 0, _controlSocket)!=0) {
+			Log::Write(L"TJNP/SocketListenerThread", L"Could not create control socket pair");
+		}
+	#endif
+}
+
+SocketListenerThread::~SocketListenerThread() {
+	Stop();
+	WaitForCompletion();
+	
+	#ifdef TJ_OS_POSIX
+		close(_controlSocket[0]);
+		close(_controlSocket[1]);
+	#endif
+
+	#ifdef TJ_OS_WIN
+		DestroyWindow(_window);
+	#endif
+}
+
+void SocketListenerThread::Stop() {
+	#ifdef TJ_OS_WIN
+		PostThreadMessage(GetID(), WM_QUIT, 0, 0);
+	#endif
+		
+	#ifdef TJ_OS_POSIX
+		char quit[1] = {'Q'};
+		if(write(_controlSocket[0], quit, 1)==-1) {
+			Log::Write(L"TJNP/SocketListenerThread", L"Could not send quit message to listener thread");
+		}
+	#endif
+}
+
+void SocketListenerThread::OnReceive() {
+	ref<SocketListener> sl = _listener;
+	if(sl) {
+		sl->OnReceive(_sock);
+	}
+	
+	#ifdef TJ_OS_WIN
+		// Restart the asynchronous select, since it stops whenever the socket is readable
+		WSAAsyncSelect(_sock, _window,TJSOCKET_MESSAGE,FD_READ);
+	#endif
+}
+
+void SocketListenerThread::Run() {
+	#ifdef TJ_OS_WIN
+		_window = CreateWindow(TJSOCKET_MESSAGE_CLASS, L"SocketWnd", 0, 0, 0, 0, 0, 0, 0, GetModuleHandle(NULL), 0);
+		if(!_window) {
+			Throw(L"Couldn't create message window for socket.", ExceptionTypeError);
+		}
+		SetWindowLong(_window, GWL_USERDATA, LONG((long long)this));
+		WSAAsyncSelect(_sock,_window,TJSOCKET_MESSAGE,FD_READ);
+	
+		MSG msg;
+		while(GetMessage(&msg,0,0,0)) {
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+	
+		DestroyWindow(_window);
+	#endif	
+	
+	#ifdef TJ_OS_POSIX
+		while(true) {
+			fd_set fds;
+			FD_ZERO(&fds);
+			FD_SET(_controlSocket[1], &fds);
+			FD_SET(_sock, &fds);
+			
+			select(_controlSocket[1]+_sock, &fds, NULL, NULL, NULL);
+			if(FD_ISSET(_controlSocket[1], &fds)) {
+				// End the thread, a control message was sent to us
+				Log::Write(L"TJNP/SocketListenerThread", L"End thread, quit control message received");
+				return;
+			}
+			else if(FD_ISSET(_sock, &fds)) {
+				OnReceive();
+			}
+		}
+	#endif
+}
+
+#ifdef TJ_OS_WIN
+namespace tj {
+	namespace np {
+		LRESULT CALLBACK SocketListenerWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) {
+			if(msg==WM_CREATE) {
+				return 1;
+			}
+			else if(msg==TJSOCKET_MESSAGE) {
+				SocketListenerThread* sock = reinterpret_cast<SocketListenerThread*>((long long)GetWindowLong(wnd, GWL_USERDATA));
+				if(sock) sock->OnReceive();
+			}
+			
+			return DefWindowProc(wnd,msg,wp,lp);
+		}
+	}
+}
+
+#endif
 
 #pragma pack(pop)

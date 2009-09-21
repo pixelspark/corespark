@@ -1,7 +1,9 @@
 #ifndef _TJNETWORK_H
 #define _TJNETWORK_H
 
-typedef struct in_addr;
+#ifdef TJ_OS_POSIX
+	typedef struct in_addr;
+#endif
 
 namespace tj {
 	namespace shared {

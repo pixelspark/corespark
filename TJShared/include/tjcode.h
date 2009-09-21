@@ -49,6 +49,18 @@ namespace tj {
 					return *this;
 				}
 
+				inline void Append(const char* buffer, unsigned int size) {
+					if(_buffer==0) {
+						Throw(L"CodeWriter appended to after buffer has been taken over!", ExceptionTypeSevere);
+					}
+
+					Grow(size*sizeof(char));
+					for(unsigned int a=0;a<size;a++) {
+						_buffer[_pos+a] = buffer[a];
+					}
+					_pos += size;
+				}
+
 				inline const char* GetBuffer() {
 					return _buffer;
 				}
@@ -59,6 +71,10 @@ namespace tj {
 					_size = 0;
 					_pos = 0;
 					return buf;
+				}
+
+				inline void Reset() {
+					_pos = 0;
 				}
 				
 			protected:

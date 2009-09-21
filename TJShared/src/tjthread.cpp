@@ -324,8 +324,8 @@ void Thread::Sleep(double ms) {
 		ResetEvent(_event);
 	}
 
-	void Event::Wait(int ms) {
-		WaitForSingleObject(_event, ms);
+	bool Event::Wait(int ms) {
+		return WaitForSingleObject(_event, ms)==WAIT_OBJECT_0;
 	}
 
 	HANDLE Event::GetHandle() {
@@ -453,10 +453,6 @@ void ThreadLocal::operator=(int r) {
 
 	void Wait::Add(Event& evt) {
 		_handles.push_back(evt._event);
-	}
-
-	void Wait::Add(PeriodicTimer& h) {
-		_handles.push_back(h._timer);
 	}
 
 	void Wait::Add(Semaphore& sm) {

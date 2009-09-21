@@ -123,6 +123,7 @@
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="3"
+				DisableSpecificWarnings="4275;4251"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -186,6 +187,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\tjslip.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\tjsocket.cpp"
 				>
 			</File>
@@ -216,6 +221,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\include\tjslip.h"
+				>
+			</File>
+			<File
 				RelativePath=".\include\tjsocket.h"
 				>
 			</File>
@@ -227,6 +236,14 @@
 				RelativePath=".\include\tjtransaction.h"
 				>
 			</File>
+			<Filter
+				Name="internal"
+				>
+				<File
+					RelativePath=".\include\internal\tjnp.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Resource Files"
