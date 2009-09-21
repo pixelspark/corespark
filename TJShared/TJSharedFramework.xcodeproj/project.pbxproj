@@ -61,9 +61,19 @@
 		B486E86D106628710043CE5D /* tjutil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B486E838106628710043CE5D /* tjutil.cpp */; };
 		B486E86E106628710043CE5D /* tjvector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B486E839106628710043CE5D /* tjvector.cpp */; };
 		B486E86F106628710043CE5D /* tjzone.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B486E83A106628710043CE5D /* tjzone.cpp */; };
-		B486E8BE106629E00043CE5D /* TinyXMLFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B486E8BD106629E00043CE5D /* TinyXMLFramework.framework */; };
 		B486E8C210662A170043CE5D /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B486E8C110662A170043CE5D /* CoreFoundation.framework */; };
+		B4F6F29B1067DF3300B137C0 /* TinyXMLFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B4F6F29A1067DF2F00B137C0 /* TinyXMLFramework.framework */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		B4F6F2991067DF2F00B137C0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B4F6F2951067DF2F00B137C0 /* TinyXMLFramework.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8DC2EF5B0486A6940098B216 /* TinyXMLFramework.framework */;
+			remoteInfo = TinyXMLFramework;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		0867D69BFE84028FC02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
@@ -125,6 +135,8 @@
 		B486E83A106628710043CE5D /* tjzone.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tjzone.cpp; sourceTree = "<group>"; };
 		B486E8BD106629E00043CE5D /* TinyXMLFramework.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TinyXMLFramework.framework; path = ../Libraries/TinyXML/build/Release/TinyXMLFramework.framework; sourceTree = SOURCE_ROOT; };
 		B486E8C110662A170043CE5D /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
+		B4F6F20E1067678900B137C0 /* Info copy.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info copy.plist"; sourceTree = "<group>"; };
+		B4F6F2951067DF2F00B137C0 /* TinyXMLFramework.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TinyXMLFramework.xcodeproj; path = ../Libraries/TinyXML/TinyXMLFramework.xcodeproj; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -132,7 +144,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B486E8BE106629E00043CE5D /* TinyXMLFramework.framework in Frameworks */,
+				B4F6F29B1067DF3300B137C0 /* TinyXMLFramework.framework in Frameworks */,
 				B486E8C210662A170043CE5D /* CoreFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -151,6 +163,7 @@
 		0867D691FE84028FC02AAC07 /* TJSharedFramework */ = {
 			isa = PBXGroup;
 			children = (
+				B4F6F2951067DF2F00B137C0 /* TinyXMLFramework.xcodeproj */,
 				B486E803106628710043CE5D /* include */,
 				B486E823106628710043CE5D /* src */,
 				089C1665FE841158C02AAC07 /* Resources */,
@@ -174,6 +187,7 @@
 			children = (
 				8DC2EF5A0486A6940098B216 /* Info.plist */,
 				089C1666FE841158C02AAC07 /* InfoPlist.strings */,
+				B4F6F20E1067678900B137C0 /* Info copy.plist */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -270,6 +284,14 @@
 			path = src;
 			sourceTree = "<group>";
 		};
+		B4F6F2961067DF2F00B137C0 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B4F6F29A1067DF2F00B137C0 /* TinyXMLFramework.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -344,12 +366,28 @@
 			mainGroup = 0867D691FE84028FC02AAC07 /* TJSharedFramework */;
 			productRefGroup = 034768DFFF38A50411DB9C8B /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = B4F6F2961067DF2F00B137C0 /* Products */;
+					ProjectRef = B4F6F2951067DF2F00B137C0 /* TinyXMLFramework.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				8DC2EF4F0486A6940098B216 /* TJSharedFramework */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		B4F6F29A1067DF2F00B137C0 /* TinyXMLFramework.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = TinyXMLFramework.framework;
+			remoteRef = B4F6F2991067DF2F00B137C0 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		8DC2EF520486A6940098B216 /* Resources */ = {

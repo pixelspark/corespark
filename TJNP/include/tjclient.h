@@ -30,10 +30,6 @@ namespace tj {
 				Features GetFeatures() const;
 				void SetFeatures(Features f);
 				const tj::shared::Networking::MACAddress& GetMACAddress() const;
-
-				static std::wstring GetHostName(const std::wstring& ip);
-				static std::wstring GetHostName(const in_addr& addr);
-
 				virtual void Save(TiXmlElement* me);
 				virtual void Load(TiXmlElement* you);
 

@@ -7,6 +7,7 @@ namespace tj {
 	namespace script {
 		class ScriptScope;
 		class VM;
+		class ScriptThread;
 
 		class SCRIPT_EXPORTED ScriptContext: public virtual tj::shared::Object {
 			friend class ScriptThread;

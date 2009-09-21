@@ -2,6 +2,7 @@
 
 #include <time.h>
 #include <sstream>
+#include <limits>
 
 #ifndef TJ_OS_WIN
 	#include <sys/socket.h>
@@ -19,9 +20,114 @@ using namespace tj::np;
 #pragma pack(push,1)
 
 #ifdef TJ_OS_WIN
-	LRESULT CALLBACK SocketMessageWindowProc(HWND, UINT, WPARAM, LPARAM);
+	namespace tj {
+		namespace np {
+			LRESULT CALLBACK SocketListenerWindowProc(HWND, UINT, WPARAM, LPARAM);
+		}
+	}
+
 	#define TJSOCKET_MESSAGE_CLASS (L"TjSocketMessageWnd")
 	#define TJSOCKET_MESSAGE (WM_USER+1338)
+#endif
+
+/** SocketListener **/
+SocketListener::~SocketListener() {
+}
+
+/** SocketListenerThread **/
+SocketListenerThread::SocketListenerThread(NativeSocket ns, ref<SocketListener> sl): _sock(ns), _listener(sl) {
+	#ifdef TJ_OS_POSIX
+		if(socketpair(AF_UNIX, SOCK_STREAM, 0, _controlSocket)!=0) {
+			Log::Write(L"TJNP/SocketListenerThread", L"Could not create control socket pair");
+		}
+	#endif
+}
+
+SocketListenerThread::~SocketListenerThread() {
+	Stop();
+	WaitForCompletion();
+	
+	#ifdef TJ_OS_POSIX
+		close(_controlSocket[0]);
+		close(_controlSocket[1]);
+	#endif
+}
+
+void SocketListenerThread::Stop() {
+	#ifdef TJ_OS_WIN
+		PostThreadMessage(GetID(), WM_QUIT, 0, 0);
+	#endif
+		
+	#ifdef TJ_OS_POSIX
+		char quit[1] = {'Q'};
+		if(write(_controlSocket[0], quit, 1)==-1) {
+			Log::Write(L"TJNP/SocketListenerThread", L"Could not send quit message to listener thread");
+		}
+	#endif
+}
+
+void SocketListenerThread::OnReceive() {
+	ref<SocketListener> sl = _listener;
+	if(sl) {
+		sl->OnReceive(_sock);
+	}
+	
+	#ifdef TJ_OS_WIN
+		// Restart the asynchronous select, since it stops whenever the socket is readable
+		WSAAsyncSelect(_server, _window,TJSOCKET_MESSAGE,FD_READ);
+	#endif
+}
+
+void SocketListenerThread::Run() {
+	#ifdef TJ_OS_WIN
+		_window = CreateWindow(TJSOCKET_MESSAGE_CLASS, L"SocketWnd", 0, 0, 0, 0, 0, 0, 0, GetModuleHandle(NULL), 0);
+		if(!_window) {
+			Throw(L"Couldn't create message window for socket.", ExceptionTypeError);
+		}
+		SetWindowLong(_window, GWL_USERDATA, LONG((long long)this));
+		WSAAsyncSelect(_server,_window,TJSOCKET_MESSAGE,FD_READ);
+	
+		MSG msg;
+		while(GetMessage(&msg,0,0,0)) {
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+	
+		DestroyWindow(_window);
+	#endif	
+	
+	#ifdef TJ_OS_POSIX
+		while(true) {
+			fd_set fds;
+			FD_ZERO(&fds);
+			FD_SET(_controlSocket[1], &fds);
+			FD_SET(_sock, &fds);
+			
+			select(_controlSocket[1]+_sock, &fds, NULL, NULL, NULL);
+			if(FD_ISSET(_controlSocket[1], &fds)) {
+				// End the thread, a control message was sent to us
+				Log::Write(L"TJNP/SocketListenerThread", L"End thread, quit control message received");
+				return;
+			}
+			else if(FD_ISSET(_sock, &fds)) {
+				OnReceive();
+			}
+		}
+	#endif
+}
+
+#ifdef TJ_OS_WIN
+	LRESULT CALLBACK SocketMessageWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) {
+		if(msg==WM_CREATE) {
+			return 1;
+		}
+		else if(msg==TJSOCKET_MESSAGE) {
+			SocketListenerThread* sock = reinterpret_cast<SocketListenerThread*>((long long)GetWindowLong(wnd, GWL_USERDATA));
+			if(sock) sock->OnReceive();
+		}
+		
+		return DefWindowProc(wnd,msg,wp,lp);
+	}
 #endif
 
 NetworkInitializer Socket::_initializer;
@@ -64,17 +170,6 @@ Socket::Socket(int port, const char* address, ref<Node> nw): _lastPacketID(0), _
 	mreq.imr_interface.s_addr = INADDR_ANY;
 	setsockopt(_server, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char*)&mreq, sizeof(mreq));
 
-	#ifdef TJ_OS_WIN
-		_window = CreateWindow(TJSOCKET_MESSAGE_CLASS, L"SocketWnd", 0, 0, 0, 0, 0, 0, 0, GetModuleHandle(NULL), 0);
-		if(!_window) {
-			Throw(L"Couldn't create message window for socket.", ExceptionTypeError);
-		}
-		SetWindowLong(_window, GWL_USERDATA, LONG((long long)this));
-		WSAAsyncSelect(_server,_window,TJSOCKET_MESSAGE,FD_READ);
-	#else
-		#error Not implemented (socket select operation)
-	#endif
-
 	_client = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 	if(_client == INVALID_SOCKET) {
 		Throw(L"Couldn't open socket for broadcasting",ExceptionTypeError);
@@ -85,7 +180,14 @@ Socket::Socket(int port, const char* address, ref<Node> nw): _lastPacketID(0), _
 	setsockopt(_client,SOL_SOCKET,SO_REUSEADDR,(const char*)&on, sizeof(int));
 }
 
+void Socket::OnCreated() {
+	_listenerThread = GC::Hold(new SocketListenerThread(_server, this));
+	_listenerThread->Start();
+}
+
 Socket::~Socket() {
+	_listenerThread->Stop();
+	
 	#ifdef TJ_OS_WIN
 		closesocket(_client);
 		closesocket(_server);
@@ -114,11 +216,11 @@ void Socket::CleanTransactions() {
 	while(it!=_transactions.end()) {
 		ref<Transaction> tx = it->second;
 		if(!tx) {
-			it = _transactions.erase(it);
+			_transactions.erase(it++);
 		}
 		else if(tx->IsExpired()) {
 			tx->OnExpire();
-			it = _transactions.erase(it);
+			_transactions.erase(it++);
 		}
 		else {
 			++it;
@@ -130,7 +232,7 @@ unsigned int Socket::GetActiveTransactionCount() const {
 	return (unsigned int)_transactions.size();
 }
 
-void Socket::Receive() {
+void Socket::OnReceive(NativeSocket ns) {
 	ref<Node> nw = _network;
 	if(!nw) {
 		Log::Write(L"TJNP/Socket", L"Internal error: no network instance set");
@@ -148,12 +250,6 @@ void Socket::Receive() {
 		memset(_recieveBuffer,0,sizeof(char)*Packet::maximumSize);
 		socklen_t size = (int)sizeof(from);
 		int ret = recvfrom(_server, _recieveBuffer, Packet::maximumSize-1, 0, (sockaddr*)&from, &size);
-		
-		#ifdef TJ_OS_WIN
-			WSAAsyncSelect(_server,_window,TJSOCKET_MESSAGE,FD_READ);
-		#else
-			#warning Not implemented (part of socket select stuff)
-		#endif
 		
 		if(ret == SOCKET_ERROR) {
 			// This seems to happen on packets that come from us
@@ -567,7 +663,7 @@ void Socket::Send(strong<Packet> p, const sockaddr_in* address, bool reliable) {
 	///	return;
 	///}
 
-	unsigned int size = min(Packet::maximumSize-sizeof(PacketHeader), p->GetSize()) + sizeof(PacketHeader);
+	unsigned int size = ((unsigned int)(Packet::maximumSize-sizeof(PacketHeader)), (unsigned int)(p->GetSize() + sizeof(PacketHeader)));
 	p->_header->_from = nw->GetInstanceID();
 	int ret = sendto(_client, reinterpret_cast<char*>(p->_header), size, 0, (const sockaddr*)address, sizeof(sockaddr_in));
 
@@ -590,20 +686,6 @@ void Socket::Send(strong<Message> s, bool reliable) {
 unsigned int Socket::GetWishListSize() const {
 	return (unsigned int)_reliableWishList.size();
 }
-
-#ifdef TJ_OS_WIN
-	LRESULT CALLBACK SocketMessageWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) {
-		if(msg==WM_CREATE) {
-			return 1;
-		}
-		else if(msg==TJSOCKET_MESSAGE) {
-			Socket* sock = reinterpret_cast<Socket*>((long long)GetWindowLong(wnd, GWL_USERDATA));
-			if(sock) sock->Receive();
-		}
-
-		return DefWindowProc(wnd,msg,wp,lp);
-	}
-#endif
 
 int Socket::GetBytesSent() const {
 	return _bytesSent;

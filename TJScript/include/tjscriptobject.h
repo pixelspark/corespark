@@ -81,7 +81,7 @@ namespace tj {
 				return tj::shared::GC::Hold(new ScriptObjectMemberIterator<T>());
 			}
 			else if(c==L"class") {
-				return tj::shared::GC::Hold(new ScriptString(Wcs(typeid(T).name())));
+				return tj::shared::GC::Hold(new ScriptString(tj::shared::Wcs(typeid(T).name())));
 			}
 			else {
 				return 0;

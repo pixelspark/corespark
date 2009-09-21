@@ -12,7 +12,11 @@ Transaction::Transaction(tj::shared::Time out) {
 	#ifdef TJ_OS_WIN
 		_expires = GetTickCount() + out.ToInt();
 	#else
-		#error Not implemented
+		#ifdef TJ_OS_POSIX
+			_expires = time(NULL) + out.ToInt();
+		#else
+			#error Not implemented
+		#endif
 	#endif
 }
 
@@ -23,7 +27,11 @@ bool Transaction::IsExpired() const {
 	#ifdef _WIN32
 		return GetTickCount() > _expires;
 	#else
-		#error Not implemented
+		#ifdef TJ_OS_POSIX
+			return time(NULL) > _expires;
+		#else
+			#error Not implemented
+		#endif
 	#endif
 }
 

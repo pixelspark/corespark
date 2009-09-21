@@ -8,8 +8,10 @@
 #endif
 
 #ifdef TJ_OS_MAC
+	#include <sys/types.h>
 	#include <sys/socket.h>
 	#include <arpa/inet.h>
+	#include <netdb.h>
 #endif
 
 using namespace tj::np;
@@ -54,27 +56,9 @@ void BasicClient::Save(TiXmlElement* me) {
 	SaveAttributeSmall(me, "mac", _mac.ToString());
 }
 
-std::wstring BasicClient::GetHostName(const std::wstring& ip) {
-	sockaddr_in host;
-	host.sin_family = AF_INET;
-	host.sin_addr.s_addr = inet_addr(Mbs(ip).c_str());
-	host.sin_port = 0;
-	
-	char hostName[255];
-	memset(hostName, 0, sizeof(char)*255);
-
-	#ifdef TJ_OS_WIN
-		GetNameInfoA((const sockaddr*)&host, sizeof(host), hostName, sizeof(char)*254, 0, 0, 0);
-	#else
-		#error Not implemented (BasicClient::GetHostName(ip))
-	#endif
-	
-	return Wcs(std::string(hostName));
-}
-
 std::wstring BasicClient::GetHostName() {
 	if(_hostName.length()>0) return _hostName;
-	_hostName = GetHostName(_ip);
+	_hostName = Networking::GetHostName(_ip);
 	return _hostName;
 }
 
@@ -138,22 +122,4 @@ std::wstring BasicClient::GetIP() const {
 
 std::wstring BasicClient::GetAddressing() const {
 	return _addressing;
-}
-
-std::wstring BasicClient::GetHostName(const in_addr& addr) {
-	sockaddr_in host;
-	host.sin_family = AF_INET;
-	host.sin_addr = addr;
-	host.sin_port = 0;
-
-	char hostName[255];
-	memset(hostName, 0, sizeof(char)*255);
-	
-	#ifdef TJ_OS_WIN
-		getnameinfo((const sockaddr*)&host, sizeof(host), hostName, sizeof(char)*254, 0, 0, 0);
-	#else
-		#error Not implemented (BasicClient::GetHostName(in_addr))
-	#endif
-	
-	return Wcs(std::string(hostName));
 }

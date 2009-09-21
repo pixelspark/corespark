@@ -16,6 +16,40 @@
 
 using namespace tj::shared;
 
+String Networking::GetHostName(const String& ip) {
+	sockaddr_in host;
+	host.sin_family = AF_INET;
+	host.sin_addr.s_addr = inet_addr(Mbs(ip).c_str());
+	host.sin_port = 0;
+	
+	char hostName[255];
+	memset(hostName, 0, sizeof(char)*255);
+	
+	#ifdef TJ_OS_WIN
+		GetNameInfoA((const sockaddr*)&host, sizeof(host), hostName, sizeof(char)*254, 0, 0, 0);
+	#else
+		#ifdef TJ_OS_POSIX
+			getnameinfo((const sockaddr*)&host, sizeof(host), hostName, sizeof(char)*254, 0, 0, 0);
+		#else
+			#error Not implemented (BasicClient::GetHostName)
+		#endif
+	#endif
+		
+	return Wcs(std::string(hostName));
+}
+
+String Networking::GetHostName(const in_addr* addr) {
+	sockaddr_in host;
+	host.sin_family = AF_INET;
+	host.sin_addr = *addr;
+	host.sin_port = 0;
+	
+	char hostName[255];
+	memset(hostName, 0, sizeof(char)*255);
+	getnameinfo((const sockaddr*)&host, sizeof(host), hostName, sizeof(char)*254, 0, 0, 0);
+	return Wcs(std::string(hostName));
+}
+
 std::string Networking::GetHostName() {
 	ZoneEntry ze(Zones::NetworkZone);
 

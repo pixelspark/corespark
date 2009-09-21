@@ -23,12 +23,45 @@ namespace tj {
 		#else
 			typedef int NativeSocket;
 		#endif
+		
+		class NP_EXPORTED SocketListener: public virtual tj::shared::Object {
+			public:
+				virtual ~SocketListener();
+				virtual void OnReceive(NativeSocket ns) = 0;
+		};
+		
+		class NP_EXPORTED SocketListenerThread: public tj::shared::Thread {
+			#ifdef TJ_OS_WIN
+				friend LRESULT CALLBACK SocketListenerWindowProc(HWND, UINT, WPARAM, LPARAM);
+			#endif
+						
+			public:
+				SocketListenerThread(NativeSocket sock, tj::shared::ref<SocketListener> sl);
+				virtual ~SocketListenerThread();
+				virtual void Run();
+				virtual void Stop();
+			
+			protected:
+				virtual void OnReceive();
+				
+				tj::shared::weak<SocketListener> _listener;
+				NativeSocket _sock;
+				
+			#ifdef TJ_OS_POSIX
+				NativeSocket _controlSocket[2];
+			#endif
+						
+			#ifdef TJ_OS_WIN
+				HWND _window;
+			#endif
+		};
 
-		class NP_EXPORTED Socket {
+		class NP_EXPORTED Socket: public virtual tj::shared::Object, public SocketListener {
 			public:
 				Socket(int port, const char* address, tj::shared::ref<Node> main);
 				virtual ~Socket();
 			
+				virtual void OnCreated();
 				void SendAnnounce(Role r, const std::wstring& address, Features feats, tj::shared::strong<Transaction> ti);
 				void SendAnnounceReply(Role r, const std::wstring& address, Features feats, TransactionIdentifier ti);
 				void SendLeave();
@@ -59,20 +92,17 @@ namespace tj {
 				unsigned int GetWishListSize() const;
 				void CleanTransactions();
 				void SendRedeliveryRequests();
-
-				// Called by network implementation layer, do not call by yourself
-				void Receive();
 			
+				// Called by network implementation layer, do not call by yourself
+				virtual void OnReceive(NativeSocket ns);
+				
 			private:
 				ReliablePacketID RegisterReliablePacket(tj::shared::strong<Packet> p);
 				void Send(tj::shared::strong<Packet> p, const sockaddr_in* address, bool reliable);
 				
 				static NetworkInitializer _initializer;
-
-				#ifdef TJ_OS_WIN
-					HWND _window;
-				#endif
 			
+				tj::shared::ref<SocketListenerThread> _listenerThread;
 				NativeSocket _server;
 				NativeSocket _client;
 				char* _recieveBuffer;

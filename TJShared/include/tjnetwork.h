@@ -1,6 +1,8 @@
 #ifndef _TJNETWORK_H
 #define _TJNETWORK_H
 
+typedef struct in_addr;
+
 namespace tj {
 	namespace shared {
 		class EXPORTED Networking {
@@ -21,6 +23,8 @@ namespace tj {
 				static std::string GetHostAddress();
 				static void Wake(const MACAddress& mac);
 				static bool GetMACAddress(const String& ip, MACAddress& maca);
+				static String GetHostName(const String& ip);
+				static String GetHostName(const in_addr* address);
 		};
 	}
 }
