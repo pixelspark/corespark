@@ -358,7 +358,21 @@ void SecureHash::AddFile(const String& path) {
 		}
 
 		CloseHandle(file);
-	#else
-		#warning Not implemented
+	#endif
+	
+	#ifdef TJ_OS_POSIX
+		std::string mbsPath = Mbs(path);
+		FILE* fp = fopen(mbsPath.c_str(), "rb");
+		unsigned char buffer[1024];
+		if(fp!=NULL) {
+			unsigned int read = 1;
+			while(read>0) {
+				read = fread(buffer, 1, 1024, fp);
+				if(read>0) {
+					AddData(buffer, read);
+				}
+			}
+		}
+		fclose(fp);
 	#endif
 }

@@ -290,9 +290,9 @@ Bytes LocalFileResource::GetSize() {
 	#endif
 	
 	#ifdef TJ_OS_MAC
-		struct stat64 sts;
+		struct stat sts;
 		std::string mbsPath = Mbs(_path);
-		stat64(mbsPath.c_str(), &sts);
+		stat(mbsPath.c_str(), &sts);
 		return sts.st_size;
 		
 	#endif

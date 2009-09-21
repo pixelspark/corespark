@@ -156,8 +156,8 @@ Bytes File::GetFileSize(const String& filePath) {
 	
 	#ifdef TJ_OS_MAC
 	std::string mbsPath = Mbs(filePath);
-	struct stat64 st;
-	if(stat64(mbsPath.c_str(), &st)==0) {
+	struct stat st;
+	if(stat(mbsPath.c_str(), &st)==0) {
 		return st.st_size;
 	}
 	return -1;

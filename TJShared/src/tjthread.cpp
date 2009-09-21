@@ -5,6 +5,7 @@ using namespace tj::shared;
 	#define TJ_USE_PTHREADS
 	#include <pthread.h>
 	#include <sys/time.h>
+	#include <dispatch/dispatch.h>
 #endif
 
 volatile ReferenceCount Thread::_count = 0;
@@ -291,15 +292,36 @@ void Thread::Sleep(double ms) {
 		ReleaseSemaphore(_sema, n, NULL);
 	}
 
-	bool Semaphore::Wait() {
-		return WaitForSingleObject(_sema, INFINITE) == WAIT_OBJECT_0;
+	bool Semaphore::Wait(const Time& out) {
+		int timeoutMS = out.ToInt();
+		return WaitForSingleObject(_sema, (timeoutMS>0)?timeoutMS:INFINITE) == WAIT_OBJECT_0;
 	}
 
 	HANDLE Semaphore::GetHandle() {
 		return _sema;
 	}
-#else
-	#warning Not implemented on this platform: class Semaphore
+#endif
+
+#ifdef TJ_OS_MAC
+	Semaphore::Semaphore() {
+		_sema = reinterpret_cast<void*>(dispatch_semaphore_create(0));
+	}
+
+	Semaphore::~Semaphore() {
+		dispatch_release(reinterpret_cast<dispatch_semaphore_t>(_sema));
+	}
+
+	void Semaphore::Release(int n) {
+		while(n>0) {
+			dispatch_semaphore_signal(reinterpret_cast<dispatch_semaphore_t>(_sema));
+			--n;
+		}
+	}
+
+	bool Semaphore::Wait(const Time& out) {
+		int timeoutMS = out.ToInt();
+		return dispatch_semaphore_wait(reinterpret_cast<dispatch_semaphore_t>(_sema), (timeoutMS<0)?DISPATCH_TIME_FOREVER:dispatch_time(DISPATCH_TIME_NOW, timeoutMS*1000))==0;
+	}
 #endif
 
 /* Event; Windows implementation */
@@ -367,8 +389,7 @@ bool Event::Wait(int ms) {
 		
 		struct timespec abstime;
 		abstime.tv_sec = now.tv_sec + (ms / 1000);
-		abstime.tv_nsec = (now.tv_usec + (ms % 1000));
-		#warning the above is incorrect, we need nanoseconds... look up how to make nanoseconds from milliseconds
+		abstime.tv_nsec = (now.tv_usec + ((ms % 1000)*1000));
 		return pthread_cond_timedwait(&_event, &lock, &abstime)==0; /* When timing out, pthread_cond_timedwait returns ETIMEOUT */
 	}
 }

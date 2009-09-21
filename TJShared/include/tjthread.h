@@ -114,7 +114,7 @@ namespace tj {
 				Semaphore();
 				~Semaphore();
 				void Release(int n = 1);
-				bool Wait();
+				bool Wait(const Time& out = Time(-1));
 
 				#ifdef TJ_OS_WIN
 					HANDLE GetHandle();
@@ -123,6 +123,10 @@ namespace tj {
 			private:
 				#ifdef TJ_OS_WIN
 					HANDLE _sema;
+				#endif
+			
+				#ifdef TJ_OS_MAC
+					void* _sema;
 				#endif
 		};
 

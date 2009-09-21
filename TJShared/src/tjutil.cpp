@@ -160,7 +160,6 @@ wchar_t* Util::IntToWide(int x) {
 		std::wostringstream wos;
 		wos << x;
 		return CopyString(wos.str().c_str());
-		#warning "Slow implementation on Mac used in Util::IntToWide"
 	#endif
 }
 
@@ -572,6 +571,8 @@ std::wstring Util::MacStringToString(CFStringRef cr) {
 #else
 ScreensaverOff::ScreensaverOff() {
 	#warning ScreensaverOff not implemented on Mac
+	// Should call UpdateSystemActivity(OverallAct); every 30 seconds, also prevents sleep
+	// (http://developer.apple.com/mac/library/qa/qa2004/qa1160.html)
 }
 
 ScreensaverOff::~ScreensaverOff() {
@@ -581,6 +582,7 @@ ScreensaverOff::~ScreensaverOff() {
 Flags<Power::Status> Power::GetStatus() {
 	#ifdef TJ_OS_MAC
 		return Flags<Status>();
+		#warning Not implemented on Mac (power status flags)
 	#endif
 
 	#ifdef TJ_OS_WIN

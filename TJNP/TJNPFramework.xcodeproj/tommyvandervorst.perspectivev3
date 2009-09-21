@@ -270,6 +270,8 @@
 								<string>0867D691FE84028FC02AAC07</string>
 								<string>B41DD3F910663BB2000742DD</string>
 								<string>B41DD3F010663BA7000742DD</string>
+								<string>B41DD3D610663B65000742DD</string>
+								<string>B41DD3DD10663B65000742DD</string>
 								<string>089C1665FE841158C02AAC07</string>
 								<string>0867D69AFE84028FC02AAC07</string>
 								<string>1058C7B0FEA5585E11CA2CBB</string>
@@ -281,8 +283,8 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
+									<integer>15</integer>
 									<integer>14</integer>
-									<integer>13</integer>
 									<integer>0</integer>
 								</array>
 							</array>
@@ -322,7 +324,7 @@
 								<key>PBXProjectModuleGUID</key>
 								<string>B41DD3C210663B1B000742DD</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>tjsocket.cpp</string>
+								<string>tjslip.cpp</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -330,20 +332,25 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>B41DD3C310663B1B000742DD</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>tjsocket.cpp</string>
+										<string>tjslip.cpp</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>B4F6F23F1067D79F00B137C0</string>
+										<string>B4F6F345106807E000B137C0</string>
 										<key>history</key>
 										<array>
 											<string>B41DD40510663BE1000742DD</string>
 											<string>B41DD40610663BE1000742DD</string>
-											<string>B4F6F2291067703B00B137C0</string>
 											<string>B4F6F22A1067703B00B137C0</string>
 											<string>B4F6F22B1067703B00B137C0</string>
-											<string>B4F6F23D1067D79F00B137C0</string>
-											<string>B4F6F23E1067D79F00B137C0</string>
+											<string>B4F6F33D106807E000B137C0</string>
+											<string>B4F6F33E106807E000B137C0</string>
+											<string>B4F6F33F106807E000B137C0</string>
+											<string>B4F6F340106807E000B137C0</string>
+											<string>B4F6F341106807E000B137C0</string>
+											<string>B4F6F342106807E000B137C0</string>
+											<string>B4F6F343106807E000B137C0</string>
+											<string>B4F6F344106807E000B137C0</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
