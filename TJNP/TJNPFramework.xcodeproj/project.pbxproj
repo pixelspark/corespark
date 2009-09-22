@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		8DC2EF530486A6940098B216 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C1666FE841158C02AAC07 /* InfoPlist.strings */; };
+		B40226F5106917ED00137628 /* tjpattern.h in Headers */ = {isa = PBXBuildFile; fileRef = B40226F4106917ED00137628 /* tjpattern.h */; };
 		B41DD3E310663B65000742DD /* tjclient.h in Headers */ = {isa = PBXBuildFile; fileRef = B41DD3D710663B65000742DD /* tjclient.h */; };
 		B41DD3E410663B65000742DD /* tjnp.h in Headers */ = {isa = PBXBuildFile; fileRef = B41DD3D810663B65000742DD /* tjnp.h */; };
 		B41DD3E510663B65000742DD /* tjprotocol.h in Headers */ = {isa = PBXBuildFile; fileRef = B41DD3D910663B65000742DD /* tjprotocol.h */; };
@@ -47,6 +48,7 @@
 		089C1667FE841158C02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		8DC2EF5A0486A6940098B216 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8DC2EF5B0486A6940098B216 /* TJNPFramework.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = TJNPFramework.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B40226F4106917ED00137628 /* tjpattern.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tjpattern.h; path = include/tjpattern.h; sourceTree = SOURCE_ROOT; };
 		B41DD3D710663B65000742DD /* tjclient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tjclient.h; sourceTree = "<group>"; };
 		B41DD3D810663B65000742DD /* tjnp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tjnp.h; sourceTree = "<group>"; };
 		B41DD3D910663B65000742DD /* tjprotocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tjprotocol.h; sourceTree = "<group>"; };
@@ -135,6 +137,7 @@
 		B41DD3D610663B65000742DD /* include */ = {
 			isa = PBXGroup;
 			children = (
+				B40226F4106917ED00137628 /* tjpattern.h */,
 				B4F6F2C01067ECC000B137C0 /* internal */,
 				B4F6F2C11067ECD100B137C0 /* tjslip.h */,
 				B41DD3D710663B65000742DD /* tjclient.h */,
@@ -199,6 +202,7 @@
 				B41DD3E810663B65000742DD /* tjtransaction.h in Headers */,
 				B4F6F2BF1067ECBA00B137C0 /* tjnp.h in Headers */,
 				B4F6F2C21067ECD100B137C0 /* tjslip.h in Headers */,
+				B40226F5106917ED00137628 /* tjpattern.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -212,11 +212,13 @@
 				<string>NSToolbarSeparatorItem</string>
 				<string>active-combo-popup</string>
 				<string>action</string>
+				<string>debugger-enable-breakpoints</string>
 				<string>NSToolbarFlexibleSpaceItem</string>
 				<string>build-and-go</string>
+				<string>debugger-fix-and-continue</string>
 				<string>com.apple.ide.PBXToolbarStopButton</string>
-				<string>NSToolbarFlexibleSpaceItem</string>
 				<string>get-info</string>
+				<string>NSToolbarFlexibleSpaceItem</string>
 				<string>com.apple.pbx.toolbar.searchfield</string>
 			</array>
 			<key>ControllerClassBaseName</key>
@@ -238,7 +240,6 @@
 						<array>
 							<string>1C37FBAC04509CD000000102</string>
 							<string>1C37FAAC04509CD000000102</string>
-							<string>1C08E77C0454961000C914BD</string>
 							<string>1C37FABC05509CD000000102</string>
 							<string>1C37FABC05539CD112110102</string>
 							<string>E2644B35053B69B200211256</string>
@@ -326,7 +327,7 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>B41DD4D110663E97000742DD</string>
+										<string>B40226041068E91A00137628</string>
 										<key>history</key>
 										<array>
 											<string>B486E9BC10662F290043CE5D</string>
@@ -334,15 +335,7 @@
 											<string>B486E9BE10662F290043CE5D</string>
 											<string>B486E9BF10662F290043CE5D</string>
 											<string>B41DD47110663C58000742DD</string>
-											<string>B41DD47210663C58000742DD</string>
-										</array>
-										<key>prevStack</key>
-										<array>
-											<string>B486E9C110662F290043CE5D</string>
-											<string>B486E9C210662F290043CE5D</string>
-											<string>B486E9C310662F290043CE5D</string>
-											<string>B486E9C410662F290043CE5D</string>
-											<string>B41DD47310663C58000742DD</string>
+											<string>B41DD4D110663E97000742DD</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -356,18 +349,18 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 0}, {603, 132}}</string>
+								<string>{{0, 0}, {603, 117}}</string>
 								<key>RubberWindowFrame</key>
 								<string>104 370 810 487 0 0 1280 1002 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
 							<key>Proportion</key>
-							<string>132pt</string>
+							<string>117pt</string>
 						</dict>
 						<dict>
 							<key>Proportion</key>
-							<string>309pt</string>
+							<string>324pt</string>
 							<key>Tabs</key>
 							<array>
 								<dict>
@@ -381,7 +374,7 @@
 									<key>GeometryConfiguration</key>
 									<dict>
 										<key>Frame</key>
-										<string>{{10, 27}, {603, 282}}</string>
+										<string>{{10, 27}, {603, 297}}</string>
 										<key>RubberWindowFrame</key>
 										<string>104 370 810 487 0 0 1280 1002 </string>
 									</dict>
@@ -428,7 +421,7 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>XCMainBuildResultsModuleGUID</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>Build</string>
+										<string>Build Results</string>
 										<key>XCBuildResultsTrigger_Collapse</key>
 										<integer>1021</integer>
 										<key>XCBuildResultsTrigger_Open</key>
@@ -465,16 +458,18 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>B41DD47510663C58000742DD</string>
+				<string>B40226051068E91A00137628</string>
 				<string>1CA23ED40692098700951B8B</string>
-				<string>B41DD47610663C58000742DD</string>
+				<string>B40226061068E91A00137628</string>
 				<string>B486E97710662EB70043CE5D</string>
-				<string>B41DD47710663C58000742DD</string>
+				<string>B40226071068E91A00137628</string>
 				<string>1CA23EDF0692099D00951B8B</string>
 				<string>1CA23EE00692099D00951B8B</string>
 				<string>1CA23EE10692099D00951B8B</string>
 				<string>XCMainBuildResultsModuleGUID</string>
 			</array>
+			<key>ToolbarConfigUserDefaultsMinorVersion</key>
+			<string>2</string>
 			<key>ToolbarConfiguration</key>
 			<string>xcode.toolbar.config.defaultV3</string>
 		</dict>

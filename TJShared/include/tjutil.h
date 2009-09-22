@@ -178,34 +178,43 @@ namespace tj {
 		}
 
 		inline std::string Mbs(const String& ws) {
-			char* buf  = new char[ws.length()+2];
+			unsigned int n = ws.length();
+			char* buf  = new char[n+1];
 			
 			#ifdef TJ_OS_MAC
-				wcstombs(buf, ws.c_str(), ws.length()+1);
+				wcstombs(buf, ws.c_str(), n+1);
 			#endif
 			
 			#ifdef TJ_OS_WIN
-				wcstombs_s(0, buf, ws.length()+1, ws.c_str(), _TRUNCATE);
+				wcstombs_s(0, buf, n+1, ws.c_str(), _TRUNCATE);
 			#endif
 
+			buf[n] = '\0';
 			std::string w(buf);
 			delete[] buf;
 			return w;
 		}
 
 		inline String Wcs(const std::string& ws) {
-			wchar_t* buf  = new wchar_t[ws.length()+2];
+			unsigned int n = ws.length();
 			
 			#ifdef TJ_OS_WIN
-				mbstowcs_s(0, buf, ws.length()+1, ws.c_str(), _TRUNCATE);
+				wchar_t* buf  = new wchar_t[n+1];
+				mbstowcs_s(0, buf, n+1, ws.c_str(), _TRUNCATE);
 			#endif
 			
 			#ifdef TJ_OS_MAC
-				mbstowcs(buf, ws.c_str(), ws.length());
+				wchar_t* buf = reinterpret_cast<wchar_t*>(alloca((n+1)*sizeof(wchar_t)));
+				mbstowcs(buf, ws.c_str(), n+1);
 			#endif
 			
+			buf[n] = 0;
 			String w(buf);
-			delete[] buf;
+			
+			#ifdef TJ_OS_WIN
+				delete[] buf;
+			#endif
+			
 			return w;
 		}
 

@@ -274,14 +274,12 @@
 								<string>B486E803106628710043CE5D</string>
 								<string>B486E804106628710043CE5D</string>
 								<string>1C37FBAC04509CD000000102</string>
-								<string>B4F6F329106807DE00B137C0</string>
-								<string>B4F6F32A106807DE00B137C0</string>
 								<string>1C37FAAC04509CD000000102</string>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>6</integer>
+									<integer>32</integer>
 									<integer>3</integer>
 									<integer>0</integer>
 								</array>
@@ -317,12 +315,14 @@
 					<key>Dock</key>
 					<array>
 						<dict>
+							<key>BecomeActive</key>
+							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
 								<string>B486E7EB106628130043CE5D</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>tjutil.cpp</string>
+								<string>tjutil.h</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -330,11 +330,11 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>B486E7EC106628130043CE5D</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>tjutil.cpp</string>
+										<string>tjutil.h</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>B4F6F339106807DE00B137C0</string>
+										<string>B40226491068F0B800137628</string>
 										<key>history</key>
 										<array>
 											<string>B486EA19106632B40043CE5D</string>
@@ -367,11 +367,9 @@
 											<string>B45F568F1066A4CD00FEDA6B</string>
 											<string>B45F56911066A4CD00FEDA6B</string>
 											<string>B45F56941066A4CD00FEDA6B</string>
-											<string>B45F56D51066A86E00FEDA6B</string>
 											<string>B45F57671066ABF300FEDA6B</string>
 											<string>B4F6F2411067DA8700B137C0</string>
 											<string>B4F6F2421067DA8700B137C0</string>
-											<string>B4F6F32B106807DE00B137C0</string>
 											<string>B4F6F32C106807DE00B137C0</string>
 											<string>B4F6F32E106807DE00B137C0</string>
 											<string>B4F6F330106807DE00B137C0</string>
@@ -382,7 +380,9 @@
 											<string>B4F6F335106807DE00B137C0</string>
 											<string>B4F6F336106807DE00B137C0</string>
 											<string>B4F6F337106807DE00B137C0</string>
-											<string>B4F6F338106807DE00B137C0</string>
+											<string>B40226461068F0B800137628</string>
+											<string>B40226471068F0B800137628</string>
+											<string>B40226481068F0B800137628</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -396,18 +396,18 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 0}, {1073, 539}}</string>
+								<string>{{0, 0}, {1073, 531}}</string>
 								<key>RubberWindowFrame</key>
 								<string>0 92 1280 910 0 0 1280 1002 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
 							<key>Proportion</key>
-							<string>539pt</string>
+							<string>531pt</string>
 						</dict>
 						<dict>
 							<key>Proportion</key>
-							<string>325pt</string>
+							<string>333pt</string>
 							<key>Tabs</key>
 							<array>
 								<dict>
@@ -421,7 +421,9 @@
 									<key>GeometryConfiguration</key>
 									<dict>
 										<key>Frame</key>
-										<string>{{10, 27}, {1073, 298}}</string>
+										<string>{{10, 27}, {1073, 306}}</string>
+										<key>RubberWindowFrame</key>
+										<string>0 92 1280 910 0 0 1280 1002 </string>
 									</dict>
 									<key>Module</key>
 									<string>XCDetailModule</string>
@@ -497,8 +499,6 @@
 									<dict>
 										<key>Frame</key>
 										<string>{{10, 27}, {1073, 298}}</string>
-										<key>RubberWindowFrame</key>
-										<string>0 92 1280 910 0 0 1280 1002 </string>
 									</dict>
 									<key>Module</key>
 									<string>PBXBuildResultsModule</string>
@@ -526,11 +526,11 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>B4F6F33A106807DE00B137C0</string>
+				<string>B40225B51068E7F600137628</string>
 				<string>1CA23ED40692098700951B8B</string>
-				<string>B4F6F33B106807DE00B137C0</string>
+				<string>B40225B61068E7F600137628</string>
 				<string>B486E7EB106628130043CE5D</string>
-				<string>B4F6F33C106807DE00B137C0</string>
+				<string>B40225B71068E7F600137628</string>
 				<string>1CA23EDF0692099D00951B8B</string>
 				<string>1CA23EE00692099D00951B8B</string>
 				<string>1CA23EE10692099D00951B8B</string>
