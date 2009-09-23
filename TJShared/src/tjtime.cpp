@@ -186,7 +186,7 @@ void Timestamp::Now() {
 }
 
 String Timestamp::ToString() const {
-	return Stringify(ToMicroSeconds());
+	return Stringify((int)ToMicroSeconds());
 }
 
 String Timestamp::ToHexString() const {

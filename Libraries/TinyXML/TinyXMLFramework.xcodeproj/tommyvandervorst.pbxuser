@@ -1,7 +1,7 @@
 // !$*UTF8*$!
 {
 	0867D690FE84028FC02AAC07 /* Project object */ = {
-		activeBuildConfigurationName = Debug;
+		activeBuildConfigurationName = Release;
 		activeTarget = 8DC2EF4F0486A6940098B216 /* TinyXMLFramework */;
 		addToTargets = (
 			8DC2EF4F0486A6940098B216 /* TinyXMLFramework */,
@@ -70,12 +70,11 @@
 			PBXWorkspaceStateSaveDate = 275315544;
 		};
 		perUserProjectItems = {
-			B40226941068FB7000137628 /* PBXTextBookmark */ = B40226941068FB7000137628 /* PBXTextBookmark */;
-			B45F58AF1066CB3E00FEDA6B = B45F58AF1066CB3E00FEDA6B /* PlistBookmark */;
-			B45F58B21066CB3E00FEDA6B = B45F58B21066CB3E00FEDA6B /* PBXTextBookmark */;
-			B486E8E610662B880043CE5D = B486E8E610662B880043CE5D /* PBXTextBookmark */;
-			B486E8E710662B880043CE5D = B486E8E710662B880043CE5D /* PBXTextBookmark */;
-			B4F6F3121068023100B137C0 = B4F6F3121068023100B137C0 /* PBXTextBookmark */;
+			B4022A1510696DA900137628 /* PBXTextBookmark */ = B4022A1510696DA900137628 /* PBXTextBookmark */;
+			B45F58AF1066CB3E00FEDA6B /* PlistBookmark */ = B45F58AF1066CB3E00FEDA6B /* PlistBookmark */;
+			B486E8E610662B880043CE5D /* PBXTextBookmark */ = B486E8E610662B880043CE5D /* PBXTextBookmark */;
+			B486E8E710662B880043CE5D /* PBXTextBookmark */ = B486E8E710662B880043CE5D /* PBXTextBookmark */;
+			B4F6F3121068023100B137C0 /* PBXTextBookmark */ = B4F6F3121068023100B137C0 /* PBXTextBookmark */;
 		};
 		sourceControlManager = B486E89E1066294A0043CE5D /* Source Control */;
 		userBuildSettings = {
@@ -84,7 +83,7 @@
 	8DC2EF4F0486A6940098B216 /* TinyXMLFramework */ = {
 		activeExec = 0;
 	};
-	B40226941068FB7000137628 /* PBXTextBookmark */ = {
+	B4022A1510696DA900137628 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
 		fRef = B486E8AB106629700043CE5D /* tinystr.cpp */;
 		name = "tinystr.cpp: 1";
@@ -105,16 +104,6 @@
 		name = /Users/tommyvandervorst/Documents/Projecten/tj/Libraries/TinyXML/Info.plist;
 		rLen = 0;
 		rLoc = 2147483647;
-	};
-	B45F58B21066CB3E00FEDA6B /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = B486E8AB106629700043CE5D /* tinystr.cpp */;
-		name = "tinystr.cpp: 1";
-		rLen = 0;
-		rLoc = 0;
-		rType = 0;
-		vrLen = 309;
-		vrLoc = 0;
 	};
 	B486E89E1066294A0043CE5D /* Source Control */ = {
 		isa = PBXSourceControlManager;

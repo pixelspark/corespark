@@ -23,8 +23,8 @@ namespace tj {
 				void SetOptimize(bool o);
 
 				template<typename T> static inline T GetValue(ref<Scriptable> s, T defaultValue);
-				template<typename T> static inline T GetValueByString(ref<Scriptable> s, T defaultValue);
-
+				static tj::shared::Any GetValue(ref<Scriptable> s);
+			
 				// Types
 				static void AddStaticType(const std::wstring& type, ref<ScriptType> stype);
 				void AddType(const std::wstring& type, ref<ScriptType> stype);
@@ -48,33 +48,11 @@ namespace tj {
 		// Converting to some other type, either the object we want to convert is of the type desired
 		// or we have to use the slow string stuff.
 		template<typename T> T ScriptContext::GetValue(ref<Scriptable> s, T defaultValue) {
-			if(s.IsCastableTo< ScriptValue<T> >()) {
-				ref< ScriptValue<T> > value = s;
-				return value->GetValue();
+			if(s.IsCastableTo< ScriptAny >()) {
+				ref<ScriptAny> value = s;
+				return (T)(value->Unbox());
 			}
-			else {
-				return GetValueByString<T>(s, defaultValue);
-			}
-		}
-
-		template<> double SCRIPT_EXPORTED ScriptContext::GetValue(ref<Scriptable> s, double defaultValue);
-		template<> float SCRIPT_EXPORTED ScriptContext::GetValue(ref<Scriptable> s, float defaultValue);
-		template<> int SCRIPT_EXPORTED ScriptContext::GetValue(ref<Scriptable> s, int defaultValue);
-		template<> bool SCRIPT_EXPORTED ScriptContext::GetValue(ref<Scriptable> s, bool defaultValue);
-
-		// The 'always works, but slow'-method
-		template<typename T> T ScriptContext::GetValueByString(ref<Scriptable> s, T defaultValue) {
-			try {
-				ref<Scriptable> str = s->Execute(L"toString", 0);
-				if(str && str.IsCastableTo< ScriptValue<std::wstring> >()) {
-					ref<ScriptValue<std::wstring> > value = str;
-					return tj::shared::StringTo<T>(value->GetValue(), defaultValue);
-				}
-				return defaultValue;
-			}
-			catch(...) {
-				return defaultValue;
-			}
+			return defaultValue;
 		}
 	}
 }

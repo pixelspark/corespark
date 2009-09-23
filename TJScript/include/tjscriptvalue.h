@@ -1,5 +1,6 @@
 #ifndef _TJSCRIPTVALUE_H
 #define _TJSCRIPTVALUE_H
+
 namespace tj {
 	namespace script {
 		class SCRIPT_EXPORTED ScriptConstantsInitializer {
@@ -16,8 +17,26 @@ namespace tj {
 			private:
 				static ScriptConstantsInitializer _init;
 		};
+		
+		class SCRIPT_EXPORTED ScriptAny: public Scriptable {
+			public:
+				virtual ~ScriptAny();
+				virtual tj::shared::Any Unbox() const = 0;
+				virtual tj::shared::ref<Scriptable> Execute(Command c, tj::shared::ref<ParameterList> ps);
+		};
 
-		template<typename T> class ScriptValue: public Scriptable {
+		/** This is the class that 'wraps' values like strings, doubles, ints & booleans as script objects. Because it 
+		 is defined as a template, a few subtleties are important here. The most important caveat is that the ScriptValue
+		 class may be compiled for each module individually (i.e. one for TJScript and one for the application using the
+		 TJScript library). This is not bad, as long as these classes are of the same version. What does matter is that
+		 client applications can never cast a ref<Scriptable> to a ref<ScriptValue<T>>, because the typeinfo of their
+		 ScriptValue-'implementation' does not match the typeinfo of the one that TJScript uses. 
+		 
+		 This is why all conversion ('unboxing') of ScriptValue values happens through ScriptAny::Unbox (using the TJShared
+		 Any type). Please do not try to use the ScriptValue<T> from client applications directly, as these problems might occur
+		 (especially under GCC; it used to work fine under MSVC++ by the way).
+		 **/
+		template<typename T> class ScriptValue: public ScriptAny {
 			public:
 				ScriptValue(const T& value): _value(value) {
 				}
@@ -25,33 +44,17 @@ namespace tj {
 				virtual ~ScriptValue() {
 				}
 
-				virtual tj::shared::ref<Scriptable> Execute(Command command, tj::shared::ref<ParameterList> params) {
-					tj::shared::ref<Scriptable> result = TypeSpecificExecute(command,params);
-					if(result) return result;
-
-					if(command==L"toString") {
-						return tj::shared::GC::Hold(new ScriptValue<std::wstring>(tj::shared::Stringify(_value)));
-					}
-					else if(command==L"class") {
-						return tj::shared::GC::Hold(new ScriptValue<std::wstring>(tj::shared::Wcs(typeid(T).name())));
-					}
-					return 0;
-				}
-
-				tj::shared::ref<Scriptable> TypeSpecificExecute(Command command, tj::shared::ref<ParameterList> params) {
-					return 0;
-				}
-
 				virtual T& GetValue() {
 					return _value;
+				}
+			
+				virtual tj::shared::Any Unbox() const {
+					return tj::shared::Any(_value);
 				}
 
 			protected:
 				T _value;
 		};
-
-		/** Type specific script functions **/
-		template<> tj::shared::ref<Scriptable> SCRIPT_EXPORTED ScriptValue<std::wstring>::TypeSpecificExecute(tj::script::Command command, tj::shared::ref<ParameterList> params);
 
 		/** Standard typedefs */
 		typedef ScriptValue<std::wstring> ScriptString;

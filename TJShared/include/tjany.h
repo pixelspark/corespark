@@ -45,6 +45,7 @@ namespace tj {
 				operator double() const;
 				operator int() const;
 				operator float() const;
+				operator String() const;
 
 				Any operator%(const Any& o) const;
 				Any operator-() const;

@@ -424,6 +424,25 @@ Any::operator bool() const {
 	}	
 }
 
+Any::operator String() const {
+	switch(_type) {
+		case TypeBool:
+			return _boolValue ? Bool::KTrue : Bool::KFalse;
+			
+		case TypeInteger:
+			return Stringify(_intValue);
+			
+		case TypeDouble:
+			return Stringify(_doubleValue);
+			
+		case TypeString:
+			return _stringValue;
+			
+		default:
+			return L"";
+	}	
+}
+
 Any::operator double() const {
 	switch(_type) {
 		case TypeBool:

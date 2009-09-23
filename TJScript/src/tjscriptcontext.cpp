@@ -13,6 +13,13 @@ ScriptContext::ScriptContext(ref<Scriptable> global) {
 ScriptContext::~ScriptContext() {
 }
 
+Any ScriptContext::GetValue(ref<Scriptable> s) {
+	if(s.IsCastableTo<ScriptAny>()) {
+		return ref<ScriptAny>(s)->Unbox();
+	}
+	return Any();
+}
+
 void ScriptContext::SetOptimize(bool o) {
 	_optimize = o;
 }
@@ -68,66 +75,4 @@ ref<ScriptType> ScriptContext::GetType(const std::wstring& type) {
 	}
 
 	throw ScriptException(std::wstring(L"The type ")+type+L" does not exist.");
-}
-
-// doubles
-template<> double ScriptContext::GetValue(ref<Scriptable> s, double defaultValue) {
-	if(s.IsCastableTo<ScriptInt>()) {
-		return double(ref<ScriptInt>(s)->GetValue());
-	}
-	else if(s.IsCastableTo<ScriptDouble>()) {
-		return double(ref<ScriptDouble>(s)->GetValue());
-	}
-	else if(s.IsCastableTo<ScriptBool>()) {
-		return ref<ScriptBool>(s)->GetValue()?1.0:0.0;
-	}
-	else if(s.IsCastableTo<ScriptNull>()) {
-		return std::numeric_limits<double>::quiet_NaN();
-	}
-	else {
-		return GetValueByString<double>(s,defaultValue);	
-	}
-}
-
-// floats are not different from doubles in the scripting engine (doubles are used everywhere) so use double
-template<> float ScriptContext::GetValue(ref<Scriptable> s, float defaultValue) {
-	return (float)GetValue<double>(s,(double)defaultValue);
-}
-
-// ints
-template<> int ScriptContext::GetValue(ref<Scriptable> s, int defaultValue) {
-	if(s.IsCastableTo<ScriptInt>()) {
-		return ref<ScriptInt>(s)->GetValue();
-	}
-	else if(s.IsCastableTo<ScriptDouble>()) {
-		return int(ref<ScriptDouble>(s)->GetValue());
-	}
-	else if(s.IsCastableTo<ScriptBool>()) {
-		return ref<ScriptBool>(s)->GetValue()?1:0;
-	}
-	else if(s.IsCastableTo<ScriptNull>()) {
-		return 0;
-	}
-	else {
-		return GetValueByString<int>(s,defaultValue);	
-	}
-}
-
-// booleans
-template<> bool ScriptContext::GetValue(ref<Scriptable> s, bool defaultValue) {
-	if(s.IsCastableTo<ScriptBool>()) {
-		return ref<ScriptBool>(s)->GetValue();
-	}
-	else if(s.IsCastableTo<ScriptInt>()) {
-		return ref<ScriptInt>(s)->GetValue()!=0;
-	}
-	else if(s.IsCastableTo<ScriptDouble>()) {
-		return ref<ScriptDouble>(s)->GetValue()!=0.0;
-	}
-	else if(s.IsCastableTo<ScriptNull>()) {
-		return false;
-	}
-	else {
-		return GetValueByString<bool>(s,defaultValue);	
-	}
 }

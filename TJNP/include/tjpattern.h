@@ -160,7 +160,7 @@ namespace tj {
 			}
 
 			template<typename CharType, typename Traits> bool Pattern<CharType, Traits>::Match(const CharType* pattern, const CharType* test) {
-				///std::wcout << L"Match t=" << test << L" p=" << pattern << std::endl;
+				//std::wcout << L"Match t=" << test << L" p=" << pattern << std::endl;
 
 				// If the pattern is empty, only an empty test string matches
 				if(pattern == 0L || pattern[0] == Traits::KEnd) {

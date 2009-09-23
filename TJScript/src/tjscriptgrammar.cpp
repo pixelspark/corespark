@@ -67,12 +67,12 @@ namespace tj {
 				ScriptWriteInt(ScriptGrammar const* gram, int i);
 
 				template<typename T> inline void operator()(T,T) const {
-					LiteralIdentifier li = _stack->Top()->StoreLiteral(GC::Hold(new ScriptValue<int>(_value)));
+					LiteralIdentifier li = _stack->Top()->StoreLiteral(GC::Hold(new ScriptInt(_value)));
 					_stack->Top()->Add(li);
 				}
 
 				template<typename T> inline void operator()(const T&) const {		
-					LiteralIdentifier li = _stack->Top()->StoreLiteral(GC::Hold(new ScriptValue<int>(_value)));
+					LiteralIdentifier li = _stack->Top()->StoreLiteral(GC::Hold(new ScriptInt(_value)));
 					_stack->Top()->Add(li);
 				}
 

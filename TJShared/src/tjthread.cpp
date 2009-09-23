@@ -574,7 +574,11 @@ void ThreadLocal::operator=(int r) {
 
 #ifdef TJ_OS_MAC
 	CriticalSection::CriticalSection() {
-		pthread_mutex_init(&_cs, NULL);
+		pthread_mutexattr_t attributes;
+		pthread_mutexattr_init(&attributes);
+		pthread_mutexattr_settype(&attributes, PTHREAD_MUTEX_RECURSIVE);
+		pthread_mutex_init(&_cs, &attributes);
+		pthread_mutexattr_destroy(&attributes);
 	}
 
 	CriticalSection::~CriticalSection() {
