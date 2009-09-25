@@ -22,6 +22,15 @@ ref<Scriptable> ScriptAny::Execute(Command c, ref<ParameterList> p) {
 	if(c==L"toString") {
 		return GC::Hold(new ScriptString(Unbox()));
 	}
+	else if(c==L"toInteger") {
+		return GC::Hold(new ScriptInt(Unbox()));
+	}
+	else if(c==L"toDouble") {
+		return GC::Hold(new ScriptDouble(Unbox()));
+	}
+	else if(c==L"toBool") {
+		return GC::Hold(new ScriptBool(Unbox()));
+	}
 	else if(c==L"toHexString") {
 		int val = Unbox();
 		std::wostringstream wos;

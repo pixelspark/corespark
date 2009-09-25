@@ -16,6 +16,14 @@
 
 using namespace tj::shared;
 
+#ifdef TJ_OS_WIN
+	const wchar_t File::PathSeparator = L'\\';
+#endif
+
+#ifdef TJ_OS_POSIX
+	const wchar_t File::PathSeparator = L'/';
+#endif
+
 String File::GetDirectory(const String& pathToFile) {
 	#ifdef TJ_OS_MAC
 		std::string path = Mbs(pathToFile);

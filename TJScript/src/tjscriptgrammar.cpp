@@ -60,11 +60,30 @@ namespace tj {
 				double _value;
 			};
 
-			// Ints can only be written by the parser itself, not from the file
 			struct ScriptWriteInt {
+				ScriptWriteInt(ScriptGrammar const* gram);
+				
+				inline void operator()(char const* start, char const* end) const {
+					std::istringstream is;
+					int value;
+					is >> value;
+					
+					LiteralIdentifier li = _stack->Top()->StoreLiteral(GC::Hold(new ScriptInt(value)));
+					_stack->Top()->Add<LiteralIdentifier>(li);
+				}
+				
+				inline void operator()(const int& value) const {		
+					LiteralIdentifier li = _stack->Top()->StoreLiteral(GC::Hold(new ScriptInt(value)));
+					_stack->Top()->Add<LiteralIdentifier>(li);
+				}
+				
+				mutable ref<ScriptletStack> _stack;
+			};
+			
+			struct ScriptWriteIntValue {
 				int _value;
 
-				ScriptWriteInt(ScriptGrammar const* gram, int i);
+				ScriptWriteIntValue(ScriptGrammar const* gram, int i);
 
 				template<typename T> inline void operator()(T,T) const {
 					LiteralIdentifier li = _stack->Top()->StoreLiteral(GC::Hold(new ScriptInt(_value)));
@@ -282,6 +301,7 @@ namespace tj {
 							doubleValue = 
 								  lexeme_d[str_p("NaN")[ScriptInstruction(&self, Ops::OpPushDouble)][ScriptWriteDoubleValue(&self, std::numeric_limits<double>::quiet_NaN())]]
 								| lexeme_d[str_p("Inf")[ScriptInstruction(&self, Ops::OpPushDouble)][ScriptWriteDoubleValue(&self, std::numeric_limits<double>::infinity())]]
+								| (ch_p('#') >> int_p[ScriptInstruction(&self, Ops::OpPushInt)][ScriptWriteInt(&self)])
 								| real_p[ScriptInstruction(&self, Ops::OpPushDouble)][ScriptWriteDouble(&self)];
 
 							nullValue =
@@ -339,11 +359,11 @@ namespace tj {
 
 							incrementOneOperator = 
 								eps_p(lexeme_d[(alpha_p >> *(alnum_p|ch_p('_')))] >> keyword_p("++"))
-								>> identifier[ScriptInstruction(&self, Ops::OpPushString)][ScriptWriteString(&self)][ScriptInstruction(&self, Ops::OpCallGlobal)] >> keyword_p("++")[ScriptInstruction(&self, Ops::OpPushInt)][ScriptWriteInt(&self,1)][ScriptInstruction(&self, Ops::OpAdd)][ScriptInstruction(&self, Ops::OpSave)];
+								>> identifier[ScriptInstruction(&self, Ops::OpPushString)][ScriptWriteString(&self)][ScriptInstruction(&self, Ops::OpCallGlobal)] >> keyword_p("++")[ScriptInstruction(&self, Ops::OpPushInt)][ScriptWriteIntValue(&self,1)][ScriptInstruction(&self, Ops::OpAdd)][ScriptInstruction(&self, Ops::OpSave)];
 
 							decrementOneOperator = 
 								eps_p(lexeme_d[(alpha_p >> *(alnum_p|ch_p('_')))] >> keyword_p("--"))
-								>> identifier[ScriptInstruction(&self, Ops::OpPushString)][ScriptWriteString(&self)][ScriptInstruction(&self, Ops::OpCallGlobal)] >> keyword_p("--")[ScriptInstruction(&self, Ops::OpPushInt)][ScriptWriteInt(&self,1)][ScriptInstruction(&self, Ops::OpSub)][ScriptInstruction(&self, Ops::OpSave)];
+								>> identifier[ScriptInstruction(&self, Ops::OpPushString)][ScriptWriteString(&self)][ScriptInstruction(&self, Ops::OpCallGlobal)] >> keyword_p("--")[ScriptInstruction(&self, Ops::OpPushInt)][ScriptWriteIntValue(&self,1)][ScriptInstruction(&self, Ops::OpSub)][ScriptInstruction(&self, Ops::OpSave)];
 
 							methodCall =
 								(identifier >> !(ch_p('(')[ScriptInstruction(&self, Ops::OpPushParameter)] >> !parameterList >> ')'));
@@ -516,13 +536,16 @@ namespace tj {
 			ScriptWriteDouble::ScriptWriteDouble(const ScriptGrammar *gram) {
 				_stack = gram->_stack;
 			}
+			
+			ScriptWriteInt::ScriptWriteInt(const ScriptGrammar* gram): _stack(gram->_stack) {
+			}
 
 			ScriptWriteDoubleValue::ScriptWriteDoubleValue(ScriptGrammar const* gram, double val) {
 				_stack = gram->_stack;
 				_value = val;
 			}
 
-			ScriptWriteInt::ScriptWriteInt(const ScriptGrammar* gram, int i) {
+			ScriptWriteIntValue::ScriptWriteIntValue(const ScriptGrammar* gram, int i) {
 				_stack = gram->_stack;
 				_value = i;
 			}

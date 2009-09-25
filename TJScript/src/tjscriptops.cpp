@@ -35,8 +35,8 @@ void OpPushFalseHandler(VM* vm) {
 
 void OpPushIntHandler(VM* vm) {
 	StackFrame* sf = vm->GetStackFrame();
-	int value = sf->_scriptlet->Get<int>(sf->_pc);
-	vm->GetStack().Push(GC::Hold(new ScriptInt(value)));
+	LiteralIdentifier id = sf->_scriptlet->Get<LiteralIdentifier>(sf->_pc);
+	vm->GetStack().Push(sf->_scriptlet->GetLiteral(id));
 }
 
 void OpPushNullHandler(VM* vm) {

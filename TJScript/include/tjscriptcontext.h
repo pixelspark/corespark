@@ -52,6 +52,12 @@ namespace tj {
 				ref<ScriptAny> value = s;
 				return (T)(value->Unbox());
 			}
+			else {
+				ref<Scriptable> stringRep = s->Execute(L"toString", tj::shared::null);
+				if(stringRep.IsCastableTo<ScriptAny>()) {
+					return (T)(ref<ScriptAny>(stringRep)->Unbox());
+				}
+			}
 			return defaultValue;
 		}
 	}

@@ -14,8 +14,16 @@ ScriptContext::~ScriptContext() {
 }
 
 Any ScriptContext::GetValue(ref<Scriptable> s) {
+	if(!s) return Any();
+	
 	if(s.IsCastableTo<ScriptAny>()) {
 		return ref<ScriptAny>(s)->Unbox();
+	}
+	else {
+		ref<Scriptable> stringRepresentation = s->Execute(L"toString", null);
+		if(stringRepresentation.IsCastableTo<ScriptAny>()) {
+			return ref<ScriptAny>(stringRepresentation)->Unbox();
+		}
 	}
 	return Any();
 }
