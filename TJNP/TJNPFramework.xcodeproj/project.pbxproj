@@ -22,6 +22,7 @@
 		B41DD3ED10663B65000742DD /* tjtransaction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B41DD3E210663B65000742DD /* tjtransaction.cpp */; };
 		B41DD40010663BC0000742DD /* TJSharedFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B41DD3FE10663BB2000742DD /* TJSharedFramework.framework */; };
 		B41DD40110663BC4000742DD /* TinyXMLFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B41DD3F810663BA7000742DD /* TinyXMLFramework.framework */; };
+		B423B788106E08C700147974 /* tjpattern.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B423B787106E08C700147974 /* tjpattern.cpp */; };
 		B4F6F2BF1067ECBA00B137C0 /* tjnp.h in Headers */ = {isa = PBXBuildFile; fileRef = B4F6F2BE1067ECBA00B137C0 /* tjnp.h */; };
 		B4F6F2C21067ECD100B137C0 /* tjslip.h in Headers */ = {isa = PBXBuildFile; fileRef = B4F6F2C11067ECD100B137C0 /* tjslip.h */; };
 		B4F6F2C41067ECDC00B137C0 /* tjslip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B4F6F2C31067ECDC00B137C0 /* tjslip.cpp */; };
@@ -62,6 +63,7 @@
 		B41DD3E210663B65000742DD /* tjtransaction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tjtransaction.cpp; sourceTree = "<group>"; };
 		B41DD3F010663BA7000742DD /* TinyXMLFramework.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TinyXMLFramework.xcodeproj; path = ../Libraries/TinyXML/TinyXMLFramework.xcodeproj; sourceTree = SOURCE_ROOT; };
 		B41DD3F910663BB2000742DD /* TJSharedFramework.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TJSharedFramework.xcodeproj; path = ../TJShared/TJSharedFramework.xcodeproj; sourceTree = SOURCE_ROOT; };
+		B423B787106E08C700147974 /* tjpattern.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tjpattern.cpp; sourceTree = "<group>"; };
 		B4F6F2BE1067ECBA00B137C0 /* tjnp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tjnp.h; path = internal/tjnp.h; sourceTree = "<group>"; };
 		B4F6F2C11067ECD100B137C0 /* tjslip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tjslip.h; path = include/tjslip.h; sourceTree = SOURCE_ROOT; };
 		B4F6F2C31067ECDC00B137C0 /* tjslip.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tjslip.cpp; path = src/tjslip.cpp; sourceTree = SOURCE_ROOT; };
@@ -159,6 +161,7 @@
 				B41DD3E010663B65000742DD /* tjsocket.cpp */,
 				B41DD3E110663B65000742DD /* tjstream.cpp */,
 				B41DD3E210663B65000742DD /* tjtransaction.cpp */,
+				B423B787106E08C700147974 /* tjpattern.cpp */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -295,6 +298,7 @@
 				B41DD3EC10663B65000742DD /* tjstream.cpp in Sources */,
 				B41DD3ED10663B65000742DD /* tjtransaction.cpp in Sources */,
 				B4F6F2C41067ECDC00B137C0 /* tjslip.cpp in Sources */,
+				B423B788106E08C700147974 /* tjpattern.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

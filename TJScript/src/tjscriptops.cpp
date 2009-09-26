@@ -3,6 +3,8 @@
 using namespace tj::script;
 using namespace tj::shared;
 
+// TODO: Use default Any::operator operations in ops that add, subtract, multiply etc values
+
 void OpNopHandler(VM* vm) {
 }
 
