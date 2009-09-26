@@ -18,6 +18,7 @@ namespace tj {
 }
 
 ref<EventLogger> Log::_eventLogger;
+CriticalSection Log::_logLock;
 
 strong<EventLogger> Log::GetEventLogger() {
 	/* This might doubly create a LogEvenLogger, but that's not really bad
@@ -60,7 +61,10 @@ void Log::Write(const String& source, const String& message) {
 	#endif
 
 	#ifdef TJ_OS_MAC
-	std::wcout << std::hex << Thread::GetCurrentThreadID() << L' ' << source << L' ' << L':' << L' ' << message << std::endl;
+	{
+		ThreadLock lock(&_logLock);
+		std::wcout << std::hex << Thread::GetCurrentThreadID() << L' ' << source << L' ' << L':' << L' ' << message << std::endl;
+	}
 	#endif
 
 	GetEventLogger()->AddEvent(finalMessage, ExceptionTypeMessage, false);

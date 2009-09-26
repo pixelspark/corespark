@@ -1,7 +1,10 @@
 #ifndef _TJ_NP_SOCKET_UTIL_H
 #define _TJ_NP_SOCKET_UTIL_H
 
+#include "internal/tjnp.h"
+
 struct sockaddr_in;
+struct sockaddr_in6;
 
 #pragma warning(push)
 #pragma warning(disable: 4251 4275)

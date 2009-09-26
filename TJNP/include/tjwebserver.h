@@ -69,10 +69,15 @@ namespace tj {
 				WebServerThread(tj::shared::ref<WebServer> fs, int port);
 				virtual ~WebServerThread();
 				virtual void Run();
+				virtual void Cancel();
 
 			protected:
 				tj::shared::weak<WebServer> _fs;
 				int _port;
+			
+				#ifdef TJ_OS_POSIX
+					NativeSocket _controlSocket[2];
+				#endif
 		};
 
 		class NP_EXPORTED WebServerResponseThread: public tj::shared::Thread {

@@ -286,7 +286,7 @@
 								</array>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateVisibleRectKey</key>
-							<string>{{0, 78}, {185, 851}}</string>
+							<string>{{0, 0}, {185, 851}}</string>
 						</dict>
 						<key>PBXTopSmartGroupGIDs</key>
 						<array/>
@@ -333,7 +333,7 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>B423B7CE106E0C6200147974</string>
+										<string>B423BA8C106E9AC400147974</string>
 										<key>history</key>
 										<array>
 											<string>B41DD5821066493C000742DD</string>
@@ -362,7 +362,7 @@
 											<string>B4D0F420106D18C70053A1BA</string>
 											<string>B423B7CC106E0C6200147974</string>
 											<string>B423B7CD106E0C6200147974</string>
-											<string>B4D0F3F5106D143C0053A1BA</string>
+											<string>B423B7CE106E0C6200147974</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -376,18 +376,18 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 0}, {1073, 507}}</string>
+								<string>{{0, 0}, {1073, 498}}</string>
 								<key>RubberWindowFrame</key>
 								<string>0 92 1280 910 0 0 1280 1002 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
 							<key>Proportion</key>
-							<string>507pt</string>
+							<string>498pt</string>
 						</dict>
 						<dict>
 							<key>Proportion</key>
-							<string>357pt</string>
+							<string>366pt</string>
 							<key>Tabs</key>
 							<array>
 								<dict>
@@ -401,9 +401,7 @@
 									<key>GeometryConfiguration</key>
 									<dict>
 										<key>Frame</key>
-										<string>{{10, 27}, {1073, 330}}</string>
-										<key>RubberWindowFrame</key>
-										<string>0 92 1280 910 0 0 1280 1002 </string>
+										<string>{{10, 27}, {1073, 339}}</string>
 									</dict>
 									<key>Module</key>
 									<string>XCDetailModule</string>
@@ -457,7 +455,9 @@
 									<key>GeometryConfiguration</key>
 									<dict>
 										<key>Frame</key>
-										<string>{{10, 27}, {1073, 314}}</string>
+										<string>{{10, 27}, {1073, 339}}</string>
+										<key>RubberWindowFrame</key>
+										<string>0 92 1280 910 0 0 1280 1002 </string>
 									</dict>
 									<key>Module</key>
 									<string>PBXBuildResultsModule</string>
@@ -485,11 +485,11 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>B423B7CF106E0C6200147974</string>
+				<string>B423BA8D106E9AC400147974</string>
 				<string>1CA23ED40692098700951B8B</string>
-				<string>B423B7D0106E0C6200147974</string>
+				<string>B423BA8E106E9AC400147974</string>
 				<string>B41DD4DA1066450E000742DD</string>
-				<string>B423B7D1106E0C6200147974</string>
+				<string>B423BA8F106E9AC400147974</string>
 				<string>1CA23EDF0692099D00951B8B</string>
 				<string>1CA23EE00692099D00951B8B</string>
 				<string>1CA23EE10692099D00951B8B</string>
@@ -656,9 +656,7 @@
 	<key>WindowJustification</key>
 	<integer>5</integer>
 	<key>WindowOrderList</key>
-	<array>
-		<string>/Users/tommyvandervorst/Documents/Projecten/tj/TJScript/TJScriptFramework.xcodeproj</string>
-	</array>
+	<array/>
 	<key>WindowString</key>
 	<string>0 92 1280 910 0 0 1280 1002 </string>
 	<key>WindowToolsV3</key>

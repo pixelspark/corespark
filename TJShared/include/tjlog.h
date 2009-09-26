@@ -22,6 +22,7 @@ namespace tj {
 
 			protected:
 				static ref<EventLogger> _eventLogger;
+				static CriticalSection _logLock;
 		};
 	}
 }

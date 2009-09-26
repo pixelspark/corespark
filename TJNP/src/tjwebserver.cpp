@@ -6,6 +6,12 @@ using namespace tj::shared;
 	#include <winsock2.h>
 #endif
 
+#ifdef TJ_OS_POSIX
+	#include <sys/socket.h>
+	#include <arpa/inet.h>
+	#include <fcntl.h>
+#endif
+
 /** HTTPRequest **/
 HTTPRequest::HTTPRequest(const std::string& req) {
 	_method = MethodNone;
@@ -231,41 +237,76 @@ void WebServerResponseThread::ServePage(ref<HTTPRequest> hrp) {
 		delete[] resolvedData;
 	}
 	else {
-		HANDLE file = CreateFile(resolvedFile.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, 0);
-		DWORD size = GetFileSize(file, 0);
-		if(size==INVALID_FILE_SIZE) {
-			Log::Write(L"TJNP/WebServer", L"Invalid file size for "+resolvedFile);
-		}
-		else {
-			// Write headers
-			headers << "Content-length: " << size << "\r\n\r\n";
-			std::string headerString = headers.str();
-			int length = (int)headerString.length();
-			send(_client, headerString.c_str(), length, 0);
-
-			ref<WebServer> fs = _fs;
-			if(fs) {
-				fs->_bytesSent += length;
+		#ifdef TJ_OS_WIN
+			HANDLE file = CreateFile(resolvedFile.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, 0);
+			DWORD size = GetFileSize(file, 0);
+			if(size==INVALID_FILE_SIZE) {
+				Log::Write(L"TJNP/WebServer", L"Invalid file size for "+resolvedFile);
 			}
+			else {
+				// Write headers
+				headers << "Content-length: " << size << "\r\n\r\n";
+				std::string headerString = headers.str();
+				int length = (int)headerString.length();
+				send(_client, headerString.c_str(), length, 0);
 
-			// Send file
-			char buffer[4096];
-			DWORD read = 0;
-
-			while(ReadFile(file, buffer, 4096, &read, NULL)!=0) {
-				if(read<=0) {
-					break;
+				ref<WebServer> fs = _fs;
+				if(fs) {
+					fs->_bytesSent += length;
 				}
-				int r = send(_client, buffer, read, 0);
-				if(r>0) {
-					if(fs) {
-						fs->_bytesSent += r;
+
+				// Send file
+				char buffer[4096];
+				DWORD read = 0;
+
+				while(ReadFile(file, buffer, 4096, &read, NULL)!=0) {
+					if(read<=0) {
+						break;
+					}
+					int r = send(_client, buffer, read, 0);
+					if(r>0) {
+						if(fs) {
+							fs->_bytesSent += r;
+						}
 					}
 				}
 			}
-		}
 
-		CloseHandle(file);
+			CloseHandle(file);
+		#endif
+		
+		#ifdef TJ_OS_POSIX
+			#ifdef TJ_OS_MAC
+				Bytes size = File::GetFileSize(resolvedFile.c_str());
+		
+				// Write headers
+				headers << "Content-length: " << size << "\r\n\r\n";
+				std::string headerString = headers.str();
+				int length = (int)headerString.length();
+				send(_client, headerString.c_str(), length, 0);
+				
+				ref<WebServer> fs = _fs;
+				if(fs) {
+					fs->_bytesSent += length;
+				}
+		
+				// Write data
+				int fp = open(Mbs(resolvedFile).c_str(), O_RDONLY);
+				if(fp!=-1) {
+					off_t length = size;
+					off_t start = 0;
+					if(sendfile(fp, _client, start, &length, NULL, 0)!=0) {
+						Log::Write(L"TJNP/WebServer", L"sendfile() failed, file path was "+resolvedFile);
+					}
+				}
+				else {
+					Log::Write(L"TJNP/WebServer", L"open() failed, file path was "+resolvedFile);
+				}
+				close(fp);
+			#else
+				#warning Not implemented on non-MAC POSIX yet
+			#endif
+		#endif
 	}
 }
 
@@ -280,7 +321,7 @@ void WebServerResponseThread::Run() {
 	// TODO: time-out (use select()?)
 	while(readingRequest) {
 		int r = recv(_client, buffer, 1023, 0);
-		if(r==SOCKET_ERROR || r==WSAETIMEDOUT || r==0) {
+		if(r<=0) {
 			break;
 		}
 		else {
@@ -317,15 +358,42 @@ void WebServerResponseThread::Run() {
 		ServePage(hrp);
 	}
 
-	shutdown(_client, SD_BOTH);
-	closesocket(_client);
+	#ifdef TJ_OS_WIN
+		shutdown(_client, SD_BOTH);
+		closesocket(_client);
+	#endif
+	
+	#ifdef TJ_OS_POSIX
+		close(_client);
+	#endif
 	delete this;
 }
 
 WebServerThread::WebServerThread(ref<WebServer> fs, int port): _fs(fs), _port(port) {
+#ifdef TJ_OS_POSIX
+	if(socketpair(AF_UNIX, SOCK_STREAM, 0, _controlSocket)!=0) {
+		Log::Write(L"TJNP/SocketListenerThread", L"Could not create control socket pair");
+	}
+#endif
 }
 
 WebServerThread::~WebServerThread() {
+	#ifdef TJ_OS_POSIX
+		close(_controlSocket[0]);
+		close(_controlSocket[1]);
+		WaitForCompletion();
+	#endif
+}
+
+void WebServerThread::Cancel() {
+	#ifdef TJ_OS_POSIX
+		char quit[1] = {'Q'};
+		if(write(_controlSocket[0], quit, 1)==-1) {
+			Log::Write(L"TJNP/SocketListenerThread", L"Could not send quit message to listener thread");
+		}
+	#endif
+	
+	// TODO: Windows implementation...
 }
 
 void WebServerThread::Run() {
@@ -357,14 +425,33 @@ void WebServerThread::Run() {
 		if(!fs->_run) {
 			break;
 		}
+		
+		#ifdef TJ_OS_POSIX
+			fd_set fds;
+			FD_ZERO(&fds);
+			FD_SET(_controlSocket[1], &fds);
+			FD_SET(server, &fds);
+			
+			select(_controlSocket[1]+server, &fds, NULL, NULL, NULL);
+		
+			if(FD_ISSET(_controlSocket[1], &fds)) {
+				// End the thread, a control message was sent to us
+				Log::Write(L"TJNP/WebServerThread", L"End thread, quit control message received");
+				return;
+			}
+			else if(FD_ISSET(server, &fds)) {
+		#endif
 
-		NativeSocket client = accept(server, 0,0);
-
-		if(client!=-1) {
-			// start a response thread
-			WebServerResponseThread* rt = new WebServerResponseThread(client, _fs); // the thread will delete itself
-			rt->Start();
-		}
+				NativeSocket client = accept(server, 0,0);
+		
+				if(client!=-1) {
+					// start a response thread
+					WebServerResponseThread* rt = new WebServerResponseThread(client, _fs); // the thread will delete itself
+					rt->Start();
+				}
+		#ifdef TJ_OS_POSIX
+			}
+		#endif
 	}
 
 	#ifdef TJ_OS_WIN
@@ -383,7 +470,7 @@ WebServer::WebServer(unsigned short port, ref<FileRequestResolver> defaultResolv
 }
 
 WebServer::~WebServer() {
-	_run = false;
+	Stop();
 }
 
 void WebServer::OnCreated() {
@@ -399,6 +486,8 @@ void WebServer::AddResolver(const std::wstring& pathPrefix, strong<FileRequestRe
 
 void WebServer::Stop() {
 	// TODO implement (stop WebServerThread and all the threads it has spawned)
+	_run = false;
+	_serverThread->Cancel();
 }
 
 unsigned int WebServer::GetBytesReceived() const {
