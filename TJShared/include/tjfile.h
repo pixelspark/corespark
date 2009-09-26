@@ -17,7 +17,7 @@ namespace tj {
 				static bool Move(const String& from, const String& to, bool silent = true);
 				static bool Copy(const String& from, const String& to, bool silent = true);
 
-				static const wchar_t PathSeparator;
+				static wchar_t GetPathSeparator();
 		};
 	}
 }

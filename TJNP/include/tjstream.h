@@ -1,7 +1,13 @@
 #ifndef _TJ_NP_STREAM_H
 #define _TJ_NP_STREAM_H
 
+#include "internal/tjnp.h"
+#include "tjprotocol.h"
+#include "tjtransaction.h"
+
 #pragma pack(push,1)
+#pragma warning(push)
+#pragma warning(disable: 4251 4275)
 
 namespace tj {
 	namespace np {
@@ -69,5 +75,6 @@ namespace tj {
 	}
 }
 
+#pragma warning(pop)
 #pragma pack(pop)
 #endif

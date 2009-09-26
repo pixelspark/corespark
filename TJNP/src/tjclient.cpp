@@ -1,4 +1,4 @@
-#include "../include/tjnp.h"
+#include "../include/tjclient.h"
 #include "../../Libraries/TinyXML/tinyxml.h"
 #include <time.h>
 #include <sstream>

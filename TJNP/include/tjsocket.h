@@ -1,61 +1,18 @@
 #ifndef _TJ_NP_SOCKET_H
 #define _TJ_NP_SOCKET_H
 
-struct sockaddr_in;
+#include "internal/tjnp.h"
+#include "tjtransaction.h"
+#include "tjclient.h"
+#include "tjstream.h"
+#include "tjsocketutil.h"
+
 #pragma pack(push,1)
+#pragma warning(push)
+#pragma warning(disable: 4251 4275)
 
 namespace tj {
 	namespace np {
-		class NetworkInitializer {
-			public:
-				NetworkInitializer();
-				~NetworkInitializer();
-				void Initialize();
-
-			protected:
-				#ifdef TJ_OS_WIN
-					void* _data;
-				#endif
-		};
-
-		#ifdef TJ_OS_WIN
-			typedef SOCKET NativeSocket;
-		#else
-			typedef int NativeSocket;
-		#endif
-		
-		class NP_EXPORTED SocketListener: public virtual tj::shared::Object {
-			public:
-				virtual ~SocketListener();
-				virtual void OnReceive(NativeSocket ns) = 0;
-		};
-		
-		class NP_EXPORTED SocketListenerThread: public tj::shared::Thread {
-			#ifdef TJ_OS_WIN
-				friend LRESULT CALLBACK SocketListenerWindowProc(HWND, UINT, WPARAM, LPARAM);
-			#endif
-						
-			public:
-				SocketListenerThread(NativeSocket sock, tj::shared::ref<SocketListener> sl);
-				virtual ~SocketListenerThread();
-				virtual void Run();
-				virtual void Stop();
-			
-			protected:
-				virtual void OnReceive();
-				
-				tj::shared::weak<SocketListener> _listener;
-				NativeSocket _sock;
-				
-			#ifdef TJ_OS_POSIX
-				NativeSocket _controlSocket[2];
-			#endif
-						
-			#ifdef TJ_OS_WIN
-				HWND _window;
-			#endif
-		};
-
 		class NP_EXPORTED Socket: public virtual tj::shared::Object, public SocketListener {
 			public:
 				Socket(int port, const char* address, tj::shared::ref<Node> main);
@@ -125,5 +82,6 @@ namespace tj {
 	}
 }
 
+#pragma warning(pop)
 #pragma pack(pop)
 #endif

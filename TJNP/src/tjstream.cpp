@@ -1,4 +1,4 @@
-#include "../include/tjnp.h"
+#include "../include/tjstream.h"
 using namespace tj::np;
 using namespace tj::shared;
 

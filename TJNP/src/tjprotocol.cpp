@@ -1,4 +1,4 @@
-#include "../include/tjnp.h"
+#include "../include/tjprotocol.h"
 #include <memory>
 
 using namespace tj::np;

@@ -31,204 +31,31 @@ which in turn was adapted from oscpattern.c, by Matt Wright and Amar Chaudhury
 namespace tj {
 	namespace np {
 		namespace pattern {
-			template<typename CharType> class PatternCharTraits {
+			class NP_EXPORTED Pattern {
 				public:
-					const static CharType KOpenBrace;
-					const static CharType KCloseBrace;
-					const static CharType KNegate;
-					const static CharType KRange;
-					const static CharType KOpenBracket;
-					const static CharType KCloseBracket;
-					const static CharType KAny;
-					const static CharType KKleene;
-					const static CharType KAlternative;
-					const static CharType KEnd;
-			};
-
-			template< typename CharType = char, typename CharTraits = PatternCharTraits<CharType> > class Pattern {
-				public:
-					class PatternException {
+					class PatternException: public tj::shared::Exception {
 						public:
-							PatternException(const CharType* pattern, const CharType* test, const wchar_t* message);
-							const CharType *pattern, *test;
-							const wchar_t* message;
+							PatternException(const wchar_t* pattern, const wchar_t* test, const wchar_t* message);
+							const wchar_t *pattern, *test;
 					};
 
-
-					static bool Match(const CharType* pattern, const CharType* test);
+					static bool Match(const wchar_t* pattern, const wchar_t* test);
 
 				private:
-					static bool MatchBrackets(const CharType* pattern, const CharType* test);
-					static bool MatchAlternatives(const CharType* pattern, const CharType* test);
+					const static wchar_t KOpenBrace;
+					const static wchar_t KCloseBrace;
+					const static wchar_t KNegate;
+					const static wchar_t KRange;
+					const static wchar_t KOpenBracket;
+					const static wchar_t KCloseBracket;
+					const static wchar_t KAny;
+					const static wchar_t KKleene;
+					const static wchar_t KAlternative;
+					const static wchar_t KEnd;
+
+					static bool MatchBrackets(const wchar_t* pattern, const wchar_t* test);
+					static bool MatchAlternatives(const wchar_t* pattern, const wchar_t* test);
 			};
-
-			template<typename CharType, typename Traits> Pattern<CharType, Traits>::PatternException::PatternException(const CharType* p, const CharType* t, const wchar_t* m): pattern(p), test(t), message(m) {
-			}
-
-			/** When called from Match: pattern[0]=='[' and test[0]!=0 **/
-			template<typename CharType, typename Traits> bool Pattern<CharType, Traits>::MatchBrackets(const CharType* pattern, const CharType* test) {
-				bool negated = false;
-				bool result = false;
-				const CharType* p = pattern;
-
-				if(pattern[1]==Traits::KEnd) {
-					throw PatternException(pattern, test, L"Unmatched opening bracket");
-				}
-
-				if(pattern[1]==Traits::KNegate) {
-					negated = true;
-					result = negated;
-					p = &(pattern[1]);
-				}
-
-				while(p[0] != Traits::KCloseBracket) {
-					if(p[0] == Traits::KEnd) {
-						throw PatternException(p, test, L"Unmatched opening bracket");
-					}
-					
-					if(p[1] == Traits::KRange && p[2] != Traits::KEnd) {
-						if(test[0] >= p[0] && test[0] <= p[2]) {
-							result = !negated;
-							break;
-						}
-					}
-
-					if(p[0] == test[0]) {
-						result = !negated;
-						break;
-					}
-					p = &(p[1]);
-				}
-
-				if(!result) {
-					return false;
-				}
-				else {
-					while(p[0]!=Traits::KCloseBracket) {
-						if(p[0]==Traits::KEnd) {
-							throw PatternException(p, test, L"Unmatched opening bracket");
-							return false;
-						}
-						p = &(p[1]);
-					}
-				}
-
-				return Match(&(p[1]), &(test[1]));
-			}
-
-			template<typename CharType, typename Traits> bool Pattern<CharType, Traits>::MatchAlternatives(const CharType* pattern, const CharType* test) {
-				// Find where the alternative list ends
-				const CharType* rest = pattern;
-				while(rest[0]!=Traits::KCloseBrace) {
-					if(rest[0]==Traits::KEnd) {
-						throw PatternException(pattern, test, L"Unmatched opening curly brace");
-					}
-					rest = &(rest[1]);
-				}
-				rest = &(rest[1]);
-				pattern = &(pattern[1]); // skip opening curly brace
-				const CharType* tp = test;
-				
-				while(true) {
-					if(pattern[0]==Traits::KAlternative) {
-						if(Match(rest, tp)) {
-							return true;
-						}
-						else {
-							tp = test;
-							pattern = &(pattern[1]);
-						}
-					}
-					else if(pattern[0]==Traits::KCloseBrace) {
-						return Match(rest, tp);
-					}
-					else if(pattern[0]==tp[0]) {
-						pattern = &(pattern[1]);
-						tp = &(tp[1]);
-					}
-					else {
-						// Skip to next alternative
-						tp = test;
-						while(pattern[0]!=Traits::KAlternative && pattern[0]!=Traits::KCloseBrace) {
-							pattern = &(pattern[1]);
-						}
-						if(pattern[0]==Traits::KAlternative) {
-							pattern = &(pattern[1]);
-						}
-					}
-				}
-				return false;
-			}
-
-			template<typename CharType, typename Traits> bool Pattern<CharType, Traits>::Match(const CharType* pattern, const CharType* test) {
-				//std::wcout << L"Match t=" << test << L" p=" << pattern << std::endl;
-
-				// If the pattern is empty, only an empty test string matches
-				if(pattern == 0L || pattern[0] == Traits::KEnd) {
-					return (test == 0L) || (test[0] == Traits::KEnd);
-				}
-				
-				// If the test string is empty, we only match patterns that end with **'s
-				if(test[0] == Traits::KEnd) {
-					if (pattern[0] == Traits::KKleene) {
-						return Match(&(pattern[1]), test);
-					}
-					else {
-						return false;
-					}
-				}
-
-				if(pattern[0]==0) {
-					return test[0] == Traits::KEnd;
-				}
-				else if(pattern[0]==Traits::KAny) {
-					return Match(&(pattern[1]), &(test[1]));
-				}
-				else if(pattern[0]==Traits::KKleene) {
-					if(Match(&(pattern[1]), test)) {
-						return true;
-					}
-					else {
-						return Match(pattern, &(test[1]));
-					}
-				}
-				else if(pattern[0]==Traits::KOpenBracket) {
-					return MatchBrackets(pattern, test);
-				}
-				else if(pattern[0]==Traits::KOpenBrace) {
-					return MatchAlternatives(pattern, test);
-				}
-				else if(pattern[0]==Traits::KCloseBracket || pattern[0]==Traits::KCloseBrace) {
-					throw PatternException(pattern, test, L"Syntax error, unmatched closing ] or }");
-				}
-			
-				else {
-					return (pattern[0] == test[0]) && Match(&(pattern[1]), &(test[1]));			
-				}
-			}
-			
-			
-			template<typename CharTraits> const wchar_t NP_EXPORTED PatternCharTraits<wchar_t>::KOpenBrace =	L'{';
-			template<typename CharTraits> const wchar_t NP_EXPORTED PatternCharTraits<wchar_t>::KCloseBrace =		L'}';
-			template<typename CharTraits> const wchar_t NP_EXPORTED PatternCharTraits<wchar_t>::KOpenBracket =	L'[';
-			template<typename CharTraits> const wchar_t NP_EXPORTED PatternCharTraits<wchar_t>::KCloseBracket =	L']';
-			template<typename CharTraits> const wchar_t NP_EXPORTED PatternCharTraits<wchar_t>::KNegate =			L'!';
-			template<typename CharTraits> const wchar_t NP_EXPORTED PatternCharTraits<wchar_t>::KRange =			L'-';
-			template<typename CharTraits> const wchar_t NP_EXPORTED PatternCharTraits<wchar_t>::KAny =			L'?';
-			template<typename CharTraits> const wchar_t NP_EXPORTED PatternCharTraits<wchar_t>::KKleene =			L'*';
-			template<typename CharTraits> const wchar_t NP_EXPORTED PatternCharTraits<wchar_t>::KAlternative =	L',';
-			template<typename CharTraits> const wchar_t NP_EXPORTED PatternCharTraits<wchar_t>::KEnd =			0;
-			
-			template<typename CharTraits> const char NP_EXPORTED PatternCharTraits<char>::KOpenBrace =			'{';
-			template<typename CharTraits> const char NP_EXPORTED PatternCharTraits<char>::KCloseBrace =			'}';
-			template<typename CharTraits> const char NP_EXPORTED PatternCharTraits<char>::KOpenBracket =			'[';
-			template<typename CharTraits> const char NP_EXPORTED PatternCharTraits<char>::KCloseBracket =			']';
-			template<typename CharTraits> const char NP_EXPORTED PatternCharTraits<char>::KNegate =				'!';
-			template<typename CharTraits> const char NP_EXPORTED PatternCharTraits<char>::KRange =				'-';
-			template<typename CharTraits> const char NP_EXPORTED PatternCharTraits<char>::KAny =					'?';
-			template<typename CharTraits> const char NP_EXPORTED PatternCharTraits<char>::KKleene =				'*';
-			template<typename CharTraits> const char NP_EXPORTED PatternCharTraits<char>::KAlternative =			',';
-			template<typename CharTraits> const char NP_EXPORTED PatternCharTraits<char>::KEnd =					0;
 		}
 	}
 }

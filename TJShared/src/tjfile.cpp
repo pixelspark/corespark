@@ -16,16 +16,19 @@
 
 using namespace tj::shared;
 
-#ifdef TJ_OS_WIN
-	const wchar_t File::PathSeparator = L'\\';
-#endif
 
-#ifdef TJ_OS_POSIX
-	const wchar_t File::PathSeparator = L'/';
-#endif
+wchar_t File::GetPathSeparator() {
+	#ifdef TJ_OS_WIN
+		return L'\\';
+	#endif
+
+	#ifdef TJ_OS_POSIX
+		return L'/';
+	#endif
+}
 
 String File::GetDirectory(const String& pathToFile) {
-	#ifdef TJ_OS_MAC
+	#ifdef TJ_OS_POSIX
 		std::string path = Mbs(pathToFile);
 		std::string dirPath(dirname(const_cast<char*>(path.c_str())));
 		return Wcs(dirPath);
@@ -45,7 +48,7 @@ String File::GetFileName(const String& pathToFile) {
 		return String(PathFindFileName(pathToFile.c_str()));
 	#endif
 	
-	#ifdef TJ_OS_MAC
+	#ifdef TJ_OS_POSIX
 		std::string path = Mbs(pathToFile);
 		std::string fileName(basename(const_cast<char*>(path.c_str())));
 		return Wcs(fileName);
@@ -53,7 +56,7 @@ String File::GetFileName(const String& pathToFile) {
 }
 
 String File::GetExtension(const String& pathToFile) {
-	#ifdef TJ_OS_MAC
+	#ifdef TJ_OS_POSIX
 		String fileName = File::GetFileName(pathToFile);
 		return std::wstring(fileName,0,fileName.find_last_of(L'.'));
 	#endif
@@ -70,7 +73,7 @@ bool File::Exists(const String& st) {
 		return GetFileAttributes(st.c_str())!=INVALID_FILE_ATTRIBUTES;
 	#endif
 	
-	#ifdef TJ_OS_MAC
+	#ifdef TJ_OS_POSIX
 		struct stat s;
 		std::string mbsFile = Mbs(st);
 		if(stat(mbsFile.c_str(), &s)==0) {
@@ -91,7 +94,7 @@ bool File::Move(const String& from, const String& to, bool silent) {
 		return MoveFile(from.c_str(), to.c_str())==TRUE;
 	#endif
 	
-	#ifdef TJ_OS_MAC
+	#ifdef TJ_OS_POSIX
 		std::string mbsFrom = Mbs(from);
 		std::string mbsTo = Mbs(to);
 		return (rename(mbsFrom.c_str(), mbsTo.c_str())==0);
@@ -116,8 +119,8 @@ bool File::Copy(const String& from, const String& to, bool silent) {
 		return SHFileOperation(&op) == 0;
 	#endif
 	
-	#ifdef TJ_OS_MAC
-		#warning Not implemented on Mac
+	#ifdef TJ_OS_POSIX
+		#warning Not implemented on POSIX
 		return false;
 	#endif
 }
@@ -142,8 +145,8 @@ void File::DeleteFiles(const String& dir, const String& pattern) {
 		}
 	#endif
 	
-	#ifdef TJ_OS_MAC
-		#warning Not implemented on Mac
+	#ifdef TJ_OS_POSIX
+		#warning Not implemented on POSIX
 	#endif
 }
 
@@ -162,13 +165,13 @@ Bytes File::GetFileSize(const String& filePath) {
 		return -1;
 	#endif
 	
-	#ifdef TJ_OS_MAC
-	std::string mbsPath = Mbs(filePath);
-	struct stat st;
-	if(stat(mbsPath.c_str(), &st)==0) {
-		return st.st_size;
-	}
-	return -1;
+	#ifdef TJ_OS_POSIX
+		std::string mbsPath = Mbs(filePath);
+		struct stat st;
+		if(stat(mbsPath.c_str(), &st)==0) {
+			return st.st_size;
+		}
+		return -1;
 	#endif
 }
 
@@ -208,8 +211,8 @@ Bytes File::GetDirectorySize(const String& dirPath) {
 		return (Bytes)totalSize.QuadPart;
 	#endif
 	
-	#ifdef TJ_OS_MAC
-		#warning Not implemented on Mac
+	#ifdef TJ_OS_POSIX
+		#warning Not implemented on POSIX
 		return 0;
 	#endif
 }

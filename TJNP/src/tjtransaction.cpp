@@ -1,4 +1,4 @@
-#include "../include/tjnp.h"
+#include "../include/tjtransaction.h"
 
 #ifdef _WIN32
 	#include <windows.h> 

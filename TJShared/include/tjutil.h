@@ -178,7 +178,7 @@ namespace tj {
 		}
 
 		inline std::string Mbs(const String& ws) {
-			unsigned int n = ws.length();
+			unsigned int n = (unsigned int)ws.length();
 			char* buf  = new char[n+1];
 			
 			#ifdef TJ_OS_MAC
@@ -196,7 +196,7 @@ namespace tj {
 		}
 
 		inline String Wcs(const std::string& ws) {
-			unsigned int n = ws.length();
+			unsigned int n = (unsigned int)ws.length();
 			
 			#ifdef TJ_OS_WIN
 				wchar_t* buf  = new wchar_t[n+1];

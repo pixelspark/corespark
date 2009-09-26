@@ -1,6 +1,9 @@
 #ifndef _TJ_NP_TRANSACTION_H
 #define _TJ_NP_TRANSACTION_H
 
+#include "internal/tjnp.h"
+#include "tjprotocol.h"
+
 #pragma warning(push)
 #pragma warning(disable: 4275)
 

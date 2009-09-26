@@ -82,7 +82,7 @@ bool LocalFileResourceProvider::GetPathToLocalResource(const ResourceIdentifier&
 	}
 
 	ZoneEntry ze(Zones::LocalFileInfoZone);
-	String myPath = _searchPath + File::PathSeparator + rid;
+	String myPath = _searchPath + File::GetPathSeparator() + rid;
 
 	// check if that file exists
 	if(File::Exists(myPath)) {
@@ -169,7 +169,7 @@ ref<Resource> ResourceManager::GetResource(const ResourceIdentifier& ident) {
 bool ResourceManager::GetPathToLocalResource(const ResourceIdentifier& rid, String& path) {
 	std::wstring ridCopy = rid;
 	#ifdef TJ_OS_WIN
-		std::replace(ridCopy.begin(), ridCopy.end(), L'/', File::PathSeparator);
+		std::replace(ridCopy.begin(), ridCopy.end(), L'/', File::GetPathSeparator());
 	#endif
 
 	std::deque< strong<ResourceProvider> >::iterator it = _paths.begin();

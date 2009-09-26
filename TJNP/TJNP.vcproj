@@ -179,7 +179,15 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\src\tjauthorizer.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\tjclient.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\tjpattern.cpp"
 				>
 			</File>
 			<File
@@ -202,6 +210,10 @@
 				RelativePath=".\src\tjtransaction.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\src\tjwebserver.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -209,11 +221,15 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath=".\include\tjauthorizer.h"
+				>
+			</File>
+			<File
 				RelativePath=".\include\tjclient.h"
 				>
 			</File>
 			<File
-				RelativePath=".\include\tjnp.h"
+				RelativePath=".\include\tjpattern.h"
 				>
 			</File>
 			<File
@@ -229,11 +245,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\include\tjsocketutil.h"
+				>
+			</File>
+			<File
 				RelativePath=".\include\tjstream.h"
 				>
 			</File>
 			<File
 				RelativePath=".\include\tjtransaction.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tjwebserver.h"
 				>
 			</File>
 			<Filter
