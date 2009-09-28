@@ -9,6 +9,7 @@
 
 #ifdef TJ_OS_POSIX
 	#include <arpa/inet.h>
+	#include <sys/stat.h>
 #endif
 
 #ifdef TJ_OS_MAC

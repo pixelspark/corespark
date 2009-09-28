@@ -8,7 +8,7 @@
 	#include <shlwapi.h>
 #endif
 
-#ifdef TJ_OS_MAC
+#ifdef TJ_OS_POSIX
 	#include <libgen.h>
 	#include <sys/stat.h>
 	#include <stdio.h>
