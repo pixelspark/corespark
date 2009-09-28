@@ -42,7 +42,7 @@ void CodeWriter::Grow(unsigned int size) {
 	}
 
 	if(_pos+size>_size) {
-		unsigned int newSize = max(_size*2, _size+size);
+		unsigned int newSize = Util::Max(_size*2, _size+size);
 		char* newBuffer = new char[newSize];
 		for(unsigned int a=0;a<_pos;a++) {
 			newBuffer[a] = _buffer[a];

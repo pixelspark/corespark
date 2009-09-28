@@ -64,7 +64,7 @@ namespace tj {
 		template<typename T> class strong;
 		class GC;
 		
-		#ifdef TJ_OS_MAC
+		#ifdef TJ_OS_POSIX
 				typedef int32_t ReferenceCount;
 		#endif
 				
@@ -90,6 +90,10 @@ namespace tj {
 							OSAtomicAdd32(1, &_referenceCount);
 						#endif
 
+						#ifdef TJ_OS_LINUX
+							__sync_add_and_fetch(&_referenceCount, 1);
+						#endif
+
 						return true;
 					}
 
@@ -100,6 +104,10 @@ namespace tj {
 						
 						#ifdef TJ_OS_MAC
 							ReferenceCount nv = OSAtomicAdd32(-1, &_referenceCount) ;
+						#endif
+
+						#ifdef TJ_OS_LINUX
+							ReferenceCount nv = __sync_sub_and_fetch(&_referenceCount, 1);
 						#endif
 
 						if(nv==0 && !IsWeaklyReferenced()) {
@@ -116,6 +124,10 @@ namespace tj {
 						#ifdef TJ_OS_MAC
 							OSAtomicAdd32(1, &_weakReferenceCount);
 						#endif
+
+						#ifdef TJ_OS_LINUX
+							__sync_add_and_fetch(&_weakReferenceCount,1);
+						#endif
 					}
 
 					inline void DeleteWeakReference() {
@@ -125,6 +137,10 @@ namespace tj {
 												
 						#ifdef TJ_OS_MAC
 							ReferenceCount nv = OSAtomicAdd32(-1, &_weakReferenceCount) ;
+						#endif
+
+						#ifdef TJ_OS_LINUX
+							ReferenceCount nv = __sync_sub_and_fetch(&_weakReferenceCount, 1);
 						#endif
 
 						if(nv==0 && !IsReferenced()) {

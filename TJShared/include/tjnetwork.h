@@ -1,8 +1,12 @@
 #ifndef _TJNETWORK_H
 #define _TJNETWORK_H
 
-#ifdef TJ_OS_POSIX
+#ifdef TJ_OS_MAC
 	typedef struct in_addr;
+#endif
+
+#ifdef TJ_OS_LINUX
+	#include <netinet/in.h>
 #endif
 
 namespace tj {

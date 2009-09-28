@@ -4,7 +4,7 @@
 	#include <iphlpapi.h>
 #endif
 
-#ifdef TJ_OS_MAC
+#ifdef TJ_OS_POSIX
 	#include <unistd.h>
 	#include <netdb.h>
 	#include <arpa/inet.h>

@@ -9,7 +9,7 @@ using namespace tj::shared;
 CMYKColor ColorSpaces::RGBToCMYK(double r, double g, double b) {
 	CMYKColor cmyk(0.0, 0.0, 0.0, 0.0);
 
-	cmyk._k = min(1.0-r, min(1.0-g, 1.0-b));
+	cmyk._k = Util::Min(1.0-r, Util::Min(1.0-g, 1.0-b));
 	if(cmyk._k<1.0) {
 		cmyk._c = (1.0-r-cmyk._k)/(1.0-cmyk._k);
 		cmyk._m = (1.0-g-cmyk._k)/(1.0-cmyk._k);
@@ -35,8 +35,8 @@ HSVColor ColorSpaces::RGBToHSV(double r, double g, double b) {
 	double h;
 	double s;
 
-	double dmin = min(min(r, g), b);
-	double dmax = max(max(r, g), b);
+	double dmin = Util::Min(Util::Min(r, g), b);
+	double dmax = Util::Max(Util::Max(r, g), b);
 	double v = dmax;
 	double delta = dmax - dmin;
 

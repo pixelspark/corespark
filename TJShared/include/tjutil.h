@@ -106,6 +106,20 @@ namespace tj {
 					static CFStringRef StringToMacString(const std::wstring& s);
 					static std::wstring MacStringToString(CFStringRef cr);
 				#endif
+
+				template<typename T> static inline T Min(T a, T b) {
+					if(a<b) {
+						return a;
+					}
+					return b;
+				}
+
+				template<typename T> static inline T Max(T a, T b) {
+					if(a>b) {
+						return a;
+					}
+					return b;
+				}
 		};
 
 		/* This class takes care of disabling the screensaver */
@@ -181,7 +195,7 @@ namespace tj {
 			unsigned int n = (unsigned int)ws.length();
 			char* buf  = new char[n+1];
 			
-			#ifdef TJ_OS_MAC
+			#ifdef TJ_OS_POSIX
 				wcstombs(buf, ws.c_str(), n+1);
 			#endif
 			
@@ -203,7 +217,7 @@ namespace tj {
 				mbstowcs_s(0, buf, n+1, ws.c_str(), _TRUNCATE);
 			#endif
 			
-			#ifdef TJ_OS_MAC
+			#ifdef TJ_OS_POSIX
 				wchar_t* buf = reinterpret_cast<wchar_t*>(alloca((n+1)*sizeof(wchar_t)));
 				mbstowcs(buf, ws.c_str(), n+1);
 			#endif

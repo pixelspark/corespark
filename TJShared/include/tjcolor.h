@@ -28,19 +28,19 @@ namespace tj {
 				virtual void Load(TiXmlElement* you);
 
 				inline unsigned char GetRed() const {
-					return (unsigned char)(min(1.0, max(0.0, _r)) * 255.0);
+					return (unsigned char)(Util::Min(1.0, Util::Max(0.0, _r)) * 255.0);
 				}
 
 				inline unsigned char GetGreen() const {
-					return (unsigned char)(min(1.0, max(0.0, _g)) * 255.0);
+					return (unsigned char)(Util::Min(1.0, Util::Max(0.0, _g)) * 255.0);
 				}
 
 				inline unsigned char GetBlue() const {
-					return (unsigned char)(min(1.0, max(0.0, _b)) * 255.0);
+					return (unsigned char)(Util::Min(1.0, Util::Max(0.0, _b)) * 255.0);
 				}
 
 				inline unsigned char GetAlpha() const {
-					return (unsigned char)(min(1.0, max(0.0, _a)) * 255.0);
+					return (unsigned char)(Util::Min(1.0, Util::Max(0.0, _a)) * 255.0);
 				}
 
 				inline bool operator==(const RGBColor& o) const {

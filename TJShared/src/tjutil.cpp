@@ -7,8 +7,11 @@
 	#include <shlwapi.h>
 #endif
 
-#ifdef TJ_OS_MAC
+#ifdef TJ_OS_POSIX
 	#include <arpa/inet.h>
+#endif
+
+#ifdef TJ_OS_MAC
 	#include <CoreFoundation/CFURL.h>
 	#include <CoreFoundation/CFBundle.h>
 	#include <CoreFoundation/CFString.h>

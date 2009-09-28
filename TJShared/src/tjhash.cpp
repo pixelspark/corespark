@@ -71,7 +71,7 @@ int Hash::Calculate(const String& s) {
 		wchar_t* buffer = _wcsdup(s.c_str());
 	#endif
 	
-	#ifdef TJ_OS_MAC
+	#ifdef TJ_OS_POSIX
 		size_t len = wcslen(s.c_str())+1;
 		wchar_t* buffer = new wchar_t[len];
 		memcpy(buffer, s.c_str(), len);
