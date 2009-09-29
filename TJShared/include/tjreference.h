@@ -431,6 +431,10 @@ namespace tj {
 				inline const T* operator->() const {
 					return _object._object;
 				}
+			
+				template<class X> inline bool IsCastableTo() const {
+					return (_object._object!=0) && (dynamic_cast<const X*>(_object._object)!=0);
+				}
 
 				ref<T> _object;
 		};

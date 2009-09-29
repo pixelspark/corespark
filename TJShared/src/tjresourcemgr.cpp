@@ -110,7 +110,7 @@ ResourceIdentifier LocalFileResourceProvider::GetRelative(const String& path) {
 	#endif
 	
 	#ifdef TJ_OS_MAC
-		#warning Not implemented on Mac
+		#warning Not implemented on Mac (LocalFileResourceProvider::GetRelative)
 	#endif
 	
 	return L"";
@@ -271,7 +271,7 @@ void LocalFileResource::Open() const {
 	#endif
 	
 	#ifdef TJ_OS_MAC
-		#warning Not implemented on Mac
+		#warning Not implemented on Mac (LocalFileResource::Open with Finder)
 	#endif
 }
 
@@ -307,7 +307,7 @@ void LocalFileResource::OpenFolder() const {
 	#endif
 	
 	#ifdef TJ_OS_MAC
-		#warning Not implemented on Mac
+		#warning Not implemented on Mac (LocalFileResource::OpenFolder)
 	#endif
 }
 

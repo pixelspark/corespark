@@ -314,8 +314,6 @@
 					<key>Dock</key>
 					<array>
 						<dict>
-							<key>BecomeActive</key>
-							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
@@ -333,7 +331,7 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>B423BA8C106E9AC400147974</string>
+										<string>B4C5952D1072AECF000A3E6E</string>
 										<key>history</key>
 										<array>
 											<string>B41DD5821066493C000742DD</string>
@@ -362,7 +360,7 @@
 											<string>B4D0F420106D18C70053A1BA</string>
 											<string>B423B7CC106E0C6200147974</string>
 											<string>B423B7CD106E0C6200147974</string>
-											<string>B423B7CE106E0C6200147974</string>
+											<string>B423BA8C106E9AC400147974</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -376,18 +374,18 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 0}, {1073, 498}}</string>
+								<string>{{0, 0}, {1073, 489}}</string>
 								<key>RubberWindowFrame</key>
 								<string>0 92 1280 910 0 0 1280 1002 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
 							<key>Proportion</key>
-							<string>498pt</string>
+							<string>489pt</string>
 						</dict>
 						<dict>
 							<key>Proportion</key>
-							<string>366pt</string>
+							<string>375pt</string>
 							<key>Tabs</key>
 							<array>
 								<dict>
@@ -401,7 +399,7 @@
 									<key>GeometryConfiguration</key>
 									<dict>
 										<key>Frame</key>
-										<string>{{10, 27}, {1073, 339}}</string>
+										<string>{{10, 27}, {1073, 348}}</string>
 									</dict>
 									<key>Module</key>
 									<string>XCDetailModule</string>
@@ -417,7 +415,9 @@
 									<key>GeometryConfiguration</key>
 									<dict>
 										<key>Frame</key>
-										<string>{{10, 31}, {603, 297}}</string>
+										<string>{{10, 27}, {1073, 348}}</string>
+										<key>RubberWindowFrame</key>
+										<string>0 92 1280 910 0 0 1280 1002 </string>
 									</dict>
 									<key>Module</key>
 									<string>PBXProjectFindModule</string>
@@ -456,8 +456,6 @@
 									<dict>
 										<key>Frame</key>
 										<string>{{10, 27}, {1073, 339}}</string>
-										<key>RubberWindowFrame</key>
-										<string>0 92 1280 910 0 0 1280 1002 </string>
 									</dict>
 									<key>Module</key>
 									<string>PBXBuildResultsModule</string>
@@ -485,11 +483,11 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>B423BA8D106E9AC400147974</string>
+				<string>B4C5952E1072AECF000A3E6E</string>
 				<string>1CA23ED40692098700951B8B</string>
-				<string>B423BA8E106E9AC400147974</string>
+				<string>B4C5952F1072AECF000A3E6E</string>
 				<string>B41DD4DA1066450E000742DD</string>
-				<string>B423BA8F106E9AC400147974</string>
+				<string>B4C595301072AECF000A3E6E</string>
 				<string>1CA23EDF0692099D00951B8B</string>
 				<string>1CA23EE00692099D00951B8B</string>
 				<string>1CA23EE10692099D00951B8B</string>
@@ -656,7 +654,9 @@
 	<key>WindowJustification</key>
 	<integer>5</integer>
 	<key>WindowOrderList</key>
-	<array/>
+	<array>
+		<string>/Users/tommyvandervorst/Documents/Projecten/tj/TJScript/TJScriptFramework.xcodeproj</string>
+	</array>
 	<key>WindowString</key>
 	<string>0 92 1280 910 0 0 1280 1002 </string>
 	<key>WindowToolsV3</key>

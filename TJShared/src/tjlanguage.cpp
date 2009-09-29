@@ -174,7 +174,7 @@ void Language::LoadDirectory(const String& locdir, const LocaleIdentifier& lang)
 	#endif
 	
 	#ifdef TJ_OS_MAC
-		#warning Not implemented
+		#warning Not implemented (Language::LoadDirectory)
 	#endif
 }
 

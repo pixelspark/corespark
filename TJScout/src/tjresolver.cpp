@@ -52,37 +52,3 @@ Resolver::~Resolver() {
 /** RequestResolver **/
 RequestResolver::~RequestResolver() {
 }
-
-/** ServiceDescription **/
-ServiceDescription::ServiceDescription() {
-}
-
-ServiceDescription::~ServiceDescription() {
-}
-
-void ServiceDescription::AddType(const ServiceType& type, const std::wstring& data) {
-	_description[type] = data;
-}
-
-bool ServiceDescription::GetDescriptionOfType(const ServiceType& type, std::wstring& data) const {
-	std::map<ServiceType,std::wstring>::const_iterator it = _description.find(type);
-	if(it!=_description.end()) {
-		data = it->second;
-		return true;
-	}
-	return false;
-}
-
-/** Service **/
-bool Service::GetAttribute(const std::wstring& key, std::wstring& value) {
-	std::map<std::wstring, std::wstring>::const_iterator it = _attributes.find(key);
-	if(it!=_attributes.end()) {
-		value = it->second;
-		return true;
-	}
-	return false;
-}
-
-void Service::SetAttribute(const std::wstring& key, const std::wstring& value) {
-	_attributes[key] = value;
-}

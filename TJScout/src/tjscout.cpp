@@ -1,5 +1,5 @@
 #include "../include/tjscout.h"
-#include "../include/tjdnssdresolver.h"
+#include "../include/tjdnssd.h"
 
 using namespace tj::shared;
 using namespace tj::scout;

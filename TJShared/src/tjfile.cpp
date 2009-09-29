@@ -120,7 +120,7 @@ bool File::Copy(const String& from, const String& to, bool silent) {
 	#endif
 	
 	#ifdef TJ_OS_POSIX
-		#warning Not implemented on POSIX
+		#warning Not implemented on POSIX (File::Copy)
 		return false;
 	#endif
 }
@@ -146,7 +146,7 @@ void File::DeleteFiles(const String& dir, const String& pattern) {
 	#endif
 	
 	#ifdef TJ_OS_POSIX
-		#warning Not implemented on POSIX
+		#warning Not implemented on POSIX (File::DeleteFiles with pattern)
 	#endif
 }
 
@@ -212,7 +212,7 @@ Bytes File::GetDirectorySize(const String& dirPath) {
 	#endif
 	
 	#ifdef TJ_OS_POSIX
-		#warning Not implemented on POSIX
+		#warning Not implemented on POSIX (File::GetDirectorySize)
 		return 0;
 	#endif
 }
