@@ -19,6 +19,7 @@ namespace tj {
 				virtual std::wstring GetType() const;
 				virtual std::wstring GetAddress() const;
 				virtual unsigned short GetPort() const;
+				virtual std::wstring GetHostName() const;
 
 			protected:
 				std::wstring _type;

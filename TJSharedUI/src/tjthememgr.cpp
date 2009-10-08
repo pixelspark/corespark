@@ -79,14 +79,12 @@ void ThemeManager::SelectTheme(strong<Theme> th) {
 }
 
 void ThemeManager::SelectTheme(int n) {
-	try {
-		_theme = _themes.at(n);
-		EventThemeChanged.Fire(null, ThemeChangeNotification(_theme));
+	if(n<0 || n>=int(_themes.size())) {
+		return;
 	}
-	catch(...) {
-		// n out of range
-		Throw(L"Tried to select a non-existant theme", ExceptionTypeError);
-	}
+
+	_theme = _themes.at(n);
+	EventThemeChanged.Fire(null, ThemeChangeNotification(_theme));
 }
 
 bool ThemeManager::IsFriendlyTime() {

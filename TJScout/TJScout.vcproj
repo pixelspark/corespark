@@ -112,10 +112,13 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="2"
-				EnableIntrinsicFunctions="true"
+				Optimization="0"
+				EnableIntrinsicFunctions="false"
+				WholeProgramOptimization="false"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;TJSCOUT_EXPORTS"
+				BasicRuntimeChecks="0"
 				RuntimeLibrary="2"
+				BufferSecurityCheck="false"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -174,7 +177,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\src\tjdnssdresolver.cpp"
+				RelativePath=".\src\tjdnssd.cpp"
 				>
 			</File>
 			<File
@@ -185,12 +188,20 @@
 				RelativePath=".\src\tjscout.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\src\tjservice.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath=".\include\tjdnssd.h"
+				>
+			</File>
 			<File
 				RelativePath=".\include\tjdnssdresolver.h"
 				>
@@ -201,6 +212,10 @@
 			</File>
 			<File
 				RelativePath=".\include\tjscout.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tjservice.h"
 				>
 			</File>
 			<Filter

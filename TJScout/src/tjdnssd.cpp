@@ -193,18 +193,21 @@ class DNSSDAddressResolver {
 		};
 
 		static void Reply(DNSServiceRef sdRef,DNSServiceFlags flags, uint32_t interfaceIndex,DNSServiceErrorType errorCode, const char* fullname,const char* hosttarget, uint16_t port, uint16_t txtLen, const unsigned char* txtRecord, void* context) {
-			ResolvedInfo* ri = (ResolvedInfo*)context;
+			ResolvedInfo* ri = reinterpret_cast<ResolvedInfo*>(context);
 			if(ri!=0) {
 				ri->_succeeded = false;
 				hostent* he = gethostbyname(hosttarget);
 				if(he!=0) {
 					struct in_addr addr;
 					addr.s_addr = *(u_long *)he->h_addr_list[0];
-					char* stringAddress = inet_ntoa(addr);
-					ri->_ip = Wcs(std::string(stringAddress));
-					ri->_hostname = Wcs(hosttarget);
-					ri->_port = ntohs(port);
-					ri->_succeeded = true;
+					const char* stringAddress = inet_ntoa(addr);
+					if(stringAddress!=0) {
+						std::string addressMbs = stringAddress;
+						ri->_ip = Wcs(addressMbs);
+						ri->_hostname = Wcs(hosttarget);
+						ri->_port = ntohs(port);
+						ri->_succeeded = true;
+					}
 				}
 			}
 		}
@@ -213,7 +216,7 @@ class DNSSDAddressResolver {
 			DNSServiceRef service = 0;
 			ResolvedInfo ri;
 			ri._succeeded = false;
-			DNSServiceResolve(&service, 0, iface, name, regtype, domain, (DNSServiceResolveReply)Reply, &ri);
+			DNSServiceResolve(&service, 0, iface, name, regtype, domain, (DNSServiceResolveReply)Reply, reinterpret_cast<void*>(&ri));
 			DNSServiceProcessResult(service);
 			DNSServiceRefDeallocate(service);
 
