@@ -112,9 +112,10 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="0"
-				EnableIntrinsicFunctions="false"
-				WholeProgramOptimization="false"
+				Optimization="2"
+				EnableIntrinsicFunctions="true"
+				FavorSizeOrSpeed="1"
+				WholeProgramOptimization="true"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;TJSCOUT_EXPORTS"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="2"

@@ -12,6 +12,9 @@ namespace tj {
 
 		class EXPORTED Bool {
 			public:
+				static const wchar_t* ToString(bool t);
+				static bool FromString(const wchar_t* str);
+
 				static const wchar_t* KTrue;
 				static const wchar_t* KFalse;
 		};

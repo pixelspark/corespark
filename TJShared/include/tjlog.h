@@ -19,8 +19,10 @@ namespace tj {
 				static void Write(const String& source, const String& message);
 				static strong<EventLogger> GetEventLogger();
 				static void SetEventLogger(strong<EventLogger> se);
+				static void SetLogToConsole(bool c);
 
 			protected:
+				static bool _logToConsole;
 				static ref<EventLogger> _eventLogger;
 				static CriticalSection _logLock;
 		};

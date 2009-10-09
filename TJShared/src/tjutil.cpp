@@ -90,6 +90,14 @@ Time MediaUtil::GetDuration(const String& file) {
 const wchar_t* Bool::KTrue = L"yes";
 const wchar_t* Bool::KFalse = L"no";
 
+const wchar_t* Bool::ToString(bool t) {
+	return t ? KTrue : KFalse;
+}
+
+bool Bool::FromString(const wchar_t* str) {
+	return std::wstring(str)==KTrue;
+}
+
 float Util::RandomFloat() { 
 	#ifdef _CRT_RAND_S
 		unsigned int pr = 0;

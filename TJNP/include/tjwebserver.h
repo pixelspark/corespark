@@ -23,6 +23,7 @@ namespace tj {
 					ResolutionNotFound,
 					ResolutionFile,
 					ResolutionData,
+					ResolutionEmpty,
 				};
 
 				virtual ~FileRequestResolver();
@@ -116,6 +117,7 @@ namespace tj {
 				unsigned int _bytesReceived;
 				unsigned int _bytesSent;
 				unsigned short _port;
+				NetworkInitializer _initializer;
 		};
 
 	}

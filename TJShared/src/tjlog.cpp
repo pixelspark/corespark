@@ -20,6 +20,12 @@ namespace tj {
 ref<EventLogger> Log::_eventLogger;
 CriticalSection Log::_logLock;
 
+#ifdef TJ_OS_POSIX
+	bool Log::_logToConsole = true;
+#else
+	bool Log::_logToConsole = false;
+#endif
+
 strong<EventLogger> Log::GetEventLogger() {
 	/* This might doubly create a LogEvenLogger, but that's not really bad
 	and otherwise, we would need a static CriticalSection / lock here,
@@ -60,14 +66,16 @@ void Log::Write(const String& source, const String& message) {
 		}
 	#endif
 
-	#ifdef TJ_OS_MAC
-	{
+	if(_logToConsole) {
 		ThreadLock lock(&_logLock);
 		std::wcout << std::hex << Thread::GetCurrentThreadID() << L' ' << source << L' ' << L':' << L' ' << message << std::endl;
 	}
-	#endif
 
 	GetEventLogger()->AddEvent(finalMessage, ExceptionTypeMessage, false);
+}
+
+void Log::SetLogToConsole(bool c) {
+	_logToConsole = c;
 }
 
 void Log::SetEventLogger(strong<EventLogger> se) {

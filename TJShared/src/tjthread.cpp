@@ -328,6 +328,9 @@ void Thread::Sleep(double ms) {
 #ifdef TJ_OS_WIN
 	Event::Event() {
 		_event = CreateEvent(NULL, TRUE, FALSE, NULL);
+		if(_event==NULL) {
+			Throw(L"Could not create Event!", ExceptionTypeError);
+		}
 	}
 
 	Event::~Event() {
@@ -347,7 +350,7 @@ void Thread::Sleep(double ms) {
 	}
 
 	bool Event::Wait(int ms) {
-		return WaitForSingleObject(_event, ms)==WAIT_OBJECT_0;
+		return WaitForSingleObject(_event, (ms<=0) ? INFINITE : ms)==WAIT_OBJECT_0;
 	}
 
 	HANDLE Event::GetHandle() {

@@ -213,6 +213,10 @@ void WebServerResponseThread::ServePage(ref<HTTPRequest> hrp) {
 			}
 			sendData = true;
 		}
+		else if(res==FileRequestResolver::ResolutionEmpty) {
+			SendError(200, L"OK", requestFile);
+			return;
+		}
 	}
 	else {
 		SendError(404, L"Not found", requestFile);
@@ -397,18 +401,20 @@ void WebServerThread::Cancel() {
 }
 
 void WebServerThread::Run() {
-	NativeSocket server = socket(AF_INET, SOCK_STREAM, 0);
+	NetworkInitializer ni;
+	NativeSocket server = socket(AF_INET6, SOCK_STREAM, IPPROTO_TCP);
 	if(server==-1) {
 		Log::Write(L"TJNP/WebServer", L"Could not create socket!");
 		return;
 	}
 
-	sockaddr_in local;
-	local.sin_addr.s_addr = INADDR_ANY;
-	local.sin_family = AF_INET;
-	local.sin_port = htons(_port);
+	in6_addr any = IN6ADDR_ANY_INIT;
+	sockaddr_in6 local;
+	local.sin6_addr = any;
+	local.sin6_family = AF_INET6;
+	local.sin6_port = htons(_port);
 	
-	if(bind(server, (sockaddr*)&local, sizeof(sockaddr_in))!=0) {
+	if(bind(server, (sockaddr*)&local, sizeof(sockaddr_in6))!=0) {
 		Log::Write(L"TJNP/WebServer", L"Could not bind socket to port (port already taken?)!");
 		return;
 	}
