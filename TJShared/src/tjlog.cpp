@@ -1,4 +1,5 @@
 #include "../include/tjshared.h"
+#include <iomanip>
 using namespace tj::shared;
 
 namespace tj {
@@ -42,7 +43,8 @@ void Log::Write(const String& source, const String& message) {
 	}
 
 	std::wostringstream wos;
-	wos << std::hex << std::setw(4) << std::uppercase << std::setfill(L'0') << Thread::GetCurrentThreadID();
+	wos.width(8);
+	wos << std::setw(8) << std::uppercase << std::setfill(L'0') << std::hex << Thread::GetCurrentThreadID();
 	
 	#ifdef TJ_OS_WIN
 		if(Zones::IsDebug() || ::IsDebuggerPresent()) {
@@ -68,7 +70,7 @@ void Log::Write(const String& source, const String& message) {
 
 	if(_logToConsole) {
 		ThreadLock lock(&_logLock);
-		std::wcout << std::hex << Thread::GetCurrentThreadID() << L' ' << source << L' ' << L':' << L' ' << message << std::endl;
+		std::wcout << std::hex << std::uppercase << std::setw(8) << Thread::GetCurrentThreadID() << L' ' << source << L' ' << L':' << L' ' << message << std::endl;
 	}
 
 	GetEventLogger()->AddEvent(finalMessage, ExceptionTypeMessage, false);

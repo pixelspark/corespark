@@ -469,7 +469,7 @@ void WebServerThread::Run() {
 		int maxSocket = 0;
 		
 		#ifdef TJ_OS_POSIX
-			FD_SET(_controlSocket[1], &fds); maxSocket max(maxSocket, _controlSocket[1]);
+			FD_SET(_controlSocket[1], &fds); maxSocket = max(maxSocket, _controlSocket[1]);
 		#endif
 		
 		FD_SET(_server6, &fds); maxSocket = max(maxSocket, (int)_server6);
@@ -515,8 +515,8 @@ void WebServerThread::Run() {
 	#endif
 
 	#ifdef TJ_OS_POSIX
-		close(server);
-		close(server4);
+		close(_server6);
+		close(_server4);
 	#endif
 
 	_server6 = -1;

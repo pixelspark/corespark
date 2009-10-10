@@ -332,7 +332,7 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>B4866E06107F71FF00308027</string>
+										<string>B40DC5E01081283A00C94A68</string>
 										<key>history</key>
 										<array>
 											<string>B486E9BC10662F290043CE5D</string>
@@ -342,7 +342,7 @@
 											<string>B4866E02107F71FF00308027</string>
 											<string>B4866E03107F71FF00308027</string>
 											<string>B4866E04107F71FF00308027</string>
-											<string>B4866E05107F71FF00308027</string>
+											<string>B40DC5DF1081283A00C94A68</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -356,18 +356,18 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 0}, {1073, 685}}</string>
+								<string>{{0, 0}, {1073, 681}}</string>
 								<key>RubberWindowFrame</key>
 								<string>0 97 1280 905 0 0 1280 1002 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
 							<key>Proportion</key>
-							<string>685pt</string>
+							<string>681pt</string>
 						</dict>
 						<dict>
 							<key>Proportion</key>
-							<string>174pt</string>
+							<string>178pt</string>
 							<key>Tabs</key>
 							<array>
 								<dict>
@@ -381,7 +381,7 @@
 									<key>GeometryConfiguration</key>
 									<dict>
 										<key>Frame</key>
-										<string>{{10, 27}, {1073, 147}}</string>
+										<string>{{10, 27}, {1073, 151}}</string>
 										<key>RubberWindowFrame</key>
 										<string>0 97 1280 905 0 0 1280 1002 </string>
 									</dict>
@@ -465,11 +465,11 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>B4866E07107F71FF00308027</string>
+				<string>B40DC5E11081283A00C94A68</string>
 				<string>1CA23ED40692098700951B8B</string>
-				<string>B4866E08107F71FF00308027</string>
+				<string>B40DC5E21081283A00C94A68</string>
 				<string>B486E97710662EB70043CE5D</string>
-				<string>B4866E09107F71FF00308027</string>
+				<string>B40DC5E31081283A00C94A68</string>
 				<string>1CA23EDF0692099D00951B8B</string>
 				<string>1CA23EE00692099D00951B8B</string>
 				<string>1CA23EE10692099D00951B8B</string>
