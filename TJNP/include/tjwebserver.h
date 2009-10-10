@@ -75,6 +75,7 @@ namespace tj {
 			protected:
 				tj::shared::weak<WebServer> _fs;
 				int _port;
+				NativeSocket _server4, _server6;
 			
 				#ifdef TJ_OS_POSIX
 					NativeSocket _controlSocket[2];

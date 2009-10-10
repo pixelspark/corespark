@@ -373,7 +373,7 @@ void WebServerResponseThread::Run() {
 	delete this;
 }
 
-WebServerThread::WebServerThread(ref<WebServer> fs, int port): _fs(fs), _port(port) {
+WebServerThread::WebServerThread(ref<WebServer> fs, int port): _fs(fs), _port(port), _server4(-1), _server6(-1) {
 	#ifdef TJ_OS_POSIX
 		if(socketpair(AF_UNIX, SOCK_STREAM, 0, _controlSocket)!=0) {
 			Log::Write(L"TJNP/SocketListenerThread", L"Could not create control socket pair");
@@ -382,10 +382,12 @@ WebServerThread::WebServerThread(ref<WebServer> fs, int port): _fs(fs), _port(po
 }
 
 WebServerThread::~WebServerThread() {
+	Cancel();
+	WaitForCompletion();
+
 	#ifdef TJ_OS_POSIX
 		close(_controlSocket[0]);
-		close(_controlSocket[1]);
-		WaitForCompletion();
+		close(_controlSocket[1]);	
 	#endif
 }
 
@@ -397,20 +399,23 @@ void WebServerThread::Cancel() {
 		}
 	#endif
 	
-	// TODO: Windows implementation...
+	#ifdef TJ_OS_WIN
+		shutdown (_server4, SD_RECEIVE);
+		shutdown (_server6, SD_RECEIVE);
+	#endif
 }
 
 void WebServerThread::Run() {
 	NetworkInitializer ni;
 	
-	NativeSocket server = socket(AF_INET6, SOCK_STREAM, IPPROTO_TCP);
-	if(server==-1) {
+	_server6 = socket(AF_INET6, SOCK_STREAM, IPPROTO_TCP);
+	if(_server6==-1) {
 		Log::Write(L"TJNP/WebServer", L"Could not create IPv6 server socket!");
 		return;
 	}
 	
-	NativeSocket server4 = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	if(server4==-1) {
+	_server4 = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	if(_server4==-1) {
 		Log::Write(L"TJNP/WebServer", L"Could not create IPv4 server socket!");
 		return;
 	}
@@ -425,25 +430,28 @@ void WebServerThread::Run() {
 	memset(&local4, 0, sizeof(local4));
 	local4.sin_family = AF_INET;
 	local4.sin_addr.s_addr = INADDR_ANY;
-	local4.sin_len = sizeof(local4);
 	local4.sin_port = htons(_port);
+
+	#ifdef TJ_OS_POSIX
+		local4.sin_len = sizeof(local4);
+	#endif
 	
-	if(bind(server, (sockaddr*)&local, sizeof(sockaddr_in6))!=0) {
+	if(bind(_server6, (sockaddr*)&local, sizeof(sockaddr_in6))!=0) {
 		Log::Write(L"TJNP/WebServer", L"Could not bind IPv6 socket to port (port already taken?)!");
 		return;
 	}
 	
-	if(bind(server4, (sockaddr*)&local4, sizeof(sockaddr_in))!=0) {
+	if(bind(_server4, (sockaddr*)&local4, sizeof(sockaddr_in))!=0) {
 		Log::Write(L"TJNP/WebServer", L"Could not bind IPv4 socket to port (port already taken?)!");
 		return;
 	}
 
-	if(listen(server, 10)!=0) {
+	if(listen(_server6, 10)!=0) {
 		Log::Write(L"TJNP/WebServer", L"The IPv6 socket just doesn't want to listen!");
 		return;
 	}
 	
-	if(listen(server4, 10)!=0) {
+	if(listen(_server4, 10)!=0) {
 		Log::Write(L"TJNP/WebServer", L"The IPv4 socket just doesn't want to listen!");
 		return;
 	}
@@ -458,46 +466,61 @@ void WebServerThread::Run() {
 		
 		fd_set fds;
 		FD_ZERO(&fds);
-		FD_SET(_controlSocket[1], &fds);
-		FD_SET(server, &fds);
-		FD_SET(server4, &fds);
+		int maxSocket = 0;
 		
-		select(max(_controlSocket[1],max(server4,server))+1, &fds, NULL, NULL, NULL);
-	
-		if(FD_ISSET(_controlSocket[1], &fds)) {
-			// End the thread, a control message was sent to us
-			Log::Write(L"TJNP/WebServerThread", L"End thread, quit control message received");
-			return;
-		}
-		else if(FD_ISSET(server, &fds)) {
-			NativeSocket client = accept(server, 0, 0);
-
-			if(client!=-1) {
-				// start a response thread
-				WebServerResponseThread* rt = new WebServerResponseThread(client, _fs); // the thread will delete itself
-				rt->Start();
-			}
-		}
-		else if(FD_ISSET(server4, &fds)) {
-			NativeSocket client = accept(server4, 0, 0);
+		#ifdef TJ_OS_POSIX
+			FD_SET(_controlSocket[1], &fds); maxSocket max(maxSocket, _controlSocket[1]);
+		#endif
+		
+		FD_SET(_server6, &fds); maxSocket = max(maxSocket, _server6);
+		FD_SET(_server4, &fds); maxSocket = max(maxSocket, _server4);
+		
+		if(select(maxSocket+1, &fds, NULL, NULL, NULL)>0) {
+			#ifdef TJ_OS_POSIX
+				if(FD_ISSET(_controlSocket[1], &fds)) {
+					// End the thread, a control message was sent to us
+					Log::Write(L"TJNP/WebServerThread", L"End thread, quit control message received");
+					return;
+				}
+			#endif
 			
-			if(client!=-1) {
-				// start a response thread
-				WebServerResponseThread* rt = new WebServerResponseThread(client, _fs); // the thread will delete itself
-				rt->Start();
+			if(FD_ISSET(_server6, &fds)) {
+				NativeSocket client = accept(_server6, 0, 0);
+
+				if(client!=-1) {
+					// start a response thread
+					WebServerResponseThread* rt = new WebServerResponseThread(client, _fs); // the thread will delete itself
+					rt->Start();
+				}
 			}
+			else if(FD_ISSET(_server4, &fds)) {
+				NativeSocket client = accept(_server4, 0, 0);
+				
+				if(client!=-1) {
+					// start a response thread
+					WebServerResponseThread* rt = new WebServerResponseThread(client, _fs); // the thread will delete itself
+					rt->Start();
+				}
+			}
+		}
+		else {
+			Log::Write(L"TJNP/WebServerThread", L"Select operation failed; terminating thread!");
+			break;
 		}
 	}
 
 	#ifdef TJ_OS_WIN
-		closesocket(server);
-		closesocket(server4);
+		closesocket(_server6);
+		closesocket(_server4);
 	#endif
 
 	#ifdef TJ_OS_POSIX
 		close(server);
 		close(server4);
 	#endif
+
+	_server6 = -1;
+	_server4 = -1;
 
 	Log::Write(L"TJNP/WebServer", L"WebServer has been stopped");
 }

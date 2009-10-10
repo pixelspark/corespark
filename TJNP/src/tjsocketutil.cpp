@@ -117,7 +117,7 @@ void SocketListenerThread::OnReceive(NativeSocket ns) {
 	
 	#ifdef TJ_OS_WIN
 		// Restart the asynchronous select, since it stops whenever the socket is readable
-		WSAAsyncSelect(_sock, _window, TJSOCKET_MESSAGE, FD_READ);
+		WSAAsyncSelect(ns, _window, TJSOCKET_MESSAGE, FD_READ);
 	#endif
 }
 
@@ -166,22 +166,26 @@ void SocketListenerThread::Run() {
 				}
 			}
 			
-			select(maxSocket+1, &fds, NULL, NULL, NULL);
-			
-			if(FD_ISSET(_controlSocket[1], &fds)) {
-				// End the thread, a control message was sent to us
-				Log::Write(L"TJNP/SocketListenerThread", L"End thread, quit control message received");
-				return;
+			if(select(maxSocket+1, &fds, NULL, NULL, NULL)>0) {
+				if(FD_ISSET(_controlSocket[1], &fds)) {
+					// End the thread, a control message was sent to us
+					Log::Write(L"TJNP/SocketListenerThread", L"End thread, quit control message received");
+					return;
+				}
+				else {
+					ThreadLock lock(&_lock);
+					std::map<NativeSocket, weak<SocketListener> >::iterator it = _listeners.begin();
+					while(it!=_listeners.end()) {
+						if(FD_ISSET(it->first, &fds)) {
+							OnReceive(it->first);
+						}
+						++it;
+					}
+				}
 			}
 			else {
-				ThreadLock lock(&_lock);
-				std::map<NativeSocket, weak<SocketListener> >::iterator it = _listeners.begin();
-				while(it!=_listeners.end()) {
-					if(FD_ISSET(it->first, &fds)) {
-						OnReceive(it->first);
-					}
-					++it;
-				}
+				Log::Write(L"TJNP/SocketListenerThread", L"Select operation failed; closing socket? Terminating listener thread!");
+				return;
 			}
 		}
 	#endif
@@ -196,7 +200,7 @@ void SocketListenerThread::Run() {
 				}
 				else if(msg==TJSOCKET_MESSAGE) {
 					SocketListenerThread* sock = reinterpret_cast<SocketListenerThread*>((long long)GetWindowLong(wnd, GWL_USERDATA));
-					if(sock) sock->OnReceive();
+					if(sock) sock->OnReceive(wp);
 				}
 				
 				return DefWindowProc(wnd,msg,wp,lp);

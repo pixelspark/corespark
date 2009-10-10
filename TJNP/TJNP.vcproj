@@ -187,6 +187,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\tjnetworkaddress.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\tjpattern.cpp"
 				>
 			</File>
@@ -200,6 +204,10 @@
 			</File>
 			<File
 				RelativePath=".\src\tjsocket.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\tjsocketutil.cpp"
 				>
 			</File>
 			<File
@@ -226,6 +234,10 @@
 			</File>
 			<File
 				RelativePath=".\include\tjclient.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tjnetworkaddress.h"
 				>
 			</File>
 			<File
