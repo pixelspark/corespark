@@ -1,6 +1,8 @@
 #ifndef _TJNETWORK_H
 #define _TJNETWORK_H
 
+#include "internal/tjnp.h"
+
 #ifdef TJ_OS_MAC
 	typedef struct in_addr;
 #endif
@@ -10,27 +12,27 @@
 #endif
 
 namespace tj {
-	namespace shared {
-		class EXPORTED Networking {
+	namespace np {
+		class NP_EXPORTED Networking {
 			public:
-				struct EXPORTED MACAddress {
+				struct NP_EXPORTED MACAddress {
 					MACAddress();
-					MACAddress(const String& mac);
+					MACAddress(const tj::shared::String& mac);
 
 					union {
 						unsigned char data[6];
 						unsigned long long_data[2];
 					} address;
 
-					String ToString() const;
+					tj::shared::String ToString() const;
 				};
 
 				static std::string GetHostName();
 				static std::string GetHostAddress();
 				static void Wake(const MACAddress& mac);
-				static bool GetMACAddress(const String& ip, MACAddress& maca);
-				static String GetHostName(const String& ip);
-				static String GetHostName(const in_addr* address);
+				static bool GetMACAddress(const tj::shared::String& ip, MACAddress& maca);
+				static tj::shared::String GetHostName(const tj::shared::String& ip);
+				static tj::shared::String GetHostName(const in_addr* address);
 		};
 	}
 }

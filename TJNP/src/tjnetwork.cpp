@@ -1,4 +1,4 @@
-#include "../include/tjshared.h"
+#include "../include/tjnetwork.h"
 
 #ifdef TJ_OS_WIN
 	#include <iphlpapi.h>
@@ -15,6 +15,7 @@
 #endif
 
 using namespace tj::shared;
+using namespace tj::np;
 
 String Networking::GetHostName(const String& ip) {
 	sockaddr_in host;

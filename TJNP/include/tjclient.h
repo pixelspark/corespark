@@ -3,6 +3,7 @@
 
 #include "internal/tjnp.h"
 #include "tjprotocol.h"
+#include "tjnetwork.h"
 
 #pragma warning(push)
 #pragma warning(disable: 4275)
@@ -32,7 +33,7 @@ namespace tj {
 				tj::shared::Timestamp GetLastAnnounce() const;
 				Features GetFeatures() const;
 				void SetFeatures(Features f);
-				const tj::shared::Networking::MACAddress& GetMACAddress() const;
+				const Networking::MACAddress& GetMACAddress() const;
 				virtual void Save(TiXmlElement* me);
 				virtual void Load(TiXmlElement* you);
 
@@ -45,7 +46,7 @@ namespace tj {
 				std::wstring _hostName;
 				int _instance;
 				Features _features;
-				tj::shared::Networking::MACAddress _mac;
+				Networking::MACAddress _mac;
 		};
 	}
 }

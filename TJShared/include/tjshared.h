@@ -12,7 +12,6 @@
 #include "tjiterator.h"
 #include "tjmixed.h"
 #include "tjcrypto.h"
-#include "tjnetwork.h"
 #include "tjlanguage.h"
 #include "tjtime.h"
 #include "tjutil.h"

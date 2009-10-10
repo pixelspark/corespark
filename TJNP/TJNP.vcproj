@@ -136,7 +136,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="$(SolutionDir)/Release/tjshared.lib ws2_32.lib $(SolutionDir)/Libraries/tinyxml/build/release/tinyxml.lib"
+				AdditionalDependencies="$(SolutionDir)/Release/tjshared.lib ws2_32.lib $(SolutionDir)/Libraries/tinyxml/build/release/tinyxml.lib iphlpapi.lib"
 				OutputFile="$(SolutionDir)\Release\TJNP.dll"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
@@ -187,6 +187,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\tjnetwork.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\tjnetworkaddress.cpp"
 				>
 			</File>
@@ -234,6 +238,10 @@
 			</File>
 			<File
 				RelativePath=".\include\tjclient.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tjnetwork.h"
 				>
 			</File>
 			<File

@@ -148,7 +148,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="comctl32.lib gdiplus.lib strmiids.lib quartz.lib iphlpapi.lib $(InputDir)\..\libraries\tinyxml\build\release\tinyxml.lib comsupp.lib ws2_32.lib shlwapi.lib"
+				AdditionalDependencies="comctl32.lib gdiplus.lib strmiids.lib quartz.lib $(InputDir)\..\libraries\tinyxml\build\release\tinyxml.lib comsupp.lib ws2_32.lib shlwapi.lib"
 				OutputFile="$(OutDir)\..\..\Release\tjshared.dll"
 				AdditionalLibraryDirectories=""
 				GenerateManifest="true"
@@ -423,10 +423,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\tjnetwork.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\src\tjresourcemgr.cpp"
 				>
 			</File>
@@ -526,10 +522,6 @@
 			</File>
 			<File
 				RelativePath=".\include\tjmixed.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\tjnetwork.h"
 				>
 			</File>
 			<File

@@ -472,8 +472,8 @@ void WebServerThread::Run() {
 			FD_SET(_controlSocket[1], &fds); maxSocket max(maxSocket, _controlSocket[1]);
 		#endif
 		
-		FD_SET(_server6, &fds); maxSocket = max(maxSocket, _server6);
-		FD_SET(_server4, &fds); maxSocket = max(maxSocket, _server4);
+		FD_SET(_server6, &fds); maxSocket = max(maxSocket, (int)_server6);
+		FD_SET(_server4, &fds); maxSocket = max(maxSocket, (int)_server4);
 		
 		if(select(maxSocket+1, &fds, NULL, NULL, NULL)>0) {
 			#ifdef TJ_OS_POSIX
