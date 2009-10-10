@@ -234,9 +234,9 @@
 	};
 	B41DD3E010663B65000742DD /* tjsocket.cpp */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1300, 8034}}";
-			sepNavSelRange = "{17958, 0}";
-			sepNavVisRange = "{16791, 1186}";
+			sepNavIntBoundsRect = "{{0, 0}, {1300, 7878}}";
+			sepNavSelRange = "{857, 0}";
+			sepNavVisRange = "{647, 1426}";
 			sepNavWindowFrame = "{{15, 115}, {1260, 882}}";
 		};
 	};
@@ -298,16 +298,16 @@
 	};
 	B423B91B106E529B00147974 /* tjsocketutil.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1012, 884}}";
-			sepNavSelRange = "{0, 0}";
-			sepNavVisRange = "{0, 915}";
+			sepNavIntBoundsRect = "{{0, 0}, {1012, 897}}";
+			sepNavSelRange = "{1146, 0}";
+			sepNavVisRange = "{412, 1015}";
 		};
 	};
 	B423B91C106E529B00147974 /* tjwebserver.h */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1223, 1651}}";
-			sepNavSelRange = "{2286, 0}";
-			sepNavVisRange = "{1800, 1002}";
+			sepNavSelRange = "{2248, 0}";
+			sepNavVisRange = "{1728, 1169}";
 		};
 	};
 	B423B921106E52AC00147974 /* tjpattern.cpp */ = {
@@ -319,9 +319,9 @@
 	};
 	B423B922106E52AC00147974 /* tjwebserver.cpp */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1012, 6578}}";
-			sepNavSelRange = "{7822, 0}";
-			sepNavVisRange = "{6969, 1053}";
+			sepNavIntBoundsRect = "{{0, 0}, {1012, 7137}}";
+			sepNavSelRange = "{10484, 0}";
+			sepNavVisRange = "{9713, 1331}";
 			sepNavWindowFrame = "{{15, 115}, {1260, 882}}";
 		};
 	};
@@ -429,12 +429,26 @@
 		vrLen = 1053;
 		vrLoc = 6969;
 	};
+	B4260DD31080CA65009F328C /* tjsocketutil.cpp */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1012, 2665}}";
+			sepNavSelRange = "{4000, 0}";
+			sepNavVisRange = "{3348, 1091}";
+		};
+	};
+	B4260E2D1080D711009F328C /* tjnetworkaddress.cpp */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1012, 1885}}";
+			sepNavSelRange = "{60, 0}";
+			sepNavVisRange = "{0, 1203}";
+		};
+	};
 	B4866E12107F736E00308027 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
 		fRef = B41DD3E010663B65000742DD /* tjsocket.cpp */;
 		name = "tjsocket.cpp: 709";
-		rLen = 39;
-		rLoc = 20826;
+		rLen = 0;
+		rLoc = 17779;
 		rType = 0;
 		vrLen = 1059;
 		vrLoc = 20093;
@@ -444,7 +458,7 @@
 		fRef = B41DD3E010663B65000742DD /* tjsocket.cpp */;
 		name = "tjsocket.cpp: 680";
 		rLen = 0;
-		rLoc = 20100;
+		rLoc = 17779;
 		rType = 0;
 		vrLen = 1218;
 		vrLoc = 19813;
