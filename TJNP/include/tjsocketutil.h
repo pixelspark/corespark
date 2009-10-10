@@ -41,16 +41,17 @@ namespace tj {
 			#endif
 						
 			public:
-				SocketListenerThread(NativeSocket sock, tj::shared::ref<SocketListener> sl);
+				SocketListenerThread();
 				virtual ~SocketListenerThread();
+				virtual void AddListener(NativeSocket sock, tj::shared::ref<SocketListener> sl);
 				virtual void Run();
 				virtual void Stop();
 			
 			protected:
-				virtual void OnReceive();
+				virtual void OnReceive(NativeSocket ns);
 				
-				tj::shared::weak<SocketListener> _listener;
-				NativeSocket _sock;
+				tj::shared::CriticalSection _lock;
+				std::map<NativeSocket, tj::shared::weak<SocketListener> > _listeners;
 				
 			#ifdef TJ_OS_POSIX
 				NativeSocket _controlSocket[2];
