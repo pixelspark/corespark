@@ -278,8 +278,7 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>16</integer>
-									<integer>4</integer>
+									<integer>1</integer>
 									<integer>0</integer>
 								</array>
 							</array>
@@ -314,12 +313,14 @@
 					<key>Dock</key>
 					<array>
 						<dict>
+							<key>BecomeActive</key>
+							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
 								<string>B486E7EB106628130043CE5D</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>tjresourcemgr.cpp</string>
+								<string>tjthread.cpp</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -327,11 +328,11 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>B486E7EC106628130043CE5D</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>tjresourcemgr.cpp</string>
+										<string>tjthread.cpp</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>B46AC55010833D2400EAE42C</string>
+										<string>B46AC58D10833EB500EAE42C</string>
 										<key>history</key>
 										<array>
 											<string>B486EA19106632B40043CE5D</string>
@@ -385,10 +386,10 @@
 											<string>B40DC60D1081360800C94A68</string>
 											<string>B40DC60E1081360800C94A68</string>
 											<string>B40DC60F1081360800C94A68</string>
-											<string>B40DC6101081360800C94A68</string>
 											<string>B40DC6111081360800C94A68</string>
 											<string>B40DC6121081360800C94A68</string>
-											<string>B40DC6141081360800C94A68</string>
+											<string>B46AC58B10833EB500EAE42C</string>
+											<string>B46AC58C10833EB500EAE42C</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>

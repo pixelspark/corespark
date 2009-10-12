@@ -320,7 +320,7 @@
 								<key>PBXProjectModuleGUID</key>
 								<string>B486E97710662EB70043CE5D</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>OscPrintReceivedElements.h</string>
+								<string>UdpSocket.cpp</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -328,11 +328,11 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>B486E97810662EB70043CE5D</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>OscPrintReceivedElements.h</string>
+										<string>UdpSocket.cpp</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>B46AC57910833D9400EAE42C</string>
+										<string>B46AC58A10833EB400EAE42C</string>
 										<key>history</key>
 										<array>
 											<string>B486E9BC10662F290043CE5D</string>
@@ -342,7 +342,6 @@
 											<string>B4866E02107F71FF00308027</string>
 											<string>B4866E03107F71FF00308027</string>
 											<string>B4866E04107F71FF00308027</string>
-											<string>B40DC62010813CFC00C94A68</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
