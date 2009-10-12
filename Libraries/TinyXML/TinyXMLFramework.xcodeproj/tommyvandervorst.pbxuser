@@ -66,12 +66,12 @@
 					PBXFileDataSource_Warnings_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 276983347;
-			PBXWorkspaceStateSaveDate = 276983347;
+			PBXPerProjectTemplateStateSaveDate = 277036412;
+			PBXWorkspaceStateSaveDate = 277036412;
 		};
 		perUserProjectItems = {
-			B4022A1510696DA900137628 /* PBXTextBookmark */ = B4022A1510696DA900137628 /* PBXTextBookmark */;
 			B45F58AF1066CB3E00FEDA6B /* PlistBookmark */ = B45F58AF1066CB3E00FEDA6B /* PlistBookmark */;
+			B46AC56610833D7F00EAE42C /* PBXTextBookmark */ = B46AC56610833D7F00EAE42C /* PBXTextBookmark */;
 			B486E8E610662B880043CE5D /* PBXTextBookmark */ = B486E8E610662B880043CE5D /* PBXTextBookmark */;
 			B486E8E710662B880043CE5D /* PBXTextBookmark */ = B486E8E710662B880043CE5D /* PBXTextBookmark */;
 			B4E6175E10826EB9004D7C02 /* PBXTextBookmark */ = B4E6175E10826EB9004D7C02 /* PBXTextBookmark */;
@@ -82,16 +82,6 @@
 	};
 	8DC2EF4F0486A6940098B216 /* TinyXMLFramework */ = {
 		activeExec = 0;
-	};
-	B4022A1510696DA900137628 /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = B486E8AB106629700043CE5D /* tinystr.cpp */;
-		name = "tinystr.cpp: 1";
-		rLen = 0;
-		rLoc = 0;
-		rType = 0;
-		vrLen = 200;
-		vrLoc = 0;
 	};
 	B45F58AF1066CB3E00FEDA6B /* PlistBookmark */ = {
 		isa = PlistBookmark;
@@ -104,6 +94,16 @@
 		name = /Users/tommyvandervorst/Documents/Projecten/tj/Libraries/TinyXML/Info.plist;
 		rLen = 0;
 		rLoc = 2147483647;
+	};
+	B46AC56610833D7F00EAE42C /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = B486E8AB106629700043CE5D /* tinystr.cpp */;
+		name = "tinystr.cpp: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 71;
+		vrLoc = 0;
 	};
 	B486E89E1066294A0043CE5D /* Source Control */ = {
 		isa = PBXSourceControlManager;
@@ -121,9 +121,9 @@
 	};
 	B486E8AB106629700043CE5D /* tinystr.cpp */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {542, 1508}}";
+			sepNavIntBoundsRect = "{{0, 0}, {542, 1521}}";
 			sepNavSelRange = "{0, 0}";
-			sepNavVisRange = "{0, 138}";
+			sepNavVisRange = "{0, 71}";
 		};
 	};
 	B486E8AF106629700043CE5D /* tinyxmlerror.cpp */ = {

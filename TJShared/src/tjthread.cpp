@@ -103,7 +103,13 @@ int Thread::GetCurrentThreadID() {
 	#endif
 	
 	#ifdef TJ_USE_PTHREADS
-		return (int)static_cast<long long>(pthread_self());
+		#ifdef TJ_OS_LINUX
+			return (int)static_cast<long long>(pthread_self());
+		#endif
+	
+		#ifdef TJ_OS_MAC
+			return (int)reinterpret_cast<long long> (pthread_self());
+		#endif
 	#endif
 }
 
