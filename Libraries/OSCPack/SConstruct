@@ -1,0 +1,6 @@
+VariantDir('build', '.');
+env = Environment();
+sources = Glob("build/ip/*.cpp") + Glob("build/osc/*.cpp") + Glob("build/ip/posix/*.cpp");
+
+objects = env.SharedObject(sources, CCFLAGS='-DTJ_OS_POSIX -DTJ_OS_LINUX ');
+env.SharedLibrary('#build/oscpack', objects);

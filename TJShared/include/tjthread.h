@@ -47,7 +47,7 @@ namespace tj {
 					CRITICAL_SECTION _cs;
 				#endif
 			
-				#ifdef TJ_OS_MAC
+				#ifdef TJ_OS_POSIX
 					pthread_mutex_t _cs;
 				#endif
 			
@@ -86,7 +86,7 @@ namespace tj {
 					DWORD _tls;
 				#endif
 			
-				#ifdef TJ_OS_MAC
+				#ifdef TJ_OS_POSIX
 					pthread_key_t _tls;
 				#endif
 		};
@@ -125,7 +125,7 @@ namespace tj {
 					HANDLE _sema;
 				#endif
 			
-				#ifdef TJ_OS_MAC
+				#ifdef TJ_OS_POSIX
 					void* _sema;
 				#endif
 		};
@@ -152,7 +152,7 @@ namespace tj {
 					HANDLE _event;
 				#endif
 			
-				#ifdef TJ_OS_MAC
+				#ifdef TJ_OS_POSIX
 					pthread_cond_t _event;
 				#endif
 		};
@@ -202,9 +202,11 @@ namespace tj {
 				static CriticalSection _nameLock;
 				static std::map<int, String> _names;
 
-				#ifdef _WIN32
+				#ifdef TJ_OS_WIN
 					HANDLE _thread;
-				#else
+				#endif
+				
+				#ifdef TJ_OS_POSIX
 					pthread_t _thread;
 				#endif
 				
@@ -233,7 +235,7 @@ namespace tj {
 				}
 
 			private:
-				#ifdef WIN32
+				#ifdef TJ_OS_WIN
 					static void For(HANDLE h, const Time& out);
 					static int For(HANDLE* handles, unsigned int n, bool all, const Time& out);
 					std::vector<HANDLE> _handles;

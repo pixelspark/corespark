@@ -91,7 +91,8 @@ namespace tj {
 						#endif
 
 						#ifdef TJ_OS_LINUX
-							__sync_add_and_fetch(&_referenceCount, 1);
+							//__sync_add_and_fetch(&_referenceCount, 1);
+							_referenceCount += 1;
 						#endif
 
 						return true;
@@ -107,7 +108,8 @@ namespace tj {
 						#endif
 
 						#ifdef TJ_OS_LINUX
-							ReferenceCount nv = __sync_sub_and_fetch(&_referenceCount, 1);
+							ReferenceCount nv = _referenceCount-1; 
+							_referenceCount -= 1;
 						#endif
 
 						if(nv==0 && !IsWeaklyReferenced()) {
@@ -126,7 +128,8 @@ namespace tj {
 						#endif
 
 						#ifdef TJ_OS_LINUX
-							__sync_add_and_fetch(&_weakReferenceCount,1);
+							//__sync_add_and_fetch(&_weakReferenceCount,1);
+							_weakReferenceCount += 1;
 						#endif
 					}
 
@@ -140,7 +143,9 @@ namespace tj {
 						#endif
 
 						#ifdef TJ_OS_LINUX
-							ReferenceCount nv = __sync_sub_and_fetch(&_weakReferenceCount, 1);
+							//ReferenceCount nv = __sync_sub_and_fetch(&_weakReferenceCount, 1);
+							ReferenceCount nv = _weakReferenceCount-1;
+							_weakReferenceCount -= 1;
 						#endif
 
 						if(nv==0 && !IsReferenced()) {

@@ -1,10 +1,13 @@
 #include "../include/tjshared.h"
 using namespace tj::shared;
 
-#ifdef TJ_OS_MAC
+#ifdef TJ_OS_POSIX
 	#define TJ_USE_PTHREADS
 	#include <pthread.h>
 	#include <sys/time.h>
+#endif
+
+#ifdef TJ_OS_MAC
 	#include <dispatch/dispatch.h>
 #endif
 
@@ -100,7 +103,7 @@ int Thread::GetCurrentThreadID() {
 	#endif
 	
 	#ifdef TJ_USE_PTHREADS
-		return (int)reinterpret_cast<long long>(pthread_self());
+		return (int)static_cast<long long>(pthread_self());
 	#endif
 }
 
@@ -575,7 +578,7 @@ void ThreadLocal::operator=(int r) {
 	}
 #endif
 
-#ifdef TJ_OS_MAC
+#ifdef TJ_USE_PTHREADS
 	CriticalSection::CriticalSection() {
 		pthread_mutexattr_t attributes;
 		pthread_mutexattr_init(&attributes);

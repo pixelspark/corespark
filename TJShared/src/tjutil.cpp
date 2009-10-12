@@ -581,20 +581,20 @@ std::wstring Util::MacStringToString(CFStringRef cr) {
 		delete[] _values;
 	}
 #else
-ScreensaverOff::ScreensaverOff() {
-	#warning ScreensaverOff not implemented on Mac
-	// Should call UpdateSystemActivity(OverallAct); every 30 seconds, also prevents sleep
-	// (http://developer.apple.com/mac/library/qa/qa2004/qa1160.html)
-}
-
-ScreensaverOff::~ScreensaverOff() {
-}
+	ScreensaverOff::ScreensaverOff() {
+		#warning ScreensaverOff not implemented on POSIX
+		// Should call UpdateSystemActivity(OverallAct) on Mac every 30 seconds, also prevents sleep
+		// (http://developer.apple.com/mac/library/qa/qa2004/qa1160.html)
+	}
+	
+	ScreensaverOff::~ScreensaverOff() {
+	}
 #endif
 
 Flags<Power::Status> Power::GetStatus() {
-	#ifdef TJ_OS_MAC
+	#ifdef TJ_OS_POSIX
 		return Flags<Status>();
-		#warning Not implemented on Mac (power status flags)
+		#warning Not implemented on POSIX (power status flags)
 	#endif
 
 	#ifdef TJ_OS_WIN

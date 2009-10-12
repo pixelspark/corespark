@@ -43,26 +43,25 @@
 // then you don't have to edit this file.
 
 #elif defined(__WIN32__) || defined(WIN32)
-
-// assume that __WIN32__ is only defined on little endian systems
-
-#define OSC_HOST_LITTLE_ENDIAN 1
-#undef OSC_HOST_BIG_ENDIAN
+	// assume that __WIN32__ is only defined on little endian systems
+	#define OSC_HOST_LITTLE_ENDIAN 1
+	#undef OSC_HOST_BIG_ENDIAN
 
 #elif defined(__APPLE__)
+	#if defined(__LITTLE_ENDIAN__)
+		#define OSC_HOST_LITTLE_ENDIAN 1
+		#undef OSC_HOST_BIG_ENDIAN
+	#else
+		#define OSC_HOST_BIG_ENDIAN 1
+		#undef OSC_HOST_LITTLE_ENDIAN
+	#endif
+	
+#elif defined(__ARMEL__)
+	#define OSC_HOST_LITTLE_ENDIAN 1
+	#undef OSC_HOST_BIG_ENDIAN
 
-#if defined(__LITTLE_ENDIAN__)
-#define OSC_HOST_LITTLE_ENDIAN 1
-#undef OSC_HOST_BIG_ENDIAN
 #else
-#define OSC_HOST_BIG_ENDIAN 1
-#undef OSC_HOST_LITTLE_ENDIAN
-#endif
-
-#else
-
-#error please edit OSCHostEndianness.h to configure endianness
-
+	#error please edit OSCHostEndianness.h to configure endianness
 #endif
 
 #endif /* OSC_HOSTENDIANNESS_H */
