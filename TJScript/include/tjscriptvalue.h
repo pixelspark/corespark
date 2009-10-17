@@ -61,6 +61,7 @@ namespace tj {
 		typedef ScriptValue<int> ScriptInt;
 		typedef ScriptValue<bool> ScriptBool;
 		typedef ScriptValue<double> ScriptDouble;
+		typedef ScriptValue<tj::shared::Any> ScriptAnyValue;
 		
 		/** Null type/value **/
 		class SCRIPT_EXPORTED ScriptNull: public Scriptable {				

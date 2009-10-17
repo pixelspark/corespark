@@ -3,8 +3,6 @@
 using namespace tj::script;
 using namespace tj::shared;
 
-// TODO: Use default Any::operator operations in ops that add, subtract, multiply etc values
-
 void OpNopHandler(VM* vm) {
 }
 
@@ -139,66 +137,29 @@ void OpSaveHandler(VM* vm) {
 
 void OpEqualsHandler(VM* vm) {
 	ScriptStack& stack = vm->GetStack();
-	ref<Scriptable> objectA = stack.Pop();
-	ref<Scriptable> objectB = stack.Pop();
-
-	bool result = false;
-
-	if(objectA.IsCastableTo<ScriptString>() && objectB.IsCastableTo<ScriptString>()) {
-		ref<ScriptString> strA = objectA;
-		ref<ScriptString> strB = objectB;
-
-		result = strA->GetValue() == strB->GetValue();
-	}
-	else if(objectA.IsCastableTo<ScriptInt>() && objectB.IsCastableTo<ScriptInt>()) {
-		ref<ScriptInt> strA = objectA;
-		ref<ScriptInt> strB = objectB;
-
-		result = strA->GetValue() == strB->GetValue();
-	}
-	else if(objectA.IsCastableTo<ScriptDouble>() && objectB.IsCastableTo<ScriptDouble>()) {
-		ref<ScriptDouble> strA = objectA;
-		ref<ScriptDouble> strB = objectB;
-
-		result = strA->GetValue() == strB->GetValue();
-	}
-	else if(objectA.IsCastableTo<ScriptBool>() && objectB.IsCastableTo<ScriptBool>()) {
-		ref<ScriptBool> strA = objectA;
-		ref<ScriptBool> strB = objectB;
-
-		result = strA->GetValue() == strB->GetValue();
-	}
-	else if(objectA.IsCastableTo<ScriptNull>() && objectB.IsCastableTo<ScriptNull>()) {
-		result = true;
+	ref<Scriptable> a = stack.Pop();
+	ref<Scriptable> b = stack.Pop();
+	
+	if(a.IsCastableTo<ScriptAny>() && b.IsCastableTo<ScriptAny>()) {
+		Any aa = ref<ScriptAny>(a)->Unbox();
+		Any ab = ref<ScriptAny>(b)->Unbox();
+		stack.Push((aa==ab) ? ScriptConstants::True : ScriptConstants::False);
 	}
 	else {
-		result = (objectA==objectB);
+		stack.Push(ScriptConstants::Null);
 	}
-
-	stack.Push(result?ScriptConstants::True:ScriptConstants::False);
 }
 
 void OpNegateHandler(VM* vm) {
 	ScriptStack& stack = vm->GetStack();
-	ref<Scriptable> top = stack.Pop();
-
-	if(top.IsCastableTo<ScriptBool>()) {
-		ref<ScriptBool> b = top;
-		ref<ScriptBool> n = b->GetValue()?ScriptConstants::False:ScriptConstants::True;
-		stack.Push(n);
-	}
-	else if(top.IsCastableTo<ScriptInt>()) {
-		ref<ScriptInt> b = top;
-		ref<ScriptInt> n = GC::Hold(new ScriptInt(-b->GetValue()));
-		stack.Push(n);
-	}
-	else if(top.IsCastableTo<ScriptDouble>()) {
-		ref<ScriptDouble> b = top;
-		ref<ScriptDouble> n = GC::Hold(new ScriptDouble(-b->GetValue()));
-		stack.Push(n);
+	ref<Scriptable> a = stack.Pop();
+	
+	if(a.IsCastableTo<ScriptAny>()) {
+		Any aa = ref<ScriptAny>(a)->Unbox();
+		stack.Push(GC::Hold(new ScriptAnyValue(-a)));
 	}
 	else {
-		stack.Push(ScriptConstants::False);
+		stack.Push(ScriptConstants::Null);
 	}
 }
 
@@ -207,37 +168,13 @@ void OpAddHandler(VM* vm) {
 	ref<Scriptable> a = stack.Pop();
 	ref<Scriptable> b = stack.Pop();
 
-	// if any of the parameters is a string, do concatenation
-	if(a.IsCastableTo<ScriptString>() || b.IsCastableTo<ScriptString>()) {
-		std::wstring as = ScriptContext::GetValue<std::wstring>(a,L"");
-		std::wstring bs = ScriptContext::GetValue<std::wstring>(b,L"");
-		stack.Push(GC::Hold(new ScriptString(bs+as)));
+	if(a.IsCastableTo<ScriptAny>() && b.IsCastableTo<ScriptAny>()) {
+		Any aa = ref<ScriptAny>(a)->Unbox();
+		Any ab = ref<ScriptAny>(b)->Unbox();
+		stack.Push(GC::Hold(new ScriptAnyValue(ab+aa)));
 	}
 	else {
-		double va = 0.0;
-		double vb = 0.0;
-
-		if(a.IsCastableTo<ScriptDouble>()) {
-			va = ref<ScriptDouble>(a)->GetValue();
-		}
-		else if(a.IsCastableTo<ScriptInt>()) {
-			va = (double)ref<ScriptInt>(a)->GetValue();
-		}
-		else {
-			va = ScriptContext::GetValue<double>(a,0.0);
-		}
-		
-		if(b.IsCastableTo<ScriptDouble>()) {
-			vb = ref<ScriptDouble>(b)->GetValue();
-		}
-		else if(b.IsCastableTo<ScriptInt>()) {
-			vb = (double)ref<ScriptInt>(b)->GetValue();
-		}
-		else {
-			vb = ScriptContext::GetValue<double>(b,0.0);
-		}
-
-		stack.Push(GC::Hold(new ScriptDouble(va+vb)));
+		stack.Push(ScriptConstants::Null);
 	}
 }
 
@@ -245,97 +182,44 @@ void OpSubHandler(VM* vm) {
 	ScriptStack& stack = vm->GetStack();
 	ref<Scriptable> a = stack.Pop();
 	ref<Scriptable> b = stack.Pop();
-
-	double va = 0.0;
-	double vb = 0.0;
-
-	if(a.IsCastableTo<ScriptDouble>()) {
-		va = ref<ScriptDouble>(a)->GetValue();
-	}
-	else if(a.IsCastableTo<ScriptInt>()) {
-		va = (double)ref<ScriptInt>(a)->GetValue();
-	}
-	else {
-		va = ScriptContext::GetValue<double>(a,0.0);
-	}
 	
-	if(b.IsCastableTo<ScriptDouble>()) {
-		vb = ref<ScriptDouble>(b)->GetValue();
-	}
-	else if(b.IsCastableTo<ScriptInt>()) {
-		vb = (double)ref<ScriptInt>(b)->GetValue();
+	if(a.IsCastableTo<ScriptAny>() && b.IsCastableTo<ScriptAny>()) {
+		Any aa = ref<ScriptAny>(a)->Unbox();
+		Any ab = ref<ScriptAny>(b)->Unbox();
+		stack.Push(GC::Hold(new ScriptAnyValue(ab-aa)));
 	}
 	else {
-		vb = ScriptContext::GetValue<double>(b,0.0);
+		stack.Push(ScriptConstants::Null);
 	}
-
-	stack.Push(GC::Hold(new ScriptDouble(vb-va)));
 }
 
 void OpMulHandler(VM* vm) {
 	ScriptStack& stack = vm->GetStack();
 	ref<Scriptable> a = stack.Pop();
 	ref<Scriptable> b = stack.Pop();
-
-	double va = 0.0;
-	double vb = 0.0;
-
-	if(a.IsCastableTo<ScriptDouble>()) {
-		va = ref<ScriptDouble>(a)->GetValue();
-	}
-	else if(a.IsCastableTo<ScriptInt>()) {
-		va = (double)ref<ScriptInt>(a)->GetValue();
-	}
-	else {
-		va = ScriptContext::GetValue<double>(a,0.0);
-	}
 	
-	if(b.IsCastableTo<ScriptDouble>()) {
-		vb = ref<ScriptDouble>(b)->GetValue();
-	}
-	else if(b.IsCastableTo<ScriptInt>()) {
-		vb = (double)ref<ScriptInt>(b)->GetValue();
+	if(a.IsCastableTo<ScriptAny>() && b.IsCastableTo<ScriptAny>()) {
+		Any aa = ref<ScriptAny>(a)->Unbox();
+		Any ab = ref<ScriptAny>(b)->Unbox();
+		stack.Push(GC::Hold(new ScriptAnyValue(aa*ab)));
 	}
 	else {
-		vb = ScriptContext::GetValue<double>(b,0.0);
+		stack.Push(ScriptConstants::Null);
 	}
-
-	stack.Push(GC::Hold(new ScriptDouble(va*vb)));
 }
 
 void OpDivHandler(VM* vm) {
 	ScriptStack& stack = vm->GetStack();
 	ref<Scriptable> a = stack.Pop();
 	ref<Scriptable> b = stack.Pop();
-
-	double va = 0.0;
-	double vb = 0.0;
-
-	if(a.IsCastableTo<ScriptDouble>()) {
-		va = ref<ScriptDouble>(a)->GetValue();
-	}
-	else if(a.IsCastableTo<ScriptInt>()) {
-		va = (double)ref<ScriptInt>(a)->GetValue();
-	}
-	else {
-		va = ScriptContext::GetValue<double>(a,0.0);
-	}
 	
-	if(b.IsCastableTo<ScriptDouble>()) {
-		vb = ref<ScriptDouble>(b)->GetValue();
-	}
-	else if(b.IsCastableTo<ScriptInt>()) {
-		vb = (double)ref<ScriptInt>(b)->GetValue();
-	}
-	else {
-		vb = ScriptContext::GetValue<double>(b,0.0);
-	}
-
-	if(va==0.0) {
-		stack.Push(GC::Hold(new ScriptDouble(std::numeric_limits<double>::quiet_NaN())));
+	if(a.IsCastableTo<ScriptAny>() && b.IsCastableTo<ScriptAny>()) {
+		Any aa = ref<ScriptAny>(a)->Unbox();
+		Any ab = ref<ScriptAny>(b)->Unbox();
+		stack.Push(GC::Hold(new ScriptAnyValue(ab/aa)));
 	}
 	else {
-		stack.Push(GC::Hold(new ScriptDouble(vb/va)));
+		stack.Push(ScriptConstants::Null);
 	}
 }
 

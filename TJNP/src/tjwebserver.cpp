@@ -436,22 +436,25 @@ void WebServerThread::Run() {
 		local4.sin_len = sizeof(local4);
 	#endif
 	
+	bool v6 = true;
+	bool v4 = true;
+	
 	if(bind(_server6, (sockaddr*)&local, sizeof(sockaddr_in6))!=0) {
 		Log::Write(L"TJNP/WebServer", L"Could not bind IPv6 socket to port (port already taken?)!");
-		return;
+		v6 = false;
 	}
 	
 	if(bind(_server4, (sockaddr*)&local4, sizeof(sockaddr_in))!=0) {
 		Log::Write(L"TJNP/WebServer", L"Could not bind IPv4 socket to port (port already taken?)!");
-		return;
+		v4 = false;
 	}
 
-	if(listen(_server6, 10)!=0) {
+	if(!v6 || listen(_server6, 10)!=0) {
 		Log::Write(L"TJNP/WebServer", L"The IPv6 socket just doesn't want to listen!");
 		return;
 	}
 	
-	if(listen(_server4, 10)!=0) {
+	if(!v4 || listen(_server4, 10)!=0) {
 		Log::Write(L"TJNP/WebServer", L"The IPv4 socket just doesn't want to listen!");
 		return;
 	}
@@ -472,8 +475,15 @@ void WebServerThread::Run() {
 			FD_SET(_controlSocket[1], &fds); maxSocket = max(maxSocket, _controlSocket[1]);
 		#endif
 		
-		FD_SET(_server6, &fds); maxSocket = max(maxSocket, (int)_server6);
-		FD_SET(_server4, &fds); maxSocket = max(maxSocket, (int)_server4);
+		if(v6) {
+			FD_SET(_server6, &fds); 
+			maxSocket = max(maxSocket, (int)_server6);
+		}
+		
+		if(v4) {
+			FD_SET(_server4, &fds); 
+			maxSocket = max(maxSocket, (int)_server4);
+		}
 		
 		if(select(maxSocket+1, &fds, NULL, NULL, NULL)>0) {
 			#ifdef TJ_OS_POSIX
