@@ -49,7 +49,13 @@ ref<ScriptScope> VM::GetCurrentScopeForWriting() {
 }
 
 void VM::Call(int n) {
-	Call(_script->GetScriptlet(n));
+	try {
+		Call(_script->GetScriptlet(n));
+	}
+	catch(...) {
+		Log::Write(L"TJScript/VM", L"Exception calling scriptlet "+Stringify(n));
+		throw;
+	}
 }
 
 /** Return is essentially the same as break: it pops the call stack and unchains a scope (destroying

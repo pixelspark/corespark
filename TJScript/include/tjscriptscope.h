@@ -14,7 +14,7 @@ namespace tj {
 				void SetPrevious(tj::shared::ref<Scriptable> r);
 				
 				virtual tj::shared::ref<Scriptable> Execute(Command command, tj::shared::ref<ParameterList> params);
-				virtual void Set(std::wstring, tj::shared::ref<Scriptable> var);
+				virtual bool Set(Field field, tj::shared::ref<Scriptable> var);
 				tj::shared::ref<Scriptable> Get(const std::wstring& key);
 				bool Exists(const std::wstring& key);
 

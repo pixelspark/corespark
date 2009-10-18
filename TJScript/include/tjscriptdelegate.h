@@ -5,27 +5,13 @@ namespace tj {
 	namespace script {
 		using tj::shared::ref;
 
-		class ScriptDelegate: public ScriptObject<ScriptDelegate> {
+		class SCRIPT_EXPORTED ScriptDelegate: public ScriptObject<ScriptDelegate> {
 			public:
-				inline ScriptDelegate(tj::shared::ref<CompiledScript> sc, tj::shared::ref<ScriptContext> ctx) {
-					assert(sc);
-					_cs = sc;
-					_context = ctx;
-				}
-
-				virtual ~ScriptDelegate() {
-				}
-
+				ScriptDelegate(tj::shared::ref<CompiledScript> sc, tj::shared::ref<ScriptContext> ctx);
+				virtual ~ScriptDelegate();
 				static void Initialize();
-
-				inline tj::shared::ref<CompiledScript> GetScript() {
-					return _cs;
-				}
-
-				inline tj::shared::ref<ScriptContext> GetContext() {
-					return _context;
-				}
-
+				tj::shared::ref<CompiledScript> GetScript();
+				tj::shared::ref<ScriptContext> GetContext();
 				tj::shared::ref<Scriptable> SToString(tj::shared::ref<ParameterList> p);
 
 			protected:

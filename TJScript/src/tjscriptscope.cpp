@@ -66,7 +66,7 @@ ref<Scriptable> ScriptScope::Execute(Command command, ref<ParameterList> params)
 	}
 }
 
-void ScriptScope::Set(std::wstring key, ref<Scriptable> value) {
+bool ScriptScope::Set(Field key, ref<Scriptable> value) {
 	/** If the variable is already defined in the outer scope, update it there */
 	if(_previous && _previous.IsCastableTo<ScriptScope>() && _previous->Execute(key,0)) {
 		ref<ScriptScope>(_previous)->Set(key,value);
@@ -74,4 +74,5 @@ void ScriptScope::Set(std::wstring key, ref<Scriptable> value) {
 	else {
 		_vars[key] = value;
 	}
+	return true;
 }

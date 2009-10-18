@@ -202,7 +202,7 @@
 		path = /Users/tommyvandervorst/Documents/Projecten/tj/build/Release/default.fabric;
 		sourceTree = "<absolute>";
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1219, 845}}";
+			sepNavIntBoundsRect = "{{0, 0}, {1219, 923}}";
 			sepNavSelRange = "{1030, 0}";
 			sepNavVisRange = "{420, 448}";
 		};

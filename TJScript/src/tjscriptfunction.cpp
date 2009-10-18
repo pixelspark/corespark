@@ -17,6 +17,24 @@ void ScriptFunction::Initialize() {
 	Bind(L"toString", &ScriptFunction::SToString);
 }
 
+/** ScriptDelegate **/
+ScriptDelegate::ScriptDelegate(ref<CompiledScript> sc, ref<ScriptContext> ctx) {
+	assert(sc);
+	_cs = sc;
+	_context = ctx;
+}
+
+ScriptDelegate::~ScriptDelegate() {
+}
+
+ref<CompiledScript> ScriptDelegate::GetScript() {
+	return _cs;
+}
+
+ref<ScriptContext> ScriptDelegate::GetContext() {
+	return _context;
+}
+
 ref<Scriptable> ScriptDelegate::SToString(ref<ParameterList> p) {
 	return GC::Hold(new ScriptString(L"[delegate]"));
 }

@@ -524,6 +524,9 @@ Any Any::operator-() const {
 
 		case TypeDouble:
 			return Any(-_doubleValue);
+			
+		case TypeBool:
+			return Any(!_boolValue);
 	}
 
 	return Any();

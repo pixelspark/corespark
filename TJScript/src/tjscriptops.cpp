@@ -156,7 +156,7 @@ void OpNegateHandler(VM* vm) {
 	
 	if(a.IsCastableTo<ScriptAny>()) {
 		Any aa = ref<ScriptAny>(a)->Unbox();
-		stack.Push(GC::Hold(new ScriptAnyValue(-a)));
+		stack.Push(GC::Hold(new ScriptAnyValue(-aa)));
 	}
 	else {
 		stack.Push(ScriptConstants::Null);
@@ -249,7 +249,7 @@ void OpBranchIfHandler(VM* vm) {
 	int  scriptlet = frame->_scriptlet->Get<int>(frame->_pc);
 	ref<Scriptable> top = stack.Top();
 	
-	bool r = ScriptContext::GetValue<bool>(top,false);
+	bool r = ScriptContext::GetValue<bool>(top, false);
 	if(r) {
 		vm->Call(scriptlet);
 	}
