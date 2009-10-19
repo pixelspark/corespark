@@ -278,7 +278,7 @@ namespace tj {
 			#ifdef TJ_OS_MAC
 				std::wostringstream wos;
 				wos << x;
-				return wos.str();
+				return std::wstring(wos.str());
 			#endif
 		}
 
