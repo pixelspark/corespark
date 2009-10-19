@@ -52,6 +52,20 @@
 			remoteGlobalIDString = 8DC2EF5B0486A6940098B216;
 			remoteInfo = TJSharedFramework;
 		};
+		B4720EB4108C67AC002DEC9F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B41DD3F910663BB2000742DD /* TJSharedFramework.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8DC2EF4F0486A6940098B216 /* TJSharedFramework */;
+			remoteInfo = TJSharedFramework;
+		};
+		B4720EB6108C67AC002DEC9F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B41DD3F010663BA7000742DD /* TinyXMLFramework.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8DC2EF4F0486A6940098B216 /* TinyXMLFramework */;
+			remoteInfo = TinyXMLFramework;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -255,6 +269,8 @@
 			buildRules = (
 			);
 			dependencies = (
+				B4720EB5108C67AC002DEC9F /* PBXTargetDependency */,
+				B4720EB7108C67AC002DEC9F /* PBXTargetDependency */,
 			);
 			name = TJNPFramework;
 			productInstallPath = "$(HOME)/Library/Frameworks";
@@ -339,6 +355,19 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		B4720EB5108C67AC002DEC9F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = TJSharedFramework;
+			targetProxy = B4720EB4108C67AC002DEC9F /* PBXContainerItemProxy */;
+		};
+		B4720EB7108C67AC002DEC9F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = TinyXMLFramework;
+			targetProxy = B4720EB6108C67AC002DEC9F /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		089C1666FE841158C02AAC07 /* InfoPlist.strings */ = {

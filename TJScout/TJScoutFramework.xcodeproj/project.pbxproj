@@ -28,6 +28,13 @@
 			remoteGlobalIDString = 8DC2EF5B0486A6940098B216;
 			remoteInfo = TJSharedFramework;
 		};
+		B4720EC3108C67BC002DEC9F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B45F58171066C6E100FEDA6B /* TJSharedFramework.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8DC2EF4F0486A6940098B216 /* TJSharedFramework */;
+			remoteInfo = TJSharedFramework;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -188,6 +195,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				B4720EC4108C67BC002DEC9F /* PBXTargetDependency */,
 			);
 			name = TJScoutFramework;
 			productInstallPath = "$(HOME)/Library/Frameworks";
@@ -253,6 +261,14 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		B4720EC4108C67BC002DEC9F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = TJSharedFramework;
+			targetProxy = B4720EC3108C67BC002DEC9F /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		089C1666FE841158C02AAC07 /* InfoPlist.strings */ = {

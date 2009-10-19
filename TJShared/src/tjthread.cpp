@@ -7,7 +7,12 @@ using namespace tj::shared;
 	#include <sys/time.h>
 #endif
 
+
 #ifdef TJ_OS_MAC
+	//#define TJ_USE_LIBDISPATCH
+#endif
+
+#ifdef TJ_USE_LIBDISPATCH
 	#include <dispatch/dispatch.h>
 #endif
 
@@ -312,6 +317,7 @@ void Thread::Sleep(double ms) {
 #endif
 
 #ifdef TJ_OS_MAC
+#ifdef TJ_USE_LIBDISPATCH
 	Semaphore::Semaphore() {
 		_sema = reinterpret_cast<void*>(dispatch_semaphore_create(0));
 	}
@@ -331,6 +337,7 @@ void Thread::Sleep(double ms) {
 		int timeoutMS = out.ToInt();
 		return dispatch_semaphore_wait(reinterpret_cast<dispatch_semaphore_t>(_sema), (timeoutMS<0)?DISPATCH_TIME_FOREVER:dispatch_time(DISPATCH_TIME_NOW, timeoutMS*1000))==0;
 	}
+#endif
 #endif
 
 /* Event; Windows implementation */

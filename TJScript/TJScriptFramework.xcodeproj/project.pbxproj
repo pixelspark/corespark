@@ -67,6 +67,13 @@
 			remoteGlobalIDString = 8DC2EF5B0486A6940098B216;
 			remoteInfo = TJSharedFramework;
 		};
+		B4720EA8108C678D002DEC9F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B41DD4EA1066453E000742DD /* TJSharedFramework.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8DC2EF4F0486A6940098B216 /* TJSharedFramework */;
+			remoteInfo = TJSharedFramework;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -329,6 +336,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				B4720EA9108C678D002DEC9F /* PBXTargetDependency */,
 			);
 			name = TJScriptFramework;
 			productInstallPath = "$(HOME)/Library/Frameworks";
@@ -412,6 +420,14 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		B4720EA9108C678D002DEC9F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = TJSharedFramework;
+			targetProxy = B4720EA8108C678D002DEC9F /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin PBXVariantGroup section */
 		089C1666FE841158C02AAC07 /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
@@ -478,7 +494,7 @@
 				HEADER_SEARCH_PATHS = "../Libraries//**";
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
-				SDKROOT = macosx10.5;
+				SDKROOT = macosx10.6;
 			};
 			name = Debug;
 		};
@@ -491,7 +507,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "../Libraries//**";
 				PREBINDING = NO;
-				SDKROOT = macosx10.5;
+				SDKROOT = macosx10.6;
 			};
 			name = Release;
 		};
