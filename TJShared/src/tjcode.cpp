@@ -12,6 +12,10 @@ Code::~Code() {
 	_size = 0;
 }
 
+const char* Code::GetBuffer() const {
+	return _code;
+}
+
 unsigned int Code::GetSize() {
 	return _size;
 }

@@ -7,6 +7,26 @@ const unsigned char SLIPFrameDecoder::KSLIPEscapeCharacter = 0xDB;
 const unsigned char SLIPFrameDecoder::KSLIPEscapeEscapeCharacter = 0xDD;
 const unsigned char SLIPFrameDecoder::KSLIPEscapeEndCharacter = 0xDC;
 
+QueueSLIPFrameDecoder::QueueSLIPFrameDecoder() {
+}
+
+QueueSLIPFrameDecoder::~QueueSLIPFrameDecoder() {
+}
+
+ref<Code> QueueSLIPFrameDecoder::NextPacket() {
+	std::deque< ref<Code> >::iterator eit = _buffers.begin();
+	if(eit!=_buffers.end()) {
+		ref<Code> code = *eit;
+		_buffers.erase(eit);
+		return code;
+	}
+	return null;
+}
+
+void QueueSLIPFrameDecoder::OnPacketReceived(const unsigned char* data, unsigned int len) {
+	_buffers.push_back(GC::Hold(new Code((const char*)data, len)));
+}
+
 SLIPFrameDecoder::SLIPFrameDecoder(): _isReceivingPacket(false), _lastCharacterWasEscape(false), _isDiscardingPacket(false) {
 }
 

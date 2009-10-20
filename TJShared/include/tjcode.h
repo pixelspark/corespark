@@ -10,6 +10,7 @@ namespace tj {
 				Code(const char* code, unsigned int size);
 				virtual ~Code();
 				unsigned int GetSize();
+				const char* GetBuffer() const;
 
 				template<typename T> T Get(unsigned int& position) {
 					unsigned int size = sizeof(T)/sizeof(char);

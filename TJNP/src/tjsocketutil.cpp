@@ -90,9 +90,37 @@ SocketListenerThread::~SocketListenerThread() {
 	#endif
 }
 
+void SocketListenerThread::PostThreadUpdate() {
+	#ifdef TJ_OS_WIN
+		PostThreadMessage(GetID(), WM_USER, 0, 0);
+	#endif
+		
+	#ifdef TJ_OS_POSIX
+		char update[1] = {'U'};
+		if(write(_controlSocket[0], update, 1)==-1) {
+			Log::Write(L"TJNP/SocketListenerThread", L"Could not send update message to listener thread");
+		}
+	#endif
+}
+
+void SocketListenerThread::RemoveListener(NativeSocket ns) {
+	{
+		ThreadLock lock(&_lock);
+		std::map<NativeSocket, weak<SocketListener> >::iterator it = _listeners.find(ns);
+		if(it!=_listeners.end()) {
+			_listeners.erase(it);
+		}
+	}
+
+	PostThreadUpdate();
+}
+
 void SocketListenerThread::AddListener(NativeSocket sock, ref<SocketListener> sl) {
-	ThreadLock lock(&_lock);
-	_listeners[sock] = sl;
+	{
+		ThreadLock lock(&_lock);
+		_listeners[sock] = sl;
+	}
+	PostThreadUpdate();
 }
 
 void SocketListenerThread::Stop() {
@@ -129,19 +157,31 @@ void SocketListenerThread::Run() {
 		}
 		SetWindowLong(_window, GWL_USERDATA, LONG((long long)this));
 	
-		{
-			ThreadLock lock(&_lock);
-			std::map<NativeSocket, weak<SocketListener> >::iterator it = _listeners.begin();
-			while(it!=_listeners.end()) {
-				WSAAsyncSelect(it->first, _window, TJSOCKET_MESSAGE, FD_READ);
-				++it;
+		bool running = true;
+		bool updateSelect = true;
+	
+		while(running) {
+			if(updateSelect) {
+				updateSelect = false;
+				ThreadLock lock(&_lock);
+				std::map<NativeSocket, weak<SocketListener> >::iterator it = _listeners.begin();
+				while(it!=_listeners.end()) {
+					WSAAsyncSelect(it->first, _window, TJSOCKET_MESSAGE, FD_READ);
+					++it;
+				}
 			}
-		}
-		
-		MSG msg;
-		while(GetMessage(&msg,0,0,0)) {
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
+			
+			MSG msg;
+			GetMessage(&msg,0,0,0)
+				
+			if(msg.wMsg==WM_USER) {
+				updateSelect = true;
+				break;
+			}
+			else if(msg.wMsg==WM_QUIT) {
+				running = false;
+				break;
+			}
 		}
 		
 		DestroyWindow(_window);
@@ -150,34 +190,56 @@ void SocketListenerThread::Run() {
 	#ifdef TJ_OS_POSIX
 		while(true) {
 			fd_set fds;
+			fd_set fdsErrors;
 			FD_ZERO(&fds);
 			int maxSocket = _controlSocket[1];
 			FD_SET(_controlSocket[1], &fds);
+			FD_SET(_controlSocket[1], &fdsErrors);
 			
 			{
 				ThreadLock lock(&_lock);
 				std::map<NativeSocket, weak<SocketListener> >::iterator it = _listeners.begin();
 				while(it!=_listeners.end()) {
 					if(ref<SocketListener>(it->second)) {
-						FD_SET(it->first, &fds);
-						maxSocket = max(maxSocket, it->first);
+						if(it->first!=-1) {
+							FD_SET(it->first, &fds);
+							FD_SET(it->first, &fdsErrors);
+							maxSocket = max(maxSocket, it->first);
+						}
 					}
 					++it;
 				}
 			}
 			
-			if(select(maxSocket+1, &fds, NULL, NULL, NULL)>0) {
+			if(select(maxSocket+1, &fds, NULL, &fdsErrors, NULL)>0) {
 				if(FD_ISSET(_controlSocket[1], &fds)) {
-					// End the thread, a control message was sent to us
-					Log::Write(L"TJNP/SocketListenerThread", L"End thread, quit control message received");
-					return;
+					char cmd = 'Q';
+					recv(_controlSocket[1], &cmd, sizeof(char), 0);
+					
+					if(cmd=='Q') {
+						// End the thread, a control message was sent to us
+						Log::Write(L"TJNP/SocketListenerThread", L"End thread, quit control message received");
+						return;
+					}
+					else if(cmd=='U') {
+						// Update, restart select()
+						continue;
+					}
+					else {
+						Log::Write(L"TJNP/SocketListenerThread", L"Unknown command");
+					}
 				}
 				else {
 					ThreadLock lock(&_lock);
 					std::map<NativeSocket, weak<SocketListener> >::iterator it = _listeners.begin();
 					while(it!=_listeners.end()) {
-						if(FD_ISSET(it->first, &fds)) {
-							OnReceive(it->first);
+						if(it->first!=-1) {
+							if(FD_ISSET(it->first, &fdsErrors)) {
+								Log::Write(L"TJNP/SocketListenerThread", L"Error on socket "+StringifyHex(it->first));
+							}
+							else if(FD_ISSET(it->first, &fds)) {
+								OnReceive(it->first);
+							}
 						}
 						++it;
 					}

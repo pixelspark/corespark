@@ -26,6 +26,17 @@ namespace tj {
 				const static unsigned char KSLIPEscapeEscapeCharacter;
 				const static unsigned char KSLIPEscapeEndCharacter;
 		};
+		
+		class NP_EXPORTED QueueSLIPFrameDecoder: public SLIPFrameDecoder {
+			public:
+				QueueSLIPFrameDecoder();
+				virtual ~QueueSLIPFrameDecoder();
+				tj::shared::ref<tj::shared::Code> NextPacket();
+				
+			protected:
+				virtual void OnPacketReceived(const unsigned char* data, unsigned int length);
+				std::deque< tj::shared::ref<tj::shared::Code> > _buffers;
+		};
 	}
 }
 
