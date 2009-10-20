@@ -26,10 +26,9 @@
 using namespace tj::shared;
 using namespace tj::np;
 
+void* NetworkInitializer::_data = 0;
+
 NetworkInitializer::NetworkInitializer() {
-	#ifdef TJ_OS_WIN
-		_data = 0;
-	#endif
 }
 
 void NetworkInitializer::Initialize() {
@@ -69,6 +68,8 @@ SocketListener::~SocketListener() {
 
 /** SocketListenerThread **/
 SocketListenerThread::SocketListenerThread() {
+	_ni.Initialize();
+
 	#ifdef TJ_OS_POSIX
 		if(socketpair(AF_UNIX, SOCK_STREAM, 0, _controlSocket)!=0) {
 			Log::Write(L"TJNP/SocketListenerThread", L"Could not create control socket pair");
@@ -113,6 +114,7 @@ void SocketListenerThread::RemoveListener(NativeSocket ns) {
 	}
 
 	PostThreadUpdate();
+	Log::Write(L"TJNP/SocketListener", L"Removed listener");
 }
 
 void SocketListenerThread::AddListener(NativeSocket sock, ref<SocketListener> sl) {
@@ -145,7 +147,7 @@ void SocketListenerThread::OnReceive(NativeSocket ns) {
 	
 	#ifdef TJ_OS_WIN
 		// Restart the asynchronous select, since it stops whenever the socket is readable
-		WSAAsyncSelect(ns, _window, TJSOCKET_MESSAGE, FD_READ);
+		WSAAsyncSelect(ns, _window, TJSOCKET_MESSAGE, FD_READ|FD_ACCEPT);
 	#endif
 }
 
@@ -153,6 +155,8 @@ void SocketListenerThread::Run() {
 	#ifdef TJ_OS_WIN
 		_window = CreateWindow(TJSOCKET_MESSAGE_CLASS, L"SocketWnd", 0, 0, 0, 0, 0, 0, 0, GetModuleHandle(NULL), 0);
 		if(!_window) {
+			DWORD gle = GetLastError();
+			Log::Write(L"TJNP/SocketListenerThread", L"Could not create message window; error="+Stringify(gle));
 			Throw(L"Couldn't create message window for socket.", ExceptionTypeError);
 		}
 		SetWindowLong(_window, GWL_USERDATA, LONG((long long)this));
@@ -166,22 +170,24 @@ void SocketListenerThread::Run() {
 				ThreadLock lock(&_lock);
 				std::map<NativeSocket, weak<SocketListener> >::iterator it = _listeners.begin();
 				while(it!=_listeners.end()) {
-					WSAAsyncSelect(it->first, _window, TJSOCKET_MESSAGE, FD_READ);
+					WSAAsyncSelect(it->first, _window, TJSOCKET_MESSAGE, FD_READ|FD_ACCEPT);
 					++it;
 				}
 			}
 			
 			MSG msg;
-			GetMessage(&msg,0,0,0)
+			GetMessage(&msg,0,0,0);
 				
-			if(msg.wMsg==WM_USER) {
+			if(msg.message==WM_USER) {
 				updateSelect = true;
 				break;
 			}
-			else if(msg.wMsg==WM_QUIT) {
+			else if(msg.message==WM_QUIT) {
 				running = false;
 				break;
 			}
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
 		}
 		
 		DestroyWindow(_window);

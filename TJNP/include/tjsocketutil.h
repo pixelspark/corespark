@@ -19,7 +19,7 @@ namespace tj {
 
 			protected:
 				#ifdef TJ_OS_WIN
-					void* _data;
+					static void* _data;
 				#endif
 		};
 
@@ -55,6 +55,7 @@ namespace tj {
 				std::map<NativeSocket, tj::shared::weak<SocketListener> > _listeners;
 				
 			private:
+				NetworkInitializer _ni;
 				virtual void PostThreadUpdate();
 			
 				#ifdef TJ_OS_POSIX

@@ -2,6 +2,8 @@
 #define _TJ_SLIP_H
 
 #include "internal/tjnp.h"
+#pragma warning(push)
+#pragma warning(disable: 4251 4275)
 
 namespace tj {
 	namespace np {
@@ -40,4 +42,5 @@ namespace tj {
 	}
 }
 
+#pragma warning(pop)
 #endif
