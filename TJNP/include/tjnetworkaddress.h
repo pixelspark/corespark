@@ -17,6 +17,14 @@ namespace tj {
 			AddressFamilyNone = 0,
 			AddressFamilyIPv4,
 			AddressFamilyIPv6,
+			_AddressFamilyLast,
+		};
+
+		enum TransportProtocol {
+			TransportProtocolNone = 0,
+			TransportProtocolTCP,
+			TransportProtocolUDP,
+			_TransportProtocolLast,
 		};
 		
 		class NP_EXPORTED NetworkAddress {

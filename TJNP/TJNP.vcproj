@@ -203,15 +203,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\tjshowsocket.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\tjslip.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\src\tjsocket.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\tjsocketutil.cpp"
 				>
 			</File>
 			<File
@@ -257,15 +257,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\include\tjshowsocket.h"
+				>
+			</File>
+			<File
 				RelativePath=".\include\tjslip.h"
 				>
 			</File>
 			<File
 				RelativePath=".\include\tjsocket.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\tjsocketutil.h"
 				>
 			</File>
 			<File

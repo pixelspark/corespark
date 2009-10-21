@@ -2,7 +2,7 @@
 #define _TJ_NP_WEBSERVER_H
 
 #include "internal/tjnp.h"
-#include "tjsocketutil.h"
+#include "tjsocket.h"
 
 #pragma warning(push)
 #pragma warning(disable:4251 4275)

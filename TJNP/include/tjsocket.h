@@ -1,87 +1,91 @@
-#ifndef _TJ_NP_SOCKET_H
-#define _TJ_NP_SOCKET_H
+#ifndef _TJ_NP_SOCKET_UTIL_H
+#define _TJ_NP_SOCKET_UTIL_H
 
 #include "internal/tjnp.h"
-#include "tjtransaction.h"
-#include "tjclient.h"
-#include "tjstream.h"
-#include "tjsocketutil.h"
+#include "tjnetworkaddress.h"
 
-#pragma pack(push,1)
+struct sockaddr_in;
+struct sockaddr_in6;
+
 #pragma warning(push)
 #pragma warning(disable: 4251 4275)
 
 namespace tj {
 	namespace np {
-		class NP_EXPORTED Socket: public virtual tj::shared::Object, public SocketListener {
+		class NP_EXPORTED NetworkInitializer {
 			public:
-				Socket(int port, const char* address, tj::shared::ref<Node> main);
-				virtual ~Socket();
-			
-				virtual void OnCreated();
-				void SendAnnounce(Role r, const std::wstring& address, Features feats, tj::shared::strong<Transaction> ti);
-				void SendAnnounceReply(Role r, const std::wstring& address, Features feats, TransactionIdentifier ti);
-				void SendLeave();
-				void SendDemoted();
-				void SendPromoted();
-				void SendResourcePush(const GroupID& gid, const tj::shared::ResourceIdentifier& rid);
-				void SendResourceFind(const tj::shared::ResourceIdentifier& ident, tj::shared::ref<Transaction> tr = 0);
-				void SendResourceAdvertise(const tj::shared::ResourceIdentifier& rid, const std::wstring& url, unsigned short port, TransactionIdentifier tid = 0);
-				void SendError(Features involved, tj::shared::ExceptionType type, const std::wstring& message);
-				void SendListDevices(InstanceID to, tj::shared::ref<Transaction> ti);
-				void SendListDevicesReply(const DeviceIdentifier& di, const std::wstring& friendly, TransactionIdentifier ti, in_addr to, unsigned int count);
-				void SendListPatches(InstanceID to, tj::shared::ref<Transaction> ti);
-				void SendListPatchesReply(const PatchIdentifier& pi, const DeviceIdentifier& di, TransactionIdentifier ti, in_addr to, unsigned int count);
-				void SendResetAll();
-				void SendSetPatch(tj::shared::ref<BasicClient> c, const PatchIdentifier& pi, const DeviceIdentifier& di);
-				void SendSetClientAddress(tj::shared::ref<BasicClient> c, std::wstring newAddress);
-				void SendInput(const PatchIdentifier& patch, const InputID& path, float value);
-				void SendOutletChange(Channel ch, GroupID gid, const std::wstring& outletName, const tj::shared::Any& value);
-				void SendResetChannel(GroupID gid, Channel ch);
+				NetworkInitializer();
+				~NetworkInitializer();
+				void Initialize();
 
-				void Send(tj::shared::strong<Message> s, bool reliable = false);
-				void Send(tj::shared::strong<Packet> p, bool reliable = false);
-				int GetPort() const;
-				std::wstring GetAddress() const;
-				int GetBytesSent() const;
-				int GetBytesReceived() const;
-				unsigned int GetActiveTransactionCount() const;
-				unsigned int GetWishListSize() const;
-				void CleanTransactions();
-				void SendRedeliveryRequests();
+			protected:
+				#ifdef TJ_OS_WIN
+					static void* _data;
+				#endif
+		};
+
+		#ifdef TJ_OS_WIN
+			typedef SOCKET NativeSocket;
+		#else
+			typedef int NativeSocket;
+		#endif
+
+		class NP_EXPORTED Socket: public virtual tj::shared::Object {
+			public:
+				Socket(NativeSocket ns);
+				Socket(const NetworkAddress& ad, TransportProtocol tp, unsigned short port);
+				Socket(AddressFamily fm, TransportProtocol tp);
+				virtual ~Socket();
+				virtual bool Connect(const NetworkAddress& ns, unsigned short port);
+				virtual void Close();
+				virtual NativeSocket GetNativeSocket() const;
+
+			protected:
+				const static NativeSocket KInvalidSocket;
+				virtual bool Create(AddressFamily fm, TransportProtocol tp);
+				NativeSocket _socket;
+		};
+
+		class NP_EXPORTED SocketListener: public virtual tj::shared::Object {
+			public:
+				virtual ~SocketListener();
+				virtual void OnReceive(NativeSocket ns) = 0;
+		};
+		
+		class NP_EXPORTED SocketListenerThread: public tj::shared::Thread {
+			#ifdef TJ_OS_WIN
+				friend LRESULT CALLBACK SocketListenerWindowProc(HWND, UINT, WPARAM, LPARAM);
+			#endif
+						
+			public:
+				SocketListenerThread();
+				virtual ~SocketListenerThread();
+				virtual void AddListener(NativeSocket sock, tj::shared::ref<SocketListener> sl);
+				virtual void RemoveListener(NativeSocket sock);
+				virtual void Run();
+				virtual void Stop();
 			
-				// Called by network implementation layer, do not call by yourself
+			protected:
 				virtual void OnReceive(NativeSocket ns);
 				
+				tj::shared::CriticalSection _lock;
+				std::map<NativeSocket, tj::shared::weak<SocketListener> > _listeners;
+				
 			private:
-				ReliablePacketID RegisterReliablePacket(tj::shared::strong<Packet> p);
-				void Send(tj::shared::strong<Packet> p, const sockaddr_in* address, bool reliable);
-				
-				static NetworkInitializer _initializer;
+				NetworkInitializer _ni;
+				virtual void PostThreadUpdate();
 			
-				tj::shared::ref<SocketListenerThread> _listenerThread;
-				NativeSocket _server;
-				NativeSocket _client;
-				char* _recieveBuffer;
-				char* _bcastAddress;
-				int _port;
-				int _bytesSent;
-				int _bytesReceived;
-				unsigned int _maxReliablePacketCount;
-				ReliablePacketID _lastPacketID;
-				TransactionIdentifier _transactionCounter;
-				tj::shared::weak<Node> _network;
-				std::map< TransactionIdentifier, tj::shared::ref<Transaction> > _transactions;
-				std::map< ReliablePacketID, tj::shared::ref<Packet> > _reliableSentPackets;
-				std::deque< std::pair<InstanceID, ReliablePacketID> > _reliableWishList;
-				std::map< InstanceID, ReliablePacketID > _reliableLastReceived;
-				mutable tj::shared::CriticalSection _lock;
-				
-				const static unsigned int KDefaultMaxReliablePacketCount = 50;
+				#ifdef TJ_OS_POSIX
+					NativeSocket _controlSocket[2];
+				#endif
+							
+				#ifdef TJ_OS_WIN
+					HWND _window;
+				#endif
 		};
 	}
 }
 
 #pragma warning(pop)
-#pragma pack(pop)
+
 #endif
