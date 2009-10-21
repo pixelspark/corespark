@@ -3,6 +3,7 @@
 #include <time.h>
 #include <sstream>
 #include <limits>
+#include <errno.h>
 
 #ifndef TJ_OS_WIN
 	#include <sys/socket.h>
@@ -26,7 +27,9 @@
 using namespace tj::shared;
 using namespace tj::np;
 
-void* NetworkInitializer::_data = 0;
+#ifdef TJ_OS_WIN
+	void* NetworkInitializer::_data = 0;
+#endif
 
 NetworkInitializer::NetworkInitializer() {
 }

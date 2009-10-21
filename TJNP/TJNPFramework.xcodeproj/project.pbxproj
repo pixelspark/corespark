@@ -24,14 +24,14 @@
 		B41DD40010663BC0000742DD /* TJSharedFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B41DD3FE10663BB2000742DD /* TJSharedFramework.framework */; };
 		B41DD40110663BC4000742DD /* TinyXMLFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B41DD3F810663BA7000742DD /* TinyXMLFramework.framework */; };
 		B423B91D106E529B00147974 /* tjauthorizer.h in Headers */ = {isa = PBXBuildFile; fileRef = B423B91A106E529B00147974 /* tjauthorizer.h */; };
-		B423B91E106E529B00147974 /* tjsocketutil.h in Headers */ = {isa = PBXBuildFile; fileRef = B423B91B106E529B00147974 /* tjsocketutil.h */; };
 		B423B91F106E529B00147974 /* tjwebserver.h in Headers */ = {isa = PBXBuildFile; fileRef = B423B91C106E529B00147974 /* tjwebserver.h */; };
 		B423B923106E52AC00147974 /* tjauthorizer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B423B920106E52AC00147974 /* tjauthorizer.cpp */; };
 		B423B924106E52AC00147974 /* tjpattern.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B423B921106E52AC00147974 /* tjpattern.cpp */; };
 		B423B925106E52AC00147974 /* tjwebserver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B423B922106E52AC00147974 /* tjwebserver.cpp */; };
-		B4260DD51080CA65009F328C /* tjsocketutil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B4260DD31080CA65009F328C /* tjsocketutil.cpp */; };
 		B4260E2E1080D711009F328C /* tjnetworkaddress.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B4260E2D1080D711009F328C /* tjnetworkaddress.cpp */; };
 		B4260E301080D73E009F328C /* tjnetworkaddress.h in Headers */ = {isa = PBXBuildFile; fileRef = B4260E2F1080D73E009F328C /* tjnetworkaddress.h */; };
+		B4E3EE3A108FBEC3008B42D7 /* tjshowsocket.h in Headers */ = {isa = PBXBuildFile; fileRef = B4E3EE39108FBEC3008B42D7 /* tjshowsocket.h */; };
+		B4E3EE3C108FBECB008B42D7 /* tjshowsocket.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B4E3EE3B108FBECB008B42D7 /* tjshowsocket.cpp */; };
 		B4F6F2BF1067ECBA00B137C0 /* tjnp.h in Headers */ = {isa = PBXBuildFile; fileRef = B4F6F2BE1067ECBA00B137C0 /* tjnp.h */; };
 		B4F6F2C21067ECD100B137C0 /* tjslip.h in Headers */ = {isa = PBXBuildFile; fileRef = B4F6F2C11067ECD100B137C0 /* tjslip.h */; };
 		B4F6F2C41067ECDC00B137C0 /* tjslip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B4F6F2C31067ECDC00B137C0 /* tjslip.cpp */; };
@@ -88,14 +88,14 @@
 		B41DD3F010663BA7000742DD /* TinyXMLFramework.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TinyXMLFramework.xcodeproj; path = ../Libraries/TinyXML/TinyXMLFramework.xcodeproj; sourceTree = SOURCE_ROOT; };
 		B41DD3F910663BB2000742DD /* TJSharedFramework.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TJSharedFramework.xcodeproj; path = ../TJShared/TJSharedFramework.xcodeproj; sourceTree = SOURCE_ROOT; };
 		B423B91A106E529B00147974 /* tjauthorizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tjauthorizer.h; sourceTree = "<group>"; };
-		B423B91B106E529B00147974 /* tjsocketutil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tjsocketutil.h; sourceTree = "<group>"; };
 		B423B91C106E529B00147974 /* tjwebserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tjwebserver.h; sourceTree = "<group>"; };
 		B423B920106E52AC00147974 /* tjauthorizer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tjauthorizer.cpp; sourceTree = "<group>"; };
 		B423B921106E52AC00147974 /* tjpattern.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tjpattern.cpp; sourceTree = "<group>"; };
 		B423B922106E52AC00147974 /* tjwebserver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tjwebserver.cpp; sourceTree = "<group>"; };
-		B4260DD31080CA65009F328C /* tjsocketutil.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tjsocketutil.cpp; sourceTree = "<group>"; };
 		B4260E2D1080D711009F328C /* tjnetworkaddress.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tjnetworkaddress.cpp; sourceTree = "<group>"; };
 		B4260E2F1080D73E009F328C /* tjnetworkaddress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tjnetworkaddress.h; sourceTree = "<group>"; };
+		B4E3EE39108FBEC3008B42D7 /* tjshowsocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tjshowsocket.h; sourceTree = "<group>"; };
+		B4E3EE3B108FBECB008B42D7 /* tjshowsocket.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tjshowsocket.cpp; sourceTree = "<group>"; };
 		B4F6F2BE1067ECBA00B137C0 /* tjnp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tjnp.h; path = internal/tjnp.h; sourceTree = "<group>"; };
 		B4F6F2C11067ECD100B137C0 /* tjslip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tjslip.h; path = include/tjslip.h; sourceTree = SOURCE_ROOT; };
 		B4F6F2C31067ECDC00B137C0 /* tjslip.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tjslip.cpp; path = src/tjslip.cpp; sourceTree = SOURCE_ROOT; };
@@ -171,10 +171,10 @@
 		B41DD3D610663B65000742DD /* include */ = {
 			isa = PBXGroup;
 			children = (
+				B4E3EE39108FBEC3008B42D7 /* tjshowsocket.h */,
 				B40DC588108123D000C94A68 /* tjnetwork.h */,
 				B4F6F2C01067ECC000B137C0 /* internal */,
 				B423B91A106E529B00147974 /* tjauthorizer.h */,
-				B423B91B106E529B00147974 /* tjsocketutil.h */,
 				B423B91C106E529B00147974 /* tjwebserver.h */,
 				B40226F4106917ED00137628 /* tjpattern.h */,
 				B4F6F2C11067ECD100B137C0 /* tjslip.h */,
@@ -191,6 +191,7 @@
 		B41DD3DD10663B65000742DD /* src */ = {
 			isa = PBXGroup;
 			children = (
+				B4E3EE3B108FBECB008B42D7 /* tjshowsocket.cpp */,
 				B40DC58A108123DB00C94A68 /* tjnetwork.cpp */,
 				B423B920106E52AC00147974 /* tjauthorizer.cpp */,
 				B423B921106E52AC00147974 /* tjpattern.cpp */,
@@ -201,7 +202,6 @@
 				B41DD3E010663B65000742DD /* tjsocket.cpp */,
 				B41DD3E110663B65000742DD /* tjstream.cpp */,
 				B41DD3E210663B65000742DD /* tjtransaction.cpp */,
-				B4260DD31080CA65009F328C /* tjsocketutil.cpp */,
 				B4260E2D1080D711009F328C /* tjnetworkaddress.cpp */,
 			);
 			path = src;
@@ -247,10 +247,10 @@
 				B4F6F2C21067ECD100B137C0 /* tjslip.h in Headers */,
 				B40226F5106917ED00137628 /* tjpattern.h in Headers */,
 				B423B91D106E529B00147974 /* tjauthorizer.h in Headers */,
-				B423B91E106E529B00147974 /* tjsocketutil.h in Headers */,
 				B423B91F106E529B00147974 /* tjwebserver.h in Headers */,
 				B4260E301080D73E009F328C /* tjnetworkaddress.h in Headers */,
 				B40DC589108123D000C94A68 /* tjnetwork.h in Headers */,
+				B4E3EE3A108FBEC3008B42D7 /* tjshowsocket.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -348,9 +348,9 @@
 				B423B923106E52AC00147974 /* tjauthorizer.cpp in Sources */,
 				B423B924106E52AC00147974 /* tjpattern.cpp in Sources */,
 				B423B925106E52AC00147974 /* tjwebserver.cpp in Sources */,
-				B4260DD51080CA65009F328C /* tjsocketutil.cpp in Sources */,
 				B4260E2E1080D711009F328C /* tjnetworkaddress.cpp in Sources */,
 				B40DC58B108123DB00C94A68 /* tjnetwork.cpp in Sources */,
+				B4E3EE3C108FBECB008B42D7 /* tjshowsocket.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
