@@ -71,9 +71,12 @@ namespace tj {
 				virtual ~WebServerThread();
 				virtual void Run();
 				virtual void Cancel();
+				virtual void Start();
+				virtual unsigned short GetActualPort() const;
 
 			protected:
 				tj::shared::weak<WebServer> _fs;
+				tj::shared::Event _readyEvent;
 				int _port;
 				NativeSocket _server4, _server6;
 			
@@ -107,8 +110,11 @@ namespace tj {
 				virtual unsigned int GetBytesReceived() const;
 				virtual unsigned int GetBytesSent() const;
 				virtual void Stop();
+				virtual unsigned short GetActualPort() const;
 				virtual void AddResolver(const tj::shared::String& pathPrefix, tj::shared::strong<FileRequestResolver> fr);
 
+				const static unsigned short KPortDontCare = 0;
+			
 			protected:
 				tj::shared::CriticalSection _lock;
 				std::map< tj::shared::String, tj::shared::ref<FileRequestResolver> > _resolvers;

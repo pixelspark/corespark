@@ -391,6 +391,16 @@ WebServerThread::~WebServerThread() {
 	#endif
 }
 
+unsigned short WebServerThread::GetActualPort() const {
+	return _port;
+}
+
+void WebServerThread::Start() {
+	_readyEvent.Reset();
+	Thread::Start();
+	_readyEvent.Wait(); // Blocks until the web server is initialized, and the actual port is known
+}
+
 void WebServerThread::Cancel() {
 	#ifdef TJ_OS_POSIX
 		char quit[1] = {'Q'};
@@ -411,12 +421,14 @@ void WebServerThread::Run() {
 	_server6 = socket(AF_INET6, SOCK_STREAM, IPPROTO_TCP);
 	if(_server6==-1) {
 		Log::Write(L"TJNP/WebServer", L"Could not create IPv6 server socket!");
+		_readyEvent.Signal();
 		return;
 	}
 	
 	_server4 = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if(_server4==-1) {
 		Log::Write(L"TJNP/WebServer", L"Could not create IPv4 server socket!");
+		_readyEvent.Signal();
 		return;
 	}
 
@@ -448,19 +460,37 @@ void WebServerThread::Run() {
 		Log::Write(L"TJNP/WebServer", L"Could not bind IPv4 socket to port (port already taken?)!");
 		v4 = false;
 	}
+	
+	if(_port==WebServer::KPortDontCare) {
+		// Try to find out on which port we are anyway
+		unsigned int len = sizeof(sockaddr_in);
+		if(v4 && getsockname(_server4, (sockaddr*)&local4, &len)==0) {
+			_port = ntohs(local4.sin_port);
+			Log::Write(L"TNP/WebServer", L"IPv4 web server chose port number: "+Stringify(_port));
+		}
+	   len = sizeof(sockaddr_in6);
+		if(v6 && getsockname(_server6, (sockaddr*)&local, &len)==0) {
+			_port = ntohs(local.sin6_port);
+			Log::Write(L"TNP/WebServer", L"IPv6 web server chose port number: "+Stringify(_port));
+		}  
+	}
 
 	if(!v6 || listen(_server6, 10)!=0) {
 		Log::Write(L"TJNP/WebServer", L"The IPv6 socket just doesn't want to listen!");
+		_readyEvent.Signal();
 		return;
 	}
 	
 	if(!v4 || listen(_server4, 10)!=0) {
 		Log::Write(L"TJNP/WebServer", L"The IPv4 socket just doesn't want to listen!");
+		_readyEvent.Signal();
 		return;
 	}
 	
 	// TODO: limit the number of threads with some kind of semaphore?
 	Log::Write(L"TJNP/WebServer", L"WebServer is up and running");
+	_readyEvent.Signal();
+	
 	while(true) {
 		ref<WebServer> fs = _fs;
 		if(!fs->_run) {
@@ -547,11 +577,20 @@ void WebServer::OnCreated() {
 	_serverThread = GC::Hold(new WebServerThread(this, _port));
 	_run = true;
 	_serverThread->Start();
+	//Log::Write(L"TJNP/WebServer", L"Actual port is "+Stringify(_serverThread->GetActualPort()));
 }
 
 void WebServer::AddResolver(const std::wstring& pathPrefix, strong<FileRequestResolver> frq) {
 	ThreadLock lock(&_lock);
 	_resolvers[pathPrefix] = frq;
+}
+
+unsigned short WebServer::GetActualPort() const {
+	if(_serverThread) {
+		// WebServerThread::_port is initialized to KPortDontCare when it is not specified by WebServer
+		return _serverThread->GetActualPort();
+	}
+	return KPortDontCare;
 }
 
 void WebServer::Stop() {
