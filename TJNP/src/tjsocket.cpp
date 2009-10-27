@@ -49,7 +49,7 @@ void NetworkInitializer::Initialize() {
 			Throw(L"Could not register socket message listener class", ExceptionTypeError);
 		}
 		
-		if(WSAStartup(MAKEWORD(1,1), (WSADATA*)&_data)!=0) {
+		if(WSAStartup(MAKEWORD(2,2), (WSADATA*)&_data)!=0) {
 			Throw(L"WSAStartup failed, usually means your computer doesn't have a network or something is really wrong.", ExceptionTypeError);	
 		}
 	}

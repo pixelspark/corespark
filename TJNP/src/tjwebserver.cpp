@@ -417,19 +417,20 @@ void WebServerThread::Cancel() {
 
 void WebServerThread::Run() {
 	NetworkInitializer ni;
-	
+	ni.Initialize();
+	bool v6 = true;
+	bool v4 = true;
+
 	_server6 = socket(AF_INET6, SOCK_STREAM, IPPROTO_TCP);
 	if(_server6==-1) {
 		Log::Write(L"TJNP/WebServer", L"Could not create IPv6 server socket!");
-		_readyEvent.Signal();
-		return;
+		v6 = false;
 	}
 	
 	_server4 = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if(_server4==-1) {
 		Log::Write(L"TJNP/WebServer", L"Could not create IPv4 server socket!");
-		_readyEvent.Signal();
-		return;
+		v4 = false;
 	}
 
 	in6_addr any = IN6ADDR_ANY_INIT;
@@ -448,22 +449,19 @@ void WebServerThread::Run() {
 		local4.sin_len = sizeof(local4);
 	#endif
 	
-	bool v6 = true;
-	bool v4 = true;
-	
-	if(bind(_server6, (sockaddr*)&local, sizeof(sockaddr_in6))!=0) {
+	if(v6 && bind(_server6, (sockaddr*)&local, sizeof(sockaddr_in6))!=0) {
 		Log::Write(L"TJNP/WebServer", L"Could not bind IPv6 socket to port (port already taken?)!");
 		v6 = false;
 	}
 	
-	if(bind(_server4, (sockaddr*)&local4, sizeof(sockaddr_in))!=0) {
+	if(v4 && bind(_server4, (sockaddr*)&local4, sizeof(sockaddr_in))!=0) {
 		Log::Write(L"TJNP/WebServer", L"Could not bind IPv4 socket to port (port already taken?)!");
 		v4 = false;
 	}
 	
 	if(_port==WebServer::KPortDontCare) {
 		// Try to find out on which port we are anyway
-		unsigned int len = sizeof(sockaddr_in);
+		socklen_t len = sizeof(sockaddr_in);
 		if(v4 && getsockname(_server4, (sockaddr*)&local4, &len)==0) {
 			_port = ntohs(local4.sin_port);
 			Log::Write(L"TNP/WebServer", L"IPv4 web server chose port number: "+Stringify(_port));
@@ -477,19 +475,23 @@ void WebServerThread::Run() {
 
 	if(!v6 || listen(_server6, 10)!=0) {
 		Log::Write(L"TJNP/WebServer", L"The IPv6 socket just doesn't want to listen!");
-		_readyEvent.Signal();
-		return;
+		v6 = false;
 	}
 	
 	if(!v4 || listen(_server4, 10)!=0) {
 		Log::Write(L"TJNP/WebServer", L"The IPv4 socket just doesn't want to listen!");
-		_readyEvent.Signal();
-		return;
+		v4 = false;
 	}
 	
 	// TODO: limit the number of threads with some kind of semaphore?
-	Log::Write(L"TJNP/WebServer", L"WebServer is up and running");
 	_readyEvent.Signal();
+	if(v4 || v6) {
+		Log::Write(L"TJNP/WebServer", L"WebServer is up and running");
+	}
+	else {
+		return;
+	}
+	
 	
 	while(true) {
 		ref<WebServer> fs = _fs;
