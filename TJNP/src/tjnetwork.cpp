@@ -134,7 +134,7 @@ void Networking::Wake(const MACAddress& mac) {
 bool Networking::GetMACAddress(const String& ip, MACAddress& maca) {
 	ZoneEntry ze(Zones::NetworkZone);
 
-	#ifdef WIN32
+	#ifdef TJ_OS_WIN
 		IPAddr ipa = inet_addr(Mbs(ip).c_str());
 
 		for(int a=0;a<6;a++) {
@@ -146,7 +146,9 @@ bool Networking::GetMACAddress(const String& ip, MACAddress& maca) {
 			return true;
 		}
 		return false;
-	#else
+	#endif
+	
+	#ifdef TJ_OS_POSIX
 		#warning Not implemented (Networking::GetMACAddress)
 		return false;
 	#endif
