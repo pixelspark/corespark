@@ -1,4 +1,5 @@
 #include "../include/internal/tjscript.h"
+#include "../include/types/tjscriptarray.h"
 using namespace tj::script;
 using namespace tj::shared;
 

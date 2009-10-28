@@ -64,12 +64,6 @@ void ScriptContext::SetDebug(bool d) {
 	_vm->SetDebug(d);
 }
 
-std::map<std::wstring, ref<ScriptType> > ScriptContext::_staticTypes;
-
-void ScriptContext::AddStaticType(const std::wstring& type, ref<ScriptType> stype) {
-	_staticTypes[type] = stype;
-}
-
 void ScriptContext::AddType(const std::wstring& type, ref<ScriptType> stype) {
 	_types[type] = stype;
 }
@@ -78,9 +72,11 @@ ref<ScriptType> ScriptContext::GetType(const std::wstring& type) {
 	if(_types.find(type)!=_types.end()) {
 		return _types[type];
 	}
-	else if(_staticTypes.find(type)!=_staticTypes.end()) {
-		return _staticTypes[type];
+	else {
+		ref<ScriptType> st = ScriptPackage::DefaultInstance()->GetType(type);
+		if(!st) {
+			throw ScriptException(std::wstring(L"The type ")+type+L" does not exist.");
+		}
+		return st;
 	}
-
-	throw ScriptException(std::wstring(L"The type ")+type+L" does not exist.");
 }

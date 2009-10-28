@@ -71,7 +71,7 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = B41DD4EA1066453E000742DD /* TJSharedFramework.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 8DC2EF4F0486A6940098B216 /* TJSharedFramework */;
+			remoteGlobalIDString = 8DC2EF4F0486A6940098B216;
 			remoteInfo = TJSharedFramework;
 		};
 /* End PBXContainerItemProxy section */

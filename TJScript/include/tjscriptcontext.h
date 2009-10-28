@@ -33,16 +33,9 @@ namespace tj {
 			protected:
 				ref<VM> _vm;
 				ref<ScriptScope> _global;
-				static std::map< std::wstring,ref<ScriptType> > _staticTypes;
 				std::map< std::wstring, ref<ScriptType> > _types;
 				bool _optimize;
 				tj::shared::CriticalSection _running;
-		};
-
-		template<class T> struct ScriptTypeRegistration {
-			inline ScriptTypeRegistration(const std::wstring& n) {
-				ScriptContext::AddStaticType(n, tj::shared::GC::Hold(new T()));
-			}
 		};
 
 		// Converting to some other type, either the object we want to convert is of the type desired
