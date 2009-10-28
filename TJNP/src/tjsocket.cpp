@@ -106,7 +106,7 @@ bool Socket::IsValid() const {
 }
 
 bool Socket::Read(char* buffer, unsigned int length, unsigned int& readBytes) {
-	int r = recv(_socket, (void*)buffer, length*sizeof(char), 0);
+	int r = recv(_socket, buffer, length*sizeof(char), 0);
 	if(r>0) {
 		readBytes = r;
 		return true;

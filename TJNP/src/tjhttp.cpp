@@ -68,7 +68,7 @@ void Download::OnReceive(NativeSocket ns) {
 				_downloadStateChanged.Signal();
 				
 				// We need 4 consecutive \r or \n characters to delimit the headers and start the contents
-				for(int a=0;a<readBytes;a++) {
+				for(unsigned int a=0;a<readBytes;a++) {
 					if(buffer[a]==L'\r' || buffer[a]==L'\n') {
 						_entersRead++;
 						if(_entersRead>=4) {

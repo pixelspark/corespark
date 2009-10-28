@@ -4,6 +4,9 @@
 #include "internal/tjnp.h"
 #include "tjsocket.h"
 
+#pragma warning (push)
+#pragma warning (disable: 4251 4275)
+
 namespace tj {
 	namespace np {
 		class NP_EXPORTED FileRequest: public tj::shared::Object {
@@ -96,4 +99,5 @@ namespace tj {
 	}
 }
 
+#pragma warning(pop)
 #endif

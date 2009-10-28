@@ -187,6 +187,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\tjhttp.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\tjnetwork.cpp"
 				>
 			</File>
@@ -238,6 +242,10 @@
 			</File>
 			<File
 				RelativePath=".\include\tjclient.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tjhttp.h"
 				>
 			</File>
 			<File
