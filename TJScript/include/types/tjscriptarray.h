@@ -1,6 +1,9 @@
 #ifndef _TJSCRIPTARRAY_H
 #define _TJSCRIPTARRAY_H
 
+#pragma warning(push)
+#pragma warning(disable: 4251 4275)
+
 namespace tj {
 	namespace script {
 
@@ -34,5 +37,7 @@ namespace tj {
 		};
 	}
 }
+
+#pragma warning(pop)
 
 #endif

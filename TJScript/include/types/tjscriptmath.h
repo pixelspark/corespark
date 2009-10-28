@@ -1,6 +1,9 @@
 #ifndef _TJSCRIPTMATH_H
 #define _TJSCRIPTMATH_H
 
+#pragma warning(push)
+#pragma warning(disable: 4251 4275)
+
 namespace tj {
 	namespace script {
 		class SCRIPT_EXPORTED ScriptMath: public ScriptObject<ScriptMath> {
@@ -35,5 +38,7 @@ namespace tj {
 		};
 	}
 }
+
+#pragma warning(pop)
 
 #endif

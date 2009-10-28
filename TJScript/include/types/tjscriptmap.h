@@ -1,6 +1,9 @@
 #ifndef _TJScriptMap_H
 #define _TJScriptMap_H
 
+#pragma warning (push)
+#pragma warning (disable: 4275 4251)
+
 namespace tj {
 	namespace script {
 
@@ -35,5 +38,7 @@ namespace tj {
 		};
 	}
 }
+
+#pragma warning(pop)
 
 #endif

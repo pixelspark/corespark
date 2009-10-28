@@ -26,7 +26,6 @@ namespace tj {
 				static tj::shared::Any GetValue(ref<Scriptable> s);
 			
 				// Types
-				static void AddStaticType(const std::wstring& type, ref<ScriptType> stype);
 				void AddType(const std::wstring& type, ref<ScriptType> stype);
 				ref<ScriptType> GetType(const std::wstring& type);
 

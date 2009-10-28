@@ -1,9 +1,11 @@
 #ifndef _TJSCRIPTHASH_H
 #define _TJSCRIPTHASH_H
 
+#pragma warning(push)
+#pragma warning(disable: 4251 4275)
+
 namespace tj {
 	namespace script {
-
 		class ScriptHashType: public ScriptType {
 			public:
 				virtual tj::shared::ref<Scriptable> Construct(tj::shared::ref<ParameterList> p);
@@ -25,5 +27,7 @@ namespace tj {
 		};
 	}
 }
+
+#pragma warning(pop)
 
 #endif
