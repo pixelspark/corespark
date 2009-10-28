@@ -12,137 +12,6 @@ using namespace tj::shared;
 	#include <fcntl.h>
 #endif
 
-/** HTTPRequest **/
-HTTPRequest::HTTPRequest(const std::string& req) {
-	_method = MethodNone;
-	_state = ParsingMethod;
-
-	std::string::const_iterator it = req.begin();
-	while(it!=req.end()) {
-		// Parsing method
-		if(_state==ParsingMethod) {
-			std::string::const_iterator end = std::find(it, req.end(), L' ');
-			std::string method(it,end);
-			if(method=="GET") {
-				_method = MethodGet;
-				_state = ParsingFile;
-			}
-			else if(method=="POST") {
-				_method = MethodPost;
-				_state = ParsingFile;
-			}
-			it = end+1;
-		}
-		else if(_state==ParsingFile) {
-			std::string::const_iterator end = std::find(it, req.end(), L' ');
-			std::string::const_iterator endURI = std::find(it, req.end(), L'?');
-			if(endURI!=req.end() && endURI<end) {
-				// parameters!
-				_file = URLDecode(it,endURI);
-				_queryString = URLDecode(endURI+1, end);
-				std::string::const_iterator parameterBegin = endURI+1;
-				
-				while(parameterBegin <= end) {
-					std::string::const_iterator endName = std::find(parameterBegin, end, L'=');
-					if(endName==end) break;
-
-					std::string parameterName(parameterBegin, endName);
-					std::string::const_iterator endValue = std::find(endName, end, L'&');
-					if(endValue<=end) {
-						_parameters[parameterName] = URLDecode(endName+1, endValue);
-						parameterBegin = endValue+1;
-					}
-					else {
-						_parameters[parameterName] = URLDecode(endName+1, end);
-						break;
-					}
-				}
-			}
-			else {
-				_file = URLDecode(it,end);
-			}
-			it = end+1;
-			_state = ParsingProtocol;
-		}
-		else if(_state==ParsingProtocol) {
-			std::string::const_iterator end = std::find(it, req.end(), L'\n');
-			it = end+1;
-			_state = ParsingEnd;
-			break;
-		}
-	}
-}
-
-HTTPRequest::~HTTPRequest() {
-}
-
-const std::wstring& HTTPRequest::GetParameter(const std::string& parameter, const std::wstring& defaultValue) {
-	std::map< std::string, std::wstring >::const_iterator it = _parameters.find(parameter);
-	if(it!=_parameters.end()) {
-		return it->second;
-	}
-	return defaultValue;
-}
-
-const std::wstring& HTTPRequest::GetPath() const {
-	return _file;
-}
-
-HTTPRequest::Method HTTPRequest::GetMethod() const {
-	return _method;
-}
-
-char HTTPRequest::GetHexChar(char a) {
-	char va = 0;
-
-	if(a>='0' && a<='9') {
-		va = (a-'0');
-	}
-	else if(a>='A' && a<='F') {
-		va = (a-'A')+10;
-	}
-	else if(a>='a' && a<='f') {
-		va = (a-'a')+10;
-	}
-	return va;
-}
-
-const std::wstring& HTTPRequest::GetQueryString() const {
-	return _queryString;
-}
-
-std::wstring HTTPRequest::URLDecode(std::string::const_iterator it, std::string::const_iterator end) {
-	std::wostringstream os;
-
-	while(it!=end) {
-		char current = *it;
-		if(current=='+') {
-			os << ' ';
-		}
-		else if(current=='%') {
-			++it;
-			if(it==end) break;
-			char ca = *it;
-			if(ca=='%') {
-				os << '%';
-				++it;
-				continue;
-			}
-
-			++it;
-			if(it==end) break;
-			char cb = *it;
-
-			os << (char)(GetHexChar(ca)*16 + GetHexChar(cb));
-		}
-		else {
-			os << current;
-		}
-		++it;
-	}
-	return os.str();
-}
-
 /** WebServerResponseThread **/
 WebServerResponseThread::WebServerResponseThread(NativeSocket client, ref<WebServer> fs): _fs(fs), _client(client) {
 }
@@ -231,11 +100,14 @@ void WebServerResponseThread::ServePage(ref<HTTPRequest> hrp) {
 
 	// Just dump the file
 	if(sendData) {
+		headers << "Content-length: " << resolvedDataLength << "\r\n\r\n";
+		std::string dataHeaders = headers.str();
+		int q = send(_client, dataHeaders.c_str(), dataHeaders.length(), 0);
 		int r = send(_client, resolvedData, resolvedDataLength, 0);
-		if(r>0) {
+		if((q+r)>0) {
 			ref<WebServer> fs = _fs;
 			if(fs) {
-				fs->_bytesSent += r;
+				fs->_bytesSent += q+r;
 			}
 		}
 		delete[] resolvedData;
@@ -607,12 +479,4 @@ unsigned int WebServer::GetBytesReceived() const {
 
 unsigned int WebServer::GetBytesSent() const {
 	return _bytesSent;
-}
-
-/** FileRequestResolver **/
-FileRequestResolver::~FileRequestResolver() {
-}
-
-/** FileRequest **/
-FileRequest::~FileRequest() {
 }

@@ -238,7 +238,7 @@ void Thread::Start() {
 void Thread::WaitForCompletion() {
 	if(!_started) {
 		// don't wait if the thread was never started
-		return;
+		Throw(L"Cannot wait for a thread that isn't started!", ExceptionTypeError);
 	}
 	
 	#ifdef TJ_OS_WIN
@@ -251,6 +251,7 @@ void Thread::WaitForCompletion() {
 	
 	#ifdef TJ_USE_PTHREADS
 		if(pthread_self()==_thread) {
+			Throw(L"Thread cannot wait on itself", ExceptionTypeError);
 			return; // Cannot wait on yourself
 		}
 	

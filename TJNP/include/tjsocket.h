@@ -38,7 +38,10 @@ namespace tj {
 				virtual ~Socket();
 				virtual bool Connect(const NetworkAddress& ns, unsigned short port);
 				virtual void Close();
+				virtual bool IsValid() const;
 				virtual NativeSocket GetNativeSocket() const;
+				virtual bool Send(const std::string& data);
+				virtual bool Read(char* buffer, unsigned int maxLength, unsigned int& readBytes);
 
 			protected:
 				const static NativeSocket KInvalidSocket;

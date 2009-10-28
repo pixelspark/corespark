@@ -101,6 +101,30 @@ void Socket::Close() {
 	_socket = KInvalidSocket;
 }
 
+bool Socket::IsValid() const {
+	return _socket != KInvalidSocket;
+}
+
+bool Socket::Read(char* buffer, unsigned int length, unsigned int& readBytes) {
+	int r = recv(_socket, (void*)buffer, length*sizeof(char), 0);
+	if(r>0) {
+		readBytes = r;
+		return true;
+	}
+	else if(r==0) {
+		Close();
+	}
+	readBytes = 0;
+	return false;
+}
+
+bool Socket::Send(const std::string& data) {
+	if(send(_socket, data.c_str(), int(data.length()*sizeof(char)), 0)<=0) {
+		return false;
+	}
+	return true;
+}
+
 bool Socket::Connect(const NetworkAddress& networkAddress, unsigned short port) {
 	void* toAddress = 0;
 	unsigned int toAddressSize = 0;
@@ -223,7 +247,6 @@ void SocketListenerThread::RemoveListener(NativeSocket ns) {
 	}
 
 	PostThreadUpdate();
-	Log::Write(L"TJNP/SocketListener", L"Removed listener");
 }
 
 void SocketListenerThread::AddListener(NativeSocket sock, ref<SocketListener> sl) {
@@ -315,17 +338,15 @@ void SocketListenerThread::Run() {
 				ThreadLock lock(&_lock);
 				std::map<NativeSocket, weak<SocketListener> >::iterator it = _listeners.begin();
 				while(it!=_listeners.end()) {
-					if(ref<SocketListener>(it->second)) {
-						if(it->first!=-1) {
-							FD_SET(it->first, &fds);
-							FD_SET(it->first, &fdsErrors);
-							maxSocket = max(maxSocket, it->first);
-						}
+					if(it->first!=-1) {
+						FD_SET(it->first, &fds);
+						FD_SET(it->first, &fdsErrors);
+						maxSocket = max(maxSocket, it->first);
 					}
 					++it;
 				}
 			}
-			
+
 			if(select(maxSocket+1, &fds, NULL, &fdsErrors, NULL)>0) {
 				if(FD_ISSET(_controlSocket[1], &fds)) {
 					char cmd = 'Q';
@@ -366,6 +387,7 @@ void SocketListenerThread::Run() {
 			}
 		}
 	#endif
+	Log::Write(L"TJNP/SocketListenerThread", L"End thread run");
 }
 
 #ifdef TJ_OS_WIN
