@@ -28,6 +28,10 @@ void Download::OnDownloadComplete(ref<CodeWriter> cw) {
 	}
 }
 
+const NetworkAddress& Download::GetAddress() const {
+	return _address;
+}
+
 void Download::Run() {
 	_entersRead = 0;
 	_data = GC::Hold(new CodeWriter());

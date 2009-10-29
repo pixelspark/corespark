@@ -82,6 +82,7 @@ namespace tj {
 				virtual void Run();
 				virtual void Start();
 				virtual DownloadState GetState() const;
+				virtual const NetworkAddress& GetAddress() const;
 				
 			protected:
 				virtual void OnReceive(NativeSocket ns);

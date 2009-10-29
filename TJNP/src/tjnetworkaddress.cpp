@@ -46,15 +46,23 @@ NetworkAddress::NetworkAddress(const String& s, bool passive): _family(AddressFa
 			}
 		}
 		else {
-#ifdef TJ_OS_POSIX
+			#ifdef TJ_OS_POSIX
 			std::wstring error = Wcs(std::string(gai_strerror(r)));
-#endif
+			#endif
 			
-#ifdef TJ_OS_WIN
+			#ifdef TJ_OS_WIN
 			std::wstring error = std::wstring(gai_strerror(r));
-#endif
+			#endif
 			
 			Log::Write(L"TJNP/NetworkAddress", L"getaddrinfo() failed: " + error);
+		}
+	}
+	else {
+		if(passive) {
+			_family = AddressFamilyIPv6;
+			in6_addr any = IN6ADDR_ANY_INIT;
+			_address.sin6_addr = any;
+			_v4address.sin_addr.s_addr = INADDR_ANY;
 		}
 	}
 }

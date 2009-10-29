@@ -33,7 +33,11 @@ namespace tj {
 						tr->Run();
 					}
 				}
+				catch(const Exception& e) {
+					Log::Write(L"TJShared/Thread", std::wstring(L"Thread ended because an exception occurred: ")+e.GetMsg());
+				}
 				catch(...) {
+					Log::Write(L"TJShared/Thread", L"Thread ended because an unknown exception was thrown");
 				}
 				
 				InterlockedDecrement(&Thread::_count);
@@ -54,7 +58,11 @@ namespace tj {
 						tr->Run();
 					}
 				}
+				catch(const Exception& e) {
+					Log::Write(L"TJShared/Thread", std::wstring(L"Thread ended because an exception occurred: ")+e.GetMsg());
+				}
 				catch(...) {
+					Log::Write(L"TJShared/Thread", L"Thread ended because an unknown exception was thrown");
 				}
 				
 				#ifdef TJ_OS_MAC
@@ -243,7 +251,7 @@ void Thread::WaitForCompletion() {
 	
 	#ifdef TJ_OS_WIN
 		if(GetCurrentThread()==_thread) {
-			return; // Cannot wait on yourself
+			Throw(L"Thread waiting on itself to finish; throwing exception to end the thread!", ExceptionTypeWarning);
 		}
 	
 		WaitForSingleObject(_thread,INFINITE);
@@ -251,8 +259,7 @@ void Thread::WaitForCompletion() {
 	
 	#ifdef TJ_USE_PTHREADS
 		if(pthread_self()==_thread) {
-			Throw(L"Thread cannot wait on itself", ExceptionTypeError);
-			return; // Cannot wait on yourself
+			Throw(L"Thread waiting on itself to finish; throwing exception to end the thread!", ExceptionTypeWarning);
 		}
 	
 		void* returnValue = 0L;

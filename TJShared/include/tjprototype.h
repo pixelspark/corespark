@@ -77,6 +77,10 @@ namespace tj {
 						}
 						return PN();
 					}
+				
+					inline bool KnowsType(const PN& prototypeName) {
+							return _prototypes.find(prototypeName) != _prototypes.end();
+					}
 
 					inline void RegisterPrototype(const PN& prototypeName, ref< Prototype<T> > pt) {
 						if(pt) {

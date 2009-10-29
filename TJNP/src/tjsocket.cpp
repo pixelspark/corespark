@@ -211,7 +211,11 @@ SocketListenerThread::SocketListenerThread() {
 }
 
 SocketListenerThread::~SocketListenerThread() {
-	Stop();
+	{
+		ThreadLock lock(&_lock);
+		Stop();
+	}
+	
 	WaitForCompletion();
 	
 	#ifdef TJ_OS_POSIX
