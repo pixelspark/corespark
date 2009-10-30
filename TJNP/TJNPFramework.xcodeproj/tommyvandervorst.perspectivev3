@@ -282,7 +282,7 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>32</integer>
+									<integer>31</integer>
 									<integer>19</integer>
 									<integer>0</integer>
 								</array>
@@ -323,7 +323,7 @@
 								<key>PBXProjectModuleGUID</key>
 								<string>B41DD3C210663B1B000742DD</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>tjhttp.cpp</string>
+								<string>tjnetworkaddress.cpp</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -331,18 +331,17 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>B41DD3C310663B1B000742DD</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>tjhttp.cpp</string>
+										<string>tjnetworkaddress.cpp</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>B462B0F91098FD4400484C29</string>
+										<string>B419F096109A38A600FE1A72</string>
 										<key>history</key>
 										<array>
 											<string>B41DD40510663BE1000742DD</string>
 											<string>B4F6F341106807E000B137C0</string>
 											<string>B40226ED1069177600137628</string>
 											<string>B423B85F106E163800147974</string>
-											<string>B423B861106E163800147974</string>
 											<string>B423BA6C106E9AC400147974</string>
 											<string>B423BA6E106E9AC400147974</string>
 											<string>B423BA73106E9AC400147974</string>
@@ -360,15 +359,16 @@
 											<string>B462AFCB1098F05800484C29</string>
 											<string>B462AFCC1098F05800484C29</string>
 											<string>B462AFCD1098F05800484C29</string>
-											<string>B462AFCE1098F05800484C29</string>
-											<string>B462AFCF1098F05800484C29</string>
 											<string>B462AFD01098F05800484C29</string>
 											<string>B462AFD71098F0DA00484C29</string>
 											<string>B462AFED1098F20900484C29</string>
-											<string>B462AFEE1098F20900484C29</string>
 											<string>B462B0341098F34600484C29</string>
-											<string>B462B0E51098F88D00484C29</string>
-											<string>B462B0E61098F88D00484C29</string>
+											<string>B419F090109A38A600FE1A72</string>
+											<string>B419F091109A38A600FE1A72</string>
+											<string>B419F092109A38A600FE1A72</string>
+											<string>B419F093109A38A600FE1A72</string>
+											<string>B419F094109A38A600FE1A72</string>
+											<string>B419F095109A38A600FE1A72</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -382,18 +382,18 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 0}, {1073, 647}}</string>
+								<string>{{0, 0}, {1073, 642}}</string>
 								<key>RubberWindowFrame</key>
 								<string>0 97 1280 905 0 0 1280 1002 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
 							<key>Proportion</key>
-							<string>647pt</string>
+							<string>642pt</string>
 						</dict>
 						<dict>
 							<key>Proportion</key>
-							<string>212pt</string>
+							<string>217pt</string>
 							<key>Tabs</key>
 							<array>
 								<dict>
@@ -407,7 +407,9 @@
 									<key>GeometryConfiguration</key>
 									<dict>
 										<key>Frame</key>
-										<string>{{10, 27}, {1073, 185}}</string>
+										<string>{{10, 27}, {1073, 190}}</string>
+										<key>RubberWindowFrame</key>
+										<string>0 97 1280 905 0 0 1280 1002 </string>
 									</dict>
 									<key>Module</key>
 									<string>XCDetailModule</string>
@@ -462,8 +464,6 @@
 									<dict>
 										<key>Frame</key>
 										<string>{{10, 27}, {1073, 185}}</string>
-										<key>RubberWindowFrame</key>
-										<string>0 97 1280 905 0 0 1280 1002 </string>
 									</dict>
 									<key>Module</key>
 									<string>PBXBuildResultsModule</string>
@@ -491,11 +491,11 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>B462AE3310989EC400484C29</string>
+				<string>B419F097109A38A600FE1A72</string>
 				<string>1CA23ED40692098700951B8B</string>
-				<string>B462AE3410989EC400484C29</string>
+				<string>B419F098109A38A600FE1A72</string>
 				<string>B41DD3C210663B1B000742DD</string>
-				<string>B462AE3510989EC400484C29</string>
+				<string>B419F099109A38A600FE1A72</string>
 				<string>1CA23EDF0692099D00951B8B</string>
 				<string>1CA23EE00692099D00951B8B</string>
 				<string>1CA23EE10692099D00951B8B</string>
