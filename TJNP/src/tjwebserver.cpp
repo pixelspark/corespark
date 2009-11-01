@@ -289,7 +289,6 @@ void WebServerThread::Cancel() {
 
 void WebServerThread::Run() {
 	NetworkInitializer ni;
-	ni.Initialize();
 	bool v6 = true;
 	bool v4 = true;
 

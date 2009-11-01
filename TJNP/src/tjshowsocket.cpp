@@ -24,7 +24,6 @@ NetworkInitializer ShowSocket::_initializer;
 ShowSocket::ShowSocket(int port, const char* address, ref<Node> nw): _lastPacketID(0), _bytesSent(0), _bytesReceived(0), _network(nw), _maxReliablePacketCount(KDefaultMaxReliablePacketCount) {
 	// Create a random transaction counter id
 	_transactionCounter = rand();
-	_initializer.Initialize();
 	assert(address!=0 && port > 0 && port < 65536);
 	_recieveBuffer = new char[Packet::maximumSize];
 

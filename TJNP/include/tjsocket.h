@@ -16,9 +16,9 @@ namespace tj {
 			public:
 				NetworkInitializer();
 				~NetworkInitializer();
-				void Initialize();
-
+				
 			protected:
+				void Initialize();
 				#ifdef TJ_OS_WIN
 					static void* _data;
 				#endif

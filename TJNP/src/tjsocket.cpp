@@ -32,6 +32,7 @@ using namespace tj::np;
 #endif
 
 NetworkInitializer::NetworkInitializer() {
+	Initialize();
 }
 
 void NetworkInitializer::Initialize() {
@@ -201,8 +202,6 @@ SocketListener::~SocketListener() {
 
 /** SocketListenerThread **/
 SocketListenerThread::SocketListenerThread() {
-	_ni.Initialize();
-
 	#ifdef TJ_OS_POSIX
 		if(socketpair(AF_UNIX, SOCK_STREAM, 0, _controlSocket)!=0) {
 			Log::Write(L"TJNP/SocketListenerThread", L"Could not create control socket pair");
@@ -316,7 +315,7 @@ void SocketListenerThread::Run() {
 				
 			if(msg.message==WM_USER) {
 				updateSelect = true;
-				break;
+				continue;
 			}
 			else if(msg.message==WM_QUIT) {
 				running = false;

@@ -1,4 +1,5 @@
 #include "../include/tjnetworkaddress.h"
+#include "../include/tjsocket.h"
 #include <errno.h>
 
 #ifdef TJ_OS_POSIX
@@ -17,6 +18,8 @@ using namespace tj::np;
 
 /** NetworkAddress **/
 NetworkAddress::NetworkAddress(const String& s, bool passive): _family(AddressFamilyNone) {
+	NetworkInitializer ni;
+
 	if(s.length()>0) {
 		memset(&_address, 0, sizeof(_address));
 		addrinfo* firstResult;
