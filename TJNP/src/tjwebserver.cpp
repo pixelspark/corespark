@@ -152,36 +152,42 @@ void WebServerResponseThread::ServePage(ref<HTTPRequest> hrp) {
 		#endif
 		
 		#ifdef TJ_OS_POSIX
-			#ifdef TJ_OS_MAC
-				Bytes size = File::GetFileSize(resolvedFile.c_str());
-		
-				// Write headers
-				headers << "Content-length: " << size << "\r\n\r\n";
-				std::string headerString = headers.str();
-				int length = (int)headerString.length();
-				send(_client, headerString.c_str(), length, 0);
+			Bytes size = File::GetFileSize(resolvedFile.c_str());
+	
+			// Write headers
+			headers << "Content-length: " << size << "\r\n\r\n";
+			std::string headerString = headers.str();
+			int length = (int)headerString.length();
+			send(_client, headerString.c_str(), length, 0);
+			
+			ref<WebServer> fs = _fs;
+			if(fs) {
+				fs->_bytesSent += length;
+			}
+	
+			// Write data
+			int fp = open(Mbs(resolvedFile).c_str(), O_RDONLY);
+			if(fp!=-1) {
+				off_t length = size;
+				off_t start = 0;
 				
-				ref<WebServer> fs = _fs;
-				if(fs) {
-					fs->_bytesSent += length;
-				}
-		
-				// Write data
-				int fp = open(Mbs(resolvedFile).c_str(), O_RDONLY);
-				if(fp!=-1) {
-					off_t length = size;
-					off_t start = 0;
+				#ifdef TJ_OS_MAC
 					if(sendfile(fp, _client, start, &length, NULL, 0)!=0) {
 						Log::Write(L"TJNP/WebServer", L"sendfile() failed, file path was "+resolvedFile);
 					}
-				}
-				else {
-					Log::Write(L"TJNP/WebServer", L"open() failed, file path was "+resolvedFile);
-				}
-				close(fp);
-			#else
-				#warning Not implemented on non-MAC POSIX yet
-			#endif
+				#endif
+				
+				#ifdef TJ_OS_LINUX
+					if(sendfile(_client, fp, NULL, length)==-1) {
+						Log::Write(L"TJNP/WebServer", L"sendfile() failed, file path was "+resolvedFile);
+					}
+				#endif
+					
+			}
+			else {
+				Log::Write(L"TJNP/WebServer", L"open() failed, file path was "+resolvedFile);
+			}
+			close(fp);
 		#endif
 	}
 }
@@ -375,17 +381,17 @@ void WebServerThread::Run() {
 		int maxSocket = 0;
 		
 		#ifdef TJ_OS_POSIX
-			FD_SET(_controlSocket[1], &fds); maxSocket = max(maxSocket, _controlSocket[1]);
+			FD_SET(_controlSocket[1], &fds); maxSocket = Util::Max(maxSocket, _controlSocket[1]);
 		#endif
 		
 		if(v6) {
 			FD_SET(_server6, &fds); 
-			maxSocket = max(maxSocket, (int)_server6);
+			maxSocket = Util::Max(maxSocket, (int)_server6);
 		}
 		
 		if(v4) {
 			FD_SET(_server4, &fds); 
-			maxSocket = max(maxSocket, (int)_server4);
+			maxSocket = Util::Max(maxSocket, (int)_server4);
 		}
 		
 		if(select(maxSocket+1, &fds, NULL, NULL, NULL)>0) {
