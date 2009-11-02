@@ -225,7 +225,7 @@ std::string HTTPRequest::URLEncode(const String& rid) {
 		if(current==L' ') {
 			os << '+';
 		}
-		else if(iswascii(current)==0) {
+		else if(isascii(current)==0) {
 			os << '%' << std::hex << current;
 		}
 		else {
