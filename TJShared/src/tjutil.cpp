@@ -58,7 +58,7 @@ void Copyright::AddCopyright(Copyright* cs) {
 Time MediaUtil::GetDuration(const String& file) {
 	ZoneEntry ze(Zones::LocalFileInfoZone);
 
-	#ifdef WIN32
+	#ifdef TJ_OS_WIN
 		if(GetFileAttributes(file.c_str())==INVALID_FILE_ATTRIBUTES) {
 			Throw(L"File does not exist, cannot get length!", ExceptionTypeError);
 		}
@@ -151,9 +151,7 @@ char* Util::CopyString(const char* str) {
 		char* buf = new char[strlen(str)+1];
 		strcpy_s(buf,strlen(str)+1,str);
 		return buf;
-	#endif
-	
-	#ifdef TJ_OS_MAC
+	#else
 		return strdup(str);
 	#endif
 }
@@ -161,9 +159,7 @@ char* Util::CopyString(const char* str) {
 wchar_t* Util::CopyString(const wchar_t* str) {
 	#ifdef TJ_OS_WIN
 		return _wcsdup(str);
-	#endif
-	
-	#ifdef TJ_OS_MAC
+	#else
 		size_t size = wcslen(str)+1;
 		wchar_t* buffer = new wchar_t[size];
 		memcpy(buffer, str, size);
@@ -176,9 +172,7 @@ wchar_t* Util::IntToWide(int x) {
 		wchar_t* str = new wchar_t[33];
 		_itow_s(x,str,33,10);
 		return str;
-	#endif
-	
-	#ifdef TJ_OS_MAC
+	#else
 		std::wostringstream wos;
 		wos << x;
 		return CopyString(wos.str().c_str());
@@ -204,6 +198,12 @@ String Util::GetApplicationDirectory() {
 		CFRelease(mainBundlePath);
 		return moduleName;
 	#endif
+	
+	#ifdef TJ_OS_LINUX
+		#warning Not implemented (Util::GetApplicationDirectory)
+	#endif
+
+	return L"";
 }
 
 String Util::IPToString(const in_addr& ip) {
@@ -258,9 +258,7 @@ namespace tj {
 		template<> int StringTo(const String& s, const int& def) {
 			#ifdef TJ_OS_WIN
 				return _wtoi(s.c_str());
-			#endif
-			
-			#ifdef TJ_OS_MAC
+			#else
 				std::wistringstream is(s);
 				int x = def;
 				is >> x;
@@ -283,9 +281,7 @@ namespace tj {
 				wchar_t buffer[33];
 				_itow_s(x, buffer, (size_t)16, 10);
 				return String(buffer);
-			#endif
-			
-			#ifdef TJ_OS_MAC
+			#else
 				std::wostringstream wos;
 				wos << x;
 				return std::wstring(wos.str());
@@ -371,25 +367,25 @@ namespace tj {
 
 // Mac strings (CFStringRef) utility methods
 #ifdef TJ_OS_MAC
-CFStringRef Util::StringToMacString(const std::wstring& s) {
-	// wchar_t is 32-bits UTF-32 on Mac (whereas it is UTF-16 on Windows...)
-	if(s.length()==0) {
-		return CFSTR("");
+	CFStringRef Util::StringToMacString(const std::wstring& s) {
+		// wchar_t is 32-bits UTF-32 on Mac (whereas it is UTF-16 on Windows...)
+		if(s.length()==0) {
+			return CFSTR("");
+		}
+		
+		return CFStringCreateWithBytes(kCFAllocatorDefault, reinterpret_cast<const unsigned char*>(s.data()), s.size(), kCFStringEncodingUTF32LE, false);
 	}
-	
-	return CFStringCreateWithBytes(kCFAllocatorDefault, reinterpret_cast<const unsigned char*>(s.data()), s.size(), kCFStringEncodingUTF32LE, false);
-}
 
-std::wstring Util::MacStringToString(CFStringRef cr) {
-	unsigned int n = CFStringGetLength(cr);
-	CFIndex bufferSizeNeeded = 0;
-	CFStringGetBytes(cr, CFRangeMake(0,n), kCFStringEncodingUTF32LE, '?', false, NULL, 0, &bufferSizeNeeded);
-	wchar_t* buffer = new wchar_t[bufferSizeNeeded+1];
-	CFIndex convertedCharacters = CFStringGetBytes(cr,CFRangeMake(0, n), kCFStringEncodingUTF32LE, '?', false, (unsigned char*)buffer, bufferSizeNeeded, NULL);
-	std::wstring val(buffer, convertedCharacters);
-	delete[] buffer;
-	return val;
-}
+	std::wstring Util::MacStringToString(CFStringRef cr) {
+		unsigned int n = CFStringGetLength(cr);
+		CFIndex bufferSizeNeeded = 0;
+		CFStringGetBytes(cr, CFRangeMake(0,n), kCFStringEncodingUTF32LE, '?', false, NULL, 0, &bufferSizeNeeded);
+		wchar_t* buffer = new wchar_t[bufferSizeNeeded+1];
+		CFIndex convertedCharacters = CFStringGetBytes(cr,CFRangeMake(0, n), kCFStringEncodingUTF32LE, '?', false, (unsigned char*)buffer, bufferSizeNeeded, NULL);
+		std::wstring val(buffer, convertedCharacters);
+		delete[] buffer;
+		return val;
+	}
 #endif
 
 // Clipboard (Windows implementation)
