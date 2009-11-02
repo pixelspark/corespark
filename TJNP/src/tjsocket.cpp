@@ -344,7 +344,7 @@ void SocketListenerThread::Run() {
 					if(it->first!=-1) {
 						FD_SET(it->first, &fds);
 						FD_SET(it->first, &fdsErrors);
-						maxSocket = max(maxSocket, it->first);
+						maxSocket = Util::Max(maxSocket, it->first);
 					}
 					++it;
 				}
