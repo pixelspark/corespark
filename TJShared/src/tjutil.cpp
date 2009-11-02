@@ -20,29 +20,39 @@
 
 using namespace tj::shared;
 
-std::set<Copyright*> Copyright::_copyrights;
+ref< std::set<Copyright*> > Copyright::_copyrights;
 
 Copyright::~Copyright() {
-	std::set<Copyright*>::iterator it = _copyrights.find(this);
-	if(it!=_copyrights.end()) {
-		_copyrights.erase(it);
+	if(_copyrights) {
+		std::set<Copyright*>::iterator it = _copyrights->find(this);
+		if(it!=_copyrights->end()) {
+			_copyrights->erase(it);
+		}
 	}
 }
 
 String Copyright::Dump() {
-	std::wostringstream wos;
-	std::set<Copyright*>::const_iterator it = _copyrights.begin();
-	while(it!=_copyrights.end()) {
-		Copyright* cr = *it;
-		wos << File::GetFileName(cr->_module) << L" uses " << cr->_component << L' ' << cr->_description << std::endl;
-		++it;
+	if(_copyrights) {
+		std::wostringstream wos;
+		std::set<Copyright*>::const_iterator it = _copyrights->begin();
+		while(it!=_copyrights->end()) {
+			Copyright* cr = *it;
+			wos << File::GetFileName(cr->_module) << L" uses " << cr->_component << L' ' << cr->_description << std::endl;
+			++it;
+		}
+	
+		return wos.str();
 	}
-
-	return wos.str();
+	else {
+		return L"";
+	}
 }
 
 void Copyright::AddCopyright(Copyright* cs) {
-	_copyrights.insert(cs);
+	if(!_copyrights) {
+		_copyrights = GC::Hold(new std::set< Copyright* >());
+	}
+	_copyrights->insert(cs);
 }
 
 Time MediaUtil::GetDuration(const String& file) {

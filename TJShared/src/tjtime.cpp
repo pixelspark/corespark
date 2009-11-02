@@ -54,6 +54,11 @@ Month Date::GetMonth() const {
 	#ifdef TJ_OS_WIN
 		return (Month)_time.wMonth;
 	#endif
+	
+	#ifdef TJ_OS_LINUX
+		#warning Date::GetMonth not implemented
+		return -1;
+	#endif
 }
 
 DayOfWeek Date::GetDayOfWeek() const {
@@ -67,6 +72,10 @@ DayOfWeek Date::GetDayOfWeek() const {
 
 	#ifdef TJ_OS_WIN
 		return (DayOfWeek)_time.wDayOfWeek;
+	#endif
+	
+	#ifdef TJ_OS_LINUX
+		return -1;
 	#endif
 }
 
@@ -82,6 +91,12 @@ DayOfMonth Date::GetDayOfMonth() const {
 	#ifdef TJ_OS_WIN
 		return (DayOfMonth)_time.wDay;
 	#endif
+	
+	#ifdef TJ_OS_LINUX
+		#warning Not implemented Date::GetDayOfMonth
+		return -1;
+	#endif
+		
 }
 Year Date::GetYear() const {
 	#ifdef TJ_OS_MAC
@@ -93,6 +108,11 @@ Year Date::GetYear() const {
 	
 	#ifdef TJ_OS_WIN
 		return (Year)_time.wYear;
+	#endif
+	
+	#ifdef TJ_OS_LINUX
+		#warning Not impelemented Date::GetYear
+		return -1;
 	#endif
 }
 
@@ -107,6 +127,11 @@ Seconds Date::GetSeconds() const {
 	#ifdef TJ_OS_WIN
 		return (Seconds)_time.wSecond;
 	#endif
+	
+	#ifdef TJ_OS_LINUX
+		#warning Not implemented Date::GetSeconds
+		return -1;
+	#endif
 }
 
 Minutes Date::GetMinutes() const {
@@ -120,6 +145,11 @@ Minutes Date::GetMinutes() const {
 	#ifdef TJ_OS_WIN
 		return (Minutes)_time.wMinute;
 	#endif
+	
+	#ifdef TJ_OS_LINUX
+		#warning Date::GetMinutes not implemented
+		return -1;
+	#endif
 }
 
 Hours Date::GetHours() const {
@@ -132,6 +162,11 @@ Hours Date::GetHours() const {
 		
 	#ifdef TJ_OS_WIN	
 		return (Hours)_time.wHour;
+	#endif
+	
+	#ifdef TJ_OS_LINUX
+		#warning Not implemented (Date::GetHours)
+		return -1;
 	#endif
 }
 
@@ -152,6 +187,11 @@ String Date::ToFriendlyString() const {
 		CFRelease(locale);
 		CFRelease(frm);
 		return formatted;
+	#endif
+	
+	#ifdef TJ_OS_LINUX
+		#warning Not implemented Date::ToFriendlyString
+		return L"";
 	#endif
 }
 
@@ -251,6 +291,11 @@ long long Timestamp::ToMicroSeconds() const {
 		long long ms = (1000*1000*_time) / freq.QuadPart;
 		return ms;
 	#endif
+	
+	#ifdef TJ_OS_LINUX
+		#warning Not implemented Timestamp::ToMicroSeconds
+		return -1;
+	#endif
 }
 
 long double Timestamp::ToMilliSeconds() const {
@@ -267,6 +312,11 @@ long double Timestamp::ToMilliSeconds() const {
 
 		long long us = (1000*1000*_time) / freq.QuadPart;
 		return (long double)us/(long double)1000.0;
+	#endif
+	
+	#ifdef TJ_OS_LINUX
+		return -1;
+		#warning Not implemented Timestamp::ToMilliSeconds
 	#endif
 }
 

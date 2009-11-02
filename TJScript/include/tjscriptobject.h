@@ -1,6 +1,8 @@
 #ifndef _TJSCRIPTOBJECT_H
 #define _TJSCRIPTOBJECT_H
 
+#include <typeinfo>
+
 namespace tj {
 	namespace script {
 		template<typename T> class ScriptObjectMemberIterator;

@@ -149,7 +149,7 @@ namespace tj {
 				String _module;
 				String _component;
 				String _description;
-				static std::set<Copyright*> _copyrights;
+				static ref< std::set<Copyright*> > _copyrights;
 		};
 
 		class EXPORTED MediaUtil {

@@ -59,9 +59,10 @@
 #elif defined(__ARMEL__)
 	#define OSC_HOST_LITTLE_ENDIAN 1
 	#undef OSC_HOST_BIG_ENDIAN
-
 #else
-	#error please edit OSCHostEndianness.h to configure endianness
+	#warning please edit OSCHostEndianness.h to configure endianness, assuming little-endian
+	#define OSC_HOST_LITTLE_ENDIAN 1
+	#undef OSC_HOST_BIG_ENDIAN
 #endif
 
 #endif /* OSC_HOSTENDIANNESS_H */

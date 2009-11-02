@@ -22,6 +22,13 @@ namespace tj {
 							}
 						}
 					#endif
+					
+					#ifdef TJ_OS_LINUX
+						long oldValue = *target;
+						*target = value;
+						return oldValue;
+						#warning Atomic::Exchange not really atomic!
+					#endif
 				}
 		};
 		
