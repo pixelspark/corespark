@@ -30,7 +30,9 @@ namespace tj {
 						long oldValue = *target;
 						*target = value;
 						return oldValue;
-						#warning Atomic::Exchange not really atomic!
+						// There is a #warning in tjthread.cpp to alert that this is not really atomic...
+						// Should use __sync_add_and_fetch or something like that on GCC4.2, but this is
+						// not currently supported on ARM
 					#endif
 				}
 		};

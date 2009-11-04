@@ -72,7 +72,7 @@ namespace tj {
 
 			protected:
 				static ref<ResourceManager> _instance;
-				std::deque< strong<ResourceProvider> > _paths;
+				std::deque< ref<ResourceProvider> > _paths;
 		};
 
 		class EXPORTED ResourceBundle: public virtual Object {

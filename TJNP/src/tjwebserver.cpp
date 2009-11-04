@@ -12,6 +12,10 @@ using namespace tj::shared;
 	#include <fcntl.h>
 #endif
 
+#ifdef TJ_OS_LINUX
+	#include <sys/sendfile.h>
+#endif
+
 /** WebServerResponseThread **/
 WebServerResponseThread::WebServerResponseThread(NativeSocket client, ref<WebServer> fs): _fs(fs), _client(client) {
 }
@@ -321,10 +325,6 @@ void WebServerThread::Run() {
 	local4.sin_family = AF_INET;
 	local4.sin_addr.s_addr = INADDR_ANY;
 	local4.sin_port = htons(_port);
-
-	#ifdef TJ_OS_POSIX
-		local4.sin_len = sizeof(local4);
-	#endif
 	
 	if(v6 && bind(_server6, (sockaddr*)&local, sizeof(sockaddr_in6))!=0) {
 		Log::Write(L"TJNP/WebServer", L"Could not bind IPv6 socket to port (port already taken?)!");

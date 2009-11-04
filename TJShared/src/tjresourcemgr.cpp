@@ -139,18 +139,20 @@ void ResourceManager::AddProvider(strong<ResourceProvider> rp, bool upFront) {
 }
 
 void ResourceManager::RemoveProvider(strong<ResourceProvider> rp) {
-	std::remove(_paths.begin(), _paths.end(), rp);
+	std::remove(_paths.begin(), _paths.end(), ref<ResourceProvider>(rp));
 }
 
 ResourceIdentifier ResourceManager::GetRelative(const String& path) {
 	ZoneEntry ze(Zones::LocalFileInfoZone);
 	
-	std::deque< strong<ResourceProvider> >::iterator it = _paths.begin();
+	std::deque< ref<ResourceProvider> >::iterator it = _paths.begin();
 	while(it!=_paths.end()) {
-		strong<ResourceProvider> rp = *it;
-		ResourceIdentifier rel = rp->GetRelative(path);
-		if(rel.length()>0) {
-			return rel;
+		ref<ResourceProvider> rp = *it;
+		if(rp) {
+			ResourceIdentifier rel = rp->GetRelative(path);
+			if(rel.length()>0) {
+				return rel;
+			}
 		}
 		++it;
 	}
@@ -159,12 +161,14 @@ ResourceIdentifier ResourceManager::GetRelative(const String& path) {
 }
 
 ref<Resource> ResourceManager::GetResource(const ResourceIdentifier& ident) {
-	std::deque< strong<ResourceProvider> >::iterator it = _paths.begin();
+	std::deque< ref<ResourceProvider> >::iterator it = _paths.begin();
 	while(it!=_paths.end()) {
-		strong<ResourceProvider> rp = *it;
-		ref<Resource> rs = rp->GetResource(ident);
-		if(rs) {
-			return rs;
+		ref<ResourceProvider> rp = *it;
+		if(rp) {
+			ref<Resource> rs = rp->GetResource(ident);
+			if(rs) {
+				return rs;
+			}
 		}
 		++it;
 	}
@@ -179,12 +183,12 @@ bool ResourceManager::GetPathToLocalResource(const ResourceIdentifier& rid, Stri
 		std::replace(ridCopy.begin(), ridCopy.end(), L'/', File::GetPathSeparator());
 	#endif
 
-	std::deque< strong<ResourceProvider> >::iterator it = _paths.begin();
+	std::deque< ref<ResourceProvider> >::iterator it = _paths.begin();
 
 	while(it!=_paths.end()) {
-		strong<ResourceProvider> rp = *it;
+		ref<ResourceProvider> rp = *it;
 		
-		if(rp->GetPathToLocalResource(ridCopy, path)) {
+		if(rp && rp->GetPathToLocalResource(ridCopy, path)) {
 			return true;
 		}
 		++it;

@@ -7,5 +7,5 @@ env = Environment();
 
 sources = Glob("build/*.cpp");
 
-objects = env.SharedObject(sources, CCFLAGS='-DTJ_OS_POSIX -DTJ_OS_LINUX ', LIBS=['gcc','gcc_s','pthread']);
+objects = env.SharedObject(sources, CCFLAGS='-DTJ_OS_POSIX -DTJ_OS_LINUX ', LIBS=['gcc','gcc_s','pthread','stdc++']);
 env.SharedLibrary('#build/tjshared', objects);

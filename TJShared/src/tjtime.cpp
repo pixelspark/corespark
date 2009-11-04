@@ -7,7 +7,11 @@
 	#include <CoreFoundation/CFDate.h>
 	#include <CoreFoundation/CFTimeZone.h>
 	#include <CoreFoundation/CFDateFormatter.h>
+#endif
+
+#ifdef TJ_OS_POSIX
 	#include <sys/time.h>
+	#include <stdint.h>
 #endif
 
 #ifdef TJ_OS_WIN
@@ -152,9 +156,9 @@ void Date::FromAbsoluteDate(AbsoluteDate at) {
     
     int64 absolute = (int64)floor(at / 86400.0);
     YMDFromAbsolute(absolute, &year, &month, &day);
-    if (INT32_MAX - 2001 < year) {
+    /**if (INT32_MAX - 2001 < year) {
 		year = INT32_MAX - 2001;
-	}
+	}**/
 	
     _year = year + 2001;
     _month = month;

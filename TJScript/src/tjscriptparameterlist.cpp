@@ -10,6 +10,7 @@ ScriptParameterList::~ScriptParameterList() {
 }
 
 void ScriptParameterList::AddNamelessParameter(ref<Scriptable> t) {
-	Set(Stringify(_namelessCount), t);
+	std::wstring parameterName = Stringify(_namelessCount);
+	Set(parameterName, t);
 	_namelessCount++;
 }

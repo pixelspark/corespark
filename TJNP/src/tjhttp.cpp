@@ -1,4 +1,5 @@
 #include "../include/tjhttp.h"
+#include <algorithm>
 using namespace tj::shared;
 using namespace tj::np;
 
@@ -127,7 +128,7 @@ HTTPRequest::HTTPRequest(const std::string& req) {
 	while(it!=req.end()) {
 		// Parsing method
 		if(_state==ParsingMethod) {
-			std::string::const_iterator end = std::find(it, req.end(), L' ');
+			std::string::const_iterator end = std::find(it, req.end(), ' ');
 			std::string method(it,end);
 			if(method=="GET") {
 				_method = MethodGet;
@@ -140,8 +141,8 @@ HTTPRequest::HTTPRequest(const std::string& req) {
 			it = end+1;
 		}
 		else if(_state==ParsingFile) {
-			std::string::const_iterator end = std::find(it, req.end(), L' ');
-			std::string::const_iterator endURI = std::find(it, req.end(), L'?');
+			std::string::const_iterator end = std::find(it, req.end(), ' ');
+			std::string::const_iterator endURI = std::find(it, req.end(), '?');
 			if(endURI!=req.end() && endURI<end) {
 				// parameters!
 				_file = URLDecode(it,endURI);
@@ -149,11 +150,11 @@ HTTPRequest::HTTPRequest(const std::string& req) {
 				std::string::const_iterator parameterBegin = endURI+1;
 				
 				while(parameterBegin <= end) {
-					std::string::const_iterator endName = std::find(parameterBegin, end, L'=');
+					std::string::const_iterator endName = std::find(parameterBegin, end, '=');
 					if(endName==end) break;
 					
 					std::string parameterName(parameterBegin, endName);
-					std::string::const_iterator endValue = std::find(endName, end, L'&');
+					std::string::const_iterator endValue = std::find(endName, end, '&');
 					if(endValue<=end) {
 						_parameters[parameterName] = URLDecode(endName+1, endValue);
 						parameterBegin = endValue+1;
@@ -171,7 +172,7 @@ HTTPRequest::HTTPRequest(const std::string& req) {
 			_state = ParsingProtocol;
 		}
 		else if(_state==ParsingProtocol) {
-			std::string::const_iterator end = std::find(it, req.end(), L'\n');
+			std::string::const_iterator end = std::find(it, req.end(), '\n');
 			it = end+1;
 			_state = ParsingEnd;
 			break;
