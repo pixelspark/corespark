@@ -1,6 +1,8 @@
 #ifndef _TJITERATOR_H
 #define _TJITERATOR_H
 
+#include <vector>
+
 namespace tj {
 	namespace shared {
 		template<typename T> class Iterator {

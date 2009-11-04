@@ -6,9 +6,6 @@
 #pragma warning(disable: 4251) // about protected members needing dll access
 #pragma warning(disable: 4355) // about 'this' being used in initializers - needed for Animated
 
-#include "tjexception.h"
-#include "tjreference.h"
-#include "tjgc.h"
 #include "tjiterator.h"
 #include "tjmixed.h"
 #include "tjcrypto.h"
@@ -20,7 +17,6 @@
 #include "tjrectangle.h"
 #include "tjcolor.h"
 #include "tjfile.h"
-#include "tjrange.h"
 #include "tjthread.h"
 #include "tjzone.h"
 #include "tjlistener.h"

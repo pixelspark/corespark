@@ -16,7 +16,7 @@
 #endif
 
 #ifdef TJ_OS_WIN
-	// When TJ_OS_WIN is defined, we are building for Windows. This means either Windows XP or Vista
+	// When TJ_OS_WIN is defined, we are building for Windows. This means either Windows XP, Vista or 7
 	#define _WIN32_WINNT 0x0700
 	#define _WIN32_IE 0x0700
 	#define _CRT_SECURE_CPP_OVERLOAD_SECURE_NAMES 1
@@ -30,24 +30,20 @@
 	#include <intrin.h>
 #endif
 
+#ifdef TJ_OS_POSIX
+	// POSIX systems are Linux, BSD, Mac; if TJ_OS_MAC or TJ_OS_LINUX is defined, TJ_OS_POSIX is defined too
+	#include <stdlib.h>
+#endif
+
 #ifdef TJ_OS_MAC
 	// When TJ_OS_MAC is defined, we are building for Mac OS X from version 10.5 onwards. It assumes that
 	// pthreads and BSD sockets are present.
 	#include <libkern/OSAtomic.h>
-	#include <stdlib.h>
+	
 	#include <CoreFoundation/CFString.h>
 #endif
 
-#include <map>
 #include <string>
-#include <sstream>
-#include <algorithm>
-#include <vector>
-#include <set>
-#include <list>
-#include <iomanip>
-#include <fstream>
-#include <deque>
 #include <math.h>
 
 #include "../../../Libraries/TinyXML/tinyxml.h"
@@ -66,32 +62,44 @@
 	#endif
 #endif
 
-// define TJSHARED_MEMORY_TRACE if you want to get a log of allocations/deallocations
-#undef TJSHARED_MEMORY_TRACE
-//#define TJSHARED_MEMORY_TRACE
+// define TJSHARED_MEMORY_TRACE here if you want to get a log of allocations/deallocations
 
 namespace tj {
 	namespace shared {
+		typedef long long int64; // This is equivalent to __int64 on MSVC++
 		typedef std::wstring String;
 		
-		#ifdef TJ_OS_MAC
-			template<typename T> inline T& min(T& a, T& b) {
-				return (a<b) ? a : b;
-			}
+		enum ExceptionType {
+			ExceptionTypeSevere=0,
+			ExceptionTypeError,
+			ExceptionTypeWarning,
+			ExceptionTypeMessage,
+		};
 		
-			template<typename T> inline T& max(T& a, T& b) {
-				return (a>b) ? a : b;
-			}
+		class EXPORTED Exception {
+			public:
+				Exception(const String& message, ExceptionType type, const char* file="", int line=0);
+				virtual ~Exception();
+				
+				const String& GetMsg() const;
+				ExceptionType GetType() const;
+				int GetLine() const;
+				const char* GetFile() const;
+				String ToString() const;
+				
+			protected:
+				String _message;
+				ExceptionType _type;
+				const char* _file;
+				int _line;
+		};
 		
-			template<typename T> inline const T& min(const T& a, const T& b) {
-				return (a<b) ? a : b;
-			}
-			
-			template<typename T> inline const T& max(const T& a, const T& b) {
-				return (a>b) ? a : b;
-			}
-		#endif
+		#define Throw(msg,t) throw tj::shared::Exception((const wchar_t*)msg,t,(const char*)__FILE__, (int)__LINE__)
 	}
 }
+
+#include "../tjreference.h"
+#include "../tjgc.h"
+
 #endif
 

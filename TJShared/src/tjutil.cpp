@@ -1,4 +1,6 @@
-#include "../include/tjshared.h"
+#include "../include/tjutil.h"
+#include "../include/tjfile.h"
+#include "../include/tjzone.h"
 #include <math.h>
 #include <iomanip>
 

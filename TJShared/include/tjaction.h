@@ -1,6 +1,12 @@
 #ifndef _TJCOMMAND_H
 #define _TJCOMMAND_H
 
+#include "internal/tjpch.h"
+#include "tjlistener.h"
+#include "tjthread.h"
+
+#include <deque>
+
 namespace tj {
 	namespace shared {
 		class Change;

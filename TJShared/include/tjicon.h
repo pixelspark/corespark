@@ -1,6 +1,8 @@
 #ifndef _TJICON_H
 #define _TJICON_H
 
+#include "internal/tjpch.h"
+
 namespace tj {
 	namespace shared {
 		class EXPORTED Icon {

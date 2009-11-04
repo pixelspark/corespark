@@ -1,6 +1,12 @@
 #ifndef _TJGC_H
 #define _TJGC_H
 
+#include "internal/tjpch.h"
+
+#ifdef TJSHARED_MEMORY_TRACE
+	#include <map>
+#endif
+
 namespace tj {
 	namespace shared {
 		class EXPORTED GC {
@@ -29,8 +35,10 @@ namespace tj {
 						throw;
 					}
 				}
-
-				static std::map< void*, String> _objects;
+				
+				#ifdef TJSHARED_MEMORY_TRACE
+					static std::map< void*, String> _objects;
+				#endif
 		};
 
 		class EXPORTED OutOfMemoryException: public Exception {

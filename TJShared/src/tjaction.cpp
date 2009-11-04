@@ -1,4 +1,6 @@
-#include "../include/tjshared.h"
+#include "../include/tjaction.h"
+#include "../include/tjlog.h"
+#include "../include/tjutil.h"
 using namespace tj::shared;
 
 /** UndoStack **/

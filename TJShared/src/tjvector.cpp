@@ -1,4 +1,4 @@
-#include "../include/tjshared.h"
+#include "../include/tjvector.h"
 #include <math.h>
 using namespace tj::shared;
 

@@ -1,4 +1,9 @@
-#include "../include/tjshared.h"
+#include "../include/tjlanguage.h"
+#include "../include/tjutil.h"
+#include "../include/tjzone.h"
+#include "../include/tjlog.h"
+#include <fstream>
+
 using namespace tj::shared;
 
 #ifdef TJ_OS_MAC

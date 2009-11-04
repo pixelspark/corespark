@@ -1,4 +1,5 @@
-#include "../include/tjshared.h"
+#include "../include/tjthread.h"
+#include "../include/tjlog.h"
 using namespace tj::shared;
 
 #ifdef TJ_OS_POSIX

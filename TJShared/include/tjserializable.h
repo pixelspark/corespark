@@ -1,6 +1,12 @@
 #ifndef _TJSERIALIZABLE_H
 #define _TJSERIALIZABLE_H
 
+#include "internal/tjpch.h"
+#include "tjlanguage.h"
+#include "tjutil.h"
+#include "tjcrypto.h"
+#include <map>
+#include <set>
 class TiXmlElement;
 
 namespace tj {

@@ -1,6 +1,8 @@
 #ifndef _TJHASH_H
 #define _TJHASH_H
 
+#include "internal/tjpch.h"
+
 namespace tj {
 	namespace shared {
 		// FNV hash

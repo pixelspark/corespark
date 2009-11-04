@@ -1,4 +1,6 @@
-#include "../include/tjshared.h"
+#include "../include/tjfile.h"
+#include "../include/tjzone.h"
+#include "../include/tjutil.h"
 
 #ifdef TJ_OS_WIN
 	#include <shellapi.h>
@@ -12,6 +14,10 @@
 	#include <libgen.h>
 	#include <sys/stat.h>
 	#include <stdio.h>
+#endif
+
+#ifdef TJ_OS_MAC
+	#include <copyfile.h>
 #endif
 
 using namespace tj::shared;
@@ -105,7 +111,7 @@ bool File::Copy(const String& from, const String& to, bool silent) {
 	ZoneEntry ze(Zones::LocalFileAdministrationZone);
 
 	#ifdef TJ_OS_WIN
-		// TODO: this should try to use IFileOperation first too
+		// TODO: this should try to use IFileOperation first too, since this replaces SHFileOperation from Windows Vista onwards
 		SHFILEOPSTRUCT op;
 		op.pFrom = from.c_str();
 		op.pTo = to.c_str();
@@ -120,8 +126,21 @@ bool File::Copy(const String& from, const String& to, bool silent) {
 	#endif
 	
 	#ifdef TJ_OS_POSIX
-		#warning Not implemented on POSIX (File::Copy)
-		return false;
+		#ifdef TJ_OS_MAC
+			std::string fromMbs = Mbs(from);
+			std::string toMbs = Mbs(to);
+	
+			// Like SHFileOperation, copyfile on Mac will also work recursively when two directories are specified
+			// But only if COPYFILE_RECURSIVE is specified (and that doesn't work somehow when building client apps)
+			if(copyfile(fromMbs.c_str(), toMbs.c_str(), NULL, COPYFILE_ALL)!=0) {
+				// TODO: Error occurred, check the return value of copyfile
+				return false;
+			}
+			return true;
+		#else
+			#warning Not implemented on POSIX (File::Copy)
+			return false;
+		#endif
 	#endif
 }
 

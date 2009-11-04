@@ -1,4 +1,8 @@
-#include "../include/tjshared.h"
+#include "../include/tjany.h"
+#include "../include/tjlanguage.h"
+#include "../include/tjutil.h"
+#include "../include/tjtime.h"
+#include "../include/tjserializable.h"
 #include <limits>
 using namespace tj::shared;
 

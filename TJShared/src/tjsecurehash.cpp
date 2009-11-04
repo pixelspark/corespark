@@ -1,4 +1,5 @@
-#include "../include/tjshared.h"
+#include "../include/tjcrypto.h"
+#include "../include/tjutil.h"
 using namespace tj::shared;
 #include <string>
 

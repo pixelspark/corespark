@@ -1,6 +1,9 @@
 #ifndef _TJFILE_H
 #define _TJFILE_H
 
+#include "internal/tjpch.h"
+#include "../include/tjutil.h"
+
 namespace tj {
 	namespace shared {
 		class EXPORTED File {

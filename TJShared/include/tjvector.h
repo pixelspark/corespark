@@ -1,6 +1,9 @@
 #ifndef _TJVECTOR_H
 #define _TJVECTOR_H
 
+#include "internal/tjpch.h"
+#include "tjserializable.h"
+
 namespace tj {
 	namespace shared {
 		class EXPORTED Vector: public Serializable {

@@ -1,6 +1,10 @@
 #ifndef _TJSHARED_SETTINGS_H
 #define _TJSHARED_SETTINGS_H
 
+#include "internal/tjpch.h"
+#include "tjthread.h"
+#include <map>
+
 namespace tj {
 	namespace shared {
 		class Property;

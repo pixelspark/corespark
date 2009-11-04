@@ -1,4 +1,5 @@
 #include "../include/tjshared.h"
+#include <iomanip>
 using namespace tj::shared;
 
 /** Black   = minimum(1-Red,1-Green,1-Blue)

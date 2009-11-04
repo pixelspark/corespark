@@ -1,7 +1,9 @@
 #ifndef _TJTHREAD_H
 #define _TJTHREAD_H
 
+#include "internal/tjpch.h"
 #include "tjtime.h"
+#include <map>
 
 namespace tj {
 	namespace shared {

@@ -1,6 +1,8 @@
 #ifndef _TJTIME_H
 #define _TJTIME_H
 
+#include "internal/tjpch.h"
+
 namespace tj {
 	namespace shared {
 		enum TimeFormat {
@@ -9,14 +11,16 @@ namespace tj {
 			TimeFormatSequential,
 		};
 
-		typedef unsigned char Month; /* 1..12 */
-		typedef unsigned char DayOfWeek; /* 0..6 */
-		typedef unsigned char DayOfMonth; /* 1..31 */
-		typedef unsigned short Year;
-		typedef unsigned char Seconds; /* 0..59 */
-		typedef unsigned char Minutes; /* 0..59 */
-		typedef unsigned char Hours; /* 0..23 */
+		typedef char Month; /* 1..12 */
+		typedef char DayOfWeek; /* 0..6 */
+		typedef char DayOfMonth; /* 1..31 */
+		typedef int64 Year;
+		typedef double Seconds; /* [0.0,60.0> */
+		typedef char Minutes; /* 0..59 */
+		typedef char Hours; /* 0..23 */
 
+		typedef double AbsoluteDate;
+		typedef double AbsoluteDateInterval;
 
 		class EXPORTED Date {
 			public:
@@ -33,17 +37,34 @@ namespace tj {
 				Minutes GetMinutes() const;
 				Hours GetHours() const;
 				String ToFriendlyString() const;
+			
+				static AbsoluteDate GetAbsoluteDate();
+				static DayOfMonth GetDaysInMonth(Month m, bool leap);
+				static int GetDaysBeforeMonth(Month m, bool leap);
+				static int GetDaysAfterMonth(Month m, bool leap);
+				static bool IsLeapYear(Year y);
 
 			private:
-				#ifdef TJ_OS_WIN
-					SYSTEMTIME _time;
-				#endif
+				const static AbsoluteDateInterval KIntervalSince1970 = 978307200.0L;
+				const static AbsoluteDateInterval KIntervalSince1904 = 3061152000.0L;
+				const static DayOfMonth KDaysInMonth[13];
+				const static int KDaysBeforeMonth[14];
+				const static int KDaysAfterMonth[14];
 			
-				#ifdef TJ_OS_MAC
-					double _time;
-				#endif
+				void FromAbsoluteDate(AbsoluteDate ad);
+				static DayOfWeek GetDayOfWeek(AbsoluteDate d);
+				static void YMDFromAbsolute(int64 absolute, int64* year, int* month, int* day);
+			
+				AbsoluteDate _date;
+				Year _year;
+				Month _month;
+				DayOfMonth _day;
+				Hours _hour;
+				Minutes _minute;
+				Seconds _second;
 		};
 
+		/** Legacy class that records a time interval in milliseconds (used by TJShow) **/
 		struct EXPORTED Time {
 			friend class Timestamp;
 			
@@ -205,7 +226,7 @@ namespace tj {
 		EXPORTED std::istream& operator>>(std::istream& strm, Time& time);
 	
 
-		/** The Timestamp class is a very precise time stamp. It uses QueryPerformanceCounter on Windows. **/
+		/** The Timestamp class is a very precise time stamp **/
 		class EXPORTED Timestamp {
 			public:
 				Timestamp(const Timestamp& t);
@@ -225,7 +246,7 @@ namespace tj {
 				bool IsLaterThan(const Timestamp& o) const;
 
 			protected:
-				long long _time;
+				AbsoluteDateInterval _time;
 		};
 	}
 }

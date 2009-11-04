@@ -1,6 +1,8 @@
 #ifndef _TJRECTANGLE_H
 #define _TJRECTANGLE_H
 
+#include "internal/tjpch.h"
+
 namespace tj {
 	namespace shared {
 		typedef int Pixels; // Logical pixels are 1/Theme::KDefaultDPI inches

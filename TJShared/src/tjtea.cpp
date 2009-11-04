@@ -1,4 +1,4 @@
-#include "../include/tjshared.h"
+#include "../include/tjcrypto.h"
 #include <cstdlib>
 #include <iostream>
 #include <string>

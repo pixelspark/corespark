@@ -1,6 +1,9 @@
 #ifndef _TJANY_H
 #define _TJANY_H
 
+#include "internal/tjpch.h"
+#include "tjserializable.h"
+
 namespace tj {
 	namespace shared {
 		class Property;

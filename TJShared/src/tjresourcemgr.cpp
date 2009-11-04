@@ -1,4 +1,9 @@
-#include "../include/tjshared.h"
+#include "../include/tjresourcemgr.h"
+#include "../include/tjlog.h"
+#include "../include/tjserializable.h"
+#include "../include/tjfile.h"
+#include "../include/tjzone.h"
+#include "../include/tjutil.h"
 
 #ifdef TJ_OS_WIN
 	#include <shlwapi.h>

@@ -1,4 +1,5 @@
-#include "../include/tjshared.h"
+#include "../include/tjserializable.h"
+#include "../include/tjzone.h"
 using namespace tj::shared;
 
 void XML::GetElementHash(const TiXmlNode* root, SecureHash& sh) {

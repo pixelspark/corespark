@@ -1,4 +1,6 @@
-#include "../include/tjshared.h"
+#include "../include/tjlog.h"
+#include "../include/tjthread.h"
+#include "../include/tjzone.h"
 #include <iomanip>
 using namespace tj::shared;
 

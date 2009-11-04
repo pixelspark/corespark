@@ -1,15 +1,180 @@
-#include "../include/tjshared.h"
+#include "../include/tjtime.h"
+#include "../include/tjutil.h"
+#include "../include/tjlanguage.h"
 #include <time.h>
 
 #ifdef TJ_OS_MAC
 	#include <CoreFoundation/CFDate.h>
 	#include <CoreFoundation/CFTimeZone.h>
 	#include <CoreFoundation/CFDateFormatter.h>
+	#include <sys/time.h>
 #endif
+
+/* This code contains modified versions of parts of the OpenCFLite sources,
+ * copyright (c) 2008-2009 Brent Fulgham <bfulgham@gmail.org>.  All rights reserved.
+ * The OpenCFLite source code is a modified version of the CoreFoundation sources released by Apple Inc. under
+ * the terms of the APSL version 2.0 (see below).
+ * For information about changes from the original Apple source release can be found by reviewing the
+ * source control system for the project at https://sourceforge.net/svn/?group_id=246198.
+ * The original license information is as follows:
+ * 
+ * Copyright (c) 2008 Apple Inc. All rights reserved.
+ *
+ * @APPLE_LICENSE_HEADER_START@
+ * 
+ * This file contains Original Code and/or Modifications of Original Code
+ * as defined in and that are subject to the Apple Public Source License
+ * Version 2.0 (the 'License'). You may not use this file except in
+ * compliance with the License. Please obtain a copy of the License at
+ * http://www.opensource.apple.com/apsl/ and read it before using this
+ * file.
+ * 
+ * The Original Code and all software distributed under the License are
+ * distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, AND APPLE HEREBY DISCLAIMS ALL SUCH WARRANTIES,
+ * INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT.
+ * Please see the License for the specific language governing rights and
+ * limitations under the License.
+ * 
+ * @APPLE_LICENSE_HEADER_END@
+ */
 
 using namespace tj::shared;
 
 /* Date */
+const DayOfMonth Date::KDaysInMonth[13] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+const int Date::KDaysBeforeMonth[14] = {0, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365};
+const int Date::KDaysAfterMonth[14] = {365, 334, 306, 275, 245, 214, 184, 153, 122, 92, 61, 31, 0, 0};
+
+#ifdef TJ_OS_WIN
+	AbsoluteDate AbsoluteDateFromFileTime(FILETIME* ft) {
+		AbsoluteDate ret = (AbsoluteDate)ft->dwHighDateTime * 429.49672960;
+		ret += (AbsoluteDateInterval)ft->dwLowDateTime / 10000000.0;
+		ret -= (11644473600.0 + Date::KIntervalSince1970);
+		/* seconds between 1601 and 1970, 1970 and 2001 */
+		return ret;
+	}
+#endif
+
+bool Date::IsLeapYear(Year year) {
+	year -= 2001; /* year now is absolute year; Gregorian 2001 == year 0; 2001/1/1 = absolute date 0 */
+    Year y = (year + 1) % 400;	/* correct to nearest multiple-of-400 year, then find the remainder */
+    if (y < 0) y = -y;
+    return (0 == (y & 3) && 100 != y && 200 != y && 300 != y);
+}
+
+DayOfWeek Date::GetDayOfWeek(AbsoluteDate at) {
+    int64 absolute;
+    absolute = (int64)floor(at / 86400.0);
+    return ((absolute < 0) ? ((absolute + 1) % 7 + 7) : (absolute % 7 + 1))-1; /* Monday = 0, Tuesday=1 onwards */
+}
+
+DayOfMonth Date::GetDaysInMonth(Month month, bool leap) {
+    return KDaysInMonth[month] + (2 == month && leap);
+}
+
+int Date::GetDaysBeforeMonth(Month month, bool leap) {
+    return KDaysBeforeMonth[month] + (2 < month && leap);
+}
+
+int Date::GetDaysAfterMonth(Month month, bool leap) {
+    return KDaysAfterMonth[month] + (month < 2 && leap);
+}
+
+int DoubleModToInt(double d, int modulus) {
+    int result = (int)(float)floor(d - floor(d / modulus) * modulus);
+    if (result < 0) {
+		result += modulus;
+	}
+    return result;
+}
+
+double DoubleMod(double d, int modulus) {
+    double result = d - floor(d / modulus) * modulus;
+    if (result < 0.0) {
+		result += (double)modulus;
+	}
+    return result;
+}
+
+/* year arg is absolute year; Gregorian 2001 == year 0; 2001/1/1 = absolute date 0 */
+void Date::YMDFromAbsolute(int64 absolute, int64* year, int* month, int* day) {
+    int64 b = absolute / 146097; // take care of as many multiples of 400 years as possible
+    int64 y = b * 400;
+    int ydays;
+	
+    absolute -= b * 146097;
+    while(absolute < 0) {
+		y -= 1;
+		absolute += GetDaysAfterMonth(0, IsLeapYear(y+2001));
+    }
+	
+    /* Now absolute is non-negative days to add to year */
+    ydays = GetDaysAfterMonth(0, IsLeapYear(y+2001));
+    while (ydays <= absolute) {
+		y += 1;
+		absolute -= ydays;
+		ydays = GetDaysAfterMonth(0, IsLeapYear(y+2001));
+    }
+	
+    /* Now we have year and days-into-year */
+    if (year) {
+		*year = y;
+	}
+	
+    if(month || day) {
+		int m = absolute / 33 + 1; /* search from the approximation */
+		bool leap = IsLeapYear(y+2001);
+		while(GetDaysBeforeMonth(m + 1, leap) <= absolute) {
+			m++;
+		}
+		
+		if(month) {
+			*month = m;
+		}
+		
+		if(day) {
+			*day = absolute - GetDaysBeforeMonth(m, leap) + 1;
+		}
+    }
+}
+
+void Date::FromAbsoluteDate(AbsoluteDate at) {
+    int64 year;
+    int month, day;
+    
+    int64 absolute = (int64_t)floor(at / 86400.0);
+    YMDFromAbsolute(absolute, &year, &month, &day);
+    if (INT32_MAX - 2001 < year) {
+		year = INT32_MAX - 2001;
+	}
+	
+    _year = year + 2001;
+    _month = month;
+    _day = day;
+    _hour = DoubleModToInt(floor(at / 3600.0), 24);
+    _minute = DoubleModToInt(floor(at / 60.0), 60);
+    _second = DoubleMod(at, 60);
+    if (0.0 == _second) _second = 0.0;	// stomp out possible -0.0
+}
+
+AbsoluteDate Date::GetAbsoluteDate() {
+	#ifdef TJ_OS_POSIX
+		struct timeval tv;
+		gettimeofday(&tv, NULL);
+		AbsoluteDate ret = (AbsoluteDateInterval)tv.tv_sec - KIntervalSince1970;
+		ret += (1.0E-6 * (AbsoluteDateInterval)tv.tv_usec);
+		return ret;
+	#endif
+	
+	#ifdef TJ_OS_WIN
+		FILETIME ft;
+		GetSystemTimeAsFileTime(&ft);
+		return AbsoluteTimeFromFileTime(&ft);
+	#endif
+}
+
 String Date::GetFriendlyMonthName(Month m) {
 	static const wchar_t* localeKeys[12] = {L"month_january", L"month_february", L"month_march", 
 											L"month_april", L"month_may", L"month_june", L"month_july",
@@ -29,170 +194,45 @@ String Date::GetFriendlyDayName(DayOfWeek m) {
 }
 
 Date::Date() {
-	#ifdef TJ_OS_WIN
-		GetLocalTime(&_time);
-	#endif
-	
-	#ifdef TJ_OS_MAC
-		// _time is relative to januari 1, 2001 00:00 GMT
-		_time = CFAbsoluteTimeGetCurrent();
-	#endif
+	_date = GetAbsoluteDate();
+	FromAbsoluteDate(_date);
 }
 
 Date::~Date() {
 }
 
 Month Date::GetMonth() const {
-	// Caution, Month is 1-based (e.g. 1...12, januari is 1)
-	#ifdef TJ_OS_MAC
-		CFTimeZoneRef tz = CFTimeZoneCopySystem();
-		CFGregorianDate date = CFAbsoluteTimeGetGregorianDate(_time, tz);
-		CFRelease(tz);
-		return (Month)date.month;
-	#endif
-	
-	#ifdef TJ_OS_WIN
-		return (Month)_time.wMonth;
-	#endif
-	
-	#ifdef TJ_OS_LINUX
-		#warning Date::GetMonth not implemented
-		return -1;
-	#endif
+	return _month;
 }
 
 DayOfWeek Date::GetDayOfWeek() const {
-	// Caution, DayOfWeek is 0..7, where 0 is monday
-	#ifdef TJ_OS_MAC
-		CFTimeZoneRef tz = CFTimeZoneCopySystem();
-		DayOfWeek dow = CFAbsoluteTimeGetDayOfWeek(_time, tz)-1;
-		CFRelease(tz);
-		return dow;
-	#endif
-
-	#ifdef TJ_OS_WIN
-		return (DayOfWeek)_time.wDayOfWeek;
-	#endif
-	
-	#ifdef TJ_OS_LINUX
-		return -1;
-	#endif
+	return GetDayOfWeek(_date);
 }
 
 DayOfMonth Date::GetDayOfMonth() const {
-	// DayOfMonth is 1-based
-	#ifdef TJ_OS_MAC
-		CFTimeZoneRef tz = CFTimeZoneCopySystem();
-		CFGregorianDate date = CFAbsoluteTimeGetGregorianDate(_time, tz);
-		CFRelease(tz);
-		return (DayOfMonth)date.day;
-	#endif
-	
-	#ifdef TJ_OS_WIN
-		return (DayOfMonth)_time.wDay;
-	#endif
-	
-	#ifdef TJ_OS_LINUX
-		#warning Not implemented Date::GetDayOfMonth
-		return -1;
-	#endif
-		
+	return _day;
 }
+
 Year Date::GetYear() const {
-	#ifdef TJ_OS_MAC
-		CFTimeZoneRef tz = CFTimeZoneCopySystem();
-		CFGregorianDate date = CFAbsoluteTimeGetGregorianDate(_time, tz);
-		CFRelease(tz);
-		return (Year)date.year;
-	#endif
-	
-	#ifdef TJ_OS_WIN
-		return (Year)_time.wYear;
-	#endif
-	
-	#ifdef TJ_OS_LINUX
-		#warning Not impelemented Date::GetYear
-		return -1;
-	#endif
+	return _year;
 }
 
 Seconds Date::GetSeconds() const {
-	#ifdef TJ_OS_MAC
-		CFTimeZoneRef tz = CFTimeZoneCopySystem();
-		CFGregorianDate date = CFAbsoluteTimeGetGregorianDate(_time, tz);
-		CFRelease(tz);
-		return (Seconds)date.second;
-	#endif
-	
-	#ifdef TJ_OS_WIN
-		return (Seconds)_time.wSecond;
-	#endif
-	
-	#ifdef TJ_OS_LINUX
-		#warning Not implemented Date::GetSeconds
-		return -1;
-	#endif
+	return _second;
 }
 
 Minutes Date::GetMinutes() const {
-	#ifdef TJ_OS_MAC
-		CFTimeZoneRef tz = CFTimeZoneCopySystem();
-		CFGregorianDate date = CFAbsoluteTimeGetGregorianDate(_time, tz);
-		CFRelease(tz);
-		return (Minutes)date.minute;
-	#endif
-	
-	#ifdef TJ_OS_WIN
-		return (Minutes)_time.wMinute;
-	#endif
-	
-	#ifdef TJ_OS_LINUX
-		#warning Date::GetMinutes not implemented
-		return -1;
-	#endif
+	return _minute;
 }
 
 Hours Date::GetHours() const {
-	#ifdef TJ_OS_MAC
-		CFTimeZoneRef tz = CFTimeZoneCopySystem();
-		CFGregorianDate date = CFAbsoluteTimeGetGregorianDate(_time, tz);
-		CFRelease(tz);
-		return (Seconds)date.hour;
-	#endif
-		
-	#ifdef TJ_OS_WIN	
-		return (Hours)_time.wHour;
-	#endif
-	
-	#ifdef TJ_OS_LINUX
-		#warning Not implemented (Date::GetHours)
-		return -1;
-	#endif
+	return _hour;
 }
 
 String Date::ToFriendlyString() const {
-	#ifdef TJ_OS_WIN
-		wchar_t time[255];
-		memset(time, 0, sizeof(wchar_t)*255);
-		GetTimeFormat(LOCALE_USER_DEFAULT, 0, &_time, NULL, time, 253);
-		return String(time);
-	#endif
-	
-	#ifdef TJ_OS_MAC
-		CFLocaleRef locale = CFLocaleCopyCurrent();
-		CFDateFormatterRef frm = CFDateFormatterCreate(kCFAllocatorDefault, locale, kCFDateFormatterShortStyle, kCFDateFormatterShortStyle);
-		CFStringRef str = CFDateFormatterCreateStringWithAbsoluteTime(kCFAllocatorDefault, frm, _time);
-		String formatted = Util::MacStringToString(str);
-		CFRelease(str);
-		CFRelease(locale);
-		CFRelease(frm);
-		return formatted;
-	#endif
-	
-	#ifdef TJ_OS_LINUX
-		#warning Not implemented Date::ToFriendlyString
-		return L"";
-	#endif
+	std::wostringstream wos;
+	wos << int(_year) << L'-' << int(_month) << L'-' << int(_day) << L' ' << int(_hour) << L':' << int(_minute) << L':' << _second << L" GMT";
+	return wos.str();
 }
 
 /* Timestamp */
@@ -208,21 +248,12 @@ Timestamp::Timestamp(bool now) {
 		Now();
 	}
 	else {
-		_time = 0;
+		_time = 0.0;
 	}
 }
 
 void Timestamp::Now() {
-	#ifdef TJ_OS_MAC
-		_time = (long long)CFAbsoluteTimeGetCurrent();
-	#endif
-	
-	#ifdef TJ_OS_WIN
-		if(QueryPerformanceCounter((LARGE_INTEGER*)&_time)==FALSE) {
-			Log::Write(L"TJShow/Timestamp", L"Performance counter does not work, reverting to tickcount");
-			_time = GetTickCount();
-		}
-	#endif
+	_time = Date::GetAbsoluteDate();
 }
 
 String Timestamp::ToString() const {
@@ -240,20 +271,7 @@ Timestamp& Timestamp::operator =(const Timestamp& o) {
 
 Timestamp Timestamp::Increment(const Time& t) const {
 	Timestamp ret(false);
-
-	#ifdef TJ_OS_WIN
-		LARGE_INTEGER freq;
-		if(QueryPerformanceFrequency(&freq)==FALSE) {
-			// Tickcount used, so our frequency would be 1000
-			freq.QuadPart = 1000;
-		}
-		ret._time = _time + (t.ToInt() * freq.QuadPart) / 1000;
-	#endif
-
-	#ifdef TJ_OS_MAC
-		ret._time = _time + (double(t._time) / 1000.0);
-	#endif
-
+	ret._time = _time + (double(t._time) / 1000.0);
 	return ret;
 }
 
@@ -277,47 +295,11 @@ Timestamp Timestamp::Difference(const Timestamp& other) const {
 }
 
 long long Timestamp::ToMicroSeconds() const {
-	#ifdef TJ_OS_MAC
-		return ToMilliSeconds() * 1000.0;
-	#endif
-	
-	#ifdef TJ_OS_WIN
-		LARGE_INTEGER freq;
-		if(QueryPerformanceFrequency(&freq)==FALSE) {
-			// Tickcount used, so our frequency would be 1000
-			freq.QuadPart = 1000;
-		}
-
-		long long ms = (1000*1000*_time) / freq.QuadPart;
-		return ms;
-	#endif
-	
-	#ifdef TJ_OS_LINUX
-		#warning Not implemented Timestamp::ToMicroSeconds
-		return -1;
-	#endif
+	return _time * 1000.0 * 1000.0;
 }
 
 long double Timestamp::ToMilliSeconds() const {
-	#ifdef TJ_OS_MAC
-		return _time * 1000.0;
-	#endif
-
-	#ifdef TJ_OS_WIN
-		LARGE_INTEGER freq;
-		if(QueryPerformanceFrequency(&freq)==FALSE) {
-			// Tickcount used, so our frequency would be 1000
-			freq.QuadPart = 1000;
-		}
-
-		long long us = (1000*1000*_time) / freq.QuadPart;
-		return (long double)us/(long double)1000.0;
-	#endif
-	
-	#ifdef TJ_OS_LINUX
-		return -1;
-		#warning Not implemented Timestamp::ToMilliSeconds
-	#endif
+	return _time * 1000.0;
 }
 
 bool Timestamp::operator>(const Timestamp& o) const {

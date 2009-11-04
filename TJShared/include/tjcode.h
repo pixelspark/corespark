@@ -1,6 +1,9 @@
 #ifndef _TJCODE_H
 #define _TJCODE_H
 
+#include "internal/tjpch.h"
+#include "tjvector.h"
+
 #pragma pack(push,1)
 
 namespace tj {

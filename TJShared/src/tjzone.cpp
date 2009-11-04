@@ -1,4 +1,4 @@
-#include "../include/tjshared.h"
+#include "../include/tjzone.h"
 using namespace tj::shared;
 
 ThreadLocal Zone::_globalBarrier;

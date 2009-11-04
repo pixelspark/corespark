@@ -1,4 +1,7 @@
-#include "../include/tjshared.h"
+#include "../include/tjcode.h"
+#include "../include/tjutil.h"
+#include "../include/tjvector.h"
+#include "../include/tjserializable.h"
 using namespace tj::shared;
 
 Code::Code(const char* code, unsigned int size) {

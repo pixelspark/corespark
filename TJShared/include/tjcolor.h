@@ -1,6 +1,10 @@
 #ifndef _TJCOLOR_H
 #define _TJCOLOR_H
 
+#include "internal/tjpch.h"
+#include <sstream>
+#include <iostream>
+
 namespace tj {
 	namespace shared {
 		struct EXPORTED CMYKColor {

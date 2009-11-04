@@ -1,4 +1,7 @@
-#include "../include/tjshared.h"
+#include "../include/tjsettings.h"
+#include "../include/tjthread.h"
+#include "../include/tjutil.h"
+#include "../include/tjlog.h"
 
 #ifdef TJ_OS_WIN
 	#include <shlwapi.h>

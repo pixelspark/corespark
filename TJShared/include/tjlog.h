@@ -1,6 +1,9 @@
 #ifndef _TJLOG_H
 #define _TJLOG_H
 
+#include "internal/tjpch.h"
+#include "tjthread.h"
+
 namespace tj {
 	namespace shared {
 		class LogThread;

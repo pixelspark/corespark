@@ -1,6 +1,8 @@
 #ifndef _TJ_PROTOTYPE_H
 #define _TJ_PROTOTYPE_H
 
+#include "internal/tjpch.h"
+
 namespace tj {
 	namespace shared {
 			/** Prototypes are a way to be able to create a lot of different types of objects that have a common superclass.

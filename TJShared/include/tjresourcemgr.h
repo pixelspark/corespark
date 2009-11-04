@@ -1,6 +1,10 @@
 #ifndef _TJRESOURCEMGR_H
 #define _TJRESOURCEMGR_H
 
+#include "internal/tjpch.h"
+#include "tjutil.h"
+#include <deque>
+
 namespace tj {
 	namespace shared {
 		class RootWnd;

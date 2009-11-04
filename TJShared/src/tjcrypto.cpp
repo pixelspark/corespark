@@ -1,4 +1,4 @@
-#include "../include/tjshared.h"
+#include "../include/tjcrypto.h"
 using namespace tj::shared;
 
 /* Fowler/Noll/Vo hash

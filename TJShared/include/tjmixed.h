@@ -1,6 +1,9 @@
 #ifndef _TJMIXED_H
 #define _TJMIXED_H
 
+#include "internal/tjpch.h"
+#include <map>
+
 namespace tj {
 	namespace shared {
 		/** Mixed is a value type that is meant for easy handling of values that can be

@@ -2,12 +2,19 @@
 #define _TJUTIL_H
 
 struct in_addr;
+#include <set>
+#include <vector>
+#include <list>
+#include <map>
+#include <deque>
+
+#include "internal/tjpch.h"
+#include "tjtime.h"
+#include "tjcrypto.h"
 
 namespace tj {
 	namespace shared {
-		typedef String String;
 		class Serializable;
-		typedef long long int64; // This is equivalent to __int64 on MSVC++
 		typedef int64 Bytes; 
 
 		class EXPORTED Bool {
@@ -18,7 +25,51 @@ namespace tj {
 				static const wchar_t* KTrue;
 				static const wchar_t* KFalse;
 		};
-
+		
+		template<typename T> class Range {
+			public:
+				Range(T start, T end) {
+					_start = start;
+					_end = end;
+				}
+				
+				inline T& Start() {
+					return _start;
+				}
+				
+				inline T& End() {
+					return _end;
+				}
+				
+				inline void SetStart(T start) {
+					_start = start;
+				}
+				
+				inline void SetEnd(T end) {
+					_end = end;
+				}
+				
+				inline bool IsValid() {
+					return _start<=_end;
+				}
+				
+				inline T Length() {
+					return _end - _start;
+				}
+				
+				template<typename Q> static Range<Q>& Widest(Range<Q> a, Range<Q> b) {
+					return a.Length()>b.Length()?a:b;
+				}
+				
+				template<typename Q> static Range<T>& Narrowest(Range<Q> a, Range<Q> b) {
+					return a.Length()<b.Length()?a:b;
+				}
+				
+			protected:
+				T _start;
+				T _end;
+		};
+		
 		template<typename T, typename IntType=int> class Flags {
 			public:
 				Flags(T flags) {

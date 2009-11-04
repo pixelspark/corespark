@@ -1,4 +1,4 @@
-#include "../include/tjshared.h"
+#include "../include/tjutil.h"
 using namespace tj::shared;
 
 Arguments::Arguments(const wchar_t* cmdLine) {

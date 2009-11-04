@@ -1,6 +1,10 @@
 #ifndef _TJLISTENER_H
 #define _TJLISTENER_H
 
+#include "internal/tjpch.h"
+#include "tjthread.h"
+#include <vector>
+
 namespace tj {
 	namespace shared {
 		/** Listener **/

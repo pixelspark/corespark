@@ -1,4 +1,6 @@
-#include "../include/tjshared.h"
+#include "../include/internal/tjpch.h"
+#include "../include/tjendpoint.h"
+#include "../include/tjlanguage.h"
 
 #ifdef TJ_OS_MAC
 	#include <CoreFoundation/CoreFoundation.h>
@@ -7,6 +9,41 @@
 using namespace tj::shared;
 
 volatile ReferenceCount intern::Resource::_resourceCount = 0L;
+
+/* Exception */
+Exception::Exception(const String& message, ExceptionType type, const char* file, int line) {
+	_message = message;
+	_type = type;
+	_file = file;
+	_line = line;
+}
+
+Exception::~Exception() {
+}
+
+String Exception::ToString() const {
+	std::wostringstream os;
+	os << _message;
+	os << " (" << _file << ":" << _line << ")";
+	
+	return os.str();
+}
+
+const String& Exception::GetMsg() const {
+	return _message;
+}
+
+ExceptionType Exception::GetType() const {
+	return _type;
+}
+
+int Exception::GetLine() const {
+	return _line;
+}
+
+const char* Exception::GetFile() const {
+	return _file;
+}
 
 /* GC */
 void GC::Log(const char* tp, bool allocate) {

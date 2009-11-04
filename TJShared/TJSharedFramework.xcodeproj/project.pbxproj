@@ -15,17 +15,14 @@
 		B486E83F106628710043CE5D /* tjcolor.h in Headers */ = {isa = PBXBuildFile; fileRef = B486E809106628710043CE5D /* tjcolor.h */; };
 		B486E840106628710043CE5D /* tjcrypto.h in Headers */ = {isa = PBXBuildFile; fileRef = B486E80A106628710043CE5D /* tjcrypto.h */; };
 		B486E841106628710043CE5D /* tjendpoint.h in Headers */ = {isa = PBXBuildFile; fileRef = B486E80B106628710043CE5D /* tjendpoint.h */; };
-		B486E842106628710043CE5D /* tjexception.h in Headers */ = {isa = PBXBuildFile; fileRef = B486E80C106628710043CE5D /* tjexception.h */; };
 		B486E843106628710043CE5D /* tjfile.h in Headers */ = {isa = PBXBuildFile; fileRef = B486E80D106628710043CE5D /* tjfile.h */; };
 		B486E844106628710043CE5D /* tjgc.h in Headers */ = {isa = PBXBuildFile; fileRef = B486E80E106628710043CE5D /* tjgc.h */; };
-		B486E845106628710043CE5D /* tjicon.h in Headers */ = {isa = PBXBuildFile; fileRef = B486E80F106628710043CE5D /* tjicon.h */; };
 		B486E846106628710043CE5D /* tjiterator.h in Headers */ = {isa = PBXBuildFile; fileRef = B486E810106628710043CE5D /* tjiterator.h */; };
 		B486E847106628710043CE5D /* tjlanguage.h in Headers */ = {isa = PBXBuildFile; fileRef = B486E811106628710043CE5D /* tjlanguage.h */; };
 		B486E848106628710043CE5D /* tjlistener.h in Headers */ = {isa = PBXBuildFile; fileRef = B486E812106628710043CE5D /* tjlistener.h */; };
 		B486E849106628710043CE5D /* tjlog.h in Headers */ = {isa = PBXBuildFile; fileRef = B486E813106628710043CE5D /* tjlog.h */; };
 		B486E84A106628710043CE5D /* tjmixed.h in Headers */ = {isa = PBXBuildFile; fileRef = B486E814106628710043CE5D /* tjmixed.h */; };
 		B486E84C106628710043CE5D /* tjprototype.h in Headers */ = {isa = PBXBuildFile; fileRef = B486E816106628710043CE5D /* tjprototype.h */; };
-		B486E84D106628710043CE5D /* tjrange.h in Headers */ = {isa = PBXBuildFile; fileRef = B486E817106628710043CE5D /* tjrange.h */; };
 		B486E84E106628710043CE5D /* tjrectangle.h in Headers */ = {isa = PBXBuildFile; fileRef = B486E818106628710043CE5D /* tjrectangle.h */; };
 		B486E84F106628710043CE5D /* tjreference.h in Headers */ = {isa = PBXBuildFile; fileRef = B486E819106628710043CE5D /* tjreference.h */; };
 		B486E850106628710043CE5D /* tjresourcemgr.h in Headers */ = {isa = PBXBuildFile; fileRef = B486E81A106628710043CE5D /* tjresourcemgr.h */; };
@@ -43,10 +40,9 @@
 		B486E85C106628710043CE5D /* tjcode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B486E827106628710043CE5D /* tjcode.cpp */; };
 		B486E85D106628710043CE5D /* tjcolor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B486E828106628710043CE5D /* tjcolor.cpp */; };
 		B486E85E106628710043CE5D /* tjcore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B486E829106628710043CE5D /* tjcore.cpp */; };
-		B486E85F106628710043CE5D /* tjexception.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B486E82A106628710043CE5D /* tjexception.cpp */; };
 		B486E860106628710043CE5D /* tjfile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B486E82B106628710043CE5D /* tjfile.cpp */; };
 		B486E861106628710043CE5D /* tjgraphicsinit.h in Headers */ = {isa = PBXBuildFile; fileRef = B486E82C106628710043CE5D /* tjgraphicsinit.h */; };
-		B486E862106628710043CE5D /* tjhash.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B486E82D106628710043CE5D /* tjhash.cpp */; };
+		B486E862106628710043CE5D /* tjcrypto.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B486E82D106628710043CE5D /* tjcrypto.cpp */; };
 		B486E863106628710043CE5D /* tjlanguage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B486E82E106628710043CE5D /* tjlanguage.cpp */; };
 		B486E864106628710043CE5D /* tjlog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B486E82F106628710043CE5D /* tjlog.cpp */; };
 		B486E866106628710043CE5D /* tjresourcemgr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B486E831106628710043CE5D /* tjresourcemgr.cpp */; };
@@ -85,17 +81,14 @@
 		B486E809106628710043CE5D /* tjcolor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tjcolor.h; sourceTree = "<group>"; };
 		B486E80A106628710043CE5D /* tjcrypto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tjcrypto.h; sourceTree = "<group>"; };
 		B486E80B106628710043CE5D /* tjendpoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tjendpoint.h; sourceTree = "<group>"; };
-		B486E80C106628710043CE5D /* tjexception.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tjexception.h; sourceTree = "<group>"; };
 		B486E80D106628710043CE5D /* tjfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tjfile.h; sourceTree = "<group>"; };
 		B486E80E106628710043CE5D /* tjgc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tjgc.h; sourceTree = "<group>"; };
-		B486E80F106628710043CE5D /* tjicon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tjicon.h; sourceTree = "<group>"; };
 		B486E810106628710043CE5D /* tjiterator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tjiterator.h; sourceTree = "<group>"; };
 		B486E811106628710043CE5D /* tjlanguage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tjlanguage.h; sourceTree = "<group>"; };
 		B486E812106628710043CE5D /* tjlistener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tjlistener.h; sourceTree = "<group>"; };
 		B486E813106628710043CE5D /* tjlog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tjlog.h; sourceTree = "<group>"; };
 		B486E814106628710043CE5D /* tjmixed.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tjmixed.h; sourceTree = "<group>"; };
 		B486E816106628710043CE5D /* tjprototype.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tjprototype.h; sourceTree = "<group>"; };
-		B486E817106628710043CE5D /* tjrange.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tjrange.h; sourceTree = "<group>"; };
 		B486E818106628710043CE5D /* tjrectangle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tjrectangle.h; sourceTree = "<group>"; };
 		B486E819106628710043CE5D /* tjreference.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tjreference.h; sourceTree = "<group>"; };
 		B486E81A106628710043CE5D /* tjresourcemgr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tjresourcemgr.h; sourceTree = "<group>"; };
@@ -113,10 +106,9 @@
 		B486E827106628710043CE5D /* tjcode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tjcode.cpp; sourceTree = "<group>"; };
 		B486E828106628710043CE5D /* tjcolor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tjcolor.cpp; sourceTree = "<group>"; };
 		B486E829106628710043CE5D /* tjcore.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tjcore.cpp; sourceTree = "<group>"; };
-		B486E82A106628710043CE5D /* tjexception.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tjexception.cpp; sourceTree = "<group>"; };
 		B486E82B106628710043CE5D /* tjfile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tjfile.cpp; sourceTree = "<group>"; };
 		B486E82C106628710043CE5D /* tjgraphicsinit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tjgraphicsinit.h; sourceTree = "<group>"; };
-		B486E82D106628710043CE5D /* tjhash.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tjhash.cpp; sourceTree = "<group>"; };
+		B486E82D106628710043CE5D /* tjcrypto.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tjcrypto.cpp; sourceTree = "<group>"; };
 		B486E82E106628710043CE5D /* tjlanguage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tjlanguage.cpp; sourceTree = "<group>"; };
 		B486E82F106628710043CE5D /* tjlog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tjlog.cpp; sourceTree = "<group>"; };
 		B486E831106628710043CE5D /* tjresourcemgr.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tjresourcemgr.cpp; sourceTree = "<group>"; };
@@ -215,17 +207,14 @@
 				B486E809106628710043CE5D /* tjcolor.h */,
 				B486E80A106628710043CE5D /* tjcrypto.h */,
 				B486E80B106628710043CE5D /* tjendpoint.h */,
-				B486E80C106628710043CE5D /* tjexception.h */,
 				B486E80D106628710043CE5D /* tjfile.h */,
 				B486E80E106628710043CE5D /* tjgc.h */,
-				B486E80F106628710043CE5D /* tjicon.h */,
 				B486E810106628710043CE5D /* tjiterator.h */,
 				B486E811106628710043CE5D /* tjlanguage.h */,
 				B486E812106628710043CE5D /* tjlistener.h */,
 				B486E813106628710043CE5D /* tjlog.h */,
 				B486E814106628710043CE5D /* tjmixed.h */,
 				B486E816106628710043CE5D /* tjprototype.h */,
-				B486E817106628710043CE5D /* tjrange.h */,
 				B486E818106628710043CE5D /* tjrectangle.h */,
 				B486E819106628710043CE5D /* tjreference.h */,
 				B486E81A106628710043CE5D /* tjresourcemgr.h */,
@@ -258,10 +247,9 @@
 				B486E827106628710043CE5D /* tjcode.cpp */,
 				B486E828106628710043CE5D /* tjcolor.cpp */,
 				B486E829106628710043CE5D /* tjcore.cpp */,
-				B486E82A106628710043CE5D /* tjexception.cpp */,
 				B486E82B106628710043CE5D /* tjfile.cpp */,
 				B486E82C106628710043CE5D /* tjgraphicsinit.h */,
-				B486E82D106628710043CE5D /* tjhash.cpp */,
+				B486E82D106628710043CE5D /* tjcrypto.cpp */,
 				B486E82E106628710043CE5D /* tjlanguage.cpp */,
 				B486E82F106628710043CE5D /* tjlog.cpp */,
 				B486E831106628710043CE5D /* tjresourcemgr.cpp */,
@@ -300,17 +288,14 @@
 				B486E83F106628710043CE5D /* tjcolor.h in Headers */,
 				B486E840106628710043CE5D /* tjcrypto.h in Headers */,
 				B486E841106628710043CE5D /* tjendpoint.h in Headers */,
-				B486E842106628710043CE5D /* tjexception.h in Headers */,
 				B486E843106628710043CE5D /* tjfile.h in Headers */,
 				B486E844106628710043CE5D /* tjgc.h in Headers */,
-				B486E845106628710043CE5D /* tjicon.h in Headers */,
 				B486E846106628710043CE5D /* tjiterator.h in Headers */,
 				B486E847106628710043CE5D /* tjlanguage.h in Headers */,
 				B486E848106628710043CE5D /* tjlistener.h in Headers */,
 				B486E849106628710043CE5D /* tjlog.h in Headers */,
 				B486E84A106628710043CE5D /* tjmixed.h in Headers */,
 				B486E84C106628710043CE5D /* tjprototype.h in Headers */,
-				B486E84D106628710043CE5D /* tjrange.h in Headers */,
 				B486E84E106628710043CE5D /* tjrectangle.h in Headers */,
 				B486E84F106628710043CE5D /* tjreference.h in Headers */,
 				B486E850106628710043CE5D /* tjresourcemgr.h in Headers */,
@@ -404,9 +389,8 @@
 				B486E85C106628710043CE5D /* tjcode.cpp in Sources */,
 				B486E85D106628710043CE5D /* tjcolor.cpp in Sources */,
 				B486E85E106628710043CE5D /* tjcore.cpp in Sources */,
-				B486E85F106628710043CE5D /* tjexception.cpp in Sources */,
 				B486E860106628710043CE5D /* tjfile.cpp in Sources */,
-				B486E862106628710043CE5D /* tjhash.cpp in Sources */,
+				B486E862106628710043CE5D /* tjcrypto.cpp in Sources */,
 				B486E863106628710043CE5D /* tjlanguage.cpp in Sources */,
 				B486E864106628710043CE5D /* tjlog.cpp in Sources */,
 				B486E866106628710043CE5D /* tjresourcemgr.cpp in Sources */,
