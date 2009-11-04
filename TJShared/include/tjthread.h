@@ -166,6 +166,8 @@ namespace tj {
 			
 				#ifdef TJ_OS_POSIX
 					pthread_cond_t _event;
+					pthread_mutex_t _lock;
+					volatile int _signalCount;
 				#endif
 		};
 

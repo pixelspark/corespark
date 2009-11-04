@@ -322,9 +322,9 @@
 	};
 	B41DD3E010663B65000742DD /* tjsocket.cpp */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1219, 5213}}";
-			sepNavSelRange = "{9528, 0}";
-			sepNavVisRange = "{7107, 644}";
+			sepNavIntBoundsRect = "{{0, 0}, {1012, 5122}}";
+			sepNavSelRange = "{7796, 0}";
+			sepNavVisRange = "{7037, 1017}";
 			sepNavWindowFrame = "{{15, 115}, {1260, 882}}";
 		};
 	};
@@ -387,9 +387,9 @@
 	};
 	B423B922106E52AC00147974 /* tjwebserver.cpp */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1012, 6188}}";
-			sepNavSelRange = "{5119, 0}";
-			sepNavVisRange = "{1794, 1322}";
+			sepNavIntBoundsRect = "{{0, 0}, {1012, 6318}}";
+			sepNavSelRange = "{5198, 0}";
+			sepNavVisRange = "{3519, 1099}";
 			sepNavWindowFrame = "{{15, 115}, {1260, 882}}";
 		};
 	};
@@ -481,7 +481,7 @@
 	};
 	B462AE871098AD5600484C29 /* tjhttp.cpp */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1012, 3588}}";
+			sepNavIntBoundsRect = "{{0, 0}, {1132, 3718}}";
 			sepNavSelRange = "{5656, 0}";
 			sepNavVisRange = "{5065, 831}";
 			sepNavWindowFrame = "{{15, 115}, {1260, 882}}";
@@ -579,7 +579,7 @@
 		fRef = B423B922106E52AC00147974 /* tjwebserver.cpp */;
 		name = "tjwebserver.cpp: 181";
 		rLen = 0;
-		rLoc = 5119;
+		rLoc = 4292;
 		rType = 0;
 		vrLen = 1322;
 		vrLoc = 1794;

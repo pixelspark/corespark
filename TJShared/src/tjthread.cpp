@@ -384,43 +384,70 @@ void Thread::Sleep(double ms) {
 #endif
 
 #ifdef TJ_USE_PTHREADS
-Event::Event() {
-	pthread_cond_init(&_event, NULL);
-}
-
-Event::~Event() {
-	pthread_cond_destroy(&_event);
-}
-
-void Event::Signal() {
-	pthread_cond_signal(&_event);
-}
-
-void Event::Pulse() {
-	pthread_cond_signal(&_event);
-}
-
-void Event::Reset() {
-	// TODO: not necessary?
-}
-
-bool Event::Wait(int ms) {
-	pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
-	
-	if(ms==0) {
-		pthread_cond_wait(&_event, &lock);
-		return true;
+	Event::Event(): _signalCount(0) {
+		pthread_mutex_init(&_lock, NULL);
+		pthread_cond_init(&_event, NULL);
 	}
-	else {
-		struct timeval now;
-		gettimeofday(&now, NULL);
+
+	Event::~Event() {
+		pthread_mutex_lock(&_lock);
+		pthread_cond_destroy(&_event);
+		pthread_mutex_unlock(&_lock);
+		pthread_mutex_destroy(&_lock);
+	}
+
+	void Event::Signal() {
+		pthread_mutex_lock(&_lock);
+		++_signalCount;
+		pthread_cond_signal(&_event);
+		pthread_mutex_unlock(&_lock);
+	}
+
+	void Event::Pulse() {
+		pthread_mutex_lock(&_lock);
+		++_signalCount;
+		pthread_cond_signal(&_event);
+		pthread_mutex_unlock(&_lock);
+	}
+
+	void Event::Reset() {
+		pthread_mutex_lock(&_lock);
+		_signalCount = 0;
+		pthread_mutex_unlock(&_lock);
+	}
+
+	bool Event::Wait(int ms) {
+		pthread_mutex_lock(&_lock);
+		bool success = false;
 		
-		struct timespec abstime;
-		abstime.tv_sec = now.tv_sec + (ms / 1000);
-		abstime.tv_nsec = (now.tv_usec + ((ms % 1000)*1000));
-		return pthread_cond_timedwait(&_event, &lock, &abstime)==0; /* When timing out, pthread_cond_timedwait returns ETIMEOUT */
+		if(ms==0) {
+			while(_signalCount<=0) {
+				pthread_cond_wait(&_event, &_lock);
+			}
+			--_signalCount;
+		}
+		else {
+			struct timeval now;
+			gettimeofday(&now, NULL);
+			
+			struct timespec abstime;
+			abstime.tv_sec = now.tv_sec + (ms / 1000);
+			abstime.tv_nsec = (now.tv_usec + ((ms % 1000)*1000));
+			pthread_mutex_lock(&_lock);
+			int r = pthread_cond_timedwait(&_event, &_lock, &abstime); /* When timing out, pthread_cond_timedwait returns ETIMEOUT */
+			pthread_mutex_unlock(&_lock);
+			if(_signalCount>0) {
+				success = (r==0);
+				--_signalCount;
+			}
+			else {
+				success = false;
+			}
+		}
+		
+		pthread_mutex_unlock(&_lock);
+		return success;
 	}
-}
 #endif
 
 /* ThreadLocal; Windows implementation uses TLS */

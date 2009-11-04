@@ -1,6 +1,8 @@
 #include "../include/tjnetwork.h"
 #include <iomanip>
 
+#include <iomanip>
+
 #ifdef TJ_OS_WIN
 	#include <iphlpapi.h>
 #endif
