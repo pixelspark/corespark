@@ -4,6 +4,7 @@
 #include "internal/tjpch.h"
 #include "tjtime.h"
 #include <map>
+#include <vector>
 
 namespace tj {
 	namespace shared {

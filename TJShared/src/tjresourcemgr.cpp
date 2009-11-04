@@ -5,6 +5,8 @@
 #include "../include/tjzone.h"
 #include "../include/tjutil.h"
 
+#include <algorithm>
+
 #ifdef TJ_OS_WIN
 	#include <shlwapi.h>
 	#include <commctrl.h>

@@ -20,19 +20,15 @@
 	#define _WIN32_WINNT 0x0700
 	#define _WIN32_IE 0x0700
 	#define _CRT_SECURE_CPP_OVERLOAD_SECURE_NAMES 1
-	#define _CRT_RAND_S 1
+	#define _CRT_RAND_S
 	#define WIN32_LEAN_AND_MEAN 1
 
+	#include <stdlib.h>
 	#include <winsock2.h>
 	#include <windows.h>
 	#include <ole2.h>
 	#include <ws2tcpip.h>
 	#include <intrin.h>
-#endif
-
-#ifdef TJ_OS_POSIX
-	// POSIX systems are Linux, BSD, Mac; if TJ_OS_MAC or TJ_OS_LINUX is defined, TJ_OS_POSIX is defined too
-	#include <stdlib.h>
 #endif
 
 #ifdef TJ_OS_MAC

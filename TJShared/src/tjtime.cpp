@@ -10,6 +10,10 @@
 	#include <sys/time.h>
 #endif
 
+#ifdef TJ_OS_WIN
+	#include <intsafe.h>
+#endif
+
 /* This code contains modified versions of parts of the OpenCFLite sources,
  * copyright (c) 2008-2009 Brent Fulgham <bfulgham@gmail.org>.  All rights reserved.
  * The OpenCFLite source code is a modified version of the CoreFoundation sources released by Apple Inc. under
@@ -43,6 +47,8 @@
 using namespace tj::shared;
 
 /* Date */
+const double Date::KIntervalSince1970 = 978307200.0L;
+const double Date::KIntervalSince1904 = 3061152000.0L;
 const DayOfMonth Date::KDaysInMonth[13] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 const int Date::KDaysBeforeMonth[14] = {0, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365};
 const int Date::KDaysAfterMonth[14] = {365, 334, 306, 275, 245, 214, 184, 153, 122, 92, 61, 31, 0, 0};
@@ -124,18 +130,18 @@ void Date::YMDFromAbsolute(int64 absolute, int64* year, int* month, int* day) {
 	}
 	
     if(month || day) {
-		int m = absolute / 33 + 1; /* search from the approximation */
+		int64 m = absolute / 33 + 1; /* search from the approximation */
 		bool leap = IsLeapYear(y+2001);
-		while(GetDaysBeforeMonth(m + 1, leap) <= absolute) {
+		while(GetDaysBeforeMonth(Month(m + 1), leap) <= absolute) {
 			m++;
 		}
 		
 		if(month) {
-			*month = m;
+			*month = int(m);
 		}
 		
 		if(day) {
-			*day = absolute - GetDaysBeforeMonth(m, leap) + 1;
+			*day = int(absolute - GetDaysBeforeMonth(Month(m), leap) + 1);
 		}
     }
 }
@@ -144,7 +150,7 @@ void Date::FromAbsoluteDate(AbsoluteDate at) {
     int64 year;
     int month, day;
     
-    int64 absolute = (int64_t)floor(at / 86400.0);
+    int64 absolute = (int64)floor(at / 86400.0);
     YMDFromAbsolute(absolute, &year, &month, &day);
     if (INT32_MAX - 2001 < year) {
 		year = INT32_MAX - 2001;
@@ -171,7 +177,7 @@ AbsoluteDate Date::GetAbsoluteDate() {
 	#ifdef TJ_OS_WIN
 		FILETIME ft;
 		GetSystemTimeAsFileTime(&ft);
-		return AbsoluteTimeFromFileTime(&ft);
+		return AbsoluteDateFromFileTime(&ft);
 	#endif
 }
 
@@ -295,7 +301,7 @@ Timestamp Timestamp::Difference(const Timestamp& other) const {
 }
 
 long long Timestamp::ToMicroSeconds() const {
-	return _time * 1000.0 * 1000.0;
+	return (long long)(_time * 1000.0 * 1000.0);
 }
 
 long double Timestamp::ToMilliSeconds() const {

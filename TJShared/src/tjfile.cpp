@@ -1,6 +1,7 @@
 #include "../include/tjfile.h"
 #include "../include/tjzone.h"
 #include "../include/tjutil.h"
+#include "../include/tjlog.h"
 
 #ifdef TJ_OS_WIN
 	#include <shellapi.h>
@@ -14,6 +15,7 @@
 	#include <libgen.h>
 	#include <sys/stat.h>
 	#include <stdio.h>
+	#include <stdint.h>
 #endif
 
 #ifdef TJ_OS_MAC

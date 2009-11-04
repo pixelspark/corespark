@@ -1,16 +1,16 @@
 #ifndef _TJUTIL_H
 #define _TJUTIL_H
 
+#include "internal/tjpch.h"
+#include "tjtime.h"
+#include "tjcrypto.h"
+
 struct in_addr;
 #include <set>
 #include <vector>
 #include <list>
 #include <map>
 #include <deque>
-
-#include "internal/tjpch.h"
-#include "tjtime.h"
-#include "tjcrypto.h"
 
 namespace tj {
 	namespace shared {

@@ -135,6 +135,7 @@
 				PrecompiledHeaderFile=""
 				WarningLevel="3"
 				DebugInformationFormat="3"
+				DisableSpecificWarnings="4251;4275"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -403,15 +404,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\tjexception.cpp"
+				RelativePath=".\src\tjcrypto.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\src\tjfile.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\tjhash.cpp"
 				>
 			</File>
 			<File
@@ -493,10 +490,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\include\tjexception.h"
-				>
-			</File>
-			<File
 				RelativePath=".\include\tjfile.h"
 				>
 			</File>
@@ -526,10 +519,6 @@
 			</File>
 			<File
 				RelativePath=".\include\tjprototype.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\tjrange.h"
 				>
 			</File>
 			<File

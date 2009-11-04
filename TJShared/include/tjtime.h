@@ -44,9 +44,10 @@ namespace tj {
 				static int GetDaysAfterMonth(Month m, bool leap);
 				static bool IsLeapYear(Year y);
 
+				const static AbsoluteDateInterval KIntervalSince1970;
+				const static AbsoluteDateInterval KIntervalSince1904;
+
 			private:
-				const static AbsoluteDateInterval KIntervalSince1970 = 978307200.0L;
-				const static AbsoluteDateInterval KIntervalSince1904 = 3061152000.0L;
 				const static DayOfMonth KDaysInMonth[13];
 				const static int KDaysBeforeMonth[14];
 				const static int KDaysAfterMonth[14];

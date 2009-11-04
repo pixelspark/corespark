@@ -1,8 +1,11 @@
 #include "../include/tjutil.h"
 #include "../include/tjfile.h"
 #include "../include/tjzone.h"
+#include "../include/tjlog.h"
+#include "../include/tjserializable.h"
 #include <math.h>
 #include <iomanip>
+#include <algorithm>
 
 #ifdef TJ_OS_WIN
 	#include <dshow.h>
