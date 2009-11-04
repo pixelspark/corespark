@@ -1,5 +1,6 @@
 #include "../include/tjsharedui.h"
 #include <windowsx.h> 
+#include <algorithm>
 using namespace tj::shared;
 using namespace tj::shared::graphics;
 

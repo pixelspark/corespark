@@ -1,5 +1,6 @@
 #include "../include/tjsharedui.h"
 #include <iomanip>
+#include <algorithm>
 
 #ifdef TJ_OS_WIN
 	// TODO is this include needed anyway?
