@@ -50,9 +50,12 @@ namespace tj {
 				virtual ref<ResolveRequest> GetOriginalRequest();
 
 			protected:
+				virtual void OnCreated();
+			
 				ref<DNSSDBrowserThread> _thread;
 				DNSServiceRef _service;
 				weak<ResolveRequest> _request;
+				std::wstring _type;
 		};
 
 		class DNSSDResolver: public Resolver {

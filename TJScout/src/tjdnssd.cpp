@@ -145,17 +145,19 @@ void DNSSDDiscoveryBrowseReply(DNSServiceRef sdRef, DNSServiceFlags flags, uint3
 	}
 }
 
-DNSSDResolveRequest::DNSSDResolveRequest(ref<ResolveRequest> rq, const std::wstring& type): _service(0), _request(rq) {
-	if(rq) {
-		std::string serviceType = Mbs(type);
-		DNSServiceErrorType er = DNSServiceBrowse(&_service, 0, 0, serviceType.c_str(), NULL, (DNSServiceBrowseReply)DNSSDDiscoveryBrowseReply, (void*)this);
-		if(er!=kDNSServiceErr_NoError) {
-			Log::Write(L"TJScout/DNSSDResolveRequest", L"Could not start browsing for services; err="+Stringify(er)+L"; probably, Bonjour is not installed on this system");
-		}
-		else {
-			_thread = GC::Hold(new DNSSDBrowserThread(_service));
-			_thread->Start();
-		}
+DNSSDResolveRequest::DNSSDResolveRequest(ref<ResolveRequest> rq, const std::wstring& type): _service(0), _request(rq), _type(type) {
+}
+
+void DNSSDResolveRequest::OnCreated() {
+	RequestResolver::OnCreated();
+	std::string serviceType = Mbs(_type);
+	DNSServiceErrorType er = DNSServiceBrowse(&_service, 0, 0, serviceType.c_str(), NULL, (DNSServiceBrowseReply)DNSSDDiscoveryBrowseReply, (void*)this);
+	if(er!=kDNSServiceErr_NoError) {
+		Log::Write(L"TJScout/DNSSDResolveRequest", L"Could not start browsing for services; err="+Stringify(er)+L"; probably, Bonjour is not installed on this system");
+	}
+	else {
+		_thread = GC::Hold(new DNSSDBrowserThread(_service));
+		_thread->Start();
 	}
 }
 
