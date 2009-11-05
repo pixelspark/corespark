@@ -4,7 +4,7 @@
 	#include "../../Libraries/mDNS/include/dns_sd.h"
 #endif
 
-#ifdef TJ_OS_MAC
+#ifdef TJ_OS_POSIX
 	#include <dns_sd.h>
 	#include <arpa/inet.h>
 	#include <sys/socket.h>

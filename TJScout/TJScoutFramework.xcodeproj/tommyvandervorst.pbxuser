@@ -72,6 +72,7 @@
 			B477C26B10A38A8100396B72 /* PBXTextBookmark */ = B477C26B10A38A8100396B72 /* PBXTextBookmark */;
 			B477C26C10A38A8100396B72 /* PBXTextBookmark */ = B477C26C10A38A8100396B72 /* PBXTextBookmark */;
 			B477C26D10A38A8100396B72 /* PBXTextBookmark */ = B477C26D10A38A8100396B72 /* PBXTextBookmark */;
+			B477C27110A38B1F00396B72 /* PBXTextBookmark */ = B477C27110A38B1F00396B72 /* PBXTextBookmark */;
 			B49107E01070D1DB00279D29 = B49107E01070D1DB00279D29 /* PBXTextBookmark */;
 			B491081410711D6700279D29 = B491081410711D6700279D29 /* PBXTextBookmark */;
 			B491081510711D6700279D29 = B491081510711D6700279D29 /* PlistBookmark */;
@@ -150,9 +151,9 @@
 	};
 	B45F58071066C53600FEDA6B /* tjdnssd.cpp */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1545, 4823}}";
-			sepNavSelRange = "{4135, 0}";
-			sepNavVisRange = "{2923, 1329}";
+			sepNavIntBoundsRect = "{{0, 0}, {1012, 4992}}";
+			sepNavSelRange = "{187, 0}";
+			sepNavVisRange = "{648, 791}";
 			sepNavWindowFrame = "{{15, 114}, {1260, 882}}";
 		};
 	};
@@ -195,7 +196,7 @@
 		fRef = B45F58071066C53600FEDA6B /* tjdnssd.cpp */;
 		name = "tjdnssd.cpp: 324";
 		rLen = 0;
-		rLoc = 9412;
+		rLoc = 9414;
 		rType = 0;
 		vrLen = 1295;
 		vrLoc = 9209;
@@ -205,7 +206,7 @@
 		fRef = B45F58071066C53600FEDA6B /* tjdnssd.cpp */;
 		name = "tjdnssd.cpp: 324";
 		rLen = 0;
-		rLoc = 9412;
+		rLoc = 9414;
 		rType = 0;
 		vrLen = 1602;
 		vrLoc = 7544;
@@ -235,7 +236,7 @@
 		fRef = B45F58071066C53600FEDA6B /* tjdnssd.cpp */;
 		name = "tjdnssd.cpp: 151";
 		rLen = 0;
-		rLoc = 3627;
+		rLoc = 3629;
 		rType = 0;
 		vrLen = 1292;
 		vrLoc = 2923;
@@ -245,10 +246,20 @@
 		fRef = B45F58071066C53600FEDA6B /* tjdnssd.cpp */;
 		name = "tjdnssd.cpp: 161";
 		rLen = 0;
-		rLoc = 4135;
+		rLoc = 4137;
 		rType = 0;
 		vrLen = 1329;
 		vrLoc = 2923;
+	};
+	B477C27110A38B1F00396B72 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = B45F58071066C53600FEDA6B /* tjdnssd.cpp */;
+		name = "tjdnssd.cpp: 10";
+		rLen = 0;
+		rLoc = 187;
+		rType = 0;
+		vrLen = 791;
+		vrLoc = 648;
 	};
 	B49107971070CA3200279D29 /* tjservice.h */ = {
 		uiCtxt = {
