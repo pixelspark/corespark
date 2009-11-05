@@ -78,7 +78,7 @@ Socket::Socket(const NetworkAddress& ns, TransportProtocol tp, unsigned short po
 	}
 
 	if(!Connect(ns,port)) {
-		Log::Write(L"TJNP/Socket", L"Could not connect TCP socket; error="+Stringify(errno));
+		Log::Write(L"TJNP/Socket", L"Could not connect TCP socket; address="+ns.ToString()+L" port="+Stringify(port)+L" error="+Util::GetDescriptionOfSystemError(errno));
 		Close();
 		Throw(L"Could not connect socket", ExceptionTypeError);
 	}

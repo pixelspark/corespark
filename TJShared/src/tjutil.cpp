@@ -247,6 +247,20 @@ String Util::GetSizeString(Bytes bytes) {
 	return x;
 }
 
+String Util::GetDescriptionOfSystemError(int ern) {
+	#ifdef TJ_OS_POSIX
+		char buffer[512];
+		if(strerror_r(ern,buffer,511)==0) {
+			std::wstring errorString = Wcs(std::string(buffer));
+			return errorString;
+		}
+	#else
+		#warning not supported under non-POSIX (Util::GetDescriptionOfSystemError)
+	#endif
+	
+	return L"Unknown error";
+}
+
 String& Util::StringToLower(String& r) {
 	transform(r.begin(), r.end(), r.begin(), tolower);
 	return r;

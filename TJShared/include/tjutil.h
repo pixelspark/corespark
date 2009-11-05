@@ -155,6 +155,7 @@ namespace tj {
 				static String GetSizeString(Bytes bytes);
 				static String IPToString(const in_addr& ip);
 				static String GetApplicationDirectory();
+				static String GetDescriptionOfSystemError(int errorNumber);
 			
 				#ifdef TJ_OS_MAC
 					static CFStringRef StringToMacString(const std::wstring& s);
