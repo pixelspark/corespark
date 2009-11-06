@@ -254,8 +254,6 @@ String Util::GetDescriptionOfSystemError(int ern) {
 			std::wstring errorString = Wcs(std::string(buffer));
 			return errorString;
 		}
-	#else
-		#warning not supported under non-POSIX (Util::GetDescriptionOfSystemError)
 	#endif
 	
 	return L"Unknown error";
