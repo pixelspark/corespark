@@ -53,6 +53,10 @@ namespace tj {
 						OSAtomicAdd32(1, &Thread::_count);
 					#endif
 					
+					#ifdef TJ_OS_LINUX
+						Thread::_count++;
+					#endif
+					
 					Thread* tr = (Thread*)arg;
 					if(tr!=0) {
 						srand(time(NULL));
@@ -69,6 +73,11 @@ namespace tj {
 				#ifdef TJ_OS_MAC
 					OSAtomicAdd32(-1, &Thread::_count);
 				#endif
+				
+				#ifdef TJ_OS_LINUX
+					Thread::_count--;
+				#endif
+				
 				return NULL;
 			}
 		#endif

@@ -85,6 +85,10 @@ intern::Resource::Resource(): _referenceCount(0), _weakReferenceCount(0) {
 	#ifdef TJ_OS_MAC
 		OSAtomicAdd32(1, &_resourceCount);
 	#endif
+	
+	#ifdef TJ_OS_LINUX
+		_resourceCount++;
+	#endif
 }
 
 intern::Resource::~Resource() {
@@ -94,6 +98,10 @@ intern::Resource::~Resource() {
 	
 	#ifdef TJ_OS_MAC
 		OSAtomicAdd32(-1, &_resourceCount);
+	#endif
+	
+	#ifdef TJ_OS_LINUX
+		_resourceCount--;
 	#endif
 }
 

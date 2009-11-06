@@ -1,0 +1,12 @@
+# TJScript build
+VariantDir('build', 'src');
+env = Environment();
+
+#sources = Split("build/tjtea.cpp build/tjany.cpp build/tjaction.cpp build/tjarguments.cpp build/tjcode.cpp build/tjcolor.cpp build/tjcore.cpp 
+#build/tjexception.cpp build/tjfile.cpp build/tjhash.cpp");
+
+sources = Glob("build/*.cpp");
+
+objects = env.SharedObject(sources, CCFLAGS='-DTJ_OS_POSIX -DTJ_OS_LINUX -ILibraries/Spirit/boost -ILibraries/Spirit/boost/miniboost', 
+LIBS=['gcc','gcc_s','pthread','tjshared']);
+env.SharedLibrary('#build/tjscript', objects);

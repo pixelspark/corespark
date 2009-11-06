@@ -1,0 +1,10 @@
+# TJNP build
+VariantDir('build', 'src');
+env = Environment();
+
+sources = Glob("build/*.cpp");
+
+objects = env.SharedObject(sources, CCFLAGS='-DTJ_OS_POSIX -DTJ_OS_LINUX', CPPATH=['#Libraries/mDNS/include'], 
+LIBPATH=['#build','#Libraries/mDNS/Release'], 
+LIBS=['gcc','gcc_s','pthread','tjshared', 'dns_sd']);
+env.SharedLibrary('#build/tjscout', objects);

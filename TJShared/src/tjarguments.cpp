@@ -8,7 +8,7 @@ Arguments::Arguments(const wchar_t* cmdLine) {
 			wcscpy_s(m_cmdline, wcslen(cmdLine)+1, cmdLine);
 		#endif
 		
-		#ifdef TJ_OS_MAC
+		#ifdef TJ_OS_POSIX
 			wcsncpy(m_cmdline, cmdLine, wcslen(cmdLine)+1);
 		#endif
         Parse();
