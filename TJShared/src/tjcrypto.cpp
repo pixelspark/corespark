@@ -67,17 +67,19 @@ Hash::~Hash() {
 }
 
 int Hash::Calculate(const String& s) {
+	size_t len = wcslen(s.c_str());
+	
 	#ifdef TJ_OS_WIN
 		wchar_t* buffer = _wcsdup(s.c_str());
 	#endif
 	
 	#ifdef TJ_OS_POSIX
-		size_t len = wcslen(s.c_str())+1;
-		wchar_t* buffer = new wchar_t[len];
-		memcpy(buffer, s.c_str(), len);
+		wchar_t* buffer = new wchar_t[len+1];
+		memcpy(buffer, s.c_str(), len*sizeof(wchar_t));
+		buffer[len] = 0;
 	#endif
 
-	int hash = FNVHash(buffer, sizeof(wchar_t)*s.length(), FNVInit);
+	int hash = FNVHash(buffer, sizeof(wchar_t)*len, FNVInit);
 	delete[] buffer;
 	return hash;
 }

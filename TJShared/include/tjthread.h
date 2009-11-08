@@ -255,6 +255,21 @@ namespace tj {
 					std::vector<HANDLE> _handles;
 				#endif
 		};
+		
+		class EXPORTED Daemon: public virtual Object {
+			public:
+				static strong<Daemon> Instance();
+				virtual ~Daemon();
+				virtual void Run();
+				virtual bool Fork(const String& daemonName, bool singleInstance);
+				
+			protected:
+				Daemon();
+				static ref<Daemon> _instance;
+				static Event _signalEvent;
+				static int _lastSignal;
+				static void SignalHandler(int s);
+		};
 	}
 }
 
