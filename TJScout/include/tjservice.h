@@ -1,7 +1,7 @@
 #ifndef _TJ_SCOUT_SERVICE_H
 #define _TJ_SCOUT_SERVICE_H
 
-#include "internal/tjscout.h"
+#include "tjscoutinternal.h"
 
 namespace tj {
 	namespace scout {

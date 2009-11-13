@@ -1,7 +1,7 @@
 #ifndef _TJGC_H
 #define _TJGC_H
 
-#include "internal/tjpch.h"
+#include "tjsharedinternal.h"
 
 #ifdef TJSHARED_MEMORY_TRACE
 	#include <map>

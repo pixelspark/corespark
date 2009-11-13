@@ -1,7 +1,7 @@
 #ifndef _TJUTIL_H
 #define _TJUTIL_H
 
-#include "internal/tjpch.h"
+#include "tjsharedinternal.h"
 #include "tjtime.h"
 #include "tjcrypto.h"
 

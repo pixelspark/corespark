@@ -1,7 +1,7 @@
 #ifndef _TJLOG_H
 #define _TJLOG_H
 
-#include "internal/tjpch.h"
+#include "tjsharedinternal.h"
 #include "tjthread.h"
 
 namespace tj {

@@ -1,7 +1,7 @@
 #ifndef _TJSCRIPT_H
 #define _TJSCRIPT_H
 
-#include "../../TJShared/include/tjshared.h"
+#include <TJShared/include/tjshared.h>
 
 #undef SCRIPT_EXPORTED
 #ifdef TJSCRIPT_EXPORTS 

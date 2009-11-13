@@ -1,7 +1,7 @@
 #ifndef _TJTIME_H
 #define _TJTIME_H
 
-#include "internal/tjpch.h"
+#include "tjsharedinternal.h"
 
 namespace tj {
 	namespace shared {

@@ -1,7 +1,7 @@
 #ifndef _TJCOMMAND_H
 #define _TJCOMMAND_H
 
-#include "internal/tjpch.h"
+#include "tjsharedinternal.h"
 #include "tjlistener.h"
 #include "tjthread.h"
 

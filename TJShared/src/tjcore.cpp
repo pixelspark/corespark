@@ -1,4 +1,3 @@
-#include "../include/internal/tjpch.h"
 #include "../include/tjendpoint.h"
 #include "../include/tjlanguage.h"
 #include "../include/tjthread.h"

@@ -1,7 +1,7 @@
 #ifndef _TJLISTENER_H
 #define _TJLISTENER_H
 
-#include "internal/tjpch.h"
+#include "tjsharedinternal.h"
 #include "tjthread.h"
 #include <vector>
 

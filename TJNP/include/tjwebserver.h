@@ -1,7 +1,7 @@
 #ifndef _TJ_NP_WEBSERVER_H
 #define _TJ_NP_WEBSERVER_H
 
-#include "internal/tjnp.h"
+#include "tjnpinternal.h"
 #include "tjsocket.h"
 #include "tjhttp.h"
 

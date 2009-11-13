@@ -1,7 +1,7 @@
 #ifndef _REFERENCE_H
 #define _REFERENCE_H
 
-#include "internal/tjpch.h"
+#include "tjsharedinternal.h"
 
 namespace tj {
 	namespace shared {

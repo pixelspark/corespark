@@ -1,6 +1,7 @@
 #ifndef _TJITERATOR_H
 #define _TJITERATOR_H
 
+#include "tjsharedinternal.h"
 #include <vector>
 
 namespace tj {

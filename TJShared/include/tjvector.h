@@ -1,7 +1,7 @@
 #ifndef _TJVECTOR_H
 #define _TJVECTOR_H
 
-#include "internal/tjpch.h"
+#include "tjsharedinternal.h"
 #include "tjserializable.h"
 
 namespace tj {

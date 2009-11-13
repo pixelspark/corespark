@@ -1,7 +1,7 @@
 #ifndef _TJ_NP_TRANSACTION_H
 #define _TJ_NP_TRANSACTION_H
 
-#include "internal/tjnp.h"
+#include "tjnpinternal.h"
 #include "tjprotocol.h"
 
 #pragma warning(push)

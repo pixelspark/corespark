@@ -1,7 +1,7 @@
 #ifndef _TJ_NP_NETWORKADDRESS_H
 #define _TJ_NP_NETWORKADDRESS_H
 
-#include "internal/tjnp.h"
+#include "tjnpinternal.h"
 
 #ifdef TJ_OS_POSIX
 	#include <arpa/inet.h>

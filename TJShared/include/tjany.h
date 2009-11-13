@@ -1,7 +1,7 @@
 #ifndef _TJANY_H
 #define _TJANY_H
 
-#include "internal/tjpch.h"
+#include "tjsharedinternal.h"		
 #include "tjserializable.h"
 
 namespace tj {

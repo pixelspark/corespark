@@ -1,7 +1,7 @@
 #ifndef _TJRESOURCEMGR_H
 #define _TJRESOURCEMGR_H
 
-#include "internal/tjpch.h"
+#include "tjsharedinternal.h"
 #include "tjutil.h"
 #include <deque>
 

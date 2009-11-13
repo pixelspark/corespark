@@ -1,7 +1,7 @@
 #ifndef _TJ_NP_CLIENT_H
 #define _TJ_NP_CLIENT_H
 
-#include "internal/tjnp.h"
+#include "tjnpinternal.h"
 #include "tjprotocol.h"
 #include "tjnetwork.h"
 

@@ -1,7 +1,7 @@
 #ifndef _TJ_NP_SOCKET_UTIL_H
 #define _TJ_NP_SOCKET_UTIL_H
 
-#include "internal/tjnp.h"
+#include "tjnpinternal.h"
 #include "tjnetworkaddress.h"
 
 struct sockaddr_in;

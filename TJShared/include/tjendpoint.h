@@ -1,7 +1,7 @@
 #ifndef _TJENDPOINT_H
 #define _TJENDPOINT_H
 
-#include "internal/tjpch.h"
+#include "tjsharedinternal.h"
 #include "tjany.h"
 
 namespace tj {

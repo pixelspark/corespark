@@ -1,7 +1,7 @@
 #ifndef _TJ_PROTOTYPE_H
 #define _TJ_PROTOTYPE_H
 
-#include "internal/tjpch.h"
+#include "tjsharedinternal.h"
 
 namespace tj {
 	namespace shared {

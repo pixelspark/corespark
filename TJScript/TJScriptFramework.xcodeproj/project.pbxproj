@@ -8,34 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		8DC2EF530486A6940098B216 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C1666FE841158C02AAC07 /* InfoPlist.strings */; };
-		B41DD4F41066454C000742DD /* TJSharedFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B41DD4F31066453E000742DD /* TJSharedFramework.framework */; };
-		B41DD52A1066455E000742DD /* tjscript.h in Headers */ = {isa = PBXBuildFile; fileRef = B41DD4F81066455E000742DD /* tjscript.h */; };
-		B41DD52B1066455E000742DD /* tjscriptfunction.h in Headers */ = {isa = PBXBuildFile; fileRef = B41DD4F91066455E000742DD /* tjscriptfunction.h */; };
-		B41DD52C1066455E000742DD /* tjscriptlet.h in Headers */ = {isa = PBXBuildFile; fileRef = B41DD4FA1066455E000742DD /* tjscriptlet.h */; };
-		B41DD52D1066455E000742DD /* tjscriptletstack.h in Headers */ = {isa = PBXBuildFile; fileRef = B41DD4FB1066455E000742DD /* tjscriptletstack.h */; };
-		B41DD52E1066455E000742DD /* tjscriptops.h in Headers */ = {isa = PBXBuildFile; fileRef = B41DD4FC1066455E000742DD /* tjscriptops.h */; };
-		B41DD52F1066455E000742DD /* tjscriptstack.h in Headers */ = {isa = PBXBuildFile; fileRef = B41DD4FD1066455E000742DD /* tjscriptstack.h */; };
-		B41DD5301066455E000742DD /* tjscriptvm.h in Headers */ = {isa = PBXBuildFile; fileRef = B41DD4FE1066455E000742DD /* tjscriptvm.h */; };
-		B41DD5311066455E000742DD /* tjcompiledscript.h in Headers */ = {isa = PBXBuildFile; fileRef = B41DD4FF1066455E000742DD /* tjcompiledscript.h */; };
-		B41DD5321066455E000742DD /* tjscript.h in Headers */ = {isa = PBXBuildFile; fileRef = B41DD5001066455E000742DD /* tjscript.h */; };
-		B41DD5331066455E000742DD /* tjscriptable.h in Headers */ = {isa = PBXBuildFile; fileRef = B41DD5011066455E000742DD /* tjscriptable.h */; };
-		B41DD5341066455E000742DD /* tjscriptcontext.h in Headers */ = {isa = PBXBuildFile; fileRef = B41DD5021066455E000742DD /* tjscriptcontext.h */; };
-		B41DD5351066455E000742DD /* tjscriptdelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = B41DD5031066455E000742DD /* tjscriptdelegate.h */; };
-		B41DD5361066455E000742DD /* tjscriptexception.h in Headers */ = {isa = PBXBuildFile; fileRef = B41DD5041066455E000742DD /* tjscriptexception.h */; };
-		B41DD5371066455E000742DD /* tjscriptiterator.h in Headers */ = {isa = PBXBuildFile; fileRef = B41DD5051066455E000742DD /* tjscriptiterator.h */; };
-		B41DD5381066455E000742DD /* tjscriptobject.h in Headers */ = {isa = PBXBuildFile; fileRef = B41DD5061066455E000742DD /* tjscriptobject.h */; };
-		B41DD5391066455E000742DD /* tjscriptparameter.h in Headers */ = {isa = PBXBuildFile; fileRef = B41DD5071066455E000742DD /* tjscriptparameter.h */; };
-		B41DD53A1066455E000742DD /* tjscriptparameterlist.h in Headers */ = {isa = PBXBuildFile; fileRef = B41DD5081066455E000742DD /* tjscriptparameterlist.h */; };
-		B41DD53B1066455E000742DD /* tjscriptscope.h in Headers */ = {isa = PBXBuildFile; fileRef = B41DD5091066455E000742DD /* tjscriptscope.h */; };
-		B41DD53C1066455E000742DD /* tjscriptthread.h in Headers */ = {isa = PBXBuildFile; fileRef = B41DD50A1066455E000742DD /* tjscriptthread.h */; };
-		B41DD53D1066455E000742DD /* tjscripttype.h in Headers */ = {isa = PBXBuildFile; fileRef = B41DD50B1066455E000742DD /* tjscripttype.h */; };
-		B41DD53E1066455E000742DD /* tjscriptvalue.h in Headers */ = {isa = PBXBuildFile; fileRef = B41DD50C1066455E000742DD /* tjscriptvalue.h */; };
-		B41DD53F1066455E000742DD /* tjscriptarray.h in Headers */ = {isa = PBXBuildFile; fileRef = B41DD50E1066455E000742DD /* tjscriptarray.h */; };
-		B41DD5401066455E000742DD /* tjscripthash.h in Headers */ = {isa = PBXBuildFile; fileRef = B41DD50F1066455E000742DD /* tjscripthash.h */; };
-		B41DD5411066455E000742DD /* tjscriptmap.h in Headers */ = {isa = PBXBuildFile; fileRef = B41DD5101066455E000742DD /* tjscriptmap.h */; };
-		B41DD5421066455E000742DD /* tjscriptmath.h in Headers */ = {isa = PBXBuildFile; fileRef = B41DD5111066455E000742DD /* tjscriptmath.h */; };
-		B41DD5431066455E000742DD /* tjscriptrange.h in Headers */ = {isa = PBXBuildFile; fileRef = B41DD5121066455E000742DD /* tjscriptrange.h */; };
-		B41DD5441066455E000742DD /* tjstatictypes.h in Headers */ = {isa = PBXBuildFile; fileRef = B41DD5131066455E000742DD /* tjstatictypes.h */; };
+		B41DD4F41066454C000742DD /* TJShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B41DD4F31066453E000742DD /* TJShared.framework */; };
 		B41DD5451066455E000742DD /* tjcompiledscript.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B41DD5151066455E000742DD /* tjcompiledscript.cpp */; };
 		B41DD5461066455E000742DD /* tjscript.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B41DD5161066455E000742DD /* tjscript.cpp */; };
 		B41DD5471066455E000742DD /* tjscriptarray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B41DD5171066455E000742DD /* tjscriptarray.cpp */; };
@@ -57,6 +30,8 @@
 		B41DD5571066455E000742DD /* tjscriptvalue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B41DD5271066455E000742DD /* tjscriptvalue.cpp */; };
 		B41DD5581066455E000742DD /* tjscriptvm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B41DD5281066455E000742DD /* tjscriptvm.cpp */; };
 		B41DD5591066455E000742DD /* tjstatictypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B41DD5291066455E000742DD /* tjstatictypes.cpp */; };
+		B4CAA86310AD64B900385A5F /* include in Resources */ = {isa = PBXBuildFile; fileRef = B4CAA84210AD64B900385A5F /* include */; };
+		B4CAA86410AD64BF00385A5F /* include in Headers */ = {isa = PBXBuildFile; fileRef = B4CAA84210AD64B900385A5F /* include */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -79,35 +54,8 @@
 /* Begin PBXFileReference section */
 		089C1667FE841158C02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		8DC2EF5A0486A6940098B216 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		8DC2EF5B0486A6940098B216 /* TJScriptFramework.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = TJScriptFramework.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		8DC2EF5B0486A6940098B216 /* TJScript.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = TJScript.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B41DD4EA1066453E000742DD /* TJSharedFramework.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TJSharedFramework.xcodeproj; path = ../TJShared/TJSharedFramework.xcodeproj; sourceTree = SOURCE_ROOT; };
-		B41DD4F81066455E000742DD /* tjscript.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tjscript.h; path = include/internal/tjscript.h; sourceTree = SOURCE_ROOT; };
-		B41DD4F91066455E000742DD /* tjscriptfunction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tjscriptfunction.h; path = include/internal/tjscriptfunction.h; sourceTree = SOURCE_ROOT; };
-		B41DD4FA1066455E000742DD /* tjscriptlet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tjscriptlet.h; path = include/internal/tjscriptlet.h; sourceTree = SOURCE_ROOT; };
-		B41DD4FB1066455E000742DD /* tjscriptletstack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tjscriptletstack.h; path = include/internal/tjscriptletstack.h; sourceTree = SOURCE_ROOT; };
-		B41DD4FC1066455E000742DD /* tjscriptops.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tjscriptops.h; path = include/internal/tjscriptops.h; sourceTree = SOURCE_ROOT; };
-		B41DD4FD1066455E000742DD /* tjscriptstack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tjscriptstack.h; path = include/internal/tjscriptstack.h; sourceTree = SOURCE_ROOT; };
-		B41DD4FE1066455E000742DD /* tjscriptvm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tjscriptvm.h; path = include/internal/tjscriptvm.h; sourceTree = SOURCE_ROOT; };
-		B41DD4FF1066455E000742DD /* tjcompiledscript.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tjcompiledscript.h; path = include/tjcompiledscript.h; sourceTree = SOURCE_ROOT; };
-		B41DD5001066455E000742DD /* tjscript.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tjscript.h; path = include/tjscript.h; sourceTree = SOURCE_ROOT; };
-		B41DD5011066455E000742DD /* tjscriptable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tjscriptable.h; path = include/tjscriptable.h; sourceTree = SOURCE_ROOT; };
-		B41DD5021066455E000742DD /* tjscriptcontext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tjscriptcontext.h; path = include/tjscriptcontext.h; sourceTree = SOURCE_ROOT; };
-		B41DD5031066455E000742DD /* tjscriptdelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tjscriptdelegate.h; path = include/tjscriptdelegate.h; sourceTree = SOURCE_ROOT; };
-		B41DD5041066455E000742DD /* tjscriptexception.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tjscriptexception.h; path = include/tjscriptexception.h; sourceTree = SOURCE_ROOT; };
-		B41DD5051066455E000742DD /* tjscriptiterator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tjscriptiterator.h; path = include/tjscriptiterator.h; sourceTree = SOURCE_ROOT; };
-		B41DD5061066455E000742DD /* tjscriptobject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tjscriptobject.h; path = include/tjscriptobject.h; sourceTree = SOURCE_ROOT; };
-		B41DD5071066455E000742DD /* tjscriptparameter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tjscriptparameter.h; path = include/tjscriptparameter.h; sourceTree = SOURCE_ROOT; };
-		B41DD5081066455E000742DD /* tjscriptparameterlist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tjscriptparameterlist.h; path = include/tjscriptparameterlist.h; sourceTree = SOURCE_ROOT; };
-		B41DD5091066455E000742DD /* tjscriptscope.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tjscriptscope.h; path = include/tjscriptscope.h; sourceTree = SOURCE_ROOT; };
-		B41DD50A1066455E000742DD /* tjscriptthread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tjscriptthread.h; path = include/tjscriptthread.h; sourceTree = SOURCE_ROOT; };
-		B41DD50B1066455E000742DD /* tjscripttype.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tjscripttype.h; path = include/tjscripttype.h; sourceTree = SOURCE_ROOT; };
-		B41DD50C1066455E000742DD /* tjscriptvalue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tjscriptvalue.h; path = include/tjscriptvalue.h; sourceTree = SOURCE_ROOT; };
-		B41DD50E1066455E000742DD /* tjscriptarray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tjscriptarray.h; path = include/types/tjscriptarray.h; sourceTree = SOURCE_ROOT; };
-		B41DD50F1066455E000742DD /* tjscripthash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tjscripthash.h; path = include/types/tjscripthash.h; sourceTree = SOURCE_ROOT; };
-		B41DD5101066455E000742DD /* tjscriptmap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tjscriptmap.h; path = include/types/tjscriptmap.h; sourceTree = SOURCE_ROOT; };
-		B41DD5111066455E000742DD /* tjscriptmath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tjscriptmath.h; path = include/types/tjscriptmath.h; sourceTree = SOURCE_ROOT; };
-		B41DD5121066455E000742DD /* tjscriptrange.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tjscriptrange.h; path = include/types/tjscriptrange.h; sourceTree = SOURCE_ROOT; };
-		B41DD5131066455E000742DD /* tjstatictypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tjstatictypes.h; path = include/types/tjstatictypes.h; sourceTree = SOURCE_ROOT; };
 		B41DD5151066455E000742DD /* tjcompiledscript.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tjcompiledscript.cpp; path = src/tjcompiledscript.cpp; sourceTree = SOURCE_ROOT; };
 		B41DD5161066455E000742DD /* tjscript.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tjscript.cpp; path = src/tjscript.cpp; sourceTree = SOURCE_ROOT; };
 		B41DD5171066455E000742DD /* tjscriptarray.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tjscriptarray.cpp; path = src/tjscriptarray.cpp; sourceTree = SOURCE_ROOT; };
@@ -129,6 +77,7 @@
 		B41DD5271066455E000742DD /* tjscriptvalue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tjscriptvalue.cpp; path = src/tjscriptvalue.cpp; sourceTree = SOURCE_ROOT; };
 		B41DD5281066455E000742DD /* tjscriptvm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tjscriptvm.cpp; path = src/tjscriptvm.cpp; sourceTree = SOURCE_ROOT; };
 		B41DD5291066455E000742DD /* tjstatictypes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tjstatictypes.cpp; path = src/tjstatictypes.cpp; sourceTree = SOURCE_ROOT; };
+		B4CAA84210AD64B900385A5F /* include */ = {isa = PBXFileReference; lastKnownFileType = folder; path = include; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -136,7 +85,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B41DD4F41066454C000742DD /* TJSharedFramework.framework in Frameworks */,
+				B41DD4F41066454C000742DD /* TJShared.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -146,7 +95,7 @@
 		034768DFFF38A50411DB9C8B /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8DC2EF5B0486A6940098B216 /* TJScriptFramework.framework */,
+				8DC2EF5B0486A6940098B216 /* TJScript.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -154,7 +103,7 @@
 		0867D691FE84028FC02AAC07 /* TJScriptFramework */ = {
 			isa = PBXGroup;
 			children = (
-				B41DD4F61066455E000742DD /* include */,
+				B4CAA84210AD64B900385A5F /* include */,
 				B41DD5141066455E000742DD /* src */,
 				B41DD4EA1066453E000742DD /* TJSharedFramework.xcodeproj */,
 				089C1665FE841158C02AAC07 /* Resources */,
@@ -199,62 +148,10 @@
 		B41DD4EB1066453E000742DD /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				B41DD4F31066453E000742DD /* TJSharedFramework.framework */,
+				B41DD4F31066453E000742DD /* TJShared.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
-		};
-		B41DD4F61066455E000742DD /* include */ = {
-			isa = PBXGroup;
-			children = (
-				B41DD4F71066455E000742DD /* internal */,
-				B41DD4FF1066455E000742DD /* tjcompiledscript.h */,
-				B41DD5001066455E000742DD /* tjscript.h */,
-				B41DD5011066455E000742DD /* tjscriptable.h */,
-				B41DD5021066455E000742DD /* tjscriptcontext.h */,
-				B41DD5031066455E000742DD /* tjscriptdelegate.h */,
-				B41DD5041066455E000742DD /* tjscriptexception.h */,
-				B41DD5051066455E000742DD /* tjscriptiterator.h */,
-				B41DD5061066455E000742DD /* tjscriptobject.h */,
-				B41DD5071066455E000742DD /* tjscriptparameter.h */,
-				B41DD5081066455E000742DD /* tjscriptparameterlist.h */,
-				B41DD5091066455E000742DD /* tjscriptscope.h */,
-				B41DD50A1066455E000742DD /* tjscriptthread.h */,
-				B41DD50B1066455E000742DD /* tjscripttype.h */,
-				B41DD50C1066455E000742DD /* tjscriptvalue.h */,
-				B41DD50D1066455E000742DD /* types */,
-			);
-			path = include;
-			sourceTree = SOURCE_ROOT;
-		};
-		B41DD4F71066455E000742DD /* internal */ = {
-			isa = PBXGroup;
-			children = (
-				B41DD4F81066455E000742DD /* tjscript.h */,
-				B41DD4F91066455E000742DD /* tjscriptfunction.h */,
-				B41DD4FA1066455E000742DD /* tjscriptlet.h */,
-				B41DD4FB1066455E000742DD /* tjscriptletstack.h */,
-				B41DD4FC1066455E000742DD /* tjscriptops.h */,
-				B41DD4FD1066455E000742DD /* tjscriptstack.h */,
-				B41DD4FE1066455E000742DD /* tjscriptvm.h */,
-			);
-			name = internal;
-			path = include/internal;
-			sourceTree = SOURCE_ROOT;
-		};
-		B41DD50D1066455E000742DD /* types */ = {
-			isa = PBXGroup;
-			children = (
-				B41DD50E1066455E000742DD /* tjscriptarray.h */,
-				B41DD50F1066455E000742DD /* tjscripthash.h */,
-				B41DD5101066455E000742DD /* tjscriptmap.h */,
-				B41DD5111066455E000742DD /* tjscriptmath.h */,
-				B41DD5121066455E000742DD /* tjscriptrange.h */,
-				B41DD5131066455E000742DD /* tjstatictypes.h */,
-			);
-			name = types;
-			path = include/types;
-			sourceTree = SOURCE_ROOT;
 		};
 		B41DD5141066455E000742DD /* src */ = {
 			isa = PBXGroup;
@@ -291,42 +188,16 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B41DD52A1066455E000742DD /* tjscript.h in Headers */,
-				B41DD52B1066455E000742DD /* tjscriptfunction.h in Headers */,
-				B41DD52C1066455E000742DD /* tjscriptlet.h in Headers */,
-				B41DD52D1066455E000742DD /* tjscriptletstack.h in Headers */,
-				B41DD52E1066455E000742DD /* tjscriptops.h in Headers */,
-				B41DD52F1066455E000742DD /* tjscriptstack.h in Headers */,
-				B41DD5301066455E000742DD /* tjscriptvm.h in Headers */,
-				B41DD5311066455E000742DD /* tjcompiledscript.h in Headers */,
-				B41DD5321066455E000742DD /* tjscript.h in Headers */,
-				B41DD5331066455E000742DD /* tjscriptable.h in Headers */,
-				B41DD5341066455E000742DD /* tjscriptcontext.h in Headers */,
-				B41DD5351066455E000742DD /* tjscriptdelegate.h in Headers */,
-				B41DD5361066455E000742DD /* tjscriptexception.h in Headers */,
-				B41DD5371066455E000742DD /* tjscriptiterator.h in Headers */,
-				B41DD5381066455E000742DD /* tjscriptobject.h in Headers */,
-				B41DD5391066455E000742DD /* tjscriptparameter.h in Headers */,
-				B41DD53A1066455E000742DD /* tjscriptparameterlist.h in Headers */,
-				B41DD53B1066455E000742DD /* tjscriptscope.h in Headers */,
-				B41DD53C1066455E000742DD /* tjscriptthread.h in Headers */,
-				B41DD53D1066455E000742DD /* tjscripttype.h in Headers */,
-				B41DD53E1066455E000742DD /* tjscriptvalue.h in Headers */,
-				B41DD53F1066455E000742DD /* tjscriptarray.h in Headers */,
-				B41DD5401066455E000742DD /* tjscripthash.h in Headers */,
-				B41DD5411066455E000742DD /* tjscriptmap.h in Headers */,
-				B41DD5421066455E000742DD /* tjscriptmath.h in Headers */,
-				B41DD5431066455E000742DD /* tjscriptrange.h in Headers */,
-				B41DD5441066455E000742DD /* tjstatictypes.h in Headers */,
+				B4CAA86410AD64BF00385A5F /* include in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		8DC2EF4F0486A6940098B216 /* TJScriptFramework */ = {
+		8DC2EF4F0486A6940098B216 /* TJScript */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1DEB91AD08733DA50010E9CD /* Build configuration list for PBXNativeTarget "TJScriptFramework" */;
+			buildConfigurationList = 1DEB91AD08733DA50010E9CD /* Build configuration list for PBXNativeTarget "TJScript" */;
 			buildPhases = (
 				8DC2EF500486A6940098B216 /* Headers */,
 				8DC2EF520486A6940098B216 /* Resources */,
@@ -338,10 +209,10 @@
 			dependencies = (
 				B4720EA9108C678D002DEC9F /* PBXTargetDependency */,
 			);
-			name = TJScriptFramework;
+			name = TJScript;
 			productInstallPath = "$(HOME)/Library/Frameworks";
 			productName = TJScriptFramework;
-			productReference = 8DC2EF5B0486A6940098B216 /* TJScriptFramework.framework */;
+			productReference = 8DC2EF5B0486A6940098B216 /* TJScript.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 /* End PBXNativeTarget section */
@@ -363,16 +234,16 @@
 			);
 			projectRoot = "";
 			targets = (
-				8DC2EF4F0486A6940098B216 /* TJScriptFramework */,
+				8DC2EF4F0486A6940098B216 /* TJScript */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		B41DD4F31066453E000742DD /* TJSharedFramework.framework */ = {
+		B41DD4F31066453E000742DD /* TJShared.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
-			path = TJSharedFramework.framework;
+			path = TJShared.framework;
 			remoteRef = B41DD4F21066453E000742DD /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -384,6 +255,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8DC2EF530486A6940098B216 /* InfoPlist.strings in Resources */,
+				B4CAA86310AD64B900385A5F /* include in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -457,7 +329,7 @@
 				GCC_PREFIX_HEADER = "";
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = .;
-				PRODUCT_NAME = TJScriptFramework;
+				PRODUCT_NAME = TJScript;
 				SYMROOT = ../build;
 				WRAPPER_EXTENSION = framework;
 			};
@@ -477,7 +349,7 @@
 				GCC_PREFIX_HEADER = "";
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = .;
-				PRODUCT_NAME = TJScriptFramework;
+				PRODUCT_NAME = TJScript;
 				SYMROOT = ../build;
 				WRAPPER_EXTENSION = framework;
 			};
@@ -514,7 +386,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		1DEB91AD08733DA50010E9CD /* Build configuration list for PBXNativeTarget "TJScriptFramework" */ = {
+		1DEB91AD08733DA50010E9CD /* Build configuration list for PBXNativeTarget "TJScript" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1DEB91AE08733DA50010E9CD /* Debug */,

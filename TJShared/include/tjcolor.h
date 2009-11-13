@@ -1,7 +1,7 @@
 #ifndef _TJCOLOR_H
 #define _TJCOLOR_H
 
-#include "internal/tjpch.h"
+#include "tjsharedinternal.h"
 #include <sstream>
 #include <iostream>
 

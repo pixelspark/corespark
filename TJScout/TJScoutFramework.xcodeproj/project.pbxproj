@@ -8,16 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		8DC2EF530486A6940098B216 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C1666FE841158C02AAC07 /* InfoPlist.strings */; };
-		B45F580A1066C53600FEDA6B /* tjscout.h in Headers */ = {isa = PBXBuildFile; fileRef = B45F58021066C53600FEDA6B /* tjscout.h */; };
-		B45F580B1066C53600FEDA6B /* tjdnssd.h in Headers */ = {isa = PBXBuildFile; fileRef = B45F58031066C53600FEDA6B /* tjdnssd.h */; };
-		B45F580C1066C53600FEDA6B /* tjresolver.h in Headers */ = {isa = PBXBuildFile; fileRef = B45F58041066C53600FEDA6B /* tjresolver.h */; };
-		B45F580D1066C53600FEDA6B /* tjscout.h in Headers */ = {isa = PBXBuildFile; fileRef = B45F58051066C53600FEDA6B /* tjscout.h */; };
 		B45F580E1066C53600FEDA6B /* tjdnssd.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B45F58071066C53600FEDA6B /* tjdnssd.cpp */; };
 		B45F580F1066C53600FEDA6B /* tjresolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B45F58081066C53600FEDA6B /* tjresolver.cpp */; };
 		B45F58101066C53600FEDA6B /* tjscout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B45F58091066C53600FEDA6B /* tjscout.cpp */; };
-		B45F581D1066C6E500FEDA6B /* TJSharedFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B45F581C1066C6E100FEDA6B /* TJSharedFramework.framework */; };
-		B49107981070CA3200279D29 /* tjservice.h in Headers */ = {isa = PBXBuildFile; fileRef = B49107971070CA3200279D29 /* tjservice.h */; };
+		B45F581D1066C6E500FEDA6B /* TJShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B45F581C1066C6E100FEDA6B /* TJShared.framework */; };
 		B491079A1070CB9F00279D29 /* tjservice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B49107991070CB9F00279D29 /* tjservice.cpp */; };
+		B4CAA80B10AD643300385A5F /* include in Resources */ = {isa = PBXBuildFile; fileRef = B4CAA80110AD643300385A5F /* include */; };
+		B4CAA80C10AD643700385A5F /* include in Headers */ = {isa = PBXBuildFile; fileRef = B4CAA80110AD643300385A5F /* include */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,23 +35,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0867D69BFE84028FC02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
-		0867D6A5FE840307C02AAC07 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		089C1667FE841158C02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		8DC2EF5A0486A6940098B216 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		8DC2EF5B0486A6940098B216 /* TJScoutFramework.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = TJScoutFramework.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		B45F58021066C53600FEDA6B /* tjscout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tjscout.h; sourceTree = "<group>"; };
-		B45F58031066C53600FEDA6B /* tjdnssd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tjdnssd.h; sourceTree = "<group>"; };
-		B45F58041066C53600FEDA6B /* tjresolver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tjresolver.h; sourceTree = "<group>"; };
-		B45F58051066C53600FEDA6B /* tjscout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tjscout.h; sourceTree = "<group>"; };
+		8DC2EF5B0486A6940098B216 /* TJScout.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = TJScout.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B45F58071066C53600FEDA6B /* tjdnssd.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tjdnssd.cpp; sourceTree = "<group>"; };
 		B45F58081066C53600FEDA6B /* tjresolver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tjresolver.cpp; sourceTree = "<group>"; };
 		B45F58091066C53600FEDA6B /* tjscout.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tjscout.cpp; sourceTree = "<group>"; };
 		B45F58171066C6E100FEDA6B /* TJSharedFramework.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TJSharedFramework.xcodeproj; path = ../TJShared/TJSharedFramework.xcodeproj; sourceTree = SOURCE_ROOT; };
-		B49107971070CA3200279D29 /* tjservice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tjservice.h; sourceTree = "<group>"; };
 		B49107991070CB9F00279D29 /* tjservice.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tjservice.cpp; sourceTree = "<group>"; };
-		D2F7E79907B2D74100F64583 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
+		B4CAA80110AD643300385A5F /* include */ = {isa = PBXFileReference; lastKnownFileType = folder; path = include; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,7 +51,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B45F581D1066C6E500FEDA6B /* TJSharedFramework.framework in Frameworks */,
+				B45F581D1066C6E500FEDA6B /* TJShared.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -72,7 +61,7 @@
 		034768DFFF38A50411DB9C8B /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8DC2EF5B0486A6940098B216 /* TJScoutFramework.framework */,
+				8DC2EF5B0486A6940098B216 /* TJScout.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -80,8 +69,8 @@
 		0867D691FE84028FC02AAC07 /* TJScoutFramework */ = {
 			isa = PBXGroup;
 			children = (
+				B4CAA80110AD643300385A5F /* include */,
 				B45F58171066C6E100FEDA6B /* TJSharedFramework.xcodeproj */,
-				B45F58001066C53600FEDA6B /* include */,
 				B45F58061066C53600FEDA6B /* src */,
 				089C1665FE841158C02AAC07 /* Resources */,
 				0867D69AFE84028FC02AAC07 /* External Frameworks and Libraries */,
@@ -111,7 +100,6 @@
 		1058C7B0FEA5585E11CA2CBB /* Linked Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */,
 			);
 			name = "Linked Frameworks";
 			sourceTree = "<group>";
@@ -119,31 +107,8 @@
 		1058C7B2FEA5585E11CA2CBB /* Other Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				0867D6A5FE840307C02AAC07 /* AppKit.framework */,
-				D2F7E79907B2D74100F64583 /* CoreData.framework */,
-				0867D69BFE84028FC02AAC07 /* Foundation.framework */,
 			);
 			name = "Other Frameworks";
-			sourceTree = "<group>";
-		};
-		B45F58001066C53600FEDA6B /* include */ = {
-			isa = PBXGroup;
-			children = (
-				B45F58011066C53600FEDA6B /* internal */,
-				B45F58031066C53600FEDA6B /* tjdnssd.h */,
-				B45F58041066C53600FEDA6B /* tjresolver.h */,
-				B45F58051066C53600FEDA6B /* tjscout.h */,
-				B49107971070CA3200279D29 /* tjservice.h */,
-			);
-			path = include;
-			sourceTree = "<group>";
-		};
-		B45F58011066C53600FEDA6B /* internal */ = {
-			isa = PBXGroup;
-			children = (
-				B45F58021066C53600FEDA6B /* tjscout.h */,
-			);
-			path = internal;
 			sourceTree = "<group>";
 		};
 		B45F58061066C53600FEDA6B /* src */ = {
@@ -160,7 +125,7 @@
 		B45F58181066C6E100FEDA6B /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				B45F581C1066C6E100FEDA6B /* TJSharedFramework.framework */,
+				B45F581C1066C6E100FEDA6B /* TJShared.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -172,11 +137,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B45F580A1066C53600FEDA6B /* tjscout.h in Headers */,
-				B45F580B1066C53600FEDA6B /* tjdnssd.h in Headers */,
-				B45F580C1066C53600FEDA6B /* tjresolver.h in Headers */,
-				B45F580D1066C53600FEDA6B /* tjscout.h in Headers */,
-				B49107981070CA3200279D29 /* tjservice.h in Headers */,
+				B4CAA80C10AD643700385A5F /* include in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -200,7 +161,7 @@
 			name = TJScoutFramework;
 			productInstallPath = "$(HOME)/Library/Frameworks";
 			productName = TJScoutFramework;
-			productReference = 8DC2EF5B0486A6940098B216 /* TJScoutFramework.framework */;
+			productReference = 8DC2EF5B0486A6940098B216 /* TJScout.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 /* End PBXNativeTarget section */
@@ -228,10 +189,10 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		B45F581C1066C6E100FEDA6B /* TJSharedFramework.framework */ = {
+		B45F581C1066C6E100FEDA6B /* TJShared.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
-			path = TJSharedFramework.framework;
+			path = TJShared.framework;
 			remoteRef = B45F581B1066C6E100FEDA6B /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -243,6 +204,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8DC2EF530486A6940098B216 /* InfoPlist.strings in Resources */,
+				B4CAA80B10AD643300385A5F /* include in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -299,11 +261,12 @@
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = .;
-				PRODUCT_NAME = TJScoutFramework;
+				PRODUCT_NAME = TJScout;
+				PUBLIC_HEADERS_FOLDER_PATH = "$(CONTENTS_FOLDER_PATH)/Headers";
 				SYMROOT = ../build;
 				WRAPPER_EXTENSION = framework;
 			};
@@ -323,11 +286,12 @@
 				);
 				FRAMEWORK_VERSION = A;
 				GCC_MODEL_TUNING = G5;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = .;
-				PRODUCT_NAME = TJScoutFramework;
+				PRODUCT_NAME = TJScout;
+				PUBLIC_HEADERS_FOLDER_PATH = "$(CONTENTS_FOLDER_PATH)/Headers";
 				SYMROOT = ../build;
 				WRAPPER_EXTENSION = framework;
 			};
@@ -336,26 +300,26 @@
 		1DEB91B208733DA50010E9CD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
-				SDKROOT = macosx10.5;
+				SDKROOT = macosx10.6;
 			};
 			name = Debug;
 		};
 		1DEB91B308733DA50010E9CD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				PREBINDING = NO;
-				SDKROOT = macosx10.5;
+				SDKROOT = macosx10.6;
 			};
 			name = Release;
 		};

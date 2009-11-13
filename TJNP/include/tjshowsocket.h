@@ -1,7 +1,7 @@
 #ifndef _TJ_NP_SOCKET_H
 #define _TJ_NP_SOCKET_H
 
-#include "internal/tjnp.h"
+#include "tjnpinternal.h"
 #include "tjtransaction.h"
 #include "tjclient.h"
 #include "tjstream.h"

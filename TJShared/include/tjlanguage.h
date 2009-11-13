@@ -1,7 +1,7 @@
 #ifndef _TJLANGUAGE_H
 #define _TJLANGUAGE_H
 
-#include "internal/tjpch.h"
+#include "tjsharedinternal.h"
 #include <deque>
 #include <vector>
 #include <map>

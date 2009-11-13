@@ -281,7 +281,7 @@
 								</array>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateVisibleRectKey</key>
-							<string>{{0, 0}, {185, 428}}</string>
+							<string>{{0, 0}, {185, 723}}</string>
 						</dict>
 						<key>PBXTopSmartGroupGIDs</key>
 						<array/>
@@ -291,14 +291,14 @@
 					<key>GeometryConfiguration</key>
 					<dict>
 						<key>Frame</key>
-						<string>{{0, 0}, {202, 446}}</string>
+						<string>{{0, 0}, {202, 741}}</string>
 						<key>GroupTreeTableConfiguration</key>
 						<array>
 							<string>MainColumn</string>
 							<real>185</real>
 						</array>
 						<key>RubberWindowFrame</key>
-						<string>42 468 810 487 0 0 1280 1002 </string>
+						<string>42 173 1092 782 0 0 1280 1002 </string>
 					</dict>
 					<key>Module</key>
 					<string>PBXSmartGroupTreeModule</string>
@@ -314,7 +314,7 @@
 								<key>PBXProjectModuleGUID</key>
 								<string>B486E8981066294A0043CE5D</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>tinystr.cpp</string>
+								<string>tinystr.h</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -322,17 +322,18 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>B486E8991066294A0043CE5D</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>tinystr.cpp</string>
+										<string>tinystr.h</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>B46AC56610833D7F00EAE42C</string>
+										<string>B497DA8D10AD5BF900EB9CB8</string>
 										<key>history</key>
 										<array>
 											<string>B486E8E610662B880043CE5D</string>
 											<string>B486E8E710662B880043CE5D</string>
-											<string>B45F58AF1066CB3E00FEDA6B</string>
-											<string>B4E6175E10826EB9004D7C02</string>
+											<string>B497DA8A10AD5BF900EB9CB8</string>
+											<string>B497DA8B10AD5BF900EB9CB8</string>
+											<string>B497DA8C10AD5BF900EB9CB8</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -346,18 +347,18 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 0}, {603, 69}}</string>
+								<string>{{0, 0}, {885, 346}}</string>
 								<key>RubberWindowFrame</key>
-								<string>42 468 810 487 0 0 1280 1002 </string>
+								<string>42 173 1092 782 0 0 1280 1002 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
 							<key>Proportion</key>
-							<string>69pt</string>
+							<string>346pt</string>
 						</dict>
 						<dict>
 							<key>Proportion</key>
-							<string>372pt</string>
+							<string>390pt</string>
 							<key>Tabs</key>
 							<array>
 								<dict>
@@ -371,9 +372,9 @@
 									<key>GeometryConfiguration</key>
 									<dict>
 										<key>Frame</key>
-										<string>{{10, 27}, {603, 345}}</string>
+										<string>{{10, 27}, {885, 363}}</string>
 										<key>RubberWindowFrame</key>
-										<string>42 468 810 487 0 0 1280 1002 </string>
+										<string>42 173 1092 782 0 0 1280 1002 </string>
 									</dict>
 									<key>Module</key>
 									<string>XCDetailModule</string>
@@ -436,7 +437,7 @@
 						</dict>
 					</array>
 					<key>Proportion</key>
-					<string>603pt</string>
+					<string>885pt</string>
 				</dict>
 			</array>
 			<key>Name</key>
@@ -455,11 +456,11 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>B46AC56710833D7F00EAE42C</string>
+				<string>B497DA8E10AD5BF900EB9CB8</string>
 				<string>1CA23ED40692098700951B8B</string>
-				<string>B46AC56810833D7F00EAE42C</string>
+				<string>B497DA8F10AD5BF900EB9CB8</string>
 				<string>B486E8981066294A0043CE5D</string>
-				<string>B46AC56910833D7F00EAE42C</string>
+				<string>B497DA9010AD5BF900EB9CB8</string>
 				<string>1CA23EDF0692099D00951B8B</string>
 				<string>1CA23EE00692099D00951B8B</string>
 				<string>1CA23EE10692099D00951B8B</string>
@@ -630,7 +631,7 @@
 		<string>/Users/tommyvandervorst/Documents/Projecten/tj/Libraries/TinyXML/TinyXMLFramework.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
-	<string>42 468 810 487 0 0 1280 1002 </string>
+	<string>42 173 1092 782 0 0 1280 1002 </string>
 	<key>WindowToolsV3</key>
 	<array>
 		<dict>

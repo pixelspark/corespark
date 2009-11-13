@@ -1,7 +1,7 @@
 #ifndef _TJ_NP_STREAM_H
 #define _TJ_NP_STREAM_H
 
-#include "internal/tjnp.h"
+#include "tjnpinternal.h"
 #include "tjprotocol.h"
 #include "tjtransaction.h"
 

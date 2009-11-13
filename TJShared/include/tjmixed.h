@@ -1,7 +1,7 @@
 #ifndef _TJMIXED_H
 #define _TJMIXED_H
 
-#include "internal/tjpch.h"
+#include "tjsharedinternal.h"
 #include <map>
 
 namespace tj {

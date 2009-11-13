@@ -1,7 +1,7 @@
 #ifndef _TJ_NP_AUTHORIZER_H
 #define _TJ_NP_AUTHORIZER_H
 
-#include "internal/tjnp.h"
+#include "tjnpinternal.h"
 
 namespace tj {
 	namespace np {

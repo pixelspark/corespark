@@ -1,7 +1,7 @@
 #ifndef _TJ_SCOUT_H
 #define _TJ_SCOUT_H
 
-#include "internal/tjscout.h"
+#include "tjscoutinternal.h"
 #include "tjresolver.h"
 
 namespace tj {

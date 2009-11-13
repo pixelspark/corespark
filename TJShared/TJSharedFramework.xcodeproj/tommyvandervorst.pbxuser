@@ -3,9 +3,9 @@
 	0867D690FE84028FC02AAC07 /* Project object */ = {
 		activeBuildConfigurationName = Release;
 		activeSDKPreference = macosx10.6;
-		activeTarget = 8DC2EF4F0486A6940098B216 /* TJSharedFramework */;
+		activeTarget = 8DC2EF4F0486A6940098B216 /* TJShared */;
 		addToTargets = (
-			8DC2EF4F0486A6940098B216 /* TJSharedFramework */,
+			8DC2EF4F0486A6940098B216 /* TJShared */,
 		);
 		breakpoints = (
 			B45CFA0C10A1824B007CA879 /* tjrectangle.h:3 */,
@@ -130,7 +130,7 @@
 			};
 			PBXConfiguration.PBXTargetDataSource.PBXTargetDataSource = {
 				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
-				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
+				PBXFileTableDataSourceColumnSortingKey = PBXTargetDataSource_PrimaryAttribute;
 				PBXFileTableDataSourceColumnWidthsKey = (
 					20,
 					794,
@@ -150,8 +150,8 @@
 					PBXFileDataSource_Warnings_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 279705703;
-			PBXWorkspaceStateSaveDate = 279705703;
+			PBXPerProjectTemplateStateSaveDate = 279798299;
+			PBXWorkspaceStateSaveDate = 279798299;
 		};
 		perUserProjectItems = {
 			B41DD44410663C1B000742DD /* PBXTextBookmark */ = B41DD44410663C1B000742DD /* PBXTextBookmark */;
@@ -160,13 +160,8 @@
 			B45CFB8F10A1B155007CA879 /* PBXTextBookmark */ = B45CFB8F10A1B155007CA879 /* PBXTextBookmark */;
 			B45CFB9110A1B155007CA879 /* PBXTextBookmark */ = B45CFB9110A1B155007CA879 /* PBXTextBookmark */;
 			B45CFB9310A1B155007CA879 /* PBXTextBookmark */ = B45CFB9310A1B155007CA879 /* PBXTextBookmark */;
-			B45CFB9510A1B155007CA879 /* PBXTextBookmark */ = B45CFB9510A1B155007CA879 /* PBXTextBookmark */;
-			B45CFB9610A1B155007CA879 /* PBXTextBookmark */ = B45CFB9610A1B155007CA879 /* PBXTextBookmark */;
-			B45CFB9810A1B155007CA879 /* PBXTextBookmark */ = B45CFB9810A1B155007CA879 /* PBXTextBookmark */;
 			B45CFB9910A1B155007CA879 /* PBXTextBookmark */ = B45CFB9910A1B155007CA879 /* PBXTextBookmark */;
-			B45CFB9A10A1B155007CA879 /* PBXTextBookmark */ = B45CFB9A10A1B155007CA879 /* PBXTextBookmark */;
 			B45CFB9C10A1B155007CA879 /* PBXTextBookmark */ = B45CFB9C10A1B155007CA879 /* PBXTextBookmark */;
-			B45CFB9F10A1B155007CA879 /* PBXTextBookmark */ = B45CFB9F10A1B155007CA879 /* PBXTextBookmark */;
 			B45CFBA010A1B155007CA879 /* PBXTextBookmark */ = B45CFBA010A1B155007CA879 /* PBXTextBookmark */;
 			B45CFBA310A1B155007CA879 /* PBXTextBookmark */ = B45CFBA310A1B155007CA879 /* PBXTextBookmark */;
 			B45CFBA410A1B155007CA879 /* PBXTextBookmark */ = B45CFBA410A1B155007CA879 /* PBXTextBookmark */;
@@ -180,40 +175,43 @@
 			B45CFBAE10A1B155007CA879 /* PBXTextBookmark */ = B45CFBAE10A1B155007CA879 /* PBXTextBookmark */;
 			B45CFBB010A1B155007CA879 /* PBXTextBookmark */ = B45CFBB010A1B155007CA879 /* PBXTextBookmark */;
 			B45CFBB210A1B155007CA879 /* PBXTextBookmark */ = B45CFBB210A1B155007CA879 /* PBXTextBookmark */;
-			B45CFBB310A1B155007CA879 /* PBXTextBookmark */ = B45CFBB310A1B155007CA879 /* PBXTextBookmark */;
 			B45CFBB610A1B155007CA879 /* PBXTextBookmark */ = B45CFBB610A1B155007CA879 /* PBXTextBookmark */;
 			B45CFBB810A1B155007CA879 /* PBXTextBookmark */ = B45CFBB810A1B155007CA879 /* PBXTextBookmark */;
 			B45CFBBB10A1B155007CA879 /* PBXTextBookmark */ = B45CFBBB10A1B155007CA879 /* PBXTextBookmark */;
 			B45CFBBC10A1B155007CA879 /* PBXTextBookmark */ = B45CFBBC10A1B155007CA879 /* PBXTextBookmark */;
-			B45CFBBD10A1B155007CA879 /* PBXTextBookmark */ = B45CFBBD10A1B155007CA879 /* PBXTextBookmark */;
 			B45CFBBE10A1B155007CA879 /* PBXTextBookmark */ = B45CFBBE10A1B155007CA879 /* PBXTextBookmark */;
 			B45CFBC010A1B155007CA879 /* PBXTextBookmark */ = B45CFBC010A1B155007CA879 /* PBXTextBookmark */;
 			B45CFBC110A1B155007CA879 /* PBXTextBookmark */ = B45CFBC110A1B155007CA879 /* PBXTextBookmark */;
 			B45CFBC310A1B155007CA879 /* PBXTextBookmark */ = B45CFBC310A1B155007CA879 /* PBXTextBookmark */;
-			B45CFBC410A1B155007CA879 /* PBXTextBookmark */ = B45CFBC410A1B155007CA879 /* PBXTextBookmark */;
 			B45CFC5110A1D1AF007CA879 /* PBXTextBookmark */ = B45CFC5110A1D1AF007CA879 /* PBXTextBookmark */;
-			B469544310A6CA4C0045DB2D /* PBXTextBookmark */ = B469544310A6CA4C0045DB2D /* PBXTextBookmark */;
-			B469544410A6CA4C0045DB2D /* PBXTextBookmark */ = B469544410A6CA4C0045DB2D /* PBXTextBookmark */;
-			B469544510A6CA4C0045DB2D /* PBXTextBookmark */ = B469544510A6CA4C0045DB2D /* PBXTextBookmark */;
 			B469550810A6E8860045DB2D /* PBXTextBookmark */ = B469550810A6E8860045DB2D /* PBXTextBookmark */;
-			B469550910A6E8860045DB2D /* PBXTextBookmark */ = B469550910A6E8860045DB2D /* PBXTextBookmark */;
 			B469550A10A6E8860045DB2D /* PBXTextBookmark */ = B469550A10A6E8860045DB2D /* PBXTextBookmark */;
 			B469550B10A6E8860045DB2D /* PBXTextBookmark */ = B469550B10A6E8860045DB2D /* PBXTextBookmark */;
 			B469550C10A6E8860045DB2D /* PBXTextBookmark */ = B469550C10A6E8860045DB2D /* PBXTextBookmark */;
 			B469550D10A6E8860045DB2D /* PBXTextBookmark */ = B469550D10A6E8860045DB2D /* PBXTextBookmark */;
 			B469550E10A6E8860045DB2D /* PBXTextBookmark */ = B469550E10A6E8860045DB2D /* PBXTextBookmark */;
-			B469550F10A6E8860045DB2D /* PBXTextBookmark */ = B469550F10A6E8860045DB2D /* PBXTextBookmark */;
 			B469551010A6E8860045DB2D /* PBXTextBookmark */ = B469551010A6E8860045DB2D /* PBXTextBookmark */;
 			B47AF0E310ACB82600D6281B /* PBXTextBookmark */ = B47AF0E310ACB82600D6281B /* PBXTextBookmark */;
 			B47AF0E410ACB82600D6281B /* PBXTextBookmark */ = B47AF0E410ACB82600D6281B /* PBXTextBookmark */;
 			B47AF0E510ACB82600D6281B /* PBXTextBookmark */ = B47AF0E510ACB82600D6281B /* PBXTextBookmark */;
-			B47AF0E610ACB82600D6281B /* PBXTextBookmark */ = B47AF0E610ACB82600D6281B /* PBXTextBookmark */;
-			B47AF0E710ACB82600D6281B /* PBXTextBookmark */ = B47AF0E710ACB82600D6281B /* PBXTextBookmark */;
 			B47B755210AB72F30031263D /* PBXTextBookmark */ = B47B755210AB72F30031263D /* PBXTextBookmark */;
 			B47B755310AB72F30031263D /* PBXTextBookmark */ = B47B755310AB72F30031263D /* PBXTextBookmark */;
 			B486EA5D106633980043CE5D /* PBXTextBookmark */ = B486EA5D106633980043CE5D /* PBXTextBookmark */;
 			B486EA88106635BB0043CE5D /* PBXTextBookmark */ = B486EA88106635BB0043CE5D /* PBXTextBookmark */;
 			B491080210710ABA00279D29 /* PlistBookmark */ = B491080210710ABA00279D29 /* PlistBookmark */;
+			B497DAB710AD5CBB00EB9CB8 /* PBXTextBookmark */ = B497DAB710AD5CBB00EB9CB8 /* PBXTextBookmark */;
+			B497DABA10AD5CBB00EB9CB8 /* PBXTextBookmark */ = B497DABA10AD5CBB00EB9CB8 /* PBXTextBookmark */;
+			B497DABB10AD5CBB00EB9CB8 /* PBXTextBookmark */ = B497DABB10AD5CBB00EB9CB8 /* PBXTextBookmark */;
+			B497DABC10AD5CBB00EB9CB8 /* PBXTextBookmark */ = B497DABC10AD5CBB00EB9CB8 /* PBXTextBookmark */;
+			B497DABD10AD5CBB00EB9CB8 /* PBXTextBookmark */ = B497DABD10AD5CBB00EB9CB8 /* PBXTextBookmark */;
+			B497DABE10AD5CBB00EB9CB8 /* PBXTextBookmark */ = B497DABE10AD5CBB00EB9CB8 /* PBXTextBookmark */;
+			B4CAA7D710AD63D100385A5F /* PBXTextBookmark */ = B4CAA7D710AD63D100385A5F /* PBXTextBookmark */;
+			B4CAA7D910AD63D100385A5F /* PBXTextBookmark */ = B4CAA7D910AD63D100385A5F /* PBXTextBookmark */;
+			B4CAA7DB10AD63D100385A5F /* PBXTextBookmark */ = B4CAA7DB10AD63D100385A5F /* PBXTextBookmark */;
+			B4CAA7DD10AD63D100385A5F /* PBXTextBookmark */ = B4CAA7DD10AD63D100385A5F /* PBXTextBookmark */;
+			B4CAA7DF10AD63D100385A5F /* PBXTextBookmark */ = B4CAA7DF10AD63D100385A5F /* PBXTextBookmark */;
+			B4CAA7E410AD63E100385A5F /* PBXTextBookmark */ = B4CAA7E410AD63E100385A5F /* PBXTextBookmark */;
+			B4CAA99210AD689600385A5F /* PBXTextBookmark */ = B4CAA99210AD689600385A5F /* PBXTextBookmark */;
 			B4E3EE21108F9E23008B42D7 /* PBXTextBookmark */ = B4E3EE21108F9E23008B42D7 /* PBXTextBookmark */;
 			B4F6F32C106807DE00B137C0 /* PBXTextBookmark */ = B4F6F32C106807DE00B137C0 /* PBXTextBookmark */;
 			B4F6F32E106807DE00B137C0 /* PBXTextBookmark */ = B4F6F32E106807DE00B137C0 /* PBXTextBookmark */;
@@ -229,7 +227,7 @@
 			sepNavVisRange = "{0, 45}";
 		};
 	};
-	8DC2EF4F0486A6940098B216 /* TJSharedFramework */ = {
+	8DC2EF4F0486A6940098B216 /* TJShared */ = {
 		activeExec = 0;
 	};
 	B41DD44410663C1B000742DD /* PBXTextBookmark */ = {
@@ -343,54 +341,14 @@
 		path = /Developer/SDKs/MacOSX10.6.sdk/System/Library/Frameworks/CoreServices.framework/Headers/../Frameworks/CarbonCore.framework/Headers/MacTypes.h;
 		sourceTree = "<absolute>";
 	};
-	B45CFB9510A1B155007CA879 /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = B486E810106628710043CE5D /* tjiterator.h */;
-		name = "tjiterator.h: 33";
-		rLen = 0;
-		rLoc = 606;
-		rType = 0;
-		vrLen = 703;
-		vrLoc = 195;
-	};
-	B45CFB9610A1B155007CA879 /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = B486E809106628710043CE5D /* tjcolor.h */;
-		name = "tjcolor.h: 6";
-		rLen = 0;
-		rLoc = 110;
-		rType = 0;
-		vrLen = 1343;
-		vrLoc = 1492;
-	};
-	B45CFB9810A1B155007CA879 /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = B486E811106628710043CE5D /* tjlanguage.h */;
-		name = "tjlanguage.h: 4";
-		rLen = 0;
-		rLoc = 72;
-		rType = 0;
-		vrLen = 1023;
-		vrLoc = 0;
-	};
 	B45CFB9910A1B155007CA879 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
 		fRef = B486E816106628710043CE5D /* tjprototype.h */;
 		name = "tjprototype.h: 4";
 		rLen = 0;
-		rLoc = 76;
+		rLoc = 78;
 		rType = 0;
 		vrLen = 1598;
-		vrLoc = 0;
-	};
-	B45CFB9A10A1B155007CA879 /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = B486E818106628710043CE5D /* tjrectangle.h */;
-		name = "tjrectangle.h: 4";
-		rLen = 27;
-		rLoc = 47;
-		rType = 0;
-		vrLen = 909;
 		vrLoc = 0;
 	};
 	B45CFB9C10A1B155007CA879 /* PBXTextBookmark */ = {
@@ -398,19 +356,9 @@
 		fRef = B486E814106628710043CE5D /* tjmixed.h */;
 		name = "tjmixed.h: 4";
 		rLen = 0;
-		rLoc = 66;
+		rLoc = 68;
 		rType = 0;
 		vrLen = 1082;
-		vrLoc = 0;
-	};
-	B45CFB9F10A1B155007CA879 /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = B486E806106628710043CE5D /* tjaction.h */;
-		name = "tjaction.h: 8";
-		rLen = 0;
-		rLoc = 141;
-		rType = 0;
-		vrLen = 1164;
 		vrLoc = 0;
 	};
 	B45CFBA010A1B155007CA879 /* PBXTextBookmark */ = {
@@ -418,7 +366,7 @@
 		fRef = B486E812106628710043CE5D /* tjlistener.h */;
 		name = "tjlistener.h: 5";
 		rLen = 0;
-		rLoc = 98;
+		rLoc = 100;
 		rType = 0;
 		vrLen = 991;
 		vrLoc = 0;
@@ -428,7 +376,7 @@
 		fRef = B486E821106628710043CE5D /* tjvector.h */;
 		name = "tjvector.h: 5";
 		rLen = 0;
-		rLoc = 100;
+		rLoc = 102;
 		rType = 0;
 		vrLen = 675;
 		vrLoc = 0;
@@ -438,7 +386,7 @@
 		fRef = B486E81B106628710043CE5D /* tjserializable.h */;
 		name = "tjserializable.h: 136";
 		rLen = 0;
-		rLoc = 3769;
+		rLoc = 3771;
 		rType = 0;
 		vrLen = 1201;
 		vrLoc = 3254;
@@ -448,7 +396,7 @@
 		fRef = B486E822106628710043CE5D /* tjzone.h */;
 		name = "tjzone.h: 6";
 		rLen = 0;
-		rLoc = 92;
+		rLoc = 94;
 		rType = 0;
 		vrLen = 752;
 		vrLoc = 0;
@@ -458,7 +406,7 @@
 		fRef = B486E80B106628710043CE5D /* tjendpoint.h */;
 		name = "tjendpoint.h: 5";
 		rLen = 0;
-		rLoc = 95;
+		rLoc = 97;
 		rType = 0;
 		vrLen = 808;
 		vrLoc = 0;
@@ -468,7 +416,7 @@
 		fRef = B486E80E106628710043CE5D /* tjgc.h */;
 		name = "tjgc.h: 4";
 		rLen = 0;
-		rLoc = 60;
+		rLoc = 62;
 		rType = 0;
 		vrLen = 1276;
 		vrLoc = 0;
@@ -508,7 +456,7 @@
 		fRef = B486E80D106628710043CE5D /* tjfile.h */;
 		name = "tjfile.h: 5";
 		rLen = 0;
-		rLoc = 99;
+		rLoc = 101;
 		rType = 0;
 		vrLen = 815;
 		vrLoc = 0;
@@ -528,7 +476,7 @@
 		fRef = B486E813106628710043CE5D /* tjlog.h */;
 		name = "tjlog.h: 5";
 		rLen = 0;
-		rLoc = 88;
+		rLoc = 90;
 		rType = 0;
 		vrLen = 1040;
 		vrLoc = 0;
@@ -538,19 +486,9 @@
 		fRef = B486E81A106628710043CE5D /* tjresourcemgr.h */;
 		name = "tjresourcemgr.h: 6";
 		rLen = 0;
-		rLoc = 120;
+		rLoc = 122;
 		rType = 0;
 		vrLen = 1441;
-		vrLoc = 0;
-	};
-	B45CFBB310A1B155007CA879 /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = B486E831106628710043CE5D /* tjresourcemgr.cpp */;
-		name = "tjresourcemgr.cpp: 6";
-		rLen = 0;
-		rLoc = 199;
-		rType = 0;
-		vrLen = 919;
 		vrLoc = 0;
 	};
 	B45CFBB610A1B155007CA879 /* PBXTextBookmark */ = {
@@ -558,7 +496,7 @@
 		fRef = B486E81C106628710043CE5D /* tjsettings.h */;
 		name = "tjsettings.h: 5";
 		rLen = 0;
-		rLoc = 108;
+		rLoc = 110;
 		rType = 0;
 		vrLen = 1514;
 		vrLoc = 0;
@@ -591,16 +529,6 @@
 		rLoc = 98;
 		rType = 0;
 		vrLen = 1000;
-		vrLoc = 0;
-	};
-	B45CFBBD10A1B155007CA879 /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = B486E824106628710043CE5D /* tjaction.cpp */;
-		name = "tjaction.cpp: 38";
-		rLen = 0;
-		rLoc = 887;
-		rType = 0;
-		vrLen = 1100;
 		vrLoc = 0;
 	};
 	B45CFBBE10A1B155007CA879 /* PBXTextBookmark */ = {
@@ -650,16 +578,6 @@
 		vrLen = 731;
 		vrLoc = 0;
 	};
-	B45CFBC410A1B155007CA879 /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = B486E805106628710043CE5D /* tjpch.h */;
-		name = "tjpch.h: 16";
-		rLen = 0;
-		rLoc = 268;
-		rType = 0;
-		vrLen = 1036;
-		vrLoc = 0;
-	};
 	B45CFBC810A1B155007CA879 /* stdint.h */ = {
 		isa = PBXFileReference;
 		lastKnownFileType = sourcecode.c.h;
@@ -677,36 +595,6 @@
 		vrLen = 1306;
 		vrLoc = 2288;
 	};
-	B469544310A6CA4C0045DB2D /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = B486E838106628710043CE5D /* tjutil.cpp */;
-		name = "tjutil.cpp: 246";
-		rLen = 0;
-		rLoc = 6264;
-		rType = 0;
-		vrLen = 860;
-		vrLoc = 5813;
-	};
-	B469544410A6CA4C0045DB2D /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = B486E807106628710043CE5D /* tjany.h */;
-		name = "tjany.h: 5";
-		rLen = 0;
-		rLoc = 94;
-		rType = 0;
-		vrLen = 821;
-		vrLoc = 0;
-	};
-	B469544510A6CA4C0045DB2D /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = B486E808106628710043CE5D /* tjcode.h */;
-		name = "tjcode.h: 5";
-		rLen = 0;
-		rLoc = 90;
-		rType = 0;
-		vrLen = 1044;
-		vrLoc = 0;
-	};
 	B469550810A6E8860045DB2D /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
 		fRef = B486E832106628710043CE5D /* tjsecurehash.cpp */;
@@ -716,16 +604,6 @@
 		rType = 0;
 		vrLen = 1226;
 		vrLoc = 0;
-	};
-	B469550910A6E8860045DB2D /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = B486E80A106628710043CE5D /* tjcrypto.h */;
-		name = "tjcrypto.h: 4";
-		rLen = 0;
-		rLoc = 67;
-		rType = 0;
-		vrLen = 991;
-		vrLoc = 171;
 	};
 	B469550A10A6E8860045DB2D /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
@@ -752,7 +630,7 @@
 		fRef = B486E81D106628710043CE5D /* tjshared.h */;
 		name = "tjshared.h: 16";
 		rLen = 0;
-		rLoc = 457;
+		rLoc = 459;
 		rType = 0;
 		vrLen = 818;
 		vrLoc = 0;
@@ -762,7 +640,7 @@
 		fRef = B486E820106628710043CE5D /* tjutil.h */;
 		name = "tjutil.h: 210";
 		rLen = 0;
-		rLoc = 4440;
+		rLoc = 4442;
 		rType = 0;
 		vrLen = 1007;
 		vrLoc = 4376;
@@ -772,20 +650,10 @@
 		fRef = B486E81E106628710043CE5D /* tjthread.h */;
 		name = "tjthread.h: 265";
 		rLen = 0;
-		rLoc = 5409;
+		rLoc = 5411;
 		rType = 0;
 		vrLen = 898;
 		vrLoc = 4688;
-	};
-	B469550F10A6E8860045DB2D /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = B486E829106628710043CE5D /* tjcore.cpp */;
-		name = "tjcore.cpp: 5";
-		rLen = 0;
-		rLoc = 171;
-		rType = 0;
-		vrLen = 823;
-		vrLoc = 0;
 	};
 	B469551010A6E8860045DB2D /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
@@ -819,7 +687,7 @@
 		fRef = B486E81F106628710043CE5D /* tjtime.h */;
 		name = "tjtime.h: 51";
 		rLen = 167;
-		rLoc = 1402;
+		rLoc = 1404;
 		rType = 0;
 		vrLen = 1275;
 		vrLoc = 471;
@@ -834,32 +702,12 @@
 		vrLen = 800;
 		vrLoc = 7194;
 	};
-	B47AF0E610ACB82600D6281B /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = B486E836106628710043CE5D /* tjthread.cpp */;
-		name = "tjthread.cpp: 424";
-		rLen = 0;
-		rLoc = 8987;
-		rType = 0;
-		vrLen = 713;
-		vrLoc = 8614;
-	};
-	B47AF0E710ACB82600D6281B /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = B486E836106628710043CE5D /* tjthread.cpp */;
-		name = "tjthread.cpp: 444";
-		rLen = 0;
-		rLoc = 9431;
-		rType = 0;
-		vrLen = 768;
-		vrLoc = 9035;
-	};
 	B47B755210AB72F30031263D /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
 		fRef = B486E819106628710043CE5D /* tjreference.h */;
 		name = "tjreference.h: 191";
 		rLen = 6;
-		rLoc = 4661;
+		rLoc = 4663;
 		rType = 0;
 		vrLen = 1383;
 		vrLoc = 4253;
@@ -889,50 +737,13 @@
 		isa = PBXCodeSenseManager;
 		indexTemplatePath = "";
 	};
-	B486E805106628710043CE5D /* tjpch.h */ = {
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1012, 1378}}";
-			sepNavSelRange = "{268, 0}";
-			sepNavVisRange = "{0, 1036}";
-			sepNavWindowFrame = "{{15, 115}, {1260, 882}}";
-		};
-	};
-	B486E806106628710043CE5D /* tjaction.h */ = {
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1012, 3094}}";
-			sepNavSelRange = "{141, 0}";
-			sepNavVisRange = "{0, 1164}";
-		};
-	};
-	B486E807106628710043CE5D /* tjany.h */ = {
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1012, 1313}}";
-			sepNavSelRange = "{94, 0}";
-			sepNavVisRange = "{0, 821}";
-		};
-	};
-	B486E808106628710043CE5D /* tjcode.h */ = {
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1012, 1222}}";
-			sepNavSelRange = "{90, 0}";
-			sepNavVisRange = "{0, 1044}";
-		};
-	};
-	B486E809106628710043CE5D /* tjcolor.h */ = {
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1314, 1066}}";
-			sepNavSelRange = "{110, 0}";
-			sepNavVisRange = "{1492, 1343}";
-		};
-	};
-	B486E80A106628710043CE5D /* tjcrypto.h */ = {
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1012, 624}}";
-			sepNavSelRange = "{67, 0}";
-			sepNavVisRange = "{171, 991}";
-		};
-	};
 	B486E80B106628710043CE5D /* tjendpoint.h */ = {
+		isa = PBXFileReference;
+		fileEncoding = 4;
+		lastKnownFileType = sourcecode.c.h;
+		name = tjendpoint.h;
+		path = /Users/tommyvandervorst/Documents/Projecten/tj/TJShared/include/tjendpoint.h;
+		sourceTree = "<absolute>";
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1012, 526}}";
 			sepNavSelRange = "{95, 0}";
@@ -940,6 +751,12 @@
 		};
 	};
 	B486E80D106628710043CE5D /* tjfile.h */ = {
+		isa = PBXFileReference;
+		fileEncoding = 4;
+		lastKnownFileType = sourcecode.c.h;
+		name = tjfile.h;
+		path = /Users/tommyvandervorst/Documents/Projecten/tj/TJShared/include/tjfile.h;
+		sourceTree = "<absolute>";
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1012, 526}}";
 			sepNavSelRange = "{99, 0}";
@@ -947,6 +764,12 @@
 		};
 	};
 	B486E80E106628710043CE5D /* tjgc.h */ = {
+		isa = PBXFileReference;
+		fileEncoding = 4;
+		lastKnownFileType = sourcecode.c.h;
+		name = tjgc.h;
+		path = /Users/tommyvandervorst/Documents/Projecten/tj/TJShared/include/tjgc.h;
+		sourceTree = "<absolute>";
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1012, 754}}";
 			sepNavSelRange = "{60, 0}";
@@ -954,20 +777,38 @@
 		};
 	};
 	B486E810106628710043CE5D /* tjiterator.h */ = {
+		isa = PBXFileReference;
+		fileEncoding = 4;
+		lastKnownFileType = sourcecode.c.h;
+		name = tjiterator.h;
+		path = /Users/tommyvandervorst/Documents/Projecten/tj/TJShared/include/tjiterator.h;
+		sourceTree = "<absolute>";
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1012, 689}}";
-			sepNavSelRange = "{606, 0}";
-			sepNavVisRange = "{195, 703}";
+			sepNavIntBoundsRect = "{{0, 0}, {1012, 702}}";
+			sepNavSelRange = "{77, 0}";
+			sepNavVisRange = "{289, 632}";
 		};
 	};
 	B486E811106628710043CE5D /* tjlanguage.h */ = {
+		isa = PBXFileReference;
+		fileEncoding = 4;
+		lastKnownFileType = sourcecode.c.h;
+		name = tjlanguage.h;
+		path = /Users/tommyvandervorst/Documents/Projecten/tj/TJShared/include/tjlanguage.h;
+		sourceTree = "<absolute>";
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1012, 572}}";
-			sepNavSelRange = "{72, 0}";
-			sepNavVisRange = "{0, 1023}";
+			sepNavIntBoundsRect = "{{0, 0}, {1012, 559}}";
+			sepNavSelRange = "{74, 0}";
+			sepNavVisRange = "{0, 1014}";
 		};
 	};
 	B486E812106628710043CE5D /* tjlistener.h */ = {
+		isa = PBXFileReference;
+		fileEncoding = 4;
+		lastKnownFileType = sourcecode.c.h;
+		name = tjlistener.h;
+		path = /Users/tommyvandervorst/Documents/Projecten/tj/TJShared/include/tjlistener.h;
+		sourceTree = "<absolute>";
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1012, 1079}}";
 			sepNavSelRange = "{98, 0}";
@@ -975,6 +816,12 @@
 		};
 	};
 	B486E813106628710043CE5D /* tjlog.h */ = {
+		isa = PBXFileReference;
+		fileEncoding = 4;
+		lastKnownFileType = sourcecode.c.h;
+		name = tjlog.h;
+		path = /Users/tommyvandervorst/Documents/Projecten/tj/TJShared/include/tjlog.h;
+		sourceTree = "<absolute>";
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1012, 526}}";
 			sepNavSelRange = "{88, 0}";
@@ -982,6 +829,12 @@
 		};
 	};
 	B486E814106628710043CE5D /* tjmixed.h */ = {
+		isa = PBXFileReference;
+		fileEncoding = 4;
+		lastKnownFileType = sourcecode.c.h;
+		name = tjmixed.h;
+		path = /Users/tommyvandervorst/Documents/Projecten/tj/TJShared/include/tjmixed.h;
+		sourceTree = "<absolute>";
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1012, 806}}";
 			sepNavSelRange = "{66, 0}";
@@ -989,6 +842,12 @@
 		};
 	};
 	B486E816106628710043CE5D /* tjprototype.h */ = {
+		isa = PBXFileReference;
+		fileEncoding = 4;
+		lastKnownFileType = sourcecode.c.h;
+		name = tjprototype.h;
+		path = /Users/tommyvandervorst/Documents/Projecten/tj/TJShared/include/tjprototype.h;
+		sourceTree = "<absolute>";
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1012, 1183}}";
 			sepNavSelRange = "{76, 0}";
@@ -996,13 +855,25 @@
 		};
 	};
 	B486E818106628710043CE5D /* tjrectangle.h */ = {
+		isa = PBXFileReference;
+		fileEncoding = 4;
+		lastKnownFileType = sourcecode.c.h;
+		name = tjrectangle.h;
+		path = /Users/tommyvandervorst/Documents/Projecten/tj/TJShared/include/tjrectangle.h;
+		sourceTree = "<absolute>";
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1012, 2769}}";
-			sepNavSelRange = "{47, 27}";
-			sepNavVisRange = "{0, 909}";
+			sepNavIntBoundsRect = "{{0, 0}, {1012, 2756}}";
+			sepNavSelRange = "{47, 29}";
+			sepNavVisRange = "{0, 856}";
 		};
 	};
 	B486E819106628710043CE5D /* tjreference.h */ = {
+		isa = PBXFileReference;
+		fileEncoding = 4;
+		lastKnownFileType = sourcecode.c.h;
+		name = tjreference.h;
+		path = /Users/tommyvandervorst/Documents/Projecten/tj/TJShared/include/tjreference.h;
+		sourceTree = "<absolute>";
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1012, 7046}}";
 			sepNavSelRange = "{4661, 6}";
@@ -1010,6 +881,12 @@
 		};
 	};
 	B486E81A106628710043CE5D /* tjresourcemgr.h */ = {
+		isa = PBXFileReference;
+		fileEncoding = 4;
+		lastKnownFileType = sourcecode.c.h;
+		name = tjresourcemgr.h;
+		path = /Users/tommyvandervorst/Documents/Projecten/tj/TJShared/include/tjresourcemgr.h;
+		sourceTree = "<absolute>";
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1012, 1482}}";
 			sepNavSelRange = "{120, 0}";
@@ -1017,6 +894,12 @@
 		};
 	};
 	B486E81B106628710043CE5D /* tjserializable.h */ = {
+		isa = PBXFileReference;
+		fileEncoding = 4;
+		lastKnownFileType = sourcecode.c.h;
+		name = tjserializable.h;
+		path = /Users/tommyvandervorst/Documents/Projecten/tj/TJShared/include/tjserializable.h;
+		sourceTree = "<absolute>";
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1012, 2405}}";
 			sepNavSelRange = "{3769, 0}";
@@ -1024,6 +907,12 @@
 		};
 	};
 	B486E81C106628710043CE5D /* tjsettings.h */ = {
+		isa = PBXFileReference;
+		fileEncoding = 4;
+		lastKnownFileType = sourcecode.c.h;
+		name = tjsettings.h;
+		path = /Users/tommyvandervorst/Documents/Projecten/tj/TJShared/include/tjsettings.h;
+		sourceTree = "<absolute>";
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1012, 598}}";
 			sepNavSelRange = "{108, 0}";
@@ -1031,6 +920,12 @@
 		};
 	};
 	B486E81D106628710043CE5D /* tjshared.h */ = {
+		isa = PBXFileReference;
+		fileEncoding = 4;
+		lastKnownFileType = sourcecode.c.h;
+		name = tjshared.h;
+		path = /Users/tommyvandervorst/Documents/Projecten/tj/TJShared/include/tjshared.h;
+		sourceTree = "<absolute>";
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1012, 503}}";
 			sepNavSelRange = "{457, 0}";
@@ -1039,6 +934,12 @@
 		};
 	};
 	B486E81E106628710043CE5D /* tjthread.h */ = {
+		isa = PBXFileReference;
+		fileEncoding = 4;
+		lastKnownFileType = sourcecode.c.h;
+		name = tjthread.h;
+		path = /Users/tommyvandervorst/Documents/Projecten/tj/TJShared/include/tjthread.h;
+		sourceTree = "<absolute>";
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1012, 3523}}";
 			sepNavSelRange = "{5409, 0}";
@@ -1046,6 +947,12 @@
 		};
 	};
 	B486E81F106628710043CE5D /* tjtime.h */ = {
+		isa = PBXFileReference;
+		fileEncoding = 4;
+		lastKnownFileType = sourcecode.c.h;
+		name = tjtime.h;
+		path = /Users/tommyvandervorst/Documents/Projecten/tj/TJShared/include/tjtime.h;
+		sourceTree = "<absolute>";
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1012, 3289}}";
 			sepNavSelRange = "{1402, 167}";
@@ -1053,6 +960,12 @@
 		};
 	};
 	B486E820106628710043CE5D /* tjutil.h */ = {
+		isa = PBXFileReference;
+		fileEncoding = 4;
+		lastKnownFileType = sourcecode.c.h;
+		name = tjutil.h;
+		path = /Users/tommyvandervorst/Documents/Projecten/tj/TJShared/include/tjutil.h;
+		sourceTree = "<absolute>";
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1237, 5382}}";
 			sepNavSelRange = "{4440, 0}";
@@ -1060,6 +973,12 @@
 		};
 	};
 	B486E821106628710043CE5D /* tjvector.h */ = {
+		isa = PBXFileReference;
+		fileEncoding = 4;
+		lastKnownFileType = sourcecode.c.h;
+		name = tjvector.h;
+		path = /Users/tommyvandervorst/Documents/Projecten/tj/TJShared/include/tjvector.h;
+		sourceTree = "<absolute>";
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1012, 526}}";
 			sepNavSelRange = "{100, 0}";
@@ -1067,20 +986,25 @@
 		};
 	};
 	B486E822106628710043CE5D /* tjzone.h */ = {
+		isa = PBXFileReference;
+		fileEncoding = 4;
+		lastKnownFileType = sourcecode.c.h;
+		name = tjzone.h;
+		path = /Users/tommyvandervorst/Documents/Projecten/tj/TJShared/include/tjzone.h;
+		sourceTree = "<absolute>";
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1012, 1235}}";
 			sepNavSelRange = "{92, 0}";
 			sepNavVisRange = "{0, 752}";
 		};
 	};
-	B486E824106628710043CE5D /* tjaction.cpp */ = {
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1160, 3315}}";
-			sepNavSelRange = "{887, 0}";
-			sepNavVisRange = "{0, 1100}";
-		};
-	};
 	B486E825106628710043CE5D /* tjany.cpp */ = {
+		isa = PBXFileReference;
+		fileEncoding = 4;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = tjany.cpp;
+		path = /Users/tommyvandervorst/Documents/Projecten/tj/TJShared/src/tjany.cpp;
+		sourceTree = "<absolute>";
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1012, 9087}}";
 			sepNavSelRange = "{404, 0}";
@@ -1088,6 +1012,12 @@
 		};
 	};
 	B486E826106628710043CE5D /* tjarguments.cpp */ = {
+		isa = PBXFileReference;
+		fileEncoding = 4;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = tjarguments.cpp;
+		path = /Users/tommyvandervorst/Documents/Projecten/tj/TJShared/src/tjarguments.cpp;
+		sourceTree = "<absolute>";
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1012, 1183}}";
 			sepNavSelRange = "{356, 0}";
@@ -1095,6 +1025,12 @@
 		};
 	};
 	B486E827106628710043CE5D /* tjcode.cpp */ = {
+		isa = PBXFileReference;
+		fileEncoding = 4;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = tjcode.cpp;
+		path = /Users/tommyvandervorst/Documents/Projecten/tj/TJShared/src/tjcode.cpp;
+		sourceTree = "<absolute>";
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1012, 1326}}";
 			sepNavSelRange = "{366, 0}";
@@ -1102,6 +1038,12 @@
 		};
 	};
 	B486E828106628710043CE5D /* tjcolor.cpp */ = {
+		isa = PBXFileReference;
+		fileEncoding = 4;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = tjcolor.cpp;
+		path = /Users/tommyvandervorst/Documents/Projecten/tj/TJShared/src/tjcolor.cpp;
+		sourceTree = "<absolute>";
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1012, 2353}}";
 			sepNavSelRange = "{52, 0}";
@@ -1109,13 +1051,25 @@
 		};
 	};
 	B486E829106628710043CE5D /* tjcore.cpp */ = {
+		isa = PBXFileReference;
+		fileEncoding = 4;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = tjcore.cpp;
+		path = /Users/tommyvandervorst/Documents/Projecten/tj/TJShared/src/tjcore.cpp;
+		sourceTree = "<absolute>";
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1012, 3432}}";
-			sepNavSelRange = "{171, 0}";
-			sepNavVisRange = "{0, 823}";
+			sepNavIntBoundsRect = "{{0, 0}, {1012, 3419}}";
+			sepNavSelRange = "{0, 35}";
+			sepNavVisRange = "{0, 739}";
 		};
 	};
 	B486E82B106628710043CE5D /* tjfile.cpp */ = {
+		isa = PBXFileReference;
+		fileEncoding = 4;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = tjfile.cpp;
+		path = /Users/tommyvandervorst/Documents/Projecten/tj/TJShared/src/tjfile.cpp;
+		sourceTree = "<absolute>";
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1012, 3224}}";
 			sepNavSelRange = "{345, 0}";
@@ -1123,6 +1077,12 @@
 		};
 	};
 	B486E82C106628710043CE5D /* tjgraphicsinit.h */ = {
+		isa = PBXFileReference;
+		fileEncoding = 4;
+		lastKnownFileType = sourcecode.c.h;
+		name = tjgraphicsinit.h;
+		path = /Users/tommyvandervorst/Documents/Projecten/tj/TJShared/src/tjgraphicsinit.h;
+		sourceTree = "<absolute>";
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1012, 526}}";
 			sepNavSelRange = "{0, 0}";
@@ -1130,6 +1090,12 @@
 		};
 	};
 	B486E82D106628710043CE5D /* tjcrypto.cpp */ = {
+		isa = PBXFileReference;
+		fileEncoding = 4;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = tjcrypto.cpp;
+		path = /Users/tommyvandervorst/Documents/Projecten/tj/TJShared/src/tjcrypto.cpp;
+		sourceTree = "<absolute>";
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1012, 1170}}";
 			sepNavSelRange = "{2291, 0}";
@@ -1137,6 +1103,12 @@
 		};
 	};
 	B486E82E106628710043CE5D /* tjlanguage.cpp */ = {
+		isa = PBXFileReference;
+		fileEncoding = 4;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = tjlanguage.cpp;
+		path = /Users/tommyvandervorst/Documents/Projecten/tj/TJShared/src/tjlanguage.cpp;
+		sourceTree = "<absolute>";
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1012, 3029}}";
 			sepNavSelRange = "{126, 0}";
@@ -1144,20 +1116,25 @@
 		};
 	};
 	B486E82F106628710043CE5D /* tjlog.cpp */ = {
+		isa = PBXFileReference;
+		fileEncoding = 4;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = tjlog.cpp;
+		path = /Users/tommyvandervorst/Documents/Projecten/tj/TJShared/src/tjlog.cpp;
+		sourceTree = "<absolute>";
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1012, 1235}}";
 			sepNavSelRange = "{93, 0}";
 			sepNavVisRange = "{0, 896}";
 		};
 	};
-	B486E831106628710043CE5D /* tjresourcemgr.cpp */ = {
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1012, 4264}}";
-			sepNavSelRange = "{199, 0}";
-			sepNavVisRange = "{0, 919}";
-		};
-	};
 	B486E832106628710043CE5D /* tjsecurehash.cpp */ = {
+		isa = PBXFileReference;
+		fileEncoding = 4;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = tjsecurehash.cpp;
+		path = /Users/tommyvandervorst/Documents/Projecten/tj/TJShared/src/tjsecurehash.cpp;
+		sourceTree = "<absolute>";
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1012, 4966}}";
 			sepNavSelRange = "{63, 0}";
@@ -1165,6 +1142,12 @@
 		};
 	};
 	B486E833106628710043CE5D /* tjserializable.cpp */ = {
+		isa = PBXFileReference;
+		fileEncoding = 4;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = tjserializable.cpp;
+		path = /Users/tommyvandervorst/Documents/Projecten/tj/TJShared/src/tjserializable.cpp;
+		sourceTree = "<absolute>";
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1012, 1703}}";
 			sepNavSelRange = "{336, 0}";
@@ -1172,6 +1155,12 @@
 		};
 	};
 	B486E834106628710043CE5D /* tjsettings.cpp */ = {
+		isa = PBXFileReference;
+		fileEncoding = 4;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = tjsettings.cpp;
+		path = /Users/tommyvandervorst/Documents/Projecten/tj/TJShared/src/tjsettings.cpp;
+		sourceTree = "<absolute>";
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1012, 2600}}";
 			sepNavSelRange = "{131, 0}";
@@ -1179,6 +1168,12 @@
 		};
 	};
 	B486E835106628710043CE5D /* tjtea.cpp */ = {
+		isa = PBXFileReference;
+		fileEncoding = 4;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = tjtea.cpp;
+		path = /Users/tommyvandervorst/Documents/Projecten/tj/TJShared/src/tjtea.cpp;
+		sourceTree = "<absolute>";
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1202, 2899}}";
 			sepNavSelRange = "{29, 0}";
@@ -1186,28 +1181,38 @@
 		};
 	};
 	B486E836106628710043CE5D /* tjthread.cpp */ = {
+		isa = PBXFileReference;
+		fileEncoding = 4;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = tjthread.cpp;
+		path = /Users/tommyvandervorst/Documents/Projecten/tj/TJShared/src/tjthread.cpp;
+		sourceTree = "<absolute>";
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1012, 8931}}";
+			sepNavIntBoundsRect = "{{0, 0}, {1012, 8905}}";
 			sepNavSelRange = "{9431, 0}";
-			sepNavVisRange = "{9035, 768}";
+			sepNavVisRange = "{9003, 830}";
 		};
 	};
 	B486E837106628710043CE5D /* tjtime.cpp */ = {
+		isa = PBXFileReference;
+		fileEncoding = 4;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = tjtime.cpp;
+		path = /Users/tommyvandervorst/Documents/Projecten/tj/TJShared/src/tjtime.cpp;
+		sourceTree = "<absolute>";
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1012, 5044}}";
 			sepNavSelRange = "{7579, 0}";
 			sepNavVisRange = "{7194, 800}";
 		};
 	};
-	B486E838106628710043CE5D /* tjutil.cpp */ = {
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1012, 8372}}";
-			sepNavSelRange = "{6264, 0}";
-			sepNavVisRange = "{5813, 860}";
-			sepNavWindowFrame = "{{15, 115}, {1260, 882}}";
-		};
-	};
 	B486E839106628710043CE5D /* tjvector.cpp */ = {
+		isa = PBXFileReference;
+		fileEncoding = 4;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = tjvector.cpp;
+		path = /Users/tommyvandervorst/Documents/Projecten/tj/TJShared/src/tjvector.cpp;
+		sourceTree = "<absolute>";
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1012, 585}}";
 			sepNavSelRange = "{29, 0}";
@@ -1215,6 +1220,12 @@
 		};
 	};
 	B486E83A106628710043CE5D /* tjzone.cpp */ = {
+		isa = PBXFileReference;
+		fileEncoding = 4;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = tjzone.cpp;
+		path = /Users/tommyvandervorst/Documents/Projecten/tj/TJShared/src/tjzone.cpp;
+		sourceTree = "<absolute>";
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1012, 1521}}";
 			sepNavSelRange = "{98, 0}";
@@ -1265,6 +1276,202 @@
 		name = /Users/tommyvandervorst/Documents/Projecten/tj/TJShared/Info.plist;
 		rLen = 0;
 		rLoc = 9223372036854775808;
+	};
+	B497DA6D10AD5AED00EB9CB8 /* tjsharedinternal.h */ = {
+		isa = PBXFileReference;
+		fileEncoding = 4;
+		lastKnownFileType = sourcecode.c.h;
+		name = tjsharedinternal.h;
+		path = /Users/tommyvandervorst/Documents/Projecten/tj/TJShared/include/tjsharedinternal.h;
+		sourceTree = "<absolute>";
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1012, 1300}}";
+			sepNavSelRange = "{952, 0}";
+			sepNavVisRange = "{530, 793}";
+		};
+	};
+	B497DAB710AD5CBB00EB9CB8 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = B486E836106628710043CE5D /* tjthread.cpp */;
+		name = "tjthread.cpp: 444";
+		rLen = 0;
+		rLoc = 9431;
+		rType = 0;
+		vrLen = 830;
+		vrLoc = 9003;
+	};
+	B497DABA10AD5CBB00EB9CB8 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = B486E810106628710043CE5D /* tjiterator.h */;
+		name = "tjiterator.h: 4";
+		rLen = 0;
+		rLoc = 77;
+		rType = 0;
+		vrLen = 632;
+		vrLoc = 289;
+	};
+	B497DABB10AD5CBB00EB9CB8 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = B486E818106628710043CE5D /* tjrectangle.h */;
+		name = "tjrectangle.h: 4";
+		rLen = 29;
+		rLoc = 47;
+		rType = 0;
+		vrLen = 856;
+		vrLoc = 0;
+	};
+	B497DABC10AD5CBB00EB9CB8 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = B486E811106628710043CE5D /* tjlanguage.h */;
+		name = "tjlanguage.h: 4";
+		rLen = 0;
+		rLoc = 74;
+		rType = 0;
+		vrLen = 1014;
+		vrLoc = 0;
+	};
+	B497DABD10AD5CBB00EB9CB8 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = B497DA6D10AD5AED00EB9CB8 /* tjsharedinternal.h */;
+		name = "tjsharedinternal.h: 44";
+		rLen = 0;
+		rLoc = 952;
+		rType = 0;
+		vrLen = 793;
+		vrLoc = 530;
+	};
+	B497DABE10AD5CBB00EB9CB8 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = B486E829106628710043CE5D /* tjcore.cpp */;
+		name = "tjcore.cpp: 1";
+		rLen = 35;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 739;
+		vrLoc = 0;
+	};
+	B4CAA7A810AD63BE00385A5F /* tjaction.cpp */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1160, 3328}}";
+			sepNavSelRange = "{887, 0}";
+			sepNavVisRange = "{0, 887}";
+		};
+	};
+	B4CAA7D710AD63D100385A5F /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = B4CAA7D810AD63D100385A5F /* tjcode.h */;
+		name = "tjcode.h: 5";
+		rLen = 0;
+		rLoc = 92;
+		rType = 0;
+		vrLen = 985;
+		vrLoc = 0;
+	};
+	B4CAA7D810AD63D100385A5F /* tjcode.h */ = {
+		isa = PBXFileReference;
+		name = tjcode.h;
+		path = /Users/tommyvandervorst/Documents/Projecten/tj/TJShared/include/tjcode.h;
+		sourceTree = "<absolute>";
+	};
+	B4CAA7D910AD63D100385A5F /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = B4CAA7DA10AD63D100385A5F /* tjcrypto.h */;
+		name = "tjcrypto.h: 4";
+		rLen = 0;
+		rLoc = 69;
+		rType = 0;
+		vrLen = 1028;
+		vrLoc = 125;
+	};
+	B4CAA7DA10AD63D100385A5F /* tjcrypto.h */ = {
+		isa = PBXFileReference;
+		name = tjcrypto.h;
+		path = /Users/tommyvandervorst/Documents/Projecten/tj/TJShared/include/tjcrypto.h;
+		sourceTree = "<absolute>";
+	};
+	B4CAA7DB10AD63D100385A5F /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = B4CAA7DC10AD63D100385A5F /* tjcolor.h */;
+		name = "tjcolor.h: 6";
+		rLen = 0;
+		rLoc = 112;
+		rType = 0;
+		vrLen = 1216;
+		vrLoc = 1451;
+	};
+	B4CAA7DC10AD63D100385A5F /* tjcolor.h */ = {
+		isa = PBXFileReference;
+		name = tjcolor.h;
+		path = /Users/tommyvandervorst/Documents/Projecten/tj/TJShared/include/tjcolor.h;
+		sourceTree = "<absolute>";
+	};
+	B4CAA7DD10AD63D100385A5F /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = B4CAA7DE10AD63D100385A5F /* tjany.h */;
+		name = "tjany.h: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 745;
+		vrLoc = 0;
+	};
+	B4CAA7DE10AD63D100385A5F /* tjany.h */ = {
+		isa = PBXFileReference;
+		name = tjany.h;
+		path = /Users/tommyvandervorst/Documents/Projecten/tj/TJShared/include/tjany.h;
+		sourceTree = "<absolute>";
+	};
+	B4CAA7DF10AD63D100385A5F /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = B4CAA7E010AD63D100385A5F /* tjaction.h */;
+		name = "tjaction.h: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 1108;
+		vrLoc = 0;
+	};
+	B4CAA7E010AD63D100385A5F /* tjaction.h */ = {
+		isa = PBXFileReference;
+		name = tjaction.h;
+		path = /Users/tommyvandervorst/Documents/Projecten/tj/TJShared/include/tjaction.h;
+		sourceTree = "<absolute>";
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1012, 3068}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRange = "{0, 1108}";
+		};
+	};
+	B4CAA7E410AD63E100385A5F /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = B4CAA7A810AD63BE00385A5F /* tjaction.cpp */;
+		name = "tjaction.cpp: 38";
+		rLen = 0;
+		rLoc = 887;
+		rType = 0;
+		vrLen = 887;
+		vrLoc = 0;
+	};
+	B4CAA99210AD689600385A5F /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = B4CAA99310AD689600385A5F /* tjaction.h */;
+		name = "tjaction.h: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 1108;
+		vrLoc = 0;
+	};
+	B4CAA99310AD689600385A5F /* tjaction.h */ = {
+		isa = PBXFileReference;
+		name = tjaction.h;
+		path = /Users/tommyvandervorst/Documents/Projecten/tj/TJShared/include/tjaction.h;
+		sourceTree = "<absolute>";
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1012, 3068}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRange = "{0, 1108}";
+		};
 	};
 	B4E3EE21108F9E23008B42D7 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;

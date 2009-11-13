@@ -25,7 +25,7 @@ which in turn was adapted from oscpattern.c, by Matt Wright and Amar Chaudhury
 #ifndef _TJ_PATTERN_H
 #define _TJ_PATTERN_H
 
-#include "internal/tjnp.h"
+#include "tjnpinternal.h"
 #include <iostream>
 
 namespace tj {

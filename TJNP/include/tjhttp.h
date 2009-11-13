@@ -1,7 +1,7 @@
 #ifndef _TJ_NP_HTTP_H
 #define _TJ_NP_HTTP_H
 
-#include "internal/tjnp.h"
+#include "tjnpinternal.h"
 #include "tjsocket.h"
 
 #pragma warning (push)

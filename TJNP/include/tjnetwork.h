@@ -1,7 +1,7 @@
 #ifndef _TJNETWORK_H
 #define _TJNETWORK_H
 
-#include "internal/tjnp.h"
+#include "tjnpinternal.h"
 
 #ifdef TJ_OS_MAC
 	typedef struct in_addr;

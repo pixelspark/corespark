@@ -1,7 +1,7 @@
 #ifndef _TJ_SLIP_H
 #define _TJ_SLIP_H
 
-#include "internal/tjnp.h"
+#include "tjnpinternal.h"
 #pragma warning(push)
 #pragma warning(disable: 4251 4275)
 

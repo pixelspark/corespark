@@ -1,7 +1,7 @@
 #ifndef _TJFILE_H
 #define _TJFILE_H
 
-#include "internal/tjpch.h"
+#include "tjsharedinternal.h"
 #include "../include/tjutil.h"
 
 namespace tj {

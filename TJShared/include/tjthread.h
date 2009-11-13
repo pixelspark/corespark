@@ -1,7 +1,7 @@
 #ifndef _TJTHREAD_H
 #define _TJTHREAD_H
 
-#include "internal/tjpch.h"
+#include "tjsharedinternal.h"
 #include "tjtime.h"
 #include <map>
 #include <vector>
