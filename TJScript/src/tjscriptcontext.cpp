@@ -41,9 +41,21 @@ ref<Scriptable> ScriptContext::Execute(ref<CompiledScript> scr, ref<ScriptScope>
 	}
 
 	if(scope) {
-		scope->SetPrevious(_global);
+		// Get the scope at the very end of the chain and set the previous scope of that scope to _global
+		ref<ScriptScope> last = scope;
+		while(true) {
+			ref<ScriptScope> sc = last->GetPrevious();
+			if(sc) {
+				last = sc;
+			}
+			else {
+				break;
+			}
+		}
+		
+		last->SetPrevious(_global);
 		ref<Scriptable> val = _vm->Execute(this, scr, scope);
-		scope->SetPrevious(0);
+		last->SetPrevious(null);
 		return val;
 	}
 	else {

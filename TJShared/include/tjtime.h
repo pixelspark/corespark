@@ -28,6 +28,8 @@ namespace tj {
 				static String GetFriendlyDayName(DayOfWeek d);
 
 				Date();
+				Date(Year y, Month m, DayOfMonth d, Hours h, Minutes min, Seconds s);
+				Date(AbsoluteDate ad);
 				~Date();
 				Month GetMonth() const;
 				DayOfWeek GetDayOfWeek() const;
@@ -37,12 +39,19 @@ namespace tj {
 				Minutes GetMinutes() const;
 				Hours GetHours() const;
 				String ToFriendlyString() const;
+				AbsoluteDate ToAbsoluteDate() const;
 			
 				static AbsoluteDate GetAbsoluteDate();
+				static AbsoluteDate FromGMT(Year year, Month month, DayOfMonth day);
 				static DayOfMonth GetDaysInMonth(Month m, bool leap);
 				static int GetDaysBeforeMonth(Month m, bool leap);
 				static int GetDaysAfterMonth(Month m, bool leap);
 				static bool IsLeapYear(Year y);
+			
+				bool operator < (const Date& o) const;
+				bool operator > (const Date& o) const;
+				bool operator== (const Date& o) const;
+				bool operator!= (const Date& o) const;
 
 				const static AbsoluteDateInterval KIntervalSince1970;
 				const static AbsoluteDateInterval KIntervalSince1904;
@@ -53,6 +62,7 @@ namespace tj {
 				const static int KDaysAfterMonth[14];
 			
 				void FromAbsoluteDate(AbsoluteDate ad);
+				void FromGMT(Year y, Month m, DayOfMonth d, Hours h, Minutes min, Seconds s);
 				static DayOfWeek GetDayOfWeek(AbsoluteDate d);
 				static void YMDFromAbsolute(int64 absolute, int64* year, int* month, int* day);
 			

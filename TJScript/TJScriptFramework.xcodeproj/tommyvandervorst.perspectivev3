@@ -277,13 +277,13 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>17</integer>
-									<integer>1</integer>
+									<integer>42</integer>
+									<integer>31</integer>
 									<integer>0</integer>
 								</array>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateVisibleRectKey</key>
-							<string>{{0, 0}, {185, 846}}</string>
+							<string>{{0, 223}, {185, 846}}</string>
 						</dict>
 						<key>PBXTopSmartGroupGIDs</key>
 						<array/>
@@ -300,7 +300,7 @@
 							<real>185</real>
 						</array>
 						<key>RubberWindowFrame</key>
-						<string>3 88 1280 905 0 0 1280 1002 </string>
+						<string>0 93 1280 905 0 0 1280 1002 </string>
 					</dict>
 					<key>Module</key>
 					<string>PBXSmartGroupTreeModule</string>
@@ -318,7 +318,7 @@
 								<key>PBXProjectModuleGUID</key>
 								<string>B41DD4DA1066450E000742DD</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>tjscriptobject.h</string>
+								<string>tjscriptops.cpp</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -326,11 +326,11 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>B41DD4DB1066450E000742DD</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>tjscriptobject.h</string>
+										<string>tjscriptops.cpp</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>B469547110A6CD980045DB2D</string>
+										<string>B47AF0F110ACB82600D6281B</string>
 										<key>history</key>
 										<array>
 											<string>B41DD5821066493C000742DD</string>
@@ -352,30 +352,29 @@
 											<string>B44DD3B4108B31CC00EBDC00</string>
 											<string>B44DD3B6108B31CC00EBDC00</string>
 											<string>B44DD3B8108B31CC00EBDC00</string>
-											<string>B462ADDA10984D7A00484C29</string>
 											<string>B462ADDB10984D7A00484C29</string>
 											<string>B462ADDC10984D7A00484C29</string>
 											<string>B462ADDD10984D7A00484C29</string>
 											<string>B462ADDE10984D7A00484C29</string>
 											<string>B462ADDF10984D7A00484C29</string>
-											<string>B462ADE010984D7A00484C29</string>
 											<string>B462ADE110984D7A00484C29</string>
-											<string>B462ADE210984D7A00484C29</string>
 											<string>B462ADE310984D7A00484C29</string>
-											<string>B462ADE410984D7A00484C29</string>
 											<string>B462ADE510984D7A00484C29</string>
 											<string>B462ADE610984D7A00484C29</string>
 											<string>B462ADE710984D7A00484C29</string>
-											<string>B462ADE810984D7A00484C29</string>
 											<string>B462ADE910984D7A00484C29</string>
 											<string>B462ADEA10984D7A00484C29</string>
-											<string>B462ADEB10984D7A00484C29</string>
 											<string>B462ADEC10984D7A00484C29</string>
 											<string>B462ADED10984D7A00484C29</string>
 											<string>B462ADEE10984D7A00484C29</string>
 											<string>B462ADEF10984D7A00484C29</string>
-											<string>B469546F10A6CD980045DB2D</string>
-											<string>B469547010A6CD980045DB2D</string>
+											<string>B47AF0EB10ACB82600D6281B</string>
+											<string>B47AF0EC10ACB82600D6281B</string>
+											<string>B47AF0ED10ACB82600D6281B</string>
+											<string>B47AF0EE10ACB82600D6281B</string>
+											<string>B47AF0EF10ACB82600D6281B</string>
+											<string>B47AF0F010ACB82600D6281B</string>
+											<string>B462ADEB10984D7A00484C29</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -389,18 +388,18 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 0}, {1073, 624}}</string>
+								<string>{{0, 0}, {1073, 618}}</string>
 								<key>RubberWindowFrame</key>
-								<string>3 88 1280 905 0 0 1280 1002 </string>
+								<string>0 93 1280 905 0 0 1280 1002 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
 							<key>Proportion</key>
-							<string>624pt</string>
+							<string>618pt</string>
 						</dict>
 						<dict>
 							<key>Proportion</key>
-							<string>235pt</string>
+							<string>241pt</string>
 							<key>Tabs</key>
 							<array>
 								<dict>
@@ -414,9 +413,9 @@
 									<key>GeometryConfiguration</key>
 									<dict>
 										<key>Frame</key>
-										<string>{{10, 27}, {1073, 208}}</string>
+										<string>{{10, 27}, {1073, 214}}</string>
 										<key>RubberWindowFrame</key>
-										<string>3 88 1280 905 0 0 1280 1002 </string>
+										<string>0 93 1280 905 0 0 1280 1002 </string>
 									</dict>
 									<key>Module</key>
 									<string>XCDetailModule</string>
@@ -498,11 +497,11 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>B469547210A6CD980045DB2D</string>
+				<string>B47AF0F210ACB82600D6281B</string>
 				<string>1CA23ED40692098700951B8B</string>
-				<string>B469547310A6CD980045DB2D</string>
+				<string>B47AF0F310ACB82600D6281B</string>
 				<string>B41DD4DA1066450E000742DD</string>
-				<string>B469547410A6CD980045DB2D</string>
+				<string>B47AF0F410ACB82600D6281B</string>
 				<string>1CA23EDF0692099D00951B8B</string>
 				<string>1CA23EE00692099D00951B8B</string>
 				<string>1CA23EE10692099D00951B8B</string>
@@ -673,7 +672,7 @@
 		<string>/Users/tommyvandervorst/Documents/Projecten/tj/TJScript/TJScriptFramework.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
-	<string>3 88 1280 905 0 0 1280 1002 </string>
+	<string>0 93 1280 905 0 0 1280 1002 </string>
 	<key>WindowToolsV3</key>
 	<array>
 		<dict>

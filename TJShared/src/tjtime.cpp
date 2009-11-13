@@ -108,6 +108,39 @@ double DoubleMod(double d, int modulus) {
     return result;
 }
 
+AbsoluteDate Date::FromGMT(Year year, Month month, DayOfMonth day) {
+    AbsoluteDate absolute = 0.0;
+	year -= 2001;
+    int64 b = year / 400; // take care of as many multiples of 400 years as possible
+    absolute += b * 146097.0;
+    year -= b * 400;
+	
+    if (year < 0) {
+		for (int64 idx = year; idx < 0; idx++) {
+			absolute -= GetDaysAfterMonth(idx, IsLeapYear(idx));
+		}
+    }
+	else {
+		for(int64 idx = 0; idx < year; idx++) {
+			absolute += GetDaysAfterMonth(idx, IsLeapYear(idx));
+		}
+    }
+    /* Now add the days into the original year */
+    absolute += GetDaysBeforeMonth(month, IsLeapYear(2001+year)) + day - 1;
+    return absolute;
+}
+
+void Date::FromGMT(Year y, Month m, DayOfMonth d, Hours h, Minutes min, Seconds s) {
+    _date = 86400.0 * FromGMT(y, m, d);
+    _date += 3600.0 * h + 60.0 * min + s;
+	_year = y;
+	_month = m;
+	_day = d;
+	_hour = h;
+	_minute = min;
+	_second = s;
+}
+
 /* year arg is absolute year; Gregorian 2001 == year 0; 2001/1/1 = absolute date 0 */
 void Date::YMDFromAbsolute(int64 absolute, int64* year, int* month, int* day) {
     int64 b = absolute / 146097; // take care of as many multiples of 400 years as possible
@@ -206,6 +239,35 @@ String Date::GetFriendlyDayName(DayOfWeek m) {
 Date::Date() {
 	_date = GetAbsoluteDate();
 	FromAbsoluteDate(_date);
+}
+
+Date::Date(AbsoluteDate ad) {
+	_date = ad;
+	FromAbsoluteDate(_date);
+}
+
+bool Date::operator < (const Date& o) const {
+	return _date < o._date;
+}
+
+bool Date::operator > (const Date& o) const {
+	return _date > o._date;
+}
+
+bool Date::operator== (const Date& o) const {
+	return _date == o._date;
+}
+
+bool Date::operator!= (const Date& o) const {
+	return _date != o._date;
+}
+
+AbsoluteDate Date::ToAbsoluteDate() const {
+	return _date;
+}
+
+Date::Date(Year y, Month m, DayOfMonth d, Hours h, Minutes min, Seconds s) {
+	FromGMT(y,m,d,h,min,s);
 }
 
 Date::~Date() {

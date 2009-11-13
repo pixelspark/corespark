@@ -441,10 +441,8 @@ void Thread::Sleep(double ms) {
 			
 			struct timespec abstime;
 			abstime.tv_sec = now.tv_sec + (ms / 1000);
-			abstime.tv_nsec = (now.tv_usec + ((ms % 1000)*1000));
-			pthread_mutex_lock(&_lock);
+			abstime.tv_nsec = (now.tv_usec + ((ms % 1000)*1000*1000));
 			int r = pthread_cond_timedwait(&_event, &_lock, &abstime); /* When timing out, pthread_cond_timedwait returns ETIMEOUT */
-			pthread_mutex_unlock(&_lock);
 			if(_signalCount>0) {
 				success = (r==0);
 				--_signalCount;

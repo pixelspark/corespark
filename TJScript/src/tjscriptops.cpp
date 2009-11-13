@@ -297,32 +297,36 @@ void OpEndScriptletHandler(VM* vm) {
 }
 
 void OpGreaterThanHandler(VM* vm) {
-	ref<Scriptable> a = vm->GetStack().Pop();
-	ref<Scriptable> b = vm->GetStack().Pop();
-
-	if(a.IsCastableTo<ScriptDouble>() && b.IsCastableTo<ScriptDouble>()) {
-		double va = ref<ScriptDouble>(a)->GetValue();
-		double vb = ref<ScriptDouble>(b)->GetValue();
-		bool result = vb>va;
-		vm->GetStack().Push(result?ScriptConstants::True:ScriptConstants::False);
+	ScriptStack& stack = vm->GetStack();
+	ref<Scriptable> a = stack.Pop();
+	ref<Scriptable> b = stack.Pop();
+	
+	if(a.IsCastableTo<ScriptAny>() && b.IsCastableTo<ScriptAny>()) {
+		Any aa = ref<ScriptAny>(a)->Unbox();
+		Any ab = ref<ScriptAny>(b)->Unbox();
+		
+		bool result = ab > aa;
+		stack.Push(result ? ScriptConstants::True : ScriptConstants::False);
 	}
 	else {
-		vm->GetStack().Push(ScriptConstants::Null);
+		stack.Push(ScriptConstants::Null);
 	}
 }
 
 void OpLessThanHandler(VM* vm) {
-	ref<Scriptable> a = vm->GetStack().Pop();
-	ref<Scriptable> b = vm->GetStack().Pop();
-
-	if(a.IsCastableTo<ScriptDouble>() && b.IsCastableTo<ScriptDouble>()) {
-		double va = ref<ScriptDouble>(a)->GetValue();
-		double vb = ref<ScriptDouble>(b)->GetValue();
-		bool result = vb<va;
-		vm->GetStack().Push(result?ScriptConstants::True:ScriptConstants::False);
+	ScriptStack& stack = vm->GetStack();
+	ref<Scriptable> a = stack.Pop();
+	ref<Scriptable> b = stack.Pop();
+	
+	if(a.IsCastableTo<ScriptAny>() && b.IsCastableTo<ScriptAny>()) {
+		Any aa = ref<ScriptAny>(a)->Unbox();
+		Any ab = ref<ScriptAny>(b)->Unbox();
+		
+		bool result = ab < aa;
+		stack.Push(result ? ScriptConstants::True : ScriptConstants::False);
 	}
 	else {
-		vm->GetStack().Push(ScriptConstants::Null);
+		stack.Push(ScriptConstants::Null);
 	}
 }
 
