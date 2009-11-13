@@ -4,5 +4,7 @@ env = Environment();
 
 sources = Glob("build/*.cpp");
 
-objects = env.SharedObject(sources, CCFLAGS='-DTJ_OS_POSIX -DTJ_OS_LINUX', LIBS=['gcc','gcc_s','pthread','tjshared']);
+objects = env.SharedObject(sources, CCFLAGS='-DTJ_OS_POSIX -DTJ_OS_LINUX', 
+CPPPATH=['#','#Libraries'],
+LIBS=['gcc','gcc_s','pthread','tjshared']);
 env.SharedLibrary('#build/tjnp', objects);
