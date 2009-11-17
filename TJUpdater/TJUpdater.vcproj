@@ -115,7 +115,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Libraries\atlmfc\include&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Libraries\atlmfc\include&quot;;$(SolutionDir);$(SolutionDir)\Libraries"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"

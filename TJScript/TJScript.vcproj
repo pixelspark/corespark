@@ -117,7 +117,7 @@
 				Name="VCCLCompilerTool"
 				InlineFunctionExpansion="2"
 				FavorSizeOrSpeed="1"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Libraries\Spirit\boost\miniboost&quot;;&quot;$(SolutionDir)\Libraries\Spirit\boost&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Libraries\Spirit\boost\miniboost&quot;;&quot;$(SolutionDir)\Libraries\Spirit\boost&quot;;$(SolutionDir);$(SolutionDir)\Libraries"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;TJSCRIPT_EXPORTS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"

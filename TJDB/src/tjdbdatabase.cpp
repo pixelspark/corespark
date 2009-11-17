@@ -1,5 +1,5 @@
 #include "../include/tjdb.h"
-#include "../../Libraries/SQLite/sqlite3.h"
+#include <SQLite/sqlite3.h>
 using namespace tj::db;
 using namespace tj::shared;
 

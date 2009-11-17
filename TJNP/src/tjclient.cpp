@@ -1,5 +1,5 @@
 #include "../include/tjclient.h"
-#include "../../Libraries/TinyXML/tinyxml.h"
+#include <TinyXML/tinyxml.h>
 #include <time.h>
 #include <sstream>
 

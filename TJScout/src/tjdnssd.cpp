@@ -1,7 +1,7 @@
 #include "../include/tjdnssd.h"
 
 #ifdef TJ_OS_WIN
-	#include "../../Libraries/mDNS/include/dns_sd.h"
+	#include <mDNS/include/dns_sd.h>
 #endif
 
 #ifdef TJ_OS_POSIX

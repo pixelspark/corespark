@@ -116,6 +116,7 @@
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
 				WholeProgramOptimization="true"
+				AdditionalIncludeDirectories="$(SolutionDir);$(SolutionDir)\Libraries"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;TJSCOUT_EXPORTS"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="2"

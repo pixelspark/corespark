@@ -1,7 +1,7 @@
 #ifndef _TJSHAREDUI_H
 #define _TJSHAREDUI_H
 
-#include "../../TJShared/include/tjshared.h"
+#include <TJShared/include/tjshared.h>
 #undef EXPORTED
 
 #ifdef TJSHAREDUI_EXPORTS

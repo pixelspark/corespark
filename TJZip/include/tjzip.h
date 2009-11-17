@@ -18,7 +18,7 @@
 #pragma warning(push)
 #pragma warning(disable: 4251 4275)
 
-#include "../../TJShared/include/tjshared.h"
+#include <TJShared/include/tjshared.h>
 
 #ifdef TJ_OS_WIN
 	#ifndef HZIP_DECLARED

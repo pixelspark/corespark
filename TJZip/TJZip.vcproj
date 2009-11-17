@@ -115,6 +115,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalIncludeDirectories="$(SolutionDir);$(SolutionDir)\Libraries"
 				PreprocessorDefinitions="WIN32;TJ_OS_WIN;NDEBUG;_WINDOWS;_USRDLL;TJZIP_EXPORTS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"

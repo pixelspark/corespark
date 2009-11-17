@@ -1,7 +1,7 @@
 #ifndef _TJDB_H
 #define _TJDB_H
 
-#include "../../TJShared/include/tjshared.h"
+#include <TJShared/include/tjshared.h>
 using tj::shared::ref;
 
 #ifdef TJDB_EXPORTS

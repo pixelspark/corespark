@@ -118,6 +118,7 @@
 				Name="VCCLCompilerTool"
 				EnableIntrinsicFunctions="true"
 				WholeProgramOptimization="false"
+				AdditionalIncludeDirectories="$(SolutionDir);$(SolutionDir)\Libraries"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;TJNP_EXPORTS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"

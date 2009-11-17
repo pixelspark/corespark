@@ -116,7 +116,7 @@
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
 				WholeProgramOptimization="true"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Libraries\atlmfc\include&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Libraries\atlmfc\include&quot;;$(SolutionDir);$(SolutionDir)\Libraries"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;TJSHAREDUI_EXPORTS;TJSHAREDUI_USE_GDIPLUS"
 				MinimalRebuild="true"
 				RuntimeLibrary="2"

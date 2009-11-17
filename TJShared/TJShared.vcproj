@@ -124,7 +124,7 @@
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
 				WholeProgramOptimization="true"
-				AdditionalIncludeDirectories=""
+				AdditionalIncludeDirectories="$(SolutionDir);$(SolutionDir)\Libraries"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_USRDLL;TJ_OS_WIN;TJSHARED_EXPORTS;TJSHARED_USE_GDIPLUS;NDEBUG"
 				StringPooling="true"
 				MinimalRebuild="true"
