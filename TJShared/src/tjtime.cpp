@@ -117,16 +117,16 @@ AbsoluteDate Date::FromGMT(Year year, Month month, DayOfMonth day) {
 	
     if (year < 0) {
 		for (int64 idx = year; idx < 0; idx++) {
-			absolute -= GetDaysAfterMonth((Month)idx, IsLeapYear(idx));
+			absolute -= GetDaysAfterMonth(0, IsLeapYear(2001+idx));
 		}
     }
 	else {
 		for(int64 idx = 0; idx < year; idx++) {
-			absolute += GetDaysAfterMonth((Month)idx, IsLeapYear(idx));
+			absolute += GetDaysAfterMonth(0, IsLeapYear(2001+idx));
 		}
     }
     /* Now add the days into the original year */
-    absolute += GetDaysBeforeMonth((Month)month, IsLeapYear(2001+year)) + day - 1;
+    absolute += GetDaysBeforeMonth(month, IsLeapYear(2001+year)) + day - 1;
     return absolute;
 }
 

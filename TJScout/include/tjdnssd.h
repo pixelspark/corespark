@@ -3,7 +3,12 @@
 
 #include "tjscout.h"
 #include "tjresolver.h"
-#include <mDNS/include/dns_sd.h>
+
+#ifdef TJ_OS_MAC
+	#include <dns_sd.h>
+#else
+	#include <mDNS/include/dns_sd.h>
+#endif
 
 namespace tj {
 	namespace scout {

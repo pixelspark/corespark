@@ -52,34 +52,12 @@
 					PBXFileDataSource_Warnings_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 279799346;
-			PBXWorkspaceStateSaveDate = 279799346;
+			PBXPerProjectTemplateStateSaveDate = 280617497;
+			PBXWorkspaceStateSaveDate = 280617497;
 		};
 		perUserProjectItems = {
-			B486E9BC10662F290043CE5D /* PBXTextBookmark */ = B486E9BC10662F290043CE5D /* PBXTextBookmark */;
-			B486E9BE10662F290043CE5D /* PBXTextBookmark */ = B486E9BE10662F290043CE5D /* PBXTextBookmark */;
 			B4CAA9E410AD689800385A5F /* PlistBookmark */ = B4CAA9E410AD689800385A5F /* PlistBookmark */;
-			B4CAA9E510AD689800385A5F /* PBXTextBookmark */ = B4CAA9E510AD689800385A5F /* PBXTextBookmark */;
-			B4CAA9E610AD689800385A5F /* PBXTextBookmark */ = B4CAA9E610AD689800385A5F /* PBXTextBookmark */;
-			B4CAA9E710AD689800385A5F /* PBXTextBookmark */ = B4CAA9E710AD689800385A5F /* PBXTextBookmark */;
-			B4CAA9E810AD689800385A5F /* PBXTextBookmark */ = B4CAA9E810AD689800385A5F /* PBXTextBookmark */;
-			B4CAA9E910AD689800385A5F /* PBXTextBookmark */ = B4CAA9E910AD689800385A5F /* PBXTextBookmark */;
-			B4CAA9EA10AD689800385A5F /* PBXTextBookmark */ = B4CAA9EA10AD689800385A5F /* PBXTextBookmark */;
-			B4CAA9EB10AD689800385A5F /* PBXTextBookmark */ = B4CAA9EB10AD689800385A5F /* PBXTextBookmark */;
-			B4CAA9EC10AD689800385A5F /* PBXTextBookmark */ = B4CAA9EC10AD689800385A5F /* PBXTextBookmark */;
-			B4CAA9ED10AD689800385A5F /* PBXTextBookmark */ = B4CAA9ED10AD689800385A5F /* PBXTextBookmark */;
-			B4CAA9EE10AD689800385A5F /* PBXTextBookmark */ = B4CAA9EE10AD689800385A5F /* PBXTextBookmark */;
-			B4CAA9EF10AD689800385A5F /* PBXTextBookmark */ = B4CAA9EF10AD689800385A5F /* PBXTextBookmark */;
-			B4CAA9F010AD689800385A5F /* PBXTextBookmark */ = B4CAA9F010AD689800385A5F /* PBXTextBookmark */;
-			B4CAA9F110AD689800385A5F /* PBXTextBookmark */ = B4CAA9F110AD689800385A5F /* PBXTextBookmark */;
-			B4CAA9F210AD689800385A5F /* PBXTextBookmark */ = B4CAA9F210AD689800385A5F /* PBXTextBookmark */;
-			B4CAA9F310AD689800385A5F /* PBXTextBookmark */ = B4CAA9F310AD689800385A5F /* PBXTextBookmark */;
-			B4CAA9F410AD689800385A5F /* PBXTextBookmark */ = B4CAA9F410AD689800385A5F /* PBXTextBookmark */;
-			B4CAA9F510AD689800385A5F /* PBXTextBookmark */ = B4CAA9F510AD689800385A5F /* PBXTextBookmark */;
-			B4CAA9F610AD689800385A5F /* PBXTextBookmark */ = B4CAA9F610AD689800385A5F /* PBXTextBookmark */;
-			B4CAA9F710AD689800385A5F /* PBXTextBookmark */ = B4CAA9F710AD689800385A5F /* PBXTextBookmark */;
-			B4CAA9F810AD689800385A5F /* PBXTextBookmark */ = B4CAA9F810AD689800385A5F /* PBXTextBookmark */;
-			B4CAA9F910AD689800385A5F /* PBXTextBookmark */ = B4CAA9F910AD689800385A5F /* PBXTextBookmark */;
+			B4F0AF2310B9E46B00351BAA /* PlistBookmark */ = B4F0AF2310B9E46B00351BAA /* PlistBookmark */;
 		};
 		sourceControlManager = B486E97D10662EB70043CE5D /* Source Control */;
 		userBuildSettings = {
@@ -102,192 +80,6 @@
 		isa = PBXCodeSenseManager;
 		indexTemplatePath = "";
 	};
-	B486E98D10662EF30043CE5D /* IpEndpointName.h */ = {
-		isa = PBXFileReference;
-		fileEncoding = 4;
-		lastKnownFileType = sourcecode.c.h;
-		name = IpEndpointName.h;
-		path = /Users/tommyvandervorst/Documents/Projecten/tj/Libraries/OSCPack/ip/IpEndpointName.h;
-		sourceTree = "<absolute>";
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {542, 900}}";
-			sepNavSelRange = "{0, 0}";
-			sepNavVisRange = "{0, 371}";
-		};
-	};
-	B486E99910662EF40043CE5D /* MessageMappingOscPacketListener.h */ = {
-		isa = PBXFileReference;
-		fileEncoding = 4;
-		lastKnownFileType = sourcecode.c.h;
-		name = MessageMappingOscPacketListener.h;
-		path = /Users/tommyvandervorst/Documents/Projecten/tj/Libraries/OSCPack/osc/MessageMappingOscPacketListener.h;
-		sourceTree = "<absolute>";
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {542, 840}}";
-			sepNavSelRange = "{0, 0}";
-			sepNavVisRange = "{0, 371}";
-		};
-	};
-	B486E9BC10662F290043CE5D /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = B486E99910662EF40043CE5D /* MessageMappingOscPacketListener.h */;
-		name = "MessageMappingOscPacketListener.h: 1";
-		rLen = 0;
-		rLoc = 0;
-		rType = 0;
-		vrLen = 371;
-		vrLoc = 0;
-	};
-	B486E9BE10662F290043CE5D /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = B486E98D10662EF30043CE5D /* IpEndpointName.h */;
-		name = "IpEndpointName.h: 1";
-		rLen = 0;
-		rLoc = 0;
-		rType = 0;
-		vrLen = 371;
-		vrLoc = 0;
-	};
-	B4CAA8C410AD666700385A5F /* IpEndpointName.cpp */ = {
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1012, 1001}}";
-			sepNavSelRange = "{0, 0}";
-			sepNavVisRange = "{0, 1846}";
-		};
-	};
-	B4CAA8C510AD666700385A5F /* IpEndpointName.h */ = {
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1012, 884}}";
-			sepNavSelRange = "{0, 0}";
-			sepNavVisRange = "{0, 2180}";
-		};
-	};
-	B4CAA8C610AD666700385A5F /* MessageMappingOscPacketListener.h */ = {
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1012, 910}}";
-			sepNavSelRange = "{0, 0}";
-			sepNavVisRange = "{513, 1822}";
-		};
-	};
-	B4CAA8C710AD666700385A5F /* NetworkingUtils.h */ = {
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1012, 650}}";
-			sepNavSelRange = "{0, 0}";
-			sepNavVisRange = "{0, 2011}";
-		};
-	};
-	B4CAA8C810AD666700385A5F /* OscException.h */ = {
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1012, 715}}";
-			sepNavSelRange = "{0, 0}";
-			sepNavVisRange = "{0, 2003}";
-		};
-	};
-	B4CAA8C910AD666700385A5F /* OscHostEndianness.h */ = {
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1012, 884}}";
-			sepNavSelRange = "{0, 0}";
-			sepNavVisRange = "{371, 1952}";
-		};
-	};
-	B4CAA8CA10AD666700385A5F /* OscOutboundPacketStream.cpp */ = {
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1012, 8047}}";
-			sepNavSelRange = "{0, 0}";
-			sepNavVisRange = "{173, 1704}";
-		};
-	};
-	B4CAA8CB10AD666700385A5F /* OscOutboundPacketStream.h */ = {
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1012, 1807}}";
-			sepNavSelRange = "{0, 0}";
-			sepNavVisRange = "{107, 1922}";
-		};
-	};
-	B4CAA8CC10AD666700385A5F /* OscPacketListener.h */ = {
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1012, 884}}";
-			sepNavSelRange = "{1553, 0}";
-			sepNavVisRange = "{0, 2023}";
-		};
-	};
-	B4CAA8CD10AD666700385A5F /* OscPrintReceivedElements.cpp */ = {
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1012, 3016}}";
-			sepNavSelRange = "{0, 0}";
-			sepNavVisRange = "{0, 1829}";
-		};
-	};
-	B4CAA8CE10AD666700385A5F /* OscPrintReceivedElements.h */ = {
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1012, 650}}";
-			sepNavSelRange = "{0, 0}";
-			sepNavVisRange = "{0, 2063}";
-		};
-	};
-	B4CAA8CF10AD666700385A5F /* OscReceivedElements.cpp */ = {
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1012, 8957}}";
-			sepNavSelRange = "{0, 0}";
-			sepNavVisRange = "{0, 1889}";
-		};
-	};
-	B4CAA8D010AD666700385A5F /* OscReceivedElements.h */ = {
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1012, 6058}}";
-			sepNavSelRange = "{0, 0}";
-			sepNavVisRange = "{0, 1908}";
-		};
-	};
-	B4CAA8D110AD666700385A5F /* OscTypes.cpp */ = {
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1012, 636}}";
-			sepNavSelRange = "{0, 0}";
-			sepNavVisRange = "{0, 1638}";
-		};
-	};
-	B4CAA8D210AD666700385A5F /* OscTypes.h */ = {
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1012, 2145}}";
-			sepNavSelRange = "{0, 0}";
-			sepNavVisRange = "{1087, 1010}";
-		};
-	};
-	B4CAA8D310AD666700385A5F /* PacketListener.h */ = {
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1012, 636}}";
-			sepNavSelRange = "{0, 0}";
-			sepNavVisRange = "{0, 1752}";
-		};
-	};
-	B4CAA8D510AD666700385A5F /* NetworkingUtils.cpp */ = {
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1012, 715}}";
-			sepNavSelRange = "{1444, 0}";
-			sepNavVisRange = "{0, 1813}";
-		};
-	};
-	B4CAA8D610AD666700385A5F /* UdpSocket.cpp */ = {
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1012, 6851}}";
-			sepNavSelRange = "{0, 0}";
-			sepNavVisRange = "{442, 1616}";
-		};
-	};
-	B4CAA8D710AD666700385A5F /* TimerListener.h */ = {
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1012, 636}}";
-			sepNavSelRange = "{0, 0}";
-			sepNavVisRange = "{0, 1650}";
-		};
-	};
-	B4CAA8D810AD666700385A5F /* UdpSocket.h */ = {
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1012, 2067}}";
-			sepNavSelRange = "{753, 0}";
-			sepNavVisRange = "{0, 1873}";
-		};
-	};
 	B4CAA9E410AD689800385A5F /* PlistBookmark */ = {
 		isa = PlistBookmark;
 		fRef = 8DC2EF5A0486A6940098B216 /* Info.plist */;
@@ -298,216 +90,32 @@
 		);
 		name = /Users/tommyvandervorst/Documents/Projecten/tj/Libraries/OSCPack/Info.plist;
 		rLen = 0;
-		rLoc = 9223372036854775807;
+		rLoc = 9223372036854775808;
 	};
-	B4CAA9E510AD689800385A5F /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = B4CAA8C410AD666700385A5F /* IpEndpointName.cpp */;
-		name = "IpEndpointName.cpp: 1";
+	B4F0AEC110B9E22F00351BAA /* OscReceivedElements.cpp */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1012, 8957}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRange = "{0, 1521}";
+		};
+	};
+	B4F0AEC310B9E22F00351BAA /* OscPrintReceivedElements.cpp */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1012, 2964}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRange = "{0, 1530}";
+		};
+	};
+	B4F0AF2310B9E46B00351BAA /* PlistBookmark */ = {
+		isa = PlistBookmark;
+		fRef = 8DC2EF5A0486A6940098B216 /* Info.plist */;
+		fallbackIsa = PBXBookmark;
+		isK = 0;
+		kPath = (
+			CFBundleInfoDictionaryVersion,
+		);
+		name = /Users/tommyvandervorst/Documents/Projecten/tj/Libraries/OSCPack/Info.plist;
 		rLen = 0;
 		rLoc = 0;
-		rType = 0;
-		vrLen = 1846;
-		vrLoc = 0;
-	};
-	B4CAA9E610AD689800385A5F /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = B4CAA8C510AD666700385A5F /* IpEndpointName.h */;
-		name = "IpEndpointName.h: 1";
-		rLen = 0;
-		rLoc = 0;
-		rType = 0;
-		vrLen = 2180;
-		vrLoc = 0;
-	};
-	B4CAA9E710AD689800385A5F /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = B4CAA8C610AD666700385A5F /* MessageMappingOscPacketListener.h */;
-		name = "MessageMappingOscPacketListener.h: 1";
-		rLen = 0;
-		rLoc = 0;
-		rType = 0;
-		vrLen = 1822;
-		vrLoc = 513;
-	};
-	B4CAA9E810AD689800385A5F /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = B4CAA8C710AD666700385A5F /* NetworkingUtils.h */;
-		name = "NetworkingUtils.h: 1";
-		rLen = 0;
-		rLoc = 0;
-		rType = 0;
-		vrLen = 2011;
-		vrLoc = 0;
-	};
-	B4CAA9E910AD689800385A5F /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = B4CAA8C810AD666700385A5F /* OscException.h */;
-		name = "OscException.h: 1";
-		rLen = 0;
-		rLoc = 0;
-		rType = 0;
-		vrLen = 2003;
-		vrLoc = 0;
-	};
-	B4CAA9EA10AD689800385A5F /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = B4CAA8C910AD666700385A5F /* OscHostEndianness.h */;
-		name = "OscHostEndianness.h: 1";
-		rLen = 0;
-		rLoc = 0;
-		rType = 0;
-		vrLen = 1952;
-		vrLoc = 371;
-	};
-	B4CAA9EB10AD689800385A5F /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = B4CAA8CA10AD666700385A5F /* OscOutboundPacketStream.cpp */;
-		name = "OscOutboundPacketStream.cpp: 1";
-		rLen = 0;
-		rLoc = 0;
-		rType = 0;
-		vrLen = 1704;
-		vrLoc = 173;
-	};
-	B4CAA9EC10AD689800385A5F /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = B4CAA8CB10AD666700385A5F /* OscOutboundPacketStream.h */;
-		name = "OscOutboundPacketStream.h: 1";
-		rLen = 0;
-		rLoc = 0;
-		rType = 0;
-		vrLen = 1922;
-		vrLoc = 107;
-	};
-	B4CAA9ED10AD689800385A5F /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = B4CAA8CC10AD666700385A5F /* OscPacketListener.h */;
-		name = "OscPacketListener.h: 34";
-		rLen = 0;
-		rLoc = 1553;
-		rType = 0;
-		vrLen = 2023;
-		vrLoc = 0;
-	};
-	B4CAA9EE10AD689800385A5F /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = B4CAA8CD10AD666700385A5F /* OscPrintReceivedElements.cpp */;
-		name = "OscPrintReceivedElements.cpp: 1";
-		rLen = 0;
-		rLoc = 0;
-		rType = 0;
-		vrLen = 1829;
-		vrLoc = 0;
-	};
-	B4CAA9EF10AD689800385A5F /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = B4CAA8CE10AD666700385A5F /* OscPrintReceivedElements.h */;
-		name = "OscPrintReceivedElements.h: 1";
-		rLen = 0;
-		rLoc = 0;
-		rType = 0;
-		vrLen = 2063;
-		vrLoc = 0;
-	};
-	B4CAA9F010AD689800385A5F /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = B4CAA8CF10AD666700385A5F /* OscReceivedElements.cpp */;
-		name = "OscReceivedElements.cpp: 1";
-		rLen = 0;
-		rLoc = 0;
-		rType = 0;
-		vrLen = 1889;
-		vrLoc = 0;
-	};
-	B4CAA9F110AD689800385A5F /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = B4CAA8D010AD666700385A5F /* OscReceivedElements.h */;
-		name = "OscReceivedElements.h: 1";
-		rLen = 0;
-		rLoc = 0;
-		rType = 0;
-		vrLen = 1908;
-		vrLoc = 0;
-	};
-	B4CAA9F210AD689800385A5F /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = B4CAA8D110AD666700385A5F /* OscTypes.cpp */;
-		name = "OscTypes.cpp: 1";
-		rLen = 0;
-		rLoc = 0;
-		rType = 0;
-		vrLen = 1638;
-		vrLoc = 0;
-	};
-	B4CAA9F310AD689800385A5F /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = B4CAA8D210AD666700385A5F /* OscTypes.h */;
-		name = "OscTypes.h: 1";
-		rLen = 0;
-		rLoc = 0;
-		rType = 0;
-		vrLen = 1010;
-		vrLoc = 1087;
-	};
-	B4CAA9F410AD689800385A5F /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = B4CAA8D310AD666700385A5F /* PacketListener.h */;
-		name = "PacketListener.h: 1";
-		rLen = 0;
-		rLoc = 0;
-		rType = 0;
-		vrLen = 1752;
-		vrLoc = 0;
-	};
-	B4CAA9F510AD689800385A5F /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = B4CAA8D510AD666700385A5F /* NetworkingUtils.cpp */;
-		name = "NetworkingUtils.cpp: 30";
-		rLen = 0;
-		rLoc = 1444;
-		rType = 0;
-		vrLen = 1813;
-		vrLoc = 0;
-	};
-	B4CAA9F610AD689800385A5F /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = B4CAA8D610AD666700385A5F /* UdpSocket.cpp */;
-		name = "UdpSocket.cpp: 1";
-		rLen = 0;
-		rLoc = 0;
-		rType = 0;
-		vrLen = 1616;
-		vrLoc = 442;
-	};
-	B4CAA9F710AD689800385A5F /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = B4CAA8D710AD666700385A5F /* TimerListener.h */;
-		name = "TimerListener.h: 1";
-		rLen = 0;
-		rLoc = 0;
-		rType = 0;
-		vrLen = 1650;
-		vrLoc = 0;
-	};
-	B4CAA9F810AD689800385A5F /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = B4CAA8D810AD666700385A5F /* UdpSocket.h */;
-		name = "UdpSocket.h: 1";
-		rLen = 0;
-		rLoc = 0;
-		rType = 0;
-		vrLen = 1873;
-		vrLoc = 0;
-	};
-	B4CAA9F910AD689800385A5F /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = B4CAA8D810AD666700385A5F /* UdpSocket.h */;
-		name = "UdpSocket.h: 17";
-		rLen = 0;
-		rLoc = 753;
-		rType = 0;
-		vrLen = 1873;
-		vrLoc = 0;
 	};
 }
