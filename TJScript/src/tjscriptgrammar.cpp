@@ -380,19 +380,19 @@ namespace tj {
 
 							/* Operators */
 							equalsOperator = 
-								(str_p("==") >> expression)[ScriptInstruction(&self, Ops::OpEquals)];
+								(lexeme_d[str_p("==") | keyword_p("is")] >> expression)[ScriptInstruction(&self, Ops::OpEquals)];
 
 							orOperator = 
-								(str_p("||") >> expression)[ScriptInstruction(&self, Ops::OpOr)];
+								(lexeme_d[str_p("||") | keyword_p("or")] >> expression)[ScriptInstruction(&self, Ops::OpOr)];
 
 							andOperator =
-								(str_p("&&") >> expression)[ScriptInstruction(&self, Ops::OpAnd)];
+								(lexeme_d[str_p("&&") | keyword_p("and")] >> expression)[ScriptInstruction(&self, Ops::OpAnd)];
 
 							xorOperator = 
-								(str_p("^^") >> expression)[ScriptInstruction(&self, Ops::OpXor)];
+								(lexeme_d[str_p("^^") | keyword_p("xor")] >> expression)[ScriptInstruction(&self, Ops::OpXor)];
 
 							notEqualsOperator =
-								(str_p("!=") >> expression)[ScriptInstruction(&self, Ops::OpEquals)][ScriptInstruction(&self, Ops::OpNegate)];
+								(lexeme_d[str_p("!=") | keyword_p("is not")] >> expression)[ScriptInstruction(&self, Ops::OpEquals)][ScriptInstruction(&self, Ops::OpNegate)];
 
 							plusOperator =
 								(ch_p('+') >> term)[ScriptInstruction(&self, Ops::OpAdd)];
@@ -407,10 +407,10 @@ namespace tj {
 								(ch_p('*') >> factor)[ScriptInstruction(&self, Ops::OpMul)];
 
 							gtOperator = 
-								(ch_p('>') >> expression)[ScriptInstruction(&self, Ops::OpGreaterThan)];
+								((ch_p('>') | keyword_p("greater than")) >> expression)[ScriptInstruction(&self, Ops::OpGreaterThan)];
 
 							ltOperator = 
-								(ch_p('<') >> expression)[ScriptInstruction(&self, Ops::OpLessThan)];
+								((ch_p('<') | keyword_p("less than")) >> expression)[ScriptInstruction(&self, Ops::OpLessThan)];
 
 							/* If/else */
 							ifConstruct =
@@ -619,15 +619,15 @@ namespace tj {
 	}
 }
 
-
-
 ref<CompiledScript> ScriptContext::Compile(std::wstring source) {
 	ref<CompiledScript> script = GC::Hold(new CompiledScript(this));
 
 	parser::ScriptGrammar sparser(script, this);
-	parse_info<> info = parse(Mbs(source).c_str(), sparser, space_p);
+	std::string mSource = Mbs(source);
+	parse_info<> info = parse(mSource.c_str(), sparser, space_p);
 	if(!info.full) {
-		throw ParserException(std::wstring(L"Parsing stopped at")+Wcs(info.stop));
+		throw ParserException(std::wstring(L"Parsing stopped at ")+Wcs(info.stop));
+		
 	}
 
 	if(_optimize) {
