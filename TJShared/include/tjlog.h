@@ -23,9 +23,11 @@ namespace tj {
 				static strong<EventLogger> GetEventLogger();
 				static void SetEventLogger(strong<EventLogger> se);
 				static void SetLogToConsole(bool c);
+				static void SetLogToSyslog(bool s);
 
 			protected:
 				static bool _logToConsole;
+				static bool _logToSyslog;
 				static ref<EventLogger> _eventLogger;
 				static CriticalSection _logLock;
 		};

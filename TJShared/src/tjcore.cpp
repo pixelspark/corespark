@@ -192,6 +192,10 @@ bool Daemon::Fork(const String& daemonName, bool singleInstance) {
 		wos << getpid() << '\n';
 		std::string pidString = wos.str();
 		write(lfp, pidString.c_str(),pidString.length());
+	
+		// Set log-to-syslog instead of log-to-console
+		Log::SetLogToSyslog(true);
+		Log::SetLogToConsole(false);
 		
 		// Child process is good to go
 		return true;

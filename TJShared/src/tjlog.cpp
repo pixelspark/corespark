@@ -1,7 +1,13 @@
 #include "../include/tjlog.h"
 #include "../include/tjthread.h"
 #include "../include/tjzone.h"
+#include "../include/tjutil.h"
 #include <iomanip>
+
+#ifdef TJ_OS_POSIX
+	#include <syslog.h>
+#endif
+
 using namespace tj::shared;
 
 namespace tj {
@@ -25,8 +31,10 @@ CriticalSection Log::_logLock;
 
 #ifdef TJ_OS_POSIX
 	bool Log::_logToConsole = true;
+	bool Log::_logToSyslog = false;
 #else
 	bool Log::_logToConsole = false;
+	bool Log::_logToSyslog = false;
 #endif
 
 strong<EventLogger> Log::GetEventLogger() {
@@ -74,12 +82,30 @@ void Log::Write(const String& source, const String& message) {
 		ThreadLock lock(&_logLock);
 		std::wcout << std::hex << std::uppercase << std::setw(8) << Thread::GetCurrentThreadID() << L' ' << source << L' ' << L':' << L' ' << message << std::endl;
 	}
+	
+	if(_logToSyslog) {
+		syslog(LOG_INFO, Mbs(wos.str()).c_str());
+	}
 
 	GetEventLogger()->AddEvent(finalMessage, ExceptionTypeMessage, false);
 }
 
 void Log::SetLogToConsole(bool c) {
 	_logToConsole = c;
+}
+
+void Log::SetLogToSyslog(bool s) {
+	#ifdef TJ_OS_POSIX
+		ThreadLock lock(&_logLock);
+		if(s && !_logToSyslog) {
+			openlog("tj",LOG_PID, LOG_USER);
+		}
+		else if(!s && _logToSyslog) {
+			closelog();
+		}
+	#endif
+	
+	_logToSyslog = s;
 }
 
 void Log::SetEventLogger(strong<EventLogger> se) {
