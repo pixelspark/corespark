@@ -6,6 +6,20 @@
 	objectVersion = 45;
 	objects = {
 
+/* Begin PBXAggregateTarget section */
+		B47A690210BEA54D0060D38F /* Documentation */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = B47A690D10BEA56F0060D38F /* Build configuration list for PBXAggregateTarget "Documentation" */;
+			buildPhases = (
+				B47A690110BEA54D0060D38F /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = Documentation;
+			productName = Documentation;
+		};
+/* End PBXAggregateTarget section */
+
 /* Begin PBXBuildFile section */
 		8DC2EF530486A6940098B216 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C1666FE841158C02AAC07 /* InfoPlist.strings */; };
 		B40DC58B108123DB00C94A68 /* tjnetwork.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B40DC58A108123DB00C94A68 /* tjnetwork.cpp */; };
@@ -21,6 +35,7 @@
 		B423B925106E52AC00147974 /* tjwebserver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B423B922106E52AC00147974 /* tjwebserver.cpp */; };
 		B4260E2E1080D711009F328C /* tjnetworkaddress.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B4260E2D1080D711009F328C /* tjnetworkaddress.cpp */; };
 		B462AE881098AD5600484C29 /* tjhttp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B462AE871098AD5600484C29 /* tjhttp.cpp */; };
+		B47A68FF10BEA53F0060D38F /* doxygen.config in Resources */ = {isa = PBXBuildFile; fileRef = B47A68FE10BEA53F0060D38F /* doxygen.config */; };
 		B4CAA7FB10AD640600385A5F /* include in Resources */ = {isa = PBXBuildFile; fileRef = B4CAA7E910AD640600385A5F /* include */; };
 		B4CAA7FC10AD640F00385A5F /* include in Headers */ = {isa = PBXBuildFile; fileRef = B4CAA7E910AD640600385A5F /* include */; settings = {ATTRIBUTES = (Public, ); }; };
 		B4E3EE3C108FBECB008B42D7 /* tjshowsocket.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B4E3EE3B108FBECB008B42D7 /* tjshowsocket.cpp */; };
@@ -75,6 +90,7 @@
 		B423B922106E52AC00147974 /* tjwebserver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tjwebserver.cpp; sourceTree = "<group>"; };
 		B4260E2D1080D711009F328C /* tjnetworkaddress.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tjnetworkaddress.cpp; sourceTree = "<group>"; };
 		B462AE871098AD5600484C29 /* tjhttp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tjhttp.cpp; sourceTree = "<group>"; };
+		B47A68FE10BEA53F0060D38F /* doxygen.config */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = doxygen.config; sourceTree = "<group>"; };
 		B4CAA7E910AD640600385A5F /* include */ = {isa = PBXFileReference; lastKnownFileType = folder; path = include; sourceTree = SOURCE_ROOT; };
 		B4E3EE3B108FBECB008B42D7 /* tjshowsocket.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tjshowsocket.cpp; sourceTree = "<group>"; };
 		B4F6F2C31067ECDC00B137C0 /* tjslip.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tjslip.cpp; path = src/tjslip.cpp; sourceTree = SOURCE_ROOT; };
@@ -104,6 +120,7 @@
 		0867D691FE84028FC02AAC07 /* TJNPFramework */ = {
 			isa = PBXGroup;
 			children = (
+				B47A68FE10BEA53F0060D38F /* doxygen.config */,
 				B4CAA7E910AD640600385A5F /* include */,
 				B41DD3F910663BB2000742DD /* TJSharedFramework.xcodeproj */,
 				B41DD3F010663BA7000742DD /* TinyXMLFramework.xcodeproj */,
@@ -242,6 +259,7 @@
 			projectRoot = "";
 			targets = (
 				8DC2EF4F0486A6940098B216 /* TJNP */,
+				B47A690210BEA54D0060D38F /* Documentation */,
 			);
 		};
 /* End PBXProject section */
@@ -270,10 +288,27 @@
 			files = (
 				8DC2EF530486A6940098B216 /* InfoPlist.strings in Resources */,
 				B4CAA7FB10AD640600385A5F /* include in Resources */,
+				B47A68FF10BEA53F0060D38F /* doxygen.config in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		B47A690110BEA54D0060D38F /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "#  Build the doxygen documentation for the project and load the docset into Xcode.\nif ! [ -f $SOURCE_ROOT/doxygen.config ] \nthen \n  echo doxygen config file does not exist\n  exit 0\nfi\n\n$DOXYGEN_PATH $SOURCE_ROOT/doxygen.config\nmkdir -p $BUILT_PRODUCTS_DIR/docs/TJNP/html\nmake -C $BUILT_PRODUCTS_DIR/docs/TJNP/html install\n\nexit 0\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		8DC2EF540486A6940098B216 /* Sources */ = {
@@ -392,6 +427,28 @@
 			};
 			name = Release;
 		};
+		B47A690310BEA54D0060D38F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				PRODUCT_NAME = Documentation;
+			};
+			name = Debug;
+		};
+		B47A690410BEA54D0060D38F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DOXYGEN_PATH = /Applications/Doxygen.app/Contents/Resources/doxygen;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				PRODUCT_NAME = Documentation;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -409,6 +466,15 @@
 			buildConfigurations = (
 				1DEB91B208733DA50010E9CD /* Debug */,
 				1DEB91B308733DA50010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B47A690D10BEA56F0060D38F /* Build configuration list for PBXAggregateTarget "Documentation" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B47A690310BEA54D0060D38F /* Debug */,
+				B47A690410BEA54D0060D38F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

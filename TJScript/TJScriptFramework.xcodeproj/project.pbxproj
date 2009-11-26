@@ -6,6 +6,20 @@
 	objectVersion = 45;
 	objects = {
 
+/* Begin PBXAggregateTarget section */
+		B47A68D310BEA4EF0060D38F /* Documentation */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = B47A68E110BEA5280060D38F /* Build configuration list for PBXAggregateTarget "Documentation" */;
+			buildPhases = (
+				B47A68D210BEA4EF0060D38F /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = Documentation;
+			productName = Documentation;
+		};
+/* End PBXAggregateTarget section */
+
 /* Begin PBXBuildFile section */
 		8DC2EF530486A6940098B216 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C1666FE841158C02AAC07 /* InfoPlist.strings */; };
 		B41DD4F41066454C000742DD /* TJShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B41DD4F31066453E000742DD /* TJShared.framework */; };
@@ -30,6 +44,7 @@
 		B41DD5571066455E000742DD /* tjscriptvalue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B41DD5271066455E000742DD /* tjscriptvalue.cpp */; };
 		B41DD5581066455E000742DD /* tjscriptvm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B41DD5281066455E000742DD /* tjscriptvm.cpp */; };
 		B41DD5591066455E000742DD /* tjstatictypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B41DD5291066455E000742DD /* tjstatictypes.cpp */; };
+		B47A68D110BEA4E50060D38F /* doxygen.config in Resources */ = {isa = PBXBuildFile; fileRef = B47A68D010BEA4E50060D38F /* doxygen.config */; };
 		B4CAA86310AD64B900385A5F /* include in Resources */ = {isa = PBXBuildFile; fileRef = B4CAA84210AD64B900385A5F /* include */; };
 		B4CAA86410AD64BF00385A5F /* include in Headers */ = {isa = PBXBuildFile; fileRef = B4CAA84210AD64B900385A5F /* include */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
@@ -77,6 +92,7 @@
 		B41DD5271066455E000742DD /* tjscriptvalue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tjscriptvalue.cpp; path = src/tjscriptvalue.cpp; sourceTree = SOURCE_ROOT; };
 		B41DD5281066455E000742DD /* tjscriptvm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tjscriptvm.cpp; path = src/tjscriptvm.cpp; sourceTree = SOURCE_ROOT; };
 		B41DD5291066455E000742DD /* tjstatictypes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tjstatictypes.cpp; path = src/tjstatictypes.cpp; sourceTree = SOURCE_ROOT; };
+		B47A68D010BEA4E50060D38F /* doxygen.config */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = doxygen.config; sourceTree = "<group>"; };
 		B4CAA84210AD64B900385A5F /* include */ = {isa = PBXFileReference; lastKnownFileType = folder; path = include; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
@@ -103,6 +119,7 @@
 		0867D691FE84028FC02AAC07 /* TJScriptFramework */ = {
 			isa = PBXGroup;
 			children = (
+				B47A68D010BEA4E50060D38F /* doxygen.config */,
 				B4CAA84210AD64B900385A5F /* include */,
 				B41DD5141066455E000742DD /* src */,
 				B41DD4EA1066453E000742DD /* TJSharedFramework.xcodeproj */,
@@ -235,6 +252,7 @@
 			projectRoot = "";
 			targets = (
 				8DC2EF4F0486A6940098B216 /* TJScript */,
+				B47A68D310BEA4EF0060D38F /* Documentation */,
 			);
 		};
 /* End PBXProject section */
@@ -256,10 +274,27 @@
 			files = (
 				8DC2EF530486A6940098B216 /* InfoPlist.strings in Resources */,
 				B4CAA86310AD64B900385A5F /* include in Resources */,
+				B47A68D110BEA4E50060D38F /* doxygen.config in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		B47A68D210BEA4EF0060D38F /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "#  Build the doxygen documentation for the project and load the docset into Xcode.\nif ! [ -f $SOURCE_ROOT/doxygen.config ] \nthen \n  echo doxygen config file does not exist\n  exit 0\nfi\n\n$DOXYGEN_PATH $SOURCE_ROOT/doxygen.config\nmkdir -p $BUILT_PRODUCTS_DIR/docs/TJScript/html\nmake -C $BUILT_PRODUCTS_DIR/docs/TJScript/html install\n\nexit 0\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		8DC2EF540486A6940098B216 /* Sources */ = {
@@ -383,6 +418,28 @@
 			};
 			name = Release;
 		};
+		B47A68D510BEA4EF0060D38F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				PRODUCT_NAME = Documentation;
+			};
+			name = Debug;
+		};
+		B47A68D610BEA4EF0060D38F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DOXYGEN_PATH = /Applications/Doxygen.app/Contents/Resources/doxygen;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				PRODUCT_NAME = Documentation;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -400,6 +457,15 @@
 			buildConfigurations = (
 				1DEB91B208733DA50010E9CD /* Debug */,
 				1DEB91B308733DA50010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B47A68E110BEA5280060D38F /* Build configuration list for PBXAggregateTarget "Documentation" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B47A68D510BEA4EF0060D38F /* Debug */,
+				B47A68D610BEA4EF0060D38F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

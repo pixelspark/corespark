@@ -6,8 +6,23 @@
 	objectVersion = 45;
 	objects = {
 
+/* Begin PBXAggregateTarget section */
+		B47A685D10BEA4650060D38F /* Documentation */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = B47A687C10BEA4B30060D38F /* Build configuration list for PBXAggregateTarget "Documentation" */;
+			buildPhases = (
+				B47A685C10BEA4650060D38F /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = Documentation;
+			productName = Documentation;
+		};
+/* End PBXAggregateTarget section */
+
 /* Begin PBXBuildFile section */
 		8DC2EF530486A6940098B216 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C1666FE841158C02AAC07 /* InfoPlist.strings */; };
+		B47A685B10BEA4590060D38F /* doxygen.config in Resources */ = {isa = PBXBuildFile; fileRef = B47A685A10BEA4590060D38F /* doxygen.config */; };
 		B486E8C210662A170043CE5D /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B486E8C110662A170043CE5D /* CoreFoundation.framework */; };
 		B497DAD810AD5E2500EB9CB8 /* libstdc++.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B497DAD710AD5E2500EB9CB8 /* libstdc++.6.dylib */; };
 		B4CAA78C10AD637B00385A5F /* include in Resources */ = {isa = PBXBuildFile; fileRef = B4CAA76D10AD637B00385A5F /* include */; };
@@ -58,6 +73,7 @@
 		089C1667FE841158C02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		8DC2EF5A0486A6940098B216 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8DC2EF5B0486A6940098B216 /* TJShared.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = TJShared.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B47A685A10BEA4590060D38F /* doxygen.config */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = doxygen.config; sourceTree = "<group>"; };
 		B486E8BD106629E00043CE5D /* TinyXMLFramework.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TinyXMLFramework.framework; path = ../Libraries/TinyXML/build/Release/TinyXMLFramework.framework; sourceTree = SOURCE_ROOT; };
 		B486E8C110662A170043CE5D /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		B497DAD710AD5E2500EB9CB8 /* libstdc++.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.6.dylib"; path = "usr/lib/libstdc++.6.dylib"; sourceTree = SDKROOT; };
@@ -112,6 +128,7 @@
 		0867D691FE84028FC02AAC07 /* TJSharedFramework */ = {
 			isa = PBXGroup;
 			children = (
+				B47A685A10BEA4590060D38F /* doxygen.config */,
 				B4CAA76D10AD637B00385A5F /* include */,
 				B4CAA7D210AD63C100385A5F /* src */,
 				B4F6F2951067DF2F00B137C0 /* TinyXMLFramework.xcodeproj */,
@@ -250,6 +267,7 @@
 			projectRoot = "";
 			targets = (
 				8DC2EF4F0486A6940098B216 /* TJShared */,
+				B47A685D10BEA4650060D38F /* Documentation */,
 			);
 		};
 /* End PBXProject section */
@@ -271,10 +289,27 @@
 			files = (
 				8DC2EF530486A6940098B216 /* InfoPlist.strings in Resources */,
 				B4CAA78C10AD637B00385A5F /* include in Resources */,
+				B47A685B10BEA4590060D38F /* doxygen.config in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		B47A685C10BEA4650060D38F /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "#  Build the doxygen documentation for the project and load the docset into Xcode.\nif ! [ -f $SOURCE_ROOT/doxygen.config ] \nthen \n  echo doxygen config file does not exist\n  exit 0\nfi\n\n$DOXYGEN_PATH $SOURCE_ROOT/doxygen.config\nmkdir -p $BUILT_PRODUCTS_DIR/docs/TJShared/html\nmake -C $BUILT_PRODUCTS_DIR/docs/TJShared/html install\n\nexit 0\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		8DC2EF540486A6940098B216 /* Sources */ = {
@@ -407,6 +442,28 @@
 			};
 			name = Release;
 		};
+		B47A685E10BEA4650060D38F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				PRODUCT_NAME = Documentation;
+			};
+			name = Debug;
+		};
+		B47A685F10BEA4650060D38F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DOXYGEN_PATH = /Applications/Doxygen.app/Contents/Resources/doxygen;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				PRODUCT_NAME = Documentation;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -424,6 +481,15 @@
 			buildConfigurations = (
 				1DEB91B208733DA50010E9CD /* Debug */,
 				1DEB91B308733DA50010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B47A687C10BEA4B30060D38F /* Build configuration list for PBXAggregateTarget "Documentation" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B47A685E10BEA4650060D38F /* Debug */,
+				B47A685F10BEA4650060D38F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

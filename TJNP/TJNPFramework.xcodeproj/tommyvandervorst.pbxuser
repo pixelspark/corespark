@@ -90,13 +90,12 @@
 					PBXFileDataSource_Warnings_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 279797865;
-			PBXWorkspaceStateSaveDate = 279797865;
+			PBXPerProjectTemplateStateSaveDate = 280929584;
+			PBXWorkspaceStateSaveDate = 280929584;
 		};
 		perUserProjectItems = {
 			B40226ED1069177600137628 /* PBXTextBookmark */ = B40226ED1069177600137628 /* PBXTextBookmark */;
 			B408C8E3108A84EF005AC842 /* PBXTextBookmark */ = B408C8E3108A84EF005AC842 /* PBXTextBookmark */;
-			B41DD40510663BE1000742DD /* PBXTextBookmark */ = B41DD40510663BE1000742DD /* PBXTextBookmark */;
 			B423B85F106E163800147974 /* PlistBookmark */ = B423B85F106E163800147974 /* PlistBookmark */;
 			B423BA73106E9AC400147974 /* PBXTextBookmark */ = B423BA73106E9AC400147974 /* PBXTextBookmark */;
 			B423BA75106E9AC400147974 /* PBXTextBookmark */ = B423BA75106E9AC400147974 /* PBXTextBookmark */;
@@ -110,11 +109,13 @@
 			B46A1935108E367B00B5A89E /* PBXTextBookmark */ = B46A1935108E367B00B5A89E /* PBXTextBookmark */;
 			B46CBD7A10A47B0500CDE29F /* PBXTextBookmark */ = B46CBD7A10A47B0500CDE29F /* PBXTextBookmark */;
 			B477C30210A3970E00396B72 /* PBXTextBookmark */ = B477C30210A3970E00396B72 /* PBXTextBookmark */;
+			B47A690A10BEA56F0060D38F /* PBXTextBookmark */ = B47A690A10BEA56F0060D38F /* PBXTextBookmark */;
+			B47A690B10BEA56F0060D38F /* PBXBookmark */ = B47A690B10BEA56F0060D38F /* PBXBookmark */;
+			B47A692510BEA5F20060D38F /* PBXTextBookmark */ = B47A692510BEA5F20060D38F /* PBXTextBookmark */;
 			B49777991097845B00FA1B69 /* PBXTextBookmark */ = B49777991097845B00FA1B69 /* PBXTextBookmark */;
 			B497DB4210AD601F00EB9CB8 /* PBXTextBookmark */ = B497DB4210AD601F00EB9CB8 /* PBXTextBookmark */;
 			B4B5E68C109F7C94003EB10D /* PBXTextBookmark */ = B4B5E68C109F7C94003EB10D /* PBXTextBookmark */;
 			B4CAA70E10AD60CF00385A5F /* PBXTextBookmark */ = B4CAA70E10AD60CF00385A5F /* PBXTextBookmark */;
-			B4CAA87110AD65A000385A5F /* PBXTextBookmark */ = B4CAA87110AD65A000385A5F /* PBXTextBookmark */;
 		};
 		sourceControlManager = B41DD3C810663B1B000742DD /* Source Control */;
 		userBuildSettings = {
@@ -122,7 +123,7 @@
 	};
 	089C1667FE841158C02AAC07 /* English */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1012, 582}}";
+			sepNavIntBoundsRect = "{{0, 0}, {1012, 576}}";
 			sepNavSelRange = "{45, 0}";
 			sepNavVisRange = "{0, 45}";
 		};
@@ -213,16 +214,6 @@
 			sepNavSelRange = "{144, 0}";
 			sepNavVisRange = "{0, 730}";
 		};
-	};
-	B41DD40510663BE1000742DD /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = 089C1667FE841158C02AAC07 /* English */;
-		name = "InfoPlist.strings: 1";
-		rLen = 0;
-		rLoc = 0;
-		rType = 0;
-		vrLen = 45;
-		vrLoc = 0;
 	};
 	B423B85F106E163800147974 /* PlistBookmark */ = {
 		isa = PlistBookmark;
@@ -421,6 +412,40 @@
 		vrLen = 1042;
 		vrLoc = 1383;
 	};
+	B47A68FE10BEA53F0060D38F /* doxygen.config */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1012, 20215}}";
+			sepNavSelRange = "{1694, 0}";
+			sepNavVisRange = "{0, 1928}";
+		};
+	};
+	B47A690210BEA54D0060D38F /* Documentation */ = {
+		activeExec = 0;
+	};
+	B47A690A10BEA56F0060D38F /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 089C1667FE841158C02AAC07 /* English */;
+		name = "InfoPlist.strings: 3";
+		rLen = 0;
+		rLoc = 45;
+		rType = 0;
+		vrLen = 45;
+		vrLoc = 0;
+	};
+	B47A690B10BEA56F0060D38F /* PBXBookmark */ = {
+		isa = PBXBookmark;
+		fRef = B47A68FE10BEA53F0060D38F /* doxygen.config */;
+	};
+	B47A692510BEA5F20060D38F /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = B47A68FE10BEA53F0060D38F /* doxygen.config */;
+		name = "doxygen.config: 41";
+		rLen = 0;
+		rLoc = 1694;
+		rType = 0;
+		vrLen = 1928;
+		vrLoc = 0;
+	};
 	B49777991097845B00FA1B69 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
 		fRef = B4F6F2C31067ECDC00B137C0 /* tjslip.cpp */;
@@ -460,16 +485,6 @@
 		rType = 0;
 		vrLen = 1534;
 		vrLoc = 7745;
-	};
-	B4CAA87110AD65A000385A5F /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = 089C1667FE841158C02AAC07 /* English */;
-		name = "InfoPlist.strings: 3";
-		rLen = 0;
-		rLoc = 45;
-		rType = 0;
-		vrLen = 45;
-		vrLoc = 0;
 	};
 	B4E3EE3B108FBECB008B42D7 /* tjshowsocket.cpp */ = {
 		uiCtxt = {
