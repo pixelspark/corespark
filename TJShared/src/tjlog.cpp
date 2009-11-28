@@ -84,7 +84,9 @@ void Log::Write(const String& source, const String& message) {
 	}
 	
 	if(_logToSyslog) {
-		syslog(LOG_INFO, Mbs(wos.str()).c_str());
+		#ifdef TJ_OS_POSIX
+			syslog(LOG_INFO, Mbs(wos.str()).c_str());
+		#endif
 	}
 
 	GetEventLogger()->AddEvent(finalMessage, ExceptionTypeMessage, false);
