@@ -4,6 +4,7 @@
 #include "tjnpinternal.h"
 #include "tjsocket.h"
 #include "tjhttp.h"
+#include "tjwebcontent.h"
 
 #pragma warning(push)
 #pragma warning(disable:4251 4275)
@@ -37,10 +38,20 @@ namespace tj {
 				WebServerResponseThread(NativeSocket client, tj::shared::ref<WebServer> fs);
 				virtual ~WebServerResponseThread();
 				virtual void SendError(int code, const tj::shared::String& desc, const tj::shared::String& extraInfo);
-				virtual void ServePage(tj::shared::ref<HTTPRequest> hrp);
+				virtual void ServeRequest(tj::shared::ref<HTTPRequest> hrp);
 				virtual void Run();
 
 			protected:
+				virtual void SendMultiStatusReply(TiXmlDocument& reply);
+				virtual void ServeRequestWithResolver(tj::shared::ref<HTTPRequest> hrp, tj::shared::ref<WebItem> res);
+				virtual void ServeGetRequestWithResolver(tj::shared::ref<HTTPRequest> hrp, tj::shared::ref<WebItem> res);
+				virtual void ServeOptionsRequestWithResolver(tj::shared::ref<HTTPRequest> hrp, tj::shared::ref<WebItem> res);
+				virtual void ServePropFindRequestWithResolver(tj::shared::ref<HTTPRequest> hrp, tj::shared::ref<WebItem> res);
+
+
+				const static char* KDAVAllowedHeaders;
+				const static char* KDAVVersion;
+				const static char* KServerName;
 				NativeSocket _client;
 				tj::shared::weak<WebServer> _fs;
 		};
@@ -51,21 +62,21 @@ namespace tj {
 			friend class WebServerResponseThread;
 
 			public:
-				WebServer(unsigned short port, tj::shared::ref<FileRequestResolver> defaultResolver = tj::shared::null);
+				WebServer(unsigned short port, tj::shared::ref<WebItem> defaultResolver = tj::shared::null);
 				virtual ~WebServer();
 				virtual void OnCreated();
 				virtual unsigned int GetBytesReceived() const;
 				virtual unsigned int GetBytesSent() const;
 				virtual void Stop();
 				virtual unsigned short GetActualPort() const;
-				virtual void AddResolver(const tj::shared::String& pathPrefix, tj::shared::strong<FileRequestResolver> fr);
+				virtual void AddResolver(const tj::shared::String& pathPrefix, tj::shared::strong<WebItem> fr);
 
 				const static unsigned short KPortDontCare = 0;
 			
 			protected:
 				tj::shared::CriticalSection _lock;
-				std::map< tj::shared::String, tj::shared::ref<FileRequestResolver> > _resolvers;
-				tj::shared::ref<FileRequestResolver> _defaultResolver;
+				std::map< tj::shared::String, tj::shared::ref<WebItem> > _resolvers;
+				tj::shared::ref<WebItem> _defaultResolver;
 				tj::shared::ref<WebServerThread> _serverThread;
 				volatile bool _run;
 				unsigned int _bytesReceived;

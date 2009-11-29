@@ -119,10 +119,32 @@ void Download::OnReceive(NativeSocket ns) {
 	}
 }
 
+HTTPRequest::Method HTTPRequest::MethodFromString(const std::string& method) {
+	if(method=="GET") {
+		return MethodGet;
+	}
+	else if(method=="POST") {
+		return MethodPost;
+	}
+	else if(method=="PROPFIND") {
+		return MethodPropFind;
+	}
+	else if(method=="OPTIONS") {
+		return MethodOptions;
+	}
+	else if(method=="HEAD") {
+		return MethodHead;
+	}
+
+	return MethodNone;
+}
+
 /** HTTPRequest **/
 HTTPRequest::HTTPRequest(const std::string& req) {
 	_method = MethodNone;
 	_state = ParsingMethod;
+
+	std::string currentHeader;
 	
 	std::string::const_iterator it = req.begin();
 	while(it!=req.end()) {
@@ -130,14 +152,8 @@ HTTPRequest::HTTPRequest(const std::string& req) {
 		if(_state==ParsingMethod) {
 			std::string::const_iterator end = std::find(it, req.end(), ' ');
 			std::string method(it,end);
-			if(method=="GET") {
-				_method = MethodGet;
-				_state = ParsingFile;
-			}
-			else if(method=="POST") {
-				_method = MethodPost;
-				_state = ParsingFile;
-			}
+			_method = MethodFromString(method);
+			_state = ParsingFile;
 			it = end+1;
 		}
 		else if(_state==ParsingFile) {
@@ -174,13 +190,51 @@ HTTPRequest::HTTPRequest(const std::string& req) {
 		else if(_state==ParsingProtocol) {
 			std::string::const_iterator end = std::find(it, req.end(), '\n');
 			it = end+1;
-			_state = ParsingEnd;
-			break;
+			_state = ParsingHeaderName;
+		}
+		else if(_state==ParsingHeaderName) {
+			std::string::const_iterator endOfValue = std::find(it, req.end(),  ':');
+			std::string::const_iterator endOfHeader = std::find(it, req.end(), '\n');
+			
+			if(endOfValue==req.end() || endOfValue > endOfHeader || endOfHeader==req.end()) {
+				_state = ParsingEnd;
+			}
+			currentHeader = std::string(it,endOfValue);
+			it = endOfValue;
+			_state = ParsingHeaderValue;
+		}
+		else if(_state==ParsingHeaderValue) {
+			std::string::const_iterator endOfHeader = std::find(it, req.end(), '\n');
+			if(endOfHeader==req.end()) {
+				_state = ParsingEnd;
+			}
+			else {
+				std::string headerValue(it+2,endOfHeader);
+				_headers[currentHeader] = Wcs(headerValue);
+				_state = ParsingHeaderName;
+			}
+			it = endOfHeader+1;
 		}
 	}
 }
 
 HTTPRequest::~HTTPRequest() {
+}
+
+bool HTTPRequest::HasHeader(const std::string& headerName) const {
+	return _headers.find(headerName)!=_headers.end();
+}
+
+bool HTTPRequest::HasParameter(const std::string& paramName) const {
+	return _parameters.find(paramName)!=_parameters.end();
+}
+
+const String& HTTPRequest::GetHeader(const std::string& headerName, const std::wstring& defaultValue) {
+	std::map< std::string, std::wstring >::const_iterator it = _headers.find(headerName);
+	if(it!=_headers.end()) {
+		return it->second;
+	}
+	return defaultValue;
 }
 
 const std::wstring& HTTPRequest::GetParameter(const std::string& parameter, const std::wstring& defaultValue) {
@@ -189,6 +243,10 @@ const std::wstring& HTTPRequest::GetParameter(const std::string& parameter, cons
 		return it->second;
 	}
 	return defaultValue;
+}
+
+void HTTPRequest::SetPath(const String& p) {
+	_file = p;
 }
 
 const std::wstring& HTTPRequest::GetPath() const {
@@ -269,10 +327,6 @@ std::wstring HTTPRequest::URLDecode(std::string::const_iterator it, std::string:
 	return os.str();
 }
 
-/** FileRequestResolver **/
-FileRequestResolver::~FileRequestResolver() {
-}
-
-/** FileRequest **/
-FileRequest::~FileRequest() {
+/** WebRequest **/
+WebRequest::~WebRequest() {
 }

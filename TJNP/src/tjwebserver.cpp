@@ -2,6 +2,8 @@
 using namespace tj::np;
 using namespace tj::shared;
 
+#include <algorithm>
+
 #ifdef TJ_OS_WIN
 	#include <winsock2.h>
 #endif
@@ -15,6 +17,17 @@ using namespace tj::shared;
 #ifdef TJ_OS_LINUX
 	#include <sys/sendfile.h>
 #endif
+
+const char* WebServerResponseThread::KDAVAllowedHeaders = "OPTIONS,GET,PROPFIND";
+const char* WebServerResponseThread::KDAVVersion = "1";
+const char* WebServerResponseThread::KServerName = "TJNP";
+
+std::ostream& operator<< (std::ostream& out, const TiXmlNode& doc) {
+	TiXmlPrinter printer;
+	doc.Accept(&printer);
+	out << printer.Str();
+	return out;
+}
 
 /** WebServerResponseThread **/
 WebServerResponseThread::WebServerResponseThread(NativeSocket client, ref<WebServer> fs): _fs(fs), _client(client) {
@@ -40,67 +53,185 @@ void WebServerResponseThread::SendError(int code, const std::wstring& desc, cons
 	}
 }
 
-void WebServerResponseThread::ServePage(ref<HTTPRequest> hrp) {
-	const std::wstring& requestFile = hrp->GetPath();
 
-	// Check if there is a resolver for the path, otherwise use the default file resolver (this->Resolve).
-	// Check if there is a resolver that can resolve this path (by looking at the start of the path)
-	ref<FileRequestResolver> resolver;
+void WebServerResponseThread::SendMultiStatusReply(TiXmlDocument& reply) {	
+	std::ostringstream xos;
+	xos << reply;	
+	std::string dataString = xos.str();
+
+	std::ostringstream os;
+	os << "HTTP/1.1 207 Multi-Status\r\n";
+	os << "Content-type: text/xml; charset=\"utf-8\"\r\n";
+	os << "Content-length: " << int(dataString.length()) << "\r\n";
+	os << "Server: " << KServerName << "\r\n";
+	os << "Connection: close\r\n";
+	os << "DAV: " << KDAVVersion << "\r\n";
+	os << "\r\n";
+	os << dataString;
+	std::string responseString = os.str();
+
+	int q = send(_client, responseString.c_str(), responseString.length(), 0);
 	ref<WebServer> fs = _fs;
-	if(fs) {
-		ThreadLock lock(&(fs->_lock));
-		resolver = fs->_defaultResolver;
+	if(fs && q>0) {
+		fs->_bytesSent += q;
+	}
+}
 
-		std::map< std::wstring, ref<FileRequestResolver> >::iterator it = fs->_resolvers.begin();
-		while(it!=fs->_resolvers.end()) {
-			const std::wstring& resolverPath = it->first;
-			if(requestFile.compare(0, resolverPath.length(), resolverPath)==0) {
-				// Use this resolver
-				resolver = it->second;
-				break;
+class PropFindItemWalker: public WebItemWalker {
+	public:
+		PropFindItemWalker(TiXmlElement* multistatus): _elm(multistatus) {
+			assert(multistatus!=0);
+		}
+
+		virtual ~PropFindItemWalker() {
+		}
+
+		virtual void Add(const tj::shared::String& prefix, ref<WebItem> wi, int level) {
+			TiXmlElement response("response");
+			SaveAttribute(&response, "href", Mbs(prefix));
+		
+			TiXmlElement propstat("propstat");
+			SaveAttribute(&propstat, "status", std::wstring(L"HTTP/1.1 200 OK"));
+
+			TiXmlElement prop("prop");
+			SaveAttribute(&prop, "displayname", wi->GetDisplayName());
+			unsigned int contentLength = wi->GetContentLength();
+			if(contentLength>0) {
+				SaveAttribute(&prop, "getcontentlength", contentLength);
 			}
-			++it;
+			SaveAttribute(&prop, "getcontenttype", wi->GetContentType());
+			SaveAttribute(&prop, "getetag", wi->GetETag());
+
+			TiXmlElement resourceType("resourcetype");
+			if(wi->IsCollection()) {
+				TiXmlElement typecollection("collection");
+				resourceType.InsertEndChild(typecollection);
+			}
+			else {
+				TiXmlElement typeresource("resource");
+				resourceType.InsertEndChild(typeresource);
+			}
+			prop.InsertEndChild(resourceType);
+			propstat.InsertEndChild(prop);
+
+			response.InsertEndChild(propstat);
+			_elm->InsertEndChild(response);
+
+			wi->Walk(ref<WebItemWalker>(this), prefix, level);
+		}
+
+	protected:
+		TiXmlElement* _elm;
+};
+
+void WebServerResponseThread::ServePropFindRequestWithResolver(ref<HTTPRequest> hrp, ref<WebItem> resolver) {
+	if(resolver) {
+		if(resolver->IsEditable()) {
+			int depth = -1;
+			if(hrp->HasHeader("Depth")) {
+				std::wstring depthString = hrp->GetHeader("Depth", L"1");
+				if(depthString!=L"Infinity") {
+					depth = StringTo<int>(depthString, 1);
+				}
+			}
+
+			TiXmlDocument doc;
+			TiXmlDeclaration decl("1.0", "", "no");
+			doc.InsertEndChild(decl);
+
+			TiXmlElement multiStatus("multistatus");
+			SaveAttributeSmall(&multiStatus, "xmlns", std::wstring(L"DAV:"));
+			
+			ref<PropFindItemWalker> pfi = GC::Hold(new PropFindItemWalker(&multiStatus));
+			pfi->Add(hrp->GetPath(), resolver, depth);
+
+			doc.InsertEndChild(multiStatus);
+			SendMultiStatusReply(doc);
+		}
+		else {
+			SendError(405, L"PROPFIND Method not allowed", hrp->GetPath());
 		}
 	}
+	else {
+		SendError(404, L"Not found", hrp->GetPath());
+	}
+}
 
-	std::wstring resolvedFile;
+void WebServerResponseThread::ServeOptionsRequestWithResolver(ref<HTTPRequest> hrp, ref<WebItem> resolver) {
+	if(resolver) {
+		std::ostringstream headers;
+		headers << "HTTP/1.0 200 OK\r\n";
+		headers << "Connection: close\r\n";
+		headers << "Server: " << KServerName << "\r\n";
+
+		if(resolver->IsEditable()) {
+			headers << "DAV: " << KDAVVersion << "\r\n";
+			headers << "Allow: " << KDAVAllowedHeaders << "\r\n";
+		}
+		else {
+			headers << "Allow: OPTIONS,GET\r\n";
+		}
+		headers << "\r\n";
+
+		std::string headerString = headers.str();
+		int q = send(_client, headerString.c_str(), headerString.length(), 0);
+		ref<WebServer> fs = _fs;
+		if(fs) {
+			fs->_bytesSent += q;
+		}
+	}
+	else {
+		SendError(404, L"Not found", hrp->GetPath());
+	}
+}
+
+void WebServerResponseThread::ServeGetRequestWithResolver(ref<HTTPRequest> hrp, ref<WebItem> resolver) {
 	std::wstring resolverError;
 	char* resolvedData = 0;
 	unsigned int resolvedDataLength = 0;
 	bool sendData = false;
 
-	if(resolver) {
-		FileRequestResolver::Resolution res = resolver->Resolve(hrp, resolvedFile, resolverError, &resolvedData, resolvedDataLength);
-		if(res==FileRequestResolver::ResolutionNone) {
-			SendError(500, L"Internal server error", resolverError);
-			return;
-		}
-		else if(res==FileRequestResolver::ResolutionNotFound) {
-			SendError(404, L"Not found", requestFile);
-			return;
-		}
-		else if(res==FileRequestResolver::ResolutionData) {
-			if(resolvedData==0) {
-				SendError(500, L"Internal server error", L"No data: "+resolverError);
-				return;
-			}
-			sendData = true;
-		}
-		else if(res==FileRequestResolver::ResolutionEmpty) {
-			SendError(200, L"OK", requestFile);
-			return;
-		}
-	}
-	else {
-		SendError(404, L"Not found", requestFile);
+	Resolution res = resolver->Get(hrp, resolverError, &resolvedData, resolvedDataLength);
+	if(res==ResolutionNone) {
+		SendError(500, L"Internal server error", resolverError);
 		return;
 	}
-	
+	else if(res==ResolutionNotFound) {
+		SendError(404, L"Not found", hrp->GetPath());
+		return;
+	}
+	else if(res==ResolutionData) {
+		if(resolvedData==0) {
+			SendError(500, L"Internal server error", L"No data: "+resolverError);
+			return;
+		}
+		sendData = true;
+	}
+	else if(res==ResolutionEmpty) {
+		SendError(200, L"OK", hrp->GetPath());
+		return;
+	}
+
 	// Reply
 	std::ostringstream headers;
 	headers << "HTTP/1.0 200 OK\r\n";
 	headers << "Connection: close\r\n";
-	headers << "Server: TJNP\r\n";
+	headers << "Server: " << KServerName << "\r\n";
+
+	std::string contentType = Mbs(resolver->GetContentType());
+	if(contentType.length()>0) {
+		headers << "Content-type: " << contentType << "\r\n";
+	}
+
+	unsigned int contentLength = resolver->GetContentLength();
+	if(contentLength>0) {
+		headers << "Content-length: " << int(contentLength) << "\r\n";
+	}
+
+	if(resolver->IsEditable()) {
+		headers << "DAV: " << KDAVVersion << "\r\n";
+		headers << "Allow: " << KDAVAllowedHeaders << "\r\n";
+	}
 
 	// Just dump the file
 	if(sendData) {
@@ -117,6 +248,8 @@ void WebServerResponseThread::ServePage(ref<HTTPRequest> hrp) {
 		delete[] resolvedData;
 	}
 	else {
+		std::wstring resolvedFile = resolverError;
+
 		#ifdef TJ_OS_WIN
 			HANDLE file = CreateFile(resolvedFile.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, 0);
 			DWORD size = GetFileSize(file, 0);
@@ -196,6 +329,59 @@ void WebServerResponseThread::ServePage(ref<HTTPRequest> hrp) {
 	}
 }
 
+void WebServerResponseThread::ServeRequestWithResolver(ref<HTTPRequest> hrp, ref<WebItem> resolver) {
+	if(resolver) {
+		switch(hrp->GetMethod()) {
+			case HTTPRequest::MethodGet:
+				ServeGetRequestWithResolver(hrp, resolver);
+				break;
+
+			case HTTPRequest::MethodOptions:
+				ServeOptionsRequestWithResolver(hrp,resolver);
+				break;
+
+			case HTTPRequest::MethodPropFind:
+				ServePropFindRequestWithResolver(hrp,resolver);
+				break;
+
+			default:
+				SendError(501, L"Method not implemented", Stringify(hrp->GetMethod()));
+		}
+	}
+	else {
+		SendError(404, L"Not found", hrp->GetPath());
+		return;
+	}
+}
+
+void WebServerResponseThread::ServeRequest(ref<HTTPRequest> hrp) {
+	const std::wstring& requestFile = hrp->GetPath();
+
+	// Check if there is a resolver for the path, otherwise use the default file resolver (this->Resolve).
+	// Check if there is a resolver that can resolve this path (by looking at the start of the path)
+	ref<WebItem> resolver;
+	ref<WebServer> fs = _fs;
+	if(fs) {
+		ThreadLock lock(&(fs->_lock));
+		resolver = fs->_defaultResolver;
+
+		std::map< std::wstring, ref<WebItem> >::iterator it = fs->_resolvers.begin();
+		while(it!=fs->_resolvers.end()) {
+			const std::wstring& resolverPath = it->first;
+			if(requestFile.compare(0, resolverPath.length(), resolverPath)==0) {
+				// Use this resolver
+				resolver = it->second;
+				std::wstring restOfPath = requestFile.substr(resolverPath.length());
+				resolver = resolver->Resolve(restOfPath);
+				break;
+			}
+			++it;
+		}
+	}
+
+	ServeRequestWithResolver(hrp, resolver);
+}
+
 void WebServerResponseThread::Run() {
 	std::ostringstream rid;
 
@@ -241,7 +427,7 @@ void WebServerResponseThread::Run() {
 	if(!readingRequest) {
 		std::string request = rid.str();
 		ref<HTTPRequest> hrp = GC::Hold(new HTTPRequest(request));
-		ServePage(hrp);
+		ServeRequest(hrp);
 	}
 
 	#ifdef TJ_OS_WIN
@@ -445,7 +631,7 @@ void WebServerThread::Run() {
 }
 
 /** WebServer **/
-WebServer::WebServer(unsigned short port, ref<FileRequestResolver> defaultResolver): _run(false), _bytesSent(0), _bytesReceived(0), _defaultResolver(defaultResolver), _port(port) {
+WebServer::WebServer(unsigned short port, ref<WebItem> defaultResolver): _run(false), _bytesSent(0), _bytesReceived(0), _defaultResolver(defaultResolver), _port(port) {
 }
 
 WebServer::~WebServer() {
@@ -459,7 +645,7 @@ void WebServer::OnCreated() {
 	//Log::Write(L"TJNP/WebServer", L"Actual port is "+Stringify(_serverThread->GetActualPort()));
 }
 
-void WebServer::AddResolver(const std::wstring& pathPrefix, strong<FileRequestResolver> frq) {
+void WebServer::AddResolver(const std::wstring& pathPrefix, strong<WebItem> frq) {
 	ThreadLock lock(&_lock);
 	_resolvers[pathPrefix] = frq;
 }

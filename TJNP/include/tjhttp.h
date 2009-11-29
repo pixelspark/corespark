@@ -3,58 +3,51 @@
 
 #include "tjnpinternal.h"
 #include "tjsocket.h"
+#include "tjwebcontent.h"
 
 #pragma warning (push)
 #pragma warning (disable: 4251 4275)
 
 namespace tj {
-	namespace np {
-		class NP_EXPORTED FileRequest: public tj::shared::Object {
-			public:
-				virtual ~FileRequest();
-				virtual const tj::shared::String& GetParameter(const std::string& parameter, const tj::shared::String& defaultValue) = 0;
-				virtual const tj::shared::String& GetPath() const = 0;
-		};
-		
-		class NP_EXPORTED FileRequestResolver: public virtual tj::shared::Object {
-			public:
-				enum Resolution {
-					ResolutionNone = 0,
-					ResolutionNotFound,
-					ResolutionFile,
-					ResolutionData,
-					ResolutionEmpty,
-				};
-				
-				virtual ~FileRequestResolver();
-				virtual Resolution Resolve(tj::shared::ref<FileRequest> frq, tj::shared::String& file, tj::shared::String& error, char** data, unsigned int& dataLength) = 0;
-		};
-		
-		class NP_EXPORTED HTTPRequest: public FileRequest {
+	namespace np {		
+		class NP_EXPORTED HTTPRequest: public WebRequest {
 			public:
 				enum Method {
 					MethodNone = 0,
 					MethodGet = 1,
 					MethodPost = 2,
+					MethodOptions = 3,
+					MethodPropFind = 4,
+					MethodHead = 5,
+					MethodDelete = 6,
 				};
 				
 				HTTPRequest(const std::string& req);
 				virtual ~HTTPRequest();
 				virtual const tj::shared::String& GetParameter(const std::string& parameter, const tj::shared::String& defaultValue);
+				virtual const tj::shared::String& GetHeader(const std::string& headerName, const tj::shared::String& defaultValue);
+				virtual bool HasHeader(const std::string& headerName) const;
+				virtual bool HasParameter(const std::string& paramName) const;
 				virtual const tj::shared::String& GetPath() const;
+				virtual void SetPath(const tj::shared::String& p);
 				Method GetMethod() const;
 				static char GetHexChar(char a);
 				const tj::shared::String& GetQueryString() const;
+
 				static tj::shared::String URLDecode(std::string::const_iterator it, std::string::const_iterator end);
 				static std::string URLEncode(const tj::shared::String& rid);
+				static Method MethodFromString(const std::string& methodString);
 				
 				std::map< std::string, tj::shared::String > _parameters;
+				std::map< std::string, tj::shared::String > _headers;
 				
 			protected:
 				enum ParserState {
 					ParsingMethod = 0,
 					ParsingFile = 1,
 					ParsingProtocol,
+					ParsingHeaderName,
+					ParsingHeaderValue,
 					ParsingEnd,
 				};
 				

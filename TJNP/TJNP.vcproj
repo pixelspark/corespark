@@ -228,6 +228,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\tjwebcontent.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\tjwebserver.cpp"
 				>
 			</File>
@@ -283,6 +287,10 @@
 			</File>
 			<File
 				RelativePath=".\include\tjtransaction.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tjwebcontent.h"
 				>
 			</File>
 			<File
