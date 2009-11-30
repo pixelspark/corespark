@@ -135,90 +135,124 @@ HTTPRequest::Method HTTPRequest::MethodFromString(const std::string& method) {
 	else if(method=="HEAD") {
 		return MethodHead;
 	}
+	else if(method=="LOCK") {
+		return MethodLock;
+	}
+	else if(method=="UNLOCK") {
+		return MethodUnlock;
+	}
+	else if(method=="DELETE") {
+		return MethodDelete;
+	}
+	else if(method=="PUT") {
+		return MethodPut;
+	}
+	else if(method=="MOVE") {
+		return MethodMove;
+	}
+	else if(method=="COPY") {
+		return MethodCopy;
+	}
 
 	return MethodNone;
 }
 
 /** HTTPRequest **/
 HTTPRequest::HTTPRequest(const std::string& req) {
-	_method = MethodNone;
-	_state = ParsingMethod;
+	try {
+		_method = MethodNone;
+		_state = ParsingMethod;
 
-	std::string currentHeader;
-	
-	std::string::const_iterator it = req.begin();
-	while(it!=req.end()) {
-		// Parsing method
-		if(_state==ParsingMethod) {
-			std::string::const_iterator end = std::find(it, req.end(), ' ');
-			std::string method(it,end);
-			_method = MethodFromString(method);
-			_state = ParsingFile;
-			it = end+1;
-		}
-		else if(_state==ParsingFile) {
-			std::string::const_iterator end = std::find(it, req.end(), ' ');
-			std::string::const_iterator endURI = std::find(it, req.end(), '?');
-			if(endURI!=req.end() && endURI<end) {
-				// parameters!
-				_file = URLDecode(it,endURI);
-				_queryString = URLDecode(endURI+1, end);
-				std::string::const_iterator parameterBegin = endURI+1;
-				
-				while(parameterBegin <= end) {
-					std::string::const_iterator endName = std::find(parameterBegin, end, '=');
-					if(endName==end) break;
+		std::string currentHeader;
+		
+		std::string::const_iterator it = req.begin();
+		while(it!=req.end()) {
+			// Parsing method
+			if(_state==ParsingMethod) {
+				std::string::const_iterator end = std::find(it, req.end(), ' ');
+				std::string method(it,end);
+				_method = MethodFromString(method);
+				_state = ParsingFile;
+				it = end+1;
+			}
+			else if(_state==ParsingFile) {
+				std::string::const_iterator end = std::find(it, req.end(), ' ');
+				std::string::const_iterator endURI = std::find(it, req.end(), '?');
+				if(endURI!=req.end() && endURI<end) {
+					// parameters!
+					_file = URLDecode(it,endURI);
+					_queryString = URLDecode(endURI+1, end);
+					std::string::const_iterator parameterBegin = endURI+1;
 					
-					std::string parameterName(parameterBegin, endName);
-					std::string::const_iterator endValue = std::find(endName, end, '&');
-					if(endValue<=end) {
-						_parameters[parameterName] = URLDecode(endName+1, endValue);
-						parameterBegin = endValue+1;
-					}
-					else {
-						_parameters[parameterName] = URLDecode(endName+1, end);
-						break;
+					while(parameterBegin <= end) {
+						std::string::const_iterator endName = std::find(parameterBegin, end, '=');
+						if(endName==end) break;
+						
+						std::string parameterName(parameterBegin, endName);
+						std::string::const_iterator endValue = std::find(endName, end, '&');
+						if(endValue<=end) {
+							_parameters[parameterName] = URLDecode(endName+1, endValue);
+							parameterBegin = endValue+1;
+						}
+						else {
+							_parameters[parameterName] = URLDecode(endName+1, end);
+							break;
+						}
 					}
 				}
+				else {
+					_file = URLDecode(it,end);
+				}
+				it = end+1;
+				_state = ParsingProtocol;
 			}
-			else {
-				_file = URLDecode(it,end);
-			}
-			it = end+1;
-			_state = ParsingProtocol;
-		}
-		else if(_state==ParsingProtocol) {
-			std::string::const_iterator end = std::find(it, req.end(), '\n');
-			it = end+1;
-			_state = ParsingHeaderName;
-		}
-		else if(_state==ParsingHeaderName) {
-			std::string::const_iterator endOfValue = std::find(it, req.end(),  ':');
-			std::string::const_iterator endOfHeader = std::find(it, req.end(), '\n');
-			
-			if(endOfValue==req.end() || endOfValue > endOfHeader || endOfHeader==req.end()) {
-				_state = ParsingEnd;
-			}
-			currentHeader = std::string(it,endOfValue);
-			it = endOfValue;
-			_state = ParsingHeaderValue;
-		}
-		else if(_state==ParsingHeaderValue) {
-			std::string::const_iterator endOfHeader = std::find(it, req.end(), '\n');
-			if(endOfHeader==req.end()) {
-				_state = ParsingEnd;
-			}
-			else {
-				std::string headerValue(it+2,endOfHeader);
-				_headers[currentHeader] = Wcs(headerValue);
+			else if(_state==ParsingProtocol) {
+				std::string::const_iterator end = std::find(it, req.end(), '\n');
+				it = end+1;
 				_state = ParsingHeaderName;
 			}
-			it = endOfHeader+1;
+			else if(_state==ParsingHeaderName) {
+				std::string::const_iterator endOfValue = std::find(it, req.end(),  ':');
+				std::string::const_iterator endOfHeader = std::find(it, req.end(), '\n');
+				
+				if(endOfValue==req.end() || endOfValue > endOfHeader || endOfHeader==req.end()) {
+					_state = ParsingEnd;
+				}
+				currentHeader = std::string(it,endOfValue);
+				it = endOfValue;
+				_state = ParsingHeaderValue;
+			}
+			else if(_state==ParsingHeaderValue) {
+				std::string::const_iterator endOfHeader = std::find(it, req.end(), '\n');
+				if(endOfHeader==req.end()) {
+					_state = ParsingEnd;
+				}
+				else if((it+2)==endOfHeader) {
+					_state = ParsingAdditionalData;
+				}
+				else {
+					std::string headerValue(it+2,endOfHeader-1);
+					_headers[currentHeader] = Wcs(headerValue);
+					_state = ParsingHeaderName;
+				}
+				it = endOfHeader+1;
+			}
+			else if(_state==ParsingAdditionalData) {
+				_additionalData = std::string(it+2, req.end());
+				_state = ParsingEnd;
+			}
 		}
+	}
+	catch(...) {
+		Log::Write(L"TJNP/HTTPRequest", L"Error when parsing HTTP request");
 	}
 }
 
 HTTPRequest::~HTTPRequest() {
+}
+
+const std::string& HTTPRequest::GetAdditionalRequestData() const {
+	return _additionalData;
 }
 
 bool HTTPRequest::HasHeader(const std::string& headerName) const {

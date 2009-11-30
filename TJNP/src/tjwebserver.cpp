@@ -18,7 +18,7 @@ using namespace tj::shared;
 	#include <sys/sendfile.h>
 #endif
 
-const char* WebServerResponseThread::KDAVAllowedHeaders = "OPTIONS,GET,PROPFIND";
+const char* WebServerResponseThread::KDAVAllowedHeaders = "GET, HEAD, POST, OPTIONS, PROPFIND, LOCK, UNLOCK";
 const char* WebServerResponseThread::KDAVVersion = "1";
 const char* WebServerResponseThread::KServerName = "TJNP";
 
@@ -40,7 +40,7 @@ void WebServerResponseThread::SendError(int code, const std::wstring& desc, cons
 	std::ostringstream reply;
 	reply << "HTTP/1.1 " << code << " Not Found\r\nContent-type: text/html\r\n\r\n<b>" << Mbs(desc) << "</b>";
 	if(extraInfo.length()>0) {
-		reply << ":" << Mbs(extraInfo);
+		reply << ":" << Mbs(Util::HTMLEntities(std::wstring(extraInfo)));
 	}
 
 	std::string replyText = reply.str();
@@ -79,7 +79,8 @@ void WebServerResponseThread::SendMultiStatusReply(TiXmlDocument& reply) {
 
 class PropFindItemWalker: public WebItemWalker {
 	public:
-		PropFindItemWalker(TiXmlElement* multistatus): _elm(multistatus) {
+		// host is in the form http://somehost:1234 
+		PropFindItemWalker(TiXmlElement* multistatus, const std::string& host): _elm(multistatus), _host(host) {
 			assert(multistatus!=0);
 		}
 
@@ -87,8 +88,16 @@ class PropFindItemWalker: public WebItemWalker {
 		}
 
 		virtual void Add(const tj::shared::String& prefix, ref<WebItem> wi, int level) {
+			String myPrefix = prefix;
+			if(prefix.at(0)==L'/') {
+				myPrefix = prefix.substr(1);
+			}
+			if((*myPrefix.rbegin())==L'/') {
+				myPrefix = myPrefix.substr(0,myPrefix.length()-1);
+			}
+
 			TiXmlElement response("response");
-			SaveAttribute(&response, "href", Mbs(prefix));
+			SaveAttribute(&response, "href", _host+"/"+Mbs(myPrefix));
 		
 			TiXmlElement propstat("propstat");
 			SaveAttribute(&propstat, "status", std::wstring(L"HTTP/1.1 200 OK"));
@@ -101,6 +110,10 @@ class PropFindItemWalker: public WebItemWalker {
 			}
 			SaveAttribute(&prop, "getcontenttype", wi->GetContentType());
 			SaveAttribute(&prop, "getetag", wi->GetETag());
+
+			// TODO: create WebItem::GetModifiedDate and support it
+			// The date format is "Mon, 04 Apr 2005 23:45:56 GMT".
+			SaveAttribute(&prop, "getlastmodified", std::wstring(L""));
 
 			TiXmlElement resourceType("resourcetype");
 			if(wi->IsCollection()) {
@@ -117,16 +130,18 @@ class PropFindItemWalker: public WebItemWalker {
 			response.InsertEndChild(propstat);
 			_elm->InsertEndChild(response);
 
-			wi->Walk(ref<WebItemWalker>(this), prefix, level);
+			wi->Walk(ref<WebItemWalker>(this), myPrefix, level);
 		}
 
 	protected:
 		TiXmlElement* _elm;
+		std::string _host;
 };
 
 void WebServerResponseThread::ServePropFindRequestWithResolver(ref<HTTPRequest> hrp, ref<WebItem> resolver) {
 	if(resolver) {
-		if(resolver->IsEditable()) {
+		Flags<WebItem::Permission> perms = resolver->GetPermissions();
+		if(perms.IsSet(WebItem::PermissionPropertyRead)) {
 			int depth = -1;
 			if(hrp->HasHeader("Depth")) {
 				std::wstring depthString = hrp->GetHeader("Depth", L"1");
@@ -142,7 +157,8 @@ void WebServerResponseThread::ServePropFindRequestWithResolver(ref<HTTPRequest> 
 			TiXmlElement multiStatus("multistatus");
 			SaveAttributeSmall(&multiStatus, "xmlns", std::wstring(L"DAV:"));
 			
-			ref<PropFindItemWalker> pfi = GC::Hold(new PropFindItemWalker(&multiStatus));
+			std::string host = "http://" + Mbs(hrp->GetHeader("Host", L"localhost"));
+			ref<PropFindItemWalker> pfi = GC::Hold(new PropFindItemWalker(&multiStatus, host));
 			pfi->Add(hrp->GetPath(), resolver, depth);
 
 			doc.InsertEndChild(multiStatus);
@@ -160,16 +176,17 @@ void WebServerResponseThread::ServePropFindRequestWithResolver(ref<HTTPRequest> 
 void WebServerResponseThread::ServeOptionsRequestWithResolver(ref<HTTPRequest> hrp, ref<WebItem> resolver) {
 	if(resolver) {
 		std::ostringstream headers;
-		headers << "HTTP/1.0 200 OK\r\n";
+		headers << "HTTP/1.1 200 OK\r\n";
 		headers << "Connection: close\r\n";
 		headers << "Server: " << KServerName << "\r\n";
 
-		if(resolver->IsEditable()) {
+		Flags<WebItem::Permission> perms = resolver->GetPermissions();
+		if(perms.IsSet(WebItem::PermissionPropertyRead)) {
 			headers << "DAV: " << KDAVVersion << "\r\n";
 			headers << "Allow: " << KDAVAllowedHeaders << "\r\n";
 		}
 		else {
-			headers << "Allow: OPTIONS,GET\r\n";
+			headers << "Allow: OPTIONS, GET\r\n";
 		}
 		headers << "\r\n";
 
@@ -190,6 +207,12 @@ void WebServerResponseThread::ServeGetRequestWithResolver(ref<HTTPRequest> hrp, 
 	char* resolvedData = 0;
 	unsigned int resolvedDataLength = 0;
 	bool sendData = false;
+
+	Flags<WebItem::Permission> perms = resolver->GetPermissions();
+	if(!perms.IsSet(WebItem::PermissionGet)) {
+		SendError(403, L"Permission denied", hrp->GetPath());
+		return;
+	}
 
 	Resolution res = resolver->Get(hrp, resolverError, &resolvedData, resolvedDataLength);
 	if(res==ResolutionNone) {
@@ -228,7 +251,7 @@ void WebServerResponseThread::ServeGetRequestWithResolver(ref<HTTPRequest> hrp, 
 		headers << "Content-length: " << int(contentLength) << "\r\n";
 	}
 
-	if(resolver->IsEditable()) {
+	if(perms.IsSet(WebItem::PermissionPropertyRead)) {
 		headers << "DAV: " << KDAVVersion << "\r\n";
 		headers << "Allow: " << KDAVAllowedHeaders << "\r\n";
 	}
@@ -344,8 +367,16 @@ void WebServerResponseThread::ServeRequestWithResolver(ref<HTTPRequest> hrp, ref
 				ServePropFindRequestWithResolver(hrp,resolver);
 				break;
 
+			// Fake lock implementation
+			case HTTPRequest::MethodLock:
+				SendError(412, L"Precondition Failed", Stringify(hrp->GetPath()));
+				break;
+
+			case HTTPRequest::MethodUnlock:
+				SendError(204, L"No content", Stringify(hrp->GetPath()));
+
 			default:
-				SendError(501, L"Method not implemented", Stringify(hrp->GetMethod()));
+				SendError(403, L"Method not implemented", Stringify(hrp->GetMethod()));
 		}
 	}
 	else {
@@ -430,8 +461,23 @@ void WebServerResponseThread::Run() {
 		ServeRequest(hrp);
 	}
 
+	#ifdef TJ_OS_POSIX
+		shutdown(_client, SHUT_WR);
+	#endif
+
 	#ifdef TJ_OS_WIN
-		shutdown(_client, SD_BOTH);
+		shutdown(_client, SD_SEND);
+	#endif
+
+	while(true) {
+		int r = recv(_client, buffer, 1023, 0);
+		if(r<=0) {
+			// Socket error or graceful close
+			break;
+		}
+	}
+
+	#ifdef TJ_OS_WIN
 		closesocket(_client);
 	#endif
 	

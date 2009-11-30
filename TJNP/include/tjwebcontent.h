@@ -33,6 +33,15 @@ namespace tj {
 
 		class NP_EXPORTED WebItem: public virtual tj::shared::Object {
 			public:
+				enum Permission {
+					PermissionNone = 0,
+					PermissionGet = 1,
+					PermissionPropertyRead = 2,
+					PermissionDelete = 4,
+					PermissionPut = 8,
+					PermissionPropertyWrite = 16,
+				};
+
 				virtual ~WebItem();
 				virtual void Touch() = 0;
 				virtual tj::shared::String GetETag() const = 0;
@@ -44,7 +53,7 @@ namespace tj {
 				virtual void Walk(tj::shared::strong<WebItemWalker> wiw, const tj::shared::String& prefix, int level = -1) = 0;
 				virtual tj::shared::ref<WebItem> Resolve(const tj::shared::String& file) = 0;
 				virtual Resolution Get(tj::shared::ref<WebRequest> frq, tj::shared::String& error, char** data, unsigned int& dataLength) = 0;
-				virtual bool IsEditable() const = 0;
+				virtual tj::shared::Flags<Permission> GetPermissions() const = 0;
 		};
 
 		class NP_EXPORTED WebItemResource: public virtual WebItem {
@@ -57,7 +66,7 @@ namespace tj {
 				virtual tj::shared::String GetDisplayName() const;
 				virtual tj::shared::String GetName() const;
 				virtual tj::shared::String GetContentType() const;
-				virtual bool IsEditable() const;
+				virtual tj::shared::Flags<Permission> GetPermissions() const;
 				virtual unsigned int GetContentLength() const;
 				virtual bool IsCollection() const;
 				virtual tj::shared::ref<WebItem> Resolve(const tj::shared::String& file);
@@ -83,7 +92,7 @@ namespace tj {
 				virtual bool IsCollection() const;
 				virtual void Walk(tj::shared::strong<WebItemWalker> wiw, const tj::shared::String& prefix, int level = -1);
 				virtual Resolution Get(tj::shared::ref<WebRequest> frq, tj::shared::String& error, char** data, unsigned int& dataLength);
-				virtual bool IsEditable() const;
+				virtual tj::shared::Flags<Permission> GetPermissions() const;
 		};
 
 		class NP_EXPORTED WebItemCollection: public WebItemResource {

@@ -20,6 +20,12 @@ namespace tj {
 					MethodPropFind = 4,
 					MethodHead = 5,
 					MethodDelete = 6,
+					MethodLock = 7,
+					MethodUnlock = 8,
+					MethodPropPatch = 9,
+					MethodPut = 10,
+					MethodMove = 12,
+					MethodCopy = 13,
 				};
 				
 				HTTPRequest(const std::string& req);
@@ -30,10 +36,11 @@ namespace tj {
 				virtual bool HasParameter(const std::string& paramName) const;
 				virtual const tj::shared::String& GetPath() const;
 				virtual void SetPath(const tj::shared::String& p);
-				Method GetMethod() const;
-				static char GetHexChar(char a);
-				const tj::shared::String& GetQueryString() const;
+				virtual Method GetMethod() const;
+				virtual const tj::shared::String& GetQueryString() const;
+				virtual const std::string& GetAdditionalRequestData() const;
 
+				static char GetHexChar(char a);
 				static tj::shared::String URLDecode(std::string::const_iterator it, std::string::const_iterator end);
 				static std::string URLEncode(const tj::shared::String& rid);
 				static Method MethodFromString(const std::string& methodString);
@@ -48,6 +55,7 @@ namespace tj {
 					ParsingProtocol,
 					ParsingHeaderName,
 					ParsingHeaderValue,
+					ParsingAdditionalData,
 					ParsingEnd,
 				};
 				
@@ -55,6 +63,7 @@ namespace tj {
 				ParserState _state;
 				tj::shared::String _file;
 				tj::shared::String _queryString;
+				std::string _additionalData;
 		};
 		
 		class NP_EXPORTED Download: public virtual tj::np::SocketListenerThread {

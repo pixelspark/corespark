@@ -152,6 +152,7 @@ namespace tj {
 				static wchar_t* CopyString(const wchar_t* str);
 				static wchar_t* IntToWide(int x);
 				static String& StringToLower(String& r);
+				static String& HTMLEntities(String& str);
 				static String GetSizeString(Bytes bytes);
 				static String IPToString(const in_addr& ip);
 				static String GetApplicationDirectory();

@@ -62,8 +62,8 @@ ref<WebItem> WebItemResource::Resolve(const String &file) {
 	return null;
 }
 
-bool WebItemResource::IsEditable() const {
-	return false;
+Flags<WebItem::Permission> WebItemResource::GetPermissions() const {
+	return Flags<WebItem::Permission>(WebItem::PermissionGet);
 }
 
 /** WebItemCollection **/
@@ -159,8 +159,8 @@ bool WebItemResolver::IsCollection() const {
 void WebItemResolver::Walk(tj::shared::strong<WebItemWalker> wiw, const tj::shared::String& prefix, int level) {
 }
 
-bool WebItemResolver::IsEditable() const {
-	return false;
+Flags<WebItem::Permission> WebItemResolver::GetPermissions() const {
+	return Flags<WebItem::Permission>(WebItem::PermissionGet);
 }
 
 Resolution WebItemResolver::Get(tj::shared::ref<WebRequest> frq, tj::shared::String &error, char **data, unsigned int &dataLength) {

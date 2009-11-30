@@ -49,6 +49,32 @@ ref<Scriptable> ScriptAny::Execute(Command c, ref<ParameterList> p) {
 		std::transform(val.begin(), val.end(), val.begin(), tolower);
 		return GC::Hold(new ScriptString(val));
 	}
+	else if(c==L"charAt") {
+		static const Parameter<int> PAt(L"index", 0);
+		int index = PAt.Require(p,0);
+		String value = Unbox();
+		if(index<0) {
+			index = value.length()-index;
+		}
+
+		if(index>=int(value.length())) {
+			return ScriptConstants::Null;
+		}
+		
+		std::wostringstream wos;
+		wos << value.at(index);
+		return GC::Hold(new ScriptString(wos.str()));
+	}
+	else if(c==L"replaceAll") {
+		static const Parameter<String> PFragment(L"fragment", 0);
+		static const Parameter<String> PWith(L"with", 1);
+
+		String fragment = PFragment.Require(p, L"");
+		String with = PWith.Require(p, L"");
+		String value = Unbox();
+		ReplaceAll<String>(value, fragment, with);
+		return GC::Hold(new ScriptString(value));
+	}
 	else if(c==L"explode") {
 		static const Parameter<std::wstring> PSeparator(L"separator", 0);
 		std::wstring separator = PSeparator.Require(p, L"");

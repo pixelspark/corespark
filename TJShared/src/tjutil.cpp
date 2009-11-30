@@ -172,6 +172,13 @@ wchar_t* Util::CopyString(const wchar_t* str) {
 	#endif
 }
 
+String& Util::HTMLEntities(String& text) {
+	ReplaceAll<String>(text, L"&", L"&amp;");
+	ReplaceAll<String>(text, L"<", L"&lt;");
+	ReplaceAll<String>(text, L">", L"&gt;");
+	return text;
+}
+
 wchar_t* Util::IntToWide(int x) {
 	#ifdef TJ_OS_WIN
 		wchar_t* str = new wchar_t[33];
