@@ -49,7 +49,9 @@ void Download::Run() {
 	
 	// Compose a nice request
 	std::ostringstream request;
-	request << "GET " << HTTPRequest::URLEncode(_path) << " HTTP/1.0\r\n\r\n";
+	request << "GET " << HTTPRequest::URLEncode(_path) << " HTTP/1.0\r\n";
+	request << "User-agent: TJNP\r\n";
+	request << "\r\n";
 	_socket->Send(request.str());
 	_state = DownloadStateReceivingHeaders;
 	_downloadStateChanged.Signal();
@@ -152,6 +154,9 @@ HTTPRequest::Method HTTPRequest::MethodFromString(const std::string& method) {
 	}
 	else if(method=="COPY") {
 		return MethodCopy;
+	}
+	else if(method=="MKCOL") {
+		return MethodMakeCollection;
 	}
 
 	return MethodNone;

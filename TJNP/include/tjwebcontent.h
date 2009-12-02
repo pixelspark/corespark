@@ -54,14 +54,21 @@ namespace tj {
 				virtual tj::shared::ref<WebItem> Resolve(const tj::shared::String& file) = 0;
 				virtual Resolution Get(tj::shared::ref<WebRequest> frq, tj::shared::String& error, char** data, unsigned int& dataLength) = 0;
 				virtual tj::shared::Flags<Permission> GetPermissions() const = 0;
+				virtual tj::shared::ref<WebItem> CreateCollection(const tj::shared::String& resource);
+				virtual bool Delete(const tj::shared::String& resource);
+			
+			protected:
+				tj::shared::CriticalSection _lock;
 		};
 
 		class NP_EXPORTED WebItemResource: public virtual WebItem {
 			public:
-				WebItemResource(const tj::shared::String& fn, const tj::shared::String& dn, const tj::shared::String& contentType, unsigned int length);
+			WebItemResource(const tj::shared::String& fn, const tj::shared::String& dn, const tj::shared::String& contentType, unsigned int length);
 				WebItemResource(const tj::shared::String& contentType);
+				
 				virtual ~WebItemResource();
 				virtual void Touch();
+				virtual void SetPermissions(const tj::shared::Flags<WebItem::Permission>& perms);
 				virtual tj::shared::String GetETag() const;
 				virtual tj::shared::String GetDisplayName() const;
 				virtual tj::shared::String GetName() const;
@@ -73,6 +80,7 @@ namespace tj {
 				virtual void Walk(tj::shared::strong<WebItemWalker> wiw, const tj::shared::String& prefix, int level = -1);
 
 			protected:
+				tj::shared::Flags<WebItem::Permission> _perms;
 				tj::shared::String _fn;
 				tj::shared::String _dn;
 				tj::shared::String _contentType;
@@ -104,7 +112,12 @@ namespace tj {
 				virtual void Add(tj::shared::ref<WebItem> item);
 				virtual tj::shared::ref<WebItem> Resolve(const tj::shared::String& file);
 				virtual Resolution Get(tj::shared::ref<WebRequest> frq, tj::shared::String& error, char** data, unsigned int& dataLength);
-
+				virtual tj::shared::ref<WebItem> CreateCollection(const tj::shared::String& resource);
+				virtual bool Delete(const tj::shared::String& resource);
+				
+			protected:
+				virtual tj::shared::ref<WebItem> GetNextByPath(const tj::shared::String& file, tj::shared::String& restOfPath);
+			
 			protected:
 				std::deque< tj::shared::ref<WebItem> > _children;
 		};

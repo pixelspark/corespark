@@ -18,7 +18,6 @@ using namespace tj::shared;
 	#include <sys/sendfile.h>
 #endif
 
-const char* WebServerResponseThread::KDAVAllowedHeaders = "GET, HEAD, POST, OPTIONS, PROPFIND, LOCK, UNLOCK";
 const char* WebServerResponseThread::KDAVVersion = "1";
 const char* WebServerResponseThread::KServerName = "TJNP";
 
@@ -40,7 +39,9 @@ void WebServerResponseThread::SendError(int code, const std::wstring& desc, cons
 	std::ostringstream reply;
 	reply << "HTTP/1.1 " << code << " Not Found\r\nContent-type: text/html\r\n\r\n<b>" << Mbs(desc) << "</b>";
 	if(extraInfo.length()>0) {
-		reply << ":" << Mbs(Util::HTMLEntities(std::wstring(extraInfo)));
+		std::wstring extraInfoHTML = extraInfo;
+		Util::HTMLEntities(extraInfoHTML);
+		reply << ":" << Mbs(extraInfoHTML);
 	}
 
 	std::string replyText = reply.str();
@@ -173,6 +174,22 @@ void WebServerResponseThread::ServePropFindRequestWithResolver(ref<HTTPRequest> 
 	}
 }
 
+std::string WebServerResponseThread::CreateAllowHeaderFromPermissions(const Flags<WebItem::Permission>& perms) {
+	std::ostringstream headers;
+	headers << "Allow: ";
+	if(perms.IsSet(WebItem::PermissionGet)) {
+		headers << "GET, ";
+	}
+	if(perms.IsSet(WebItem::PermissionPropertyRead)) {
+		headers << "LOCK, UNLOCK, PROPFIND, ";
+	}
+	if(perms.IsSet(WebItem::PermissionPropertyWrite)) {
+		headers << "MKCOL, ";
+	}
+	headers << "OPTIONS";
+	return headers.str();
+}
+
 void WebServerResponseThread::ServeOptionsRequestWithResolver(ref<HTTPRequest> hrp, ref<WebItem> resolver) {
 	if(resolver) {
 		std::ostringstream headers;
@@ -183,11 +200,9 @@ void WebServerResponseThread::ServeOptionsRequestWithResolver(ref<HTTPRequest> h
 		Flags<WebItem::Permission> perms = resolver->GetPermissions();
 		if(perms.IsSet(WebItem::PermissionPropertyRead)) {
 			headers << "DAV: " << KDAVVersion << "\r\n";
-			headers << "Allow: " << KDAVAllowedHeaders << "\r\n";
 		}
-		else {
-			headers << "Allow: OPTIONS, GET\r\n";
-		}
+		headers << CreateAllowHeaderFromPermissions(perms) << "\r\n";
+		
 		headers << "\r\n";
 
 		std::string headerString = headers.str();
@@ -253,8 +268,8 @@ void WebServerResponseThread::ServeGetRequestWithResolver(ref<HTTPRequest> hrp, 
 
 	if(perms.IsSet(WebItem::PermissionPropertyRead)) {
 		headers << "DAV: " << KDAVVersion << "\r\n";
-		headers << "Allow: " << KDAVAllowedHeaders << "\r\n";
 	}
+	headers << CreateAllowHeaderFromPermissions(perms) << "\r\n";
 
 	// Just dump the file
 	if(sendData) {
@@ -385,6 +400,26 @@ void WebServerResponseThread::ServeRequestWithResolver(ref<HTTPRequest> hrp, ref
 	}
 }
 
+void WebServerResponseThread::ServeDeleteRequest(ref<HTTPRequest> hrp, ref<WebItem> item, const String& restOfPath) {
+	if(item->Delete(restOfPath)) {
+		SendError(204, L"Delete successful", hrp->GetPath());
+	}
+	else {
+		SendError(404, L"Delete not successful", hrp->GetPath());
+	}
+}
+
+void WebServerResponseThread::ServeMakeCollectionRequest(ref<HTTPRequest> hrp, ref<WebItem> item, const String& restOfPath) {
+	ref<WebItem> coll = item->CreateCollection(restOfPath);
+	if(coll) {
+		SendError(201, L"Collection created", hrp->GetPath());
+	}
+	else {
+		// TODO: be more specific; send 403 Forbidden if it is a permission problem
+		SendError(409, L"Conflict", hrp->GetPath());
+	}
+}
+
 void WebServerResponseThread::ServeRequest(ref<HTTPRequest> hrp) {
 	const std::wstring& requestFile = hrp->GetPath();
 
@@ -403,7 +438,20 @@ void WebServerResponseThread::ServeRequest(ref<HTTPRequest> hrp) {
 				// Use this resolver
 				resolver = it->second;
 				std::wstring restOfPath = requestFile.substr(resolverPath.length());
-				resolver = resolver->Resolve(restOfPath);
+				
+				if(resolver) {
+					// For all request that have a path that does not exist right now, don't resolve,
+					// and let the request handler fix the problem for us.
+					if(hrp->GetMethod()==HTTPRequest::MethodMakeCollection) {
+						ServeMakeCollectionRequest(hrp, resolver, restOfPath);
+					}
+					else if(hrp->GetMethod()==HTTPRequest::MethodDelete) {
+						ServeDeleteRequest(hrp, resolver, restOfPath);
+					}
+					else {
+						resolver = resolver->Resolve(restOfPath);
+					}
+				}
 				break;
 			}
 			++it;

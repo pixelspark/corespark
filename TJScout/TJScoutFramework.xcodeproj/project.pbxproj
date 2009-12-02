@@ -13,6 +13,11 @@
 		B45F58101066C53600FEDA6B /* tjscout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B45F58091066C53600FEDA6B /* tjscout.cpp */; };
 		B45F581D1066C6E500FEDA6B /* TJShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B45F581C1066C6E100FEDA6B /* TJShared.framework */; };
 		B491079A1070CB9F00279D29 /* tjservice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B49107991070CB9F00279D29 /* tjservice.cpp */; };
+		B4A9887810C661F0001CF473 /* include in Headers */ = {isa = PBXBuildFile; fileRef = B4CAA80110AD643300385A5F /* include */; settings = {ATTRIBUTES = (Public, ); }; };
+		B4A9887A10C661F7001CF473 /* tjdnssd.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B45F58071066C53600FEDA6B /* tjdnssd.cpp */; };
+		B4A9887B10C661F7001CF473 /* tjresolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B45F58081066C53600FEDA6B /* tjresolver.cpp */; };
+		B4A9887C10C661F7001CF473 /* tjscout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B45F58091066C53600FEDA6B /* tjscout.cpp */; };
+		B4A9887D10C661F7001CF473 /* tjservice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B49107991070CB9F00279D29 /* tjservice.cpp */; };
 		B4CAA80B10AD643300385A5F /* include in Resources */ = {isa = PBXBuildFile; fileRef = B4CAA80110AD643300385A5F /* include */; };
 		B4CAA80C10AD643700385A5F /* include in Headers */ = {isa = PBXBuildFile; fileRef = B4CAA80110AD643300385A5F /* include */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
@@ -32,6 +37,13 @@
 			remoteGlobalIDString = 8DC2EF4F0486A6940098B216;
 			remoteInfo = TJSharedFramework;
 		};
+		B4A9887610C661EF001CF473 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B45F58171066C6E100FEDA6B /* TJSharedFramework.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = B4A987C410C65F70001CF473;
+			remoteInfo = TJSharedMobile;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -43,6 +55,7 @@
 		B45F58091066C53600FEDA6B /* tjscout.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tjscout.cpp; sourceTree = "<group>"; };
 		B45F58171066C6E100FEDA6B /* TJSharedFramework.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TJSharedFramework.xcodeproj; path = ../TJShared/TJSharedFramework.xcodeproj; sourceTree = SOURCE_ROOT; };
 		B49107991070CB9F00279D29 /* tjservice.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tjservice.cpp; sourceTree = "<group>"; };
+		B4A9887110C661C3001CF473 /* libTJScoutMobile.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libTJScoutMobile.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		B4CAA80110AD643300385A5F /* include */ = {isa = PBXFileReference; lastKnownFileType = folder; path = include; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
@@ -55,6 +68,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		B4A9886F10C661C3001CF473 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -62,6 +82,7 @@
 			isa = PBXGroup;
 			children = (
 				8DC2EF5B0486A6940098B216 /* TJScout.framework */,
+				B4A9887110C661C3001CF473 /* libTJScoutMobile.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -126,6 +147,7 @@
 			isa = PBXGroup;
 			children = (
 				B45F581C1066C6E100FEDA6B /* TJShared.framework */,
+				B4A9887710C661EF001CF473 /* libTJSharedMobile.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -138,6 +160,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				B4CAA80C10AD643700385A5F /* include in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B4A9886D10C661C3001CF473 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B4A9887810C661F0001CF473 /* include in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -164,6 +194,23 @@
 			productReference = 8DC2EF5B0486A6940098B216 /* TJScout.framework */;
 			productType = "com.apple.product-type.framework";
 		};
+		B4A9887010C661C3001CF473 /* TJScoutMobile */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B4A9888810C66202001CF473 /* Build configuration list for PBXNativeTarget "TJScoutMobile" */;
+			buildPhases = (
+				B4A9886D10C661C3001CF473 /* Headers */,
+				B4A9886E10C661C3001CF473 /* Sources */,
+				B4A9886F10C661C3001CF473 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TJScoutMobile;
+			productName = TJScoutMobile;
+			productReference = B4A9887110C661C3001CF473 /* libTJScoutMobile.a */;
+			productType = "com.apple.product-type.library.static";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -184,6 +231,7 @@
 			projectRoot = "";
 			targets = (
 				8DC2EF4F0486A6940098B216 /* TJScoutFramework */,
+				B4A9887010C661C3001CF473 /* TJScoutMobile */,
 			);
 		};
 /* End PBXProject section */
@@ -194,6 +242,13 @@
 			fileType = wrapper.framework;
 			path = TJShared.framework;
 			remoteRef = B45F581B1066C6E100FEDA6B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		B4A9887710C661EF001CF473 /* libTJSharedMobile.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libTJSharedMobile.a;
+			remoteRef = B4A9887610C661EF001CF473 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -219,6 +274,17 @@
 				B45F580F1066C53600FEDA6B /* tjresolver.cpp in Sources */,
 				B45F58101066C53600FEDA6B /* tjscout.cpp in Sources */,
 				B491079A1070CB9F00279D29 /* tjservice.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B4A9886E10C661C3001CF473 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B4A9887A10C661F7001CF473 /* tjdnssd.cpp in Sources */,
+				B4A9887B10C661F7001CF473 /* tjresolver.cpp in Sources */,
+				B4A9887C10C661F7001CF473 /* tjscout.cpp in Sources */,
+				B4A9887D10C661F7001CF473 /* tjservice.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -323,6 +389,45 @@
 			};
 			name = Release;
 		};
+		B4A9887210C661C4001CF473 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				HEADER_SEARCH_PATHS = (
+					../Libraries,
+					../,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = TJScoutMobile;
+				SDKROOT = iphoneos3.1;
+				SYMROOT = ../build;
+			};
+			name = Debug;
+		};
+		B4A9887310C661C4001CF473 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				HEADER_SEARCH_PATHS = (
+					../Libraries,
+					../,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = TJScoutMobile;
+				SDKROOT = iphoneos3.1;
+				SYMROOT = ../build;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -340,6 +445,15 @@
 			buildConfigurations = (
 				1DEB91B208733DA50010E9CD /* Debug */,
 				1DEB91B308733DA50010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B4A9888810C66202001CF473 /* Build configuration list for PBXNativeTarget "TJScoutMobile" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B4A9887210C661C4001CF473 /* Debug */,
+				B4A9887310C661C4001CF473 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

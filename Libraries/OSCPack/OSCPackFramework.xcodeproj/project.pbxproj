@@ -9,6 +9,13 @@
 /* Begin PBXBuildFile section */
 		8DC2EF530486A6940098B216 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C1666FE841158C02AAC07 /* InfoPlist.strings */; };
 		8DC2EF570486A6940098B216 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */; };
+		B4A989B910C6CA09001CF473 /* NetworkingUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B4F0AEBB10B9E22F00351BAA /* NetworkingUtils.cpp */; };
+		B4A989BA10C6CA09001CF473 /* UdpSocket.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B4F0AEBC10B9E22F00351BAA /* UdpSocket.cpp */; };
+		B4A989BB10C6CA09001CF473 /* OscTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B4F0AEBF10B9E22F00351BAA /* OscTypes.cpp */; };
+		B4A989BC10C6CA09001CF473 /* OscReceivedElements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B4F0AEC110B9E22F00351BAA /* OscReceivedElements.cpp */; };
+		B4A989BD10C6CA09001CF473 /* OscPrintReceivedElements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B4F0AEC310B9E22F00351BAA /* OscPrintReceivedElements.cpp */; };
+		B4A989BE10C6CA09001CF473 /* OscOutboundPacketStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B4F0AEC610B9E22F00351BAA /* OscOutboundPacketStream.cpp */; };
+		B4A989BF10C6CA09001CF473 /* IpEndpointName.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B4F0AECC10B9E22F00351BAA /* IpEndpointName.cpp */; };
 		B4F0AECD10B9E22F00351BAA /* UdpSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = B4F0AEB810B9E22F00351BAA /* UdpSocket.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B4F0AECE10B9E22F00351BAA /* TimerListener.h in Headers */ = {isa = PBXBuildFile; fileRef = B4F0AEB910B9E22F00351BAA /* TimerListener.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B4F0AECF10B9E22F00351BAA /* NetworkingUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B4F0AEBB10B9E22F00351BAA /* NetworkingUtils.cpp */; };
@@ -39,6 +46,7 @@
 		32DBCF5E0370ADEE00C91783 /* OSCPackFramework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OSCPackFramework_Prefix.pch; sourceTree = "<group>"; };
 		8DC2EF5A0486A6940098B216 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8DC2EF5B0486A6940098B216 /* OSCPack.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = OSCPack.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B4A989AB10C6C9DA001CF473 /* libOSCPackMobile.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libOSCPackMobile.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		B4F0AEB810B9E22F00351BAA /* UdpSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UdpSocket.h; sourceTree = "<group>"; };
 		B4F0AEB910B9E22F00351BAA /* TimerListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TimerListener.h; sourceTree = "<group>"; };
 		B4F0AEBB10B9E22F00351BAA /* NetworkingUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NetworkingUtils.cpp; sourceTree = "<group>"; };
@@ -71,6 +79,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		B4A989A910C6C9DA001CF473 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -78,6 +93,7 @@
 			isa = PBXGroup;
 			children = (
 				8DC2EF5B0486A6940098B216 /* OSCPack.framework */,
+				B4A989AB10C6C9DA001CF473 /* libOSCPackMobile.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -188,6 +204,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		B4A989A710C6C9DA001CF473 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
@@ -210,6 +233,23 @@
 			productReference = 8DC2EF5B0486A6940098B216 /* OSCPack.framework */;
 			productType = "com.apple.product-type.framework";
 		};
+		B4A989AA10C6C9DA001CF473 /* OSCPackMobile */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B4A989CD10C6CA12001CF473 /* Build configuration list for PBXNativeTarget "OSCPackMobile" */;
+			buildPhases = (
+				B4A989A710C6C9DA001CF473 /* Headers */,
+				B4A989A810C6C9DA001CF473 /* Sources */,
+				B4A989A910C6C9DA001CF473 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = OSCPackMobile;
+			productName = OSCPackMobile;
+			productReference = B4A989AB10C6C9DA001CF473 /* libOSCPackMobile.a */;
+			productType = "com.apple.product-type.library.static";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -224,6 +264,7 @@
 			projectRoot = "";
 			targets = (
 				8DC2EF4F0486A6940098B216 /* OSCPack */,
+				B4A989AA10C6C9DA001CF473 /* OSCPackMobile */,
 			);
 		};
 /* End PBXProject section */
@@ -251,6 +292,20 @@
 				B4F0AED710B9E22F00351BAA /* OscPrintReceivedElements.cpp in Sources */,
 				B4F0AEDA10B9E22F00351BAA /* OscOutboundPacketStream.cpp in Sources */,
 				B4F0AEE010B9E22F00351BAA /* IpEndpointName.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B4A989A810C6C9DA001CF473 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B4A989B910C6CA09001CF473 /* NetworkingUtils.cpp in Sources */,
+				B4A989BA10C6CA09001CF473 /* UdpSocket.cpp in Sources */,
+				B4A989BB10C6CA09001CF473 /* OscTypes.cpp in Sources */,
+				B4A989BC10C6CA09001CF473 /* OscReceivedElements.cpp in Sources */,
+				B4A989BD10C6CA09001CF473 /* OscPrintReceivedElements.cpp in Sources */,
+				B4A989BE10C6CA09001CF473 /* OscOutboundPacketStream.cpp in Sources */,
+				B4A989BF10C6CA09001CF473 /* IpEndpointName.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -335,6 +390,35 @@
 			};
 			name = Release;
 		};
+		B4A989AF10C6C9DB001CF473 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				PREBINDING = NO;
+				PRODUCT_NAME = OSCPackMobile;
+				SDKROOT = iphoneos3.1;
+			};
+			name = Debug;
+		};
+		B4A989B010C6C9DB001CF473 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				PREBINDING = NO;
+				PRODUCT_NAME = OSCPackMobile;
+				SDKROOT = iphoneos3.1;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -352,6 +436,15 @@
 			buildConfigurations = (
 				1DEB91B208733DA50010E9CD /* Debug */,
 				1DEB91B308733DA50010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B4A989CD10C6CA12001CF473 /* Build configuration list for PBXNativeTarget "OSCPackMobile" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B4A989AF10C6C9DB001CF473 /* Debug */,
+				B4A989B010C6C9DB001CF473 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

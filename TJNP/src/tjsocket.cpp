@@ -92,10 +92,12 @@ Socket::Socket(AddressFamily af, TransportProtocol tp) {
 
 void Socket::Close() {
 	#ifdef TJ_OS_WIN
+		shutdown(_socket, SD_BOTH);
 		closesocket(_socket);
 	#endif
 
 	#ifdef TJ_OS_POSIX
+		shutdown(_socket, SHUT_RDWR);
 		close(_socket);
 	#endif
 

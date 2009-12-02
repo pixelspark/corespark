@@ -2,7 +2,7 @@
 {
 	0867D690FE84028FC02AAC07 /* Project object */ = {
 		activeBuildConfigurationName = Release;
-		activeTarget = 8DC2EF4F0486A6940098B216 /* OSCPack */;
+		activeTarget = B4A989AA10C6C9DA001CF473 /* OSCPackMobile */;
 		addToTargets = (
 			8DC2EF4F0486A6940098B216 /* OSCPack */,
 		);
@@ -52,12 +52,12 @@
 					PBXFileDataSource_Warnings_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 280617497;
-			PBXWorkspaceStateSaveDate = 280617497;
+			PBXPerProjectTemplateStateSaveDate = 281470307;
+			PBXWorkspaceStateSaveDate = 281470307;
 		};
 		perUserProjectItems = {
-			B4CAA9E410AD689800385A5F /* PlistBookmark */ = B4CAA9E410AD689800385A5F /* PlistBookmark */;
-			B4F0AF2310B9E46B00351BAA /* PlistBookmark */ = B4F0AF2310B9E46B00351BAA /* PlistBookmark */;
+			B4A989C610C6CA12001CF473 /* PlistBookmark */ = B4A989C610C6CA12001CF473 /* PlistBookmark */;
+			B4A98AF710C6E87E001CF473 /* PlistBookmark */ = B4A98AF710C6E87E001CF473 /* PlistBookmark */;
 		};
 		sourceControlManager = B486E97D10662EB70043CE5D /* Source Control */;
 		userBuildSettings = {
@@ -80,7 +80,10 @@
 		isa = PBXCodeSenseManager;
 		indexTemplatePath = "";
 	};
-	B4CAA9E410AD689800385A5F /* PlistBookmark */ = {
+	B4A989AA10C6C9DA001CF473 /* OSCPackMobile */ = {
+		activeExec = 0;
+	};
+	B4A989C610C6CA12001CF473 /* PlistBookmark */ = {
 		isa = PlistBookmark;
 		fRef = 8DC2EF5A0486A6940098B216 /* Info.plist */;
 		fallbackIsa = PBXBookmark;
@@ -90,7 +93,33 @@
 		);
 		name = /Users/tommyvandervorst/Documents/Projecten/tj/Libraries/OSCPack/Info.plist;
 		rLen = 0;
-		rLoc = 9223372036854775808;
+		rLoc = 9223372036854775807;
+	};
+	B4A98AF710C6E87E001CF473 /* PlistBookmark */ = {
+		isa = PlistBookmark;
+		fRef = 8DC2EF5A0486A6940098B216 /* Info.plist */;
+		fallbackIsa = PBXBookmark;
+		isK = 0;
+		kPath = (
+			CFBundleInfoDictionaryVersion,
+		);
+		name = /Users/tommyvandervorst/Documents/Projecten/tj/Libraries/OSCPack/Info.plist;
+		rLen = 3;
+		rLoc = 0;
+	};
+	B4F0AEB810B9E22F00351BAA /* UdpSocket.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1012, 1950}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRange = "{0, 1533}";
+		};
+	};
+	B4F0AEBF10B9E22F00351BAA /* OscTypes.cpp */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1012, 507}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRange = "{0, 1474}";
+		};
 	};
 	B4F0AEC110B9E22F00351BAA /* OscReceivedElements.cpp */ = {
 		uiCtxt = {
@@ -105,17 +134,5 @@
 			sepNavSelRange = "{0, 0}";
 			sepNavVisRange = "{0, 1530}";
 		};
-	};
-	B4F0AF2310B9E46B00351BAA /* PlistBookmark */ = {
-		isa = PlistBookmark;
-		fRef = 8DC2EF5A0486A6940098B216 /* Info.plist */;
-		fallbackIsa = PBXBookmark;
-		isK = 0;
-		kPath = (
-			CFBundleInfoDictionaryVersion,
-		);
-		name = /Users/tommyvandervorst/Documents/Projecten/tj/Libraries/OSCPack/Info.plist;
-		rLen = 0;
-		rLoc = 0;
 	};
 }

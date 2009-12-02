@@ -26,6 +26,7 @@ namespace tj {
 					MethodPut = 10,
 					MethodMove = 12,
 					MethodCopy = 13,
+					MethodMakeCollection = 14,
 				};
 				
 				HTTPRequest(const std::string& req);
