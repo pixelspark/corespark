@@ -98,16 +98,47 @@ std::wstring NetworkAddress::ToString() const {
 		return L"";
 	}
 	else if(_family==AddressFamilyIPv6) {
-		char buffer[255];
-		memset(buffer, 0, sizeof(char)*255);
-		std::string friendlyAddress = inet_ntop(AF_INET6, (void*)&(_address.sin6_addr), buffer, 255);
-		return Wcs(friendlyAddress)+L'%'+StringifyHex(_address.sin6_scope_id);
+		#ifdef TJ_OS_POSIX
+			char buffer[255];
+			memset(buffer, 0, sizeof(char)*255);
+			std::string friendlyAddress = inet_ntop(AF_INET6, (void*)&(_address.sin6_addr), buffer, 255);
+			return Wcs(friendlyAddress)+L'%'+StringifyHex(_address.sin6_scope_id);
+		#endif
+
+		#ifdef TJ_OS_WIN
+			wchar_t buffer[255];
+			memset(buffer, 0, sizeof(wchar_t)*255);
+			DWORD bufferSize = 255;
+			int r = WSAAddressToString(const_cast<LPSOCKADDR>((const SOCKADDR*)&(_address)), sizeof(sockaddr_in6), NULL, buffer, &bufferSize);
+			if(r==0) {
+				return std::wstring(buffer);
+			}
+			else {
+				//Log::Write(L"TJNP/NetworkAddress", L"Failed to stringify IPv6 address; err="+Stringify(GetLastError()));
+			}
+		#endif
 	}
 	else if(_family==AddressFamilyIPv4) {
-		char buffer[255];
-		memset(buffer, 0, sizeof(char)*255);
-		std::string friendlyAddress = inet_ntop(AF_INET, (void*)&(_v4address.sin_addr), buffer, 255);
-		return Wcs(friendlyAddress);
+		#ifdef TJ_OS_POSIX
+			char buffer[255];
+			memset(buffer, 0, sizeof(char)*255);
+			std::string friendlyAddress = inet_ntop(AF_INET, (void*)&(_v4address.sin_addr), buffer, 255);
+			return Wcs(friendlyAddress);
+		#endif
+
+		#ifdef TJ_OS_WIN
+			wchar_t buffer[255];
+			memset(buffer, 0, sizeof(wchar_t)*255);
+			DWORD bufferSize = 255;
+			int r = WSAAddressToString(const_cast<LPSOCKADDR>((const SOCKADDR*)&_v4address), sizeof(sockaddr_in), NULL, buffer, &bufferSize);
+			if(r==0) {
+				return std::wstring(buffer);
+			}
+			else {
+				//Log::Write(L"TJNP/NetworkAddress", L"Failed to stringify IPv4 address; err="+Stringify(GetLastError()));
+			}
+		#endif
+
 	}
 	return L"[???]";
 }

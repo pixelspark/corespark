@@ -19,8 +19,8 @@ namespace tj {
 		typedef char Minutes; /* 0..59 */
 		typedef char Hours; /* 0..23 */
 
-		typedef double AbsoluteDate;
-		typedef double AbsoluteDateInterval;
+		typedef long double AbsoluteDate;
+		typedef long double AbsoluteDateInterval;
 
 		class EXPORTED Date {
 			public:

@@ -376,12 +376,11 @@ ref<Pane> TabWnd::AddPane(ref<Pane> pane, bool select) {
 		pane->GetWindow()->Show(false);
 		_panes.push_back(TabPane(pane));
 		TabPane& tp = *(_panes.rbegin());
+		tp.Layout(ThemeManager::GetTheme());
 
-		if(IsShown()) {
-			tp._appearAnimation.Start(Time(200));
-			_tabAppearAnimation.Start(Time(210));
-			StartTimer(Time(10), 2);
-		}
+		/*tp._appearAnimation.Start(Time(200));
+		_tabAppearAnimation.Start(Time(210));
+		StartTimer(Time(10), 2);*/
 
 		Placement np;
 		np._type = Placement::Tab;

@@ -1,6 +1,7 @@
 #include "../include/tjtime.h"
 #include "../include/tjutil.h"
 #include "../include/tjlanguage.h"
+#include "../include/tjlog.h"
 #include <time.h>
 
 #ifdef TJ_OS_MAC
@@ -51,16 +52,16 @@
 using namespace tj::shared;
 
 /* Date */
-const double Date::KIntervalSince1970 = 978307200.0L;
-const double Date::KIntervalSince1904 = 3061152000.0L;
+const AbsoluteDateInterval Date::KIntervalSince1970 = 978307200.0L;
+const AbsoluteDateInterval Date::KIntervalSince1904 = 3061152000.0L;
 const DayOfMonth Date::KDaysInMonth[13] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 const int Date::KDaysBeforeMonth[14] = {0, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365};
 const int Date::KDaysAfterMonth[14] = {365, 334, 306, 275, 245, 214, 184, 153, 122, 92, 61, 31, 0, 0};
 
 #ifdef TJ_OS_WIN
 	AbsoluteDate AbsoluteDateFromFileTime(FILETIME* ft) {
-		AbsoluteDate ret = (AbsoluteDate)ft->dwHighDateTime * 429.49672960;
-		ret += (AbsoluteDateInterval)ft->dwLowDateTime / 10000000.0;
+		AbsoluteDate ret = ((AbsoluteDateInterval)ft->dwHighDateTime) * 429.49672960;
+		ret += ((AbsoluteDateInterval)ft->dwLowDateTime) / 10000000.0;
 		ret -= (11644473600.0 + Date::KIntervalSince1970);
 		/* seconds between 1601 and 1970, 1970 and 2001 */
 		return ret;
@@ -325,7 +326,23 @@ Timestamp::Timestamp(bool now) {
 }
 
 void Timestamp::Now() {
-	_time = Date::GetAbsoluteDate();
+	#ifdef TJ_OS_POSIX
+		_time = Date::GetAbsoluteDate();
+	#endif
+
+	#ifdef TJ_OS_WIN
+		LARGE_INTEGER perf;
+		LARGE_INTEGER freq;
+		if(!QueryPerformanceCounter(&perf)) {
+			Throw(L"Failed to query the performance counter", ExceptionTypeError);
+			_time = 0.0;
+		}
+		if(!QueryPerformanceFrequency(&freq)) {
+			Throw(L"Failed to query the performance counter", ExceptionTypeError);
+			_time = 0.0;
+		}
+		_time = (long double)perf.QuadPart / (long double)freq.QuadPart;
+	#endif
 }
 
 String Timestamp::ToString() const {

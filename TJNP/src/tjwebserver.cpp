@@ -606,19 +606,25 @@ void WebServerThread::Run() {
 	local4.sin_addr.s_addr = INADDR_ANY;
 	local4.sin_port = htons(_port);
 	
+	if(v4 && bind(_server4, (sockaddr*)&local4, sizeof(sockaddr_in))!=0) {
+		Log::Write(L"TJNP/WebServer", L"Could not bind IPv4 socket to port (port already taken?)!");
+		v4 = false;
+	}
+
+	// If the IPv4 server initialized correctly and chose a port (local4.sin_port==0), then try to find out
+	// on which port it is and register the same port for the IPv6 server.
+	socklen_t len = sizeof(sockaddr_in);
+	if(v4 && v6 && getsockname(_server4, (sockaddr*)&local4, &len)==0) {
+		local.sin6_port = local4.sin_port;
+	}
+
 	if(v6 && bind(_server6, (sockaddr*)&local, sizeof(sockaddr_in6))!=0) {
 		Log::Write(L"TJNP/WebServer", L"Could not bind IPv6 socket to port (port already taken?)!");
 		v6 = false;
 	}
 	
-	if(v4 && bind(_server4, (sockaddr*)&local4, sizeof(sockaddr_in))!=0) {
-		Log::Write(L"TJNP/WebServer", L"Could not bind IPv4 socket to port (port already taken?)!");
-		v4 = false;
-	}
-	
 	if(_port==WebServer::KPortDontCare) {
 		// Try to find out on which port we are anyway
-		socklen_t len = sizeof(sockaddr_in);
 		if(v4 && getsockname(_server4, (sockaddr*)&local4, &len)==0) {
 			_port = ntohs(local4.sin_port);
 			Log::Write(L"TNP/WebServer", L"IPv4 web server chose port number: "+Stringify(_port));
