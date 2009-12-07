@@ -2,6 +2,7 @@
 #include "../include/tjthread.h"
 #include "../include/tjutil.h"
 #include "../include/tjlog.h"
+#include "../include/tjfile.h"
 
 #ifdef TJ_OS_WIN
 	#include <shlwapi.h>
@@ -199,9 +200,12 @@ String SettingsStorage::GetSystemSettingsPath(const String& vendor, const String
 String SettingsStorage::GetSettingsPath(const String& vendor, const String& app, const String& file) {
 	std::wostringstream wos;
 	wchar_t sep = File::GetPathSeparator();
-	String lowVendor = Util::StringToLower(vendor);
-	String lowApp = Util::StringToLower(app);
-	String lowFile = Util::StringToLower(file);
+	String lowVendor = vendor;
+	Util::StringToLower(lowVendor);
+	String lowApp = app;
+	Util::StringToLower(lowApp);
+	String lowFile = file;
+	Util::StringToLower(lowFile);
 	
 	wos << Wcs(std::string(getenv("HOME"))) << sep << L'.' << lowVendor << sep << lowApp << sep << lowFile << L".xml";
 	return wos.str();
@@ -210,10 +214,14 @@ String SettingsStorage::GetSettingsPath(const String& vendor, const String& app,
 String SettingsStorage::GetSystemSettingsPath(const String& vendor, const String& app, const String& file) {
 	std::wostringstream wos;
 	wchar_t sep = File::GetPathSeparator();
-	String lowVendor = Util::StringToLower(vendor);
-	String lowApp = Util::StringToLower(app);
-	String lowFile = Util::StringToLower(file);
+	String lowVendor = vendor;
+	Util::StringToLower(lowVendor);
+	String lowApp = app;
+	Util::StringToLower(lowApp);
+	String lowFile = file;
+	Util::StringToLower(lowFile);
 	
 	wos << sep << L"etc" << sep << lowVendor << sep << lowApp << sep << lowFile << L".xml";
+	return wos.str();
 }
 #endif
