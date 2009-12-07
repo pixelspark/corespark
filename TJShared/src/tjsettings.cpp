@@ -172,22 +172,48 @@ String SettingsStorage::GetValue(const String &key) const {
 	Throw(L"SettingsStorage value "+key+L" does not exist", ExceptionTypeWarning);
 }
 
+#ifdef TJ_OS_WIN
 /* Creates the path to a user-specific settings file.
 - On Windows: %USERPROFILE%\Application Data\TJ\TJShow\file.xml
 - On Unices, this would probably be something like /home/%USER%/.tj/tjshow/file.xml */
 String SettingsStorage::GetSettingsPath(const String& vendor, const String& app, const String& file) {
-	#ifdef TJ_OS_WIN
-		std::string suffix = "\\" + Mbs(vendor) + "\\" + Mbs(app) + "\\";
-		char buffer[MAX_PATH+2];
-		SHGetSpecialFolderPathA(NULL, buffer, CSIDL_APPDATA, TRUE);
-		SHCreateDirectoryExA(NULL, std::string(std::string(buffer)+suffix).c_str(),NULL);
+	std::string suffix = "\\" + Mbs(vendor) + "\\" + Mbs(app) + "\\";
+	char buffer[MAX_PATH+2];
+	SHGetSpecialFolderPathA(NULL, buffer, CSIDL_APPDATA, TRUE);
+	SHCreateDirectoryExA(NULL, std::string(std::string(buffer)+suffix).c_str(),NULL);
 
-		return Wcs(std::string(buffer) + suffix + Mbs(file) + ".xml");
-	#endif
-
-			
-	#ifdef TJ_OS_MAC
-		return std::wstring(L"~/Library/") + vendor + L"/" + app + L"/" + file + L".xml";
-		#warning Is this implemented correctly for Mac?
-	#endif
+	return Wcs(std::string(buffer) + suffix + Mbs(file) + ".xml");
 }
+
+String SettingsStorage::GetSystemSettingsPath(const String& vendor, const String& app, const String& file) {
+	std::string suffix = "\\" + Mbs(vendor) + "\\" + Mbs(app) + "\\";
+	char buffer[MAX_PATH+2];
+	SHGetSpecialFolderPathA(NULL, buffer, CSIDL_COMMON_APPDATA, TRUE);
+	SHCreateDirectoryExA(NULL, std::string(std::string(buffer)+suffix).c_str(),NULL);
+	
+	return Wcs(std::string(buffer) + suffix + Mbs(file) + ".xml");
+}
+#endif
+
+#ifdef TJ_OS_LINUX
+String SettingsStorage::GetSettingsPath(const String& vendor, const String& app, const String& file) {
+	std::wostringstream wos;
+	wchar_t sep = File::GetPathSeparator();
+	String lowVendor = Util::StringToLower(vendor);
+	String lowApp = Util::StringToLower(app);
+	String lowFile = Util::StringToLower(file);
+	
+	wos << Wcs(std::string(getenv("HOME"))) << sep << L'.' << lowVendor << sep << lowApp << sep << lowFile << L".xml";
+	return wos.str();
+}
+
+String SettingsStorage::GetSystemSettingsPath(const String& vendor, const String& app, const String& file) {
+	std::wostringstream wos;
+	wchar_t sep = File::GetPathSeparator();
+	String lowVendor = Util::StringToLower(vendor);
+	String lowApp = Util::StringToLower(app);
+	String lowFile = Util::StringToLower(file);
+	
+	wos << sep << L"etc" << sep << lowVendor << sep << lowApp << sep << lowFile << L".xml";
+}
+#endif

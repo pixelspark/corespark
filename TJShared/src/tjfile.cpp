@@ -16,6 +16,7 @@
 	#include <sys/stat.h>
 	#include <stdio.h>
 	#include <stdint.h>
+	#include <errno.h>
 #endif
 
 #ifdef TJ_OS_MAC
@@ -24,7 +25,6 @@
 
 using namespace tj::shared;
 
-
 wchar_t File::GetPathSeparator() {
 	#ifdef TJ_OS_WIN
 		return L'\\';
@@ -32,6 +32,51 @@ wchar_t File::GetPathSeparator() {
 
 	#ifdef TJ_OS_POSIX
 		return L'/';
+	#endif
+}
+
+bool File::CreateDirectoryAtPath(const String& path, bool recursive) {
+	#ifdef TJ_OS_POSIX
+		std::string mbsPath = Mbs(path);
+		int r = mkdir(mbsPath.c_str(), 0777);
+	
+		if(path==L"/" || path==L"") {
+			return true;
+		}
+	
+		if(path==L"." || path==L"..") {
+			return false;
+		}
+	
+		if(r==0) {
+			return true;
+		}
+	
+		if(errno==EEXIST) {
+			return true;
+		}
+		
+		if(recursive) {
+			// Strip off last component of the path and try again
+			std::string::size_type lastSlash = mbsPath.find_last_of(L'/', path.length()-1);
+			if(lastSlash==std::string::npos) {
+				return false;
+			}
+			else {
+				std::string parentPath(mbsPath, 0, lastSlash);
+				if(CreateDirectoryAtPath(Wcs(parentPath), true)) {
+					return CreateDirectoryAtPath(path, false);
+				}
+				return false;
+			}
+		}
+		else {
+			return false;
+		}
+	#endif
+	
+	#ifdef TJ_OS_WIN
+		return SUCCEEDED(SHCreateDirectory(NULL, path.c_str(), NULL));
 	#endif
 }
 

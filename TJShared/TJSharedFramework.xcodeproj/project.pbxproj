@@ -22,6 +22,9 @@
 
 /* Begin PBXBuildFile section */
 		8DC2EF530486A6940098B216 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C1666FE841158C02AAC07 /* InfoPlist.strings */; };
+		B47510CB10CCED5B008A801F /* tjsettings.mm in Sources */ = {isa = PBXBuildFile; fileRef = B47510CA10CCED5B008A801F /* tjsettings.mm */; };
+		B47510CC10CCED5B008A801F /* tjsettings.mm in Sources */ = {isa = PBXBuildFile; fileRef = B47510CA10CCED5B008A801F /* tjsettings.mm */; };
+		B475114810CCEF73008A801F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B475114710CCEF73008A801F /* Foundation.framework */; };
 		B486E8C210662A170043CE5D /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B486E8C110662A170043CE5D /* CoreFoundation.framework */; };
 		B497DAD810AD5E2500EB9CB8 /* libstdc++.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B497DAD710AD5E2500EB9CB8 /* libstdc++.6.dylib */; };
 		B4A987CD10C65FA3001CF473 /* include in Headers */ = {isa = PBXBuildFile; fileRef = B4CAA76D10AD637B00385A5F /* include */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -99,6 +102,8 @@
 		089C1667FE841158C02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		8DC2EF5A0486A6940098B216 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8DC2EF5B0486A6940098B216 /* TJShared.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = TJShared.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B47510CA10CCED5B008A801F /* tjsettings.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = tjsettings.mm; path = src/tjsettings.mm; sourceTree = "<group>"; };
+		B475114710CCEF73008A801F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		B47A685A10BEA4590060D38F /* doxygen.config */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = doxygen.config; sourceTree = "<group>"; };
 		B486E8BD106629E00043CE5D /* TinyXMLFramework.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TinyXMLFramework.framework; path = ../Libraries/TinyXML/build/Release/TinyXMLFramework.framework; sourceTree = SOURCE_ROOT; };
 		B486E8C110662A170043CE5D /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
@@ -137,6 +142,7 @@
 				B4F6F29B1067DF3300B137C0 /* TinyXML.framework in Frameworks */,
 				B486E8C210662A170043CE5D /* CoreFoundation.framework in Frameworks */,
 				B497DAD810AD5E2500EB9CB8 /* libstdc++.6.dylib in Frameworks */,
+				B475114810CCEF73008A801F /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -171,6 +177,7 @@
 				0867D69AFE84028FC02AAC07 /* External Frameworks and Libraries */,
 				034768DFFF38A50411DB9C8B /* Products */,
 				B497DAD710AD5E2500EB9CB8 /* libstdc++.6.dylib */,
+				B475114710CCEF73008A801F /* Foundation.framework */,
 			);
 			name = TJSharedFramework;
 			sourceTree = "<group>";
@@ -228,6 +235,7 @@
 				B4CAA7B410AD63BE00385A5F /* tjsecurehash.cpp */,
 				B4CAA7B510AD63BE00385A5F /* tjserializable.cpp */,
 				B4CAA7B610AD63BE00385A5F /* tjsettings.cpp */,
+				B47510CA10CCED5B008A801F /* tjsettings.mm */,
 				B4CAA7B710AD63BE00385A5F /* tjtea.cpp */,
 				B4CAA7B810AD63BE00385A5F /* tjthread.cpp */,
 				B4CAA7B910AD63BE00385A5F /* tjtime.cpp */,
@@ -401,6 +409,7 @@
 				B4CAA7CF10AD63BE00385A5F /* tjutil.cpp in Sources */,
 				B4CAA7D010AD63BE00385A5F /* tjvector.cpp in Sources */,
 				B4CAA7D110AD63BE00385A5F /* tjzone.cpp in Sources */,
+				B47510CB10CCED5B008A801F /* tjsettings.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -428,6 +437,7 @@
 				B4A987E010C65FB9001CF473 /* tjutil.cpp in Sources */,
 				B4A987E110C65FB9001CF473 /* tjvector.cpp in Sources */,
 				B4A987E210C65FB9001CF473 /* tjzone.cpp in Sources */,
+				B47510CC10CCED5B008A801F /* tjsettings.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

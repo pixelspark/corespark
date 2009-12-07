@@ -41,6 +41,7 @@ namespace tj {
 
 				// Utility functions
 				static String GetSettingsPath(const String& vendor, const String& app, const String& file);
+				static String GetSystemSettingsPath(const String& vendor, const String& app, const String& file);
 
 			protected:
 				std::map< String, String > _data;
