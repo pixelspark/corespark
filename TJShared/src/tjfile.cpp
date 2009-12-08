@@ -76,7 +76,7 @@ bool File::CreateDirectoryAtPath(const String& path, bool recursive) {
 	#endif
 	
 	#ifdef TJ_OS_WIN
-		return SUCCEEDED(SHCreateDirectory(NULL, path.c_str(), NULL));
+		return SUCCEEDED(SHCreateDirectoryEx(NULL, path.c_str(), NULL));
 	#endif
 }
 
