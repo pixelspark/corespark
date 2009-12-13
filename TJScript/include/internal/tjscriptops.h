@@ -12,7 +12,7 @@ namespace tj {
 				/* Below are all opcodes. The comments give an indication of what
 				the ops do. Everything between [brackets] are stack values,
 				between <angle brackets> are read from the scriptlet code */
-				enum Codes {
+				enum Code {
 					OpNop = 0,
 					OpPushString,			// [..] => [ScriptString]
 					OpPushDouble,			// [..] => [ScriptDouble]

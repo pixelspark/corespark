@@ -28,7 +28,7 @@ namespace tj {
 				static bool DownloadToFile(const std::wstring& url, const std::wstring& localFile, const std::wstring& ua);
 
 			private:
-				bool CheckRequestStatusCode();
+				bool CheckRequestStatusDataReader();
 				bool _connected;
 				HINTERNET _internet;
 				HINTERNET _connection;

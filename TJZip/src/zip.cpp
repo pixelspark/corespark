@@ -1591,7 +1591,7 @@ int longest_match(TState &state,IPos cur_match)
 
   // The code is optimized for HASH_BITS >= 8 and MAX_MATCH-2 multiple of 16.
   // It is easy to get rid of this optimization if necessary.
-    Assert(state,HASH_BITS>=8 && MAX_MATCH==258,"Code too clever");
+    Assert(state,HASH_BITS>=8 && MAX_MATCH==258,"DataReader too clever");
 
 
 

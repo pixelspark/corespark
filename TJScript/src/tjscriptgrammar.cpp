@@ -228,11 +228,11 @@ namespace tj {
 			
 			// Writes an instruction to the code
 			struct ScriptInstruction {
-				inline ScriptInstruction(ScriptGrammar const* gram, Ops::Codes op);
+				inline ScriptInstruction(ScriptGrammar const* gram, Ops::Code op);
 				template<typename T> void operator()(T,T) const;
 				template<typename Q> void operator()(const Q& value) const;
 				
-				Ops::Codes _op;
+				Ops::Code _op;
 				mutable ref<ScriptletStack> _stack;
 			};
 			
@@ -599,7 +599,7 @@ namespace tj {
 				main->Add<int>(idx);
 			}
 			
-			ScriptInstruction::ScriptInstruction(ScriptGrammar const* gram, Ops::Codes op) {
+			ScriptInstruction::ScriptInstruction(ScriptGrammar const* gram, Ops::Code op) {
 				_stack = gram->_stack;
 				_op = op;
 			}

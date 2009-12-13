@@ -211,21 +211,21 @@ HTTPRequest::~HTTPRequest() {
 	WinHttpCloseHandle(_internet);
 }
 
-bool HTTPRequest::CheckRequestStatusCode() {
+bool HTTPRequest::CheckRequestStatusDataReader() {
 	// Check the response code
-	DWORD statusCode = 0;
-	DWORD statusCodeSize = sizeof(DWORD);
+	DWORD statusDataReader = 0;
+	DWORD statusDataReaderSize = sizeof(DWORD);
 
-	if(WinHttpQueryHeaders(_request, WINHTTP_QUERY_STATUS_CODE|WINHTTP_QUERY_FLAG_NUMBER, WINHTTP_HEADER_NAME_BY_INDEX, &statusCode, &statusCodeSize, WINHTTP_NO_HEADER_INDEX)==FALSE) {
+	if(WinHttpQueryHeaders(_request, WINHTTP_QUERY_STATUS_CODE|WINHTTP_QUERY_FLAG_NUMBER, WINHTTP_HEADER_NAME_BY_INDEX, &statusDataReader, &statusDataReaderSize, WINHTTP_NO_HEADER_INDEX)==FALSE) {
 		UpdaterLog::Write(L"Could not check status response code; assuming an error");
 		return false;
 	}
 	else {
 		std::wostringstream wos;
-		wos << L"Status code=" << statusCode;
+		wos << L"Status code=" << statusDataReader;
 		UpdaterLog::Write(wos.str());
 
-		if(statusCode!=HTTP_STATUS_OK) {
+		if(statusDataReader!=HTTP_STATUS_OK) {
 			UpdaterLog::Write(L"Status code is not OK; cancelling request");
 			return false;
 		}
@@ -240,7 +240,7 @@ bool HTTPRequest::Download(TiXmlDocument& doc) {
 		std::wstring headerString = headers.str();
 		if(WinHttpSendRequest(_request, headerString.c_str(), -1L, WINHTTP_NO_REQUEST_DATA, 0, WINHTTP_IGNORE_REQUEST_TOTAL_LENGTH, NULL)==TRUE) {
 			if(WinHttpReceiveResponse(_request, NULL)==TRUE) {
-				if(!CheckRequestStatusCode()) {
+				if(!CheckRequestStatusDataReader()) {
 					return false;
 				}
 
@@ -302,7 +302,7 @@ bool HTTPRequest::Download(const std::wstring& localFile) {
 			std::wstring headerString = headers.str();
 			if(WinHttpSendRequest(_request, headerString.c_str(), -1L, WINHTTP_NO_REQUEST_DATA, 0, WINHTTP_IGNORE_REQUEST_TOTAL_LENGTH, NULL)==TRUE) {
 				if(WinHttpReceiveResponse(_request, NULL)==TRUE) {
-					if(!CheckRequestStatusCode()) {
+					if(!CheckRequestStatusDataReader()) {
 						return false;
 					}
 

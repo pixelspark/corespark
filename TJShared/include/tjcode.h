@@ -8,12 +8,21 @@
 
 namespace tj {
 	namespace shared {
-		class EXPORTED Code: public virtual Object {
+		class EXPORTED Data: public virtual Object {
 			public:
-				Code(const char* code, unsigned int size);
-				virtual ~Code();
-				unsigned int GetSize();
-				const char* GetBuffer() const;
+				virtual ~Data();
+				virtual unsigned int GetSize() = 0;
+				virtual const char* GetBuffer() const = 0;
+				virtual char* TakeOverBuffer(bool clearMine = true) = 0;
+		};
+
+		class EXPORTED DataReader: public Data {
+			public:
+				DataReader(const char* code, unsigned int size);
+				virtual ~DataReader();
+				virtual unsigned int GetSize();
+				virtual const char* GetBuffer() const;
+				virtual char* TakeOverBuffer(bool clearMine);
 
 				template<typename T> T Get(unsigned int& position) {
 					unsigned int size = sizeof(T)/sizeof(char);
@@ -29,19 +38,19 @@ namespace tj {
 				unsigned int _size;
 		};
 
-		template<> EXPORTED String Code::Get(unsigned int& position);
-		template<> EXPORTED tj::shared::Vector Code::Get(unsigned int& position);
+		template<> EXPORTED String DataReader::Get(unsigned int& position);
+		template<> EXPORTED tj::shared::Vector DataReader::Get(unsigned int& position);
 
-		class EXPORTED CodeWriter: public virtual Object {
+		class EXPORTED DataWriter: public Data {
 			public:
-				CodeWriter(unsigned int initialSize=1024);
-				virtual ~CodeWriter();
+				DataWriter(unsigned int initialSize=1024);
+				virtual ~DataWriter();
+				virtual unsigned int GetSize();
 				unsigned int GetCapacity();
-				unsigned int GetSize();
 
-				template<typename T> CodeWriter& Add(const T& x) {
+				template<typename T> DataWriter& Add(const T& x) {
 					if(_buffer==0) {
-						Throw(L"CodeWriter written to after buffer has been taken over!", ExceptionTypeSevere);
+						Throw(L"DataWriter written to after buffer has been taken over!", ExceptionTypeSevere);
 					}
 
 					unsigned int size = sizeof(T)/sizeof(char);
@@ -55,7 +64,7 @@ namespace tj {
 
 				inline void Append(const char* buffer, unsigned int size) {
 					if(_buffer==0) {
-						Throw(L"CodeWriter appended to after buffer has been taken over!", ExceptionTypeSevere);
+						Throw(L"DataWriter appended to after buffer has been taken over!", ExceptionTypeSevere);
 					}
 
 					Grow(size*sizeof(char));
@@ -65,17 +74,8 @@ namespace tj {
 					_pos += size;
 				}
 
-				inline const char* GetBuffer() {
-					return _buffer;
-				}
-
-				inline char* TakeOverBuffer() {
-					char* buf = _buffer;
-					_buffer = 0;
-					_size = 0;
-					_pos = 0;
-					return buf;
-				}
+				virtual const char* GetBuffer() const;
+				virtual char* TakeOverBuffer(bool clearMine);
 
 				inline void Reset() {
 					_pos = 0;
@@ -91,7 +91,7 @@ namespace tj {
 				char* _buffer;
 		};
 
-		template<> EXPORTED CodeWriter& CodeWriter::Add(const String& x);
+		template<> EXPORTED DataWriter& DataWriter::Add(const String& x);
 	}
 }
 

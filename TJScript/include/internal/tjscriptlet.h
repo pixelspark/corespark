@@ -49,7 +49,7 @@ namespace tj {
 					return *this;
 				}
 
-				inline void AddInstruction(Ops::Codes code) {
+				inline void AddInstruction(Ops::Code code) {
 					Add<int>((int)code);
 				}
 

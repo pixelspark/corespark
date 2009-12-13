@@ -29,7 +29,7 @@ namespace tj {
 					MethodMakeCollection = 14,
 				};
 				
-				HTTPRequest(const std::string& req);
+				HTTPRequest(tj::shared::ref<tj::shared::Data> headers, tj::shared::ref<tj::shared::Data> extraData);
 				virtual ~HTTPRequest();
 				virtual const tj::shared::String& GetParameter(const std::string& parameter, const tj::shared::String& defaultValue);
 				virtual const tj::shared::String& GetHeader(const std::string& headerName, const tj::shared::String& defaultValue);
@@ -39,7 +39,7 @@ namespace tj {
 				virtual void SetPath(const tj::shared::String& p);
 				virtual Method GetMethod() const;
 				virtual const tj::shared::String& GetQueryString() const;
-				virtual const std::string& GetAdditionalRequestData() const;
+				virtual tj::shared::ref<tj::shared::Data> GetAdditionalRequestData() const;
 
 				static char GetHexChar(char a);
 				static tj::shared::String URLDecode(std::string::const_iterator it, std::string::const_iterator end);
@@ -56,7 +56,6 @@ namespace tj {
 					ParsingProtocol,
 					ParsingHeaderName,
 					ParsingHeaderValue,
-					ParsingAdditionalData,
 					ParsingEnd,
 				};
 				
@@ -64,7 +63,7 @@ namespace tj {
 				ParserState _state;
 				tj::shared::String _file;
 				tj::shared::String _queryString;
-				std::string _additionalData;
+				tj::shared::ref<tj::shared::Data> _extraData;
 		};
 		
 		class NP_EXPORTED Download: public virtual tj::np::SocketListenerThread {
@@ -89,7 +88,7 @@ namespace tj {
 				
 			protected:
 				virtual void OnReceive(NativeSocket ns);
-				virtual void OnDownloadComplete(tj::shared::ref<tj::shared::CodeWriter> cw);
+				virtual void OnDownloadComplete(tj::shared::ref<tj::shared::DataWriter> cw);
 				
 				std::wstring _path;
 				NetworkAddress _address;
@@ -97,7 +96,7 @@ namespace tj {
 				volatile DownloadState _state;
 				tj::shared::ref<Socket> _socket;
 				unsigned short _port;
-				tj::shared::ref<tj::shared::CodeWriter> _data;
+				tj::shared::ref<tj::shared::DataWriter> _data;
 				unsigned int _entersRead;
 		};
 	}

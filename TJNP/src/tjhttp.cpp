@@ -20,7 +20,7 @@ void Download::Start() {
 	SocketListenerThread::Start();
 }
 
-void Download::OnDownloadComplete(ref<CodeWriter> cw) {
+void Download::OnDownloadComplete(ref<DataWriter> cw) {
 	if(cw) {
 		Log::Write(L"TJNP/Download", L"Downloaded "+Stringify(cw->GetSize())+L" bytes");
 	}
@@ -35,7 +35,7 @@ const NetworkAddress& Download::GetAddress() const {
 
 void Download::Run() {
 	_entersRead = 0;
-	_data = GC::Hold(new CodeWriter());
+	_data = GC::Hold(new DataWriter());
 	_socket = GC::Hold(new Socket(_address, TransportProtocolTCP, _port));
 	if(_socket->IsValid()) {
 		_state = DownloadStateSendingRequest;
@@ -163,14 +163,17 @@ HTTPRequest::Method HTTPRequest::MethodFromString(const std::string& method) {
 }
 
 /** HTTPRequest **/
-HTTPRequest::HTTPRequest(const std::string& req) {
+HTTPRequest::HTTPRequest(ref<Data> request, ref<Data> data) {
 	try {
 		_method = MethodNone;
 		_state = ParsingMethod;
 
+		// Find where the headers end
+		const char* fullRequest = request->GetBuffer();
+		const std::string req(fullRequest, 0, request->GetSize());
 		std::string currentHeader;
-		
 		std::string::const_iterator it = req.begin();
+
 		while(it!=req.end()) {
 			// Parsing method
 			if(_state==ParsingMethod) {
@@ -233,7 +236,7 @@ HTTPRequest::HTTPRequest(const std::string& req) {
 					_state = ParsingEnd;
 				}
 				else if((it+2)==endOfHeader) {
-					_state = ParsingAdditionalData;
+					_state = ParsingEnd;
 				}
 				else {
 					std::string headerValue(it+2,endOfHeader-1);
@@ -242,22 +245,20 @@ HTTPRequest::HTTPRequest(const std::string& req) {
 				}
 				it = endOfHeader+1;
 			}
-			else if(_state==ParsingAdditionalData) {
-				_additionalData = std::string(it+2, req.end());
-				_state = ParsingEnd;
-			}
 		}
 	}
 	catch(...) {
 		Log::Write(L"TJNP/HTTPRequest", L"Error when parsing HTTP request");
+		throw;
 	}
+	_extraData = data;
 }
 
 HTTPRequest::~HTTPRequest() {
 }
 
-const std::string& HTTPRequest::GetAdditionalRequestData() const {
-	return _additionalData;
+ref<Data> HTTPRequest::GetAdditionalRequestData() const {
+	return _extraData;
 }
 
 bool HTTPRequest::HasHeader(const std::string& headerName) const {

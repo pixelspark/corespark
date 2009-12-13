@@ -14,7 +14,7 @@ namespace tj {
 				Transaction(tj::shared::Time out = 5000);
 				virtual ~Transaction();
 				virtual bool IsExpired() const;
-				virtual void OnReceive(int instance, in_addr from, const PacketHeader& header, tj::shared::ref<tj::shared::Code> packet) = 0;
+				virtual void OnReceive(int instance, in_addr from, const PacketHeader& header, tj::shared::ref<tj::shared::DataReader> packet) = 0;
 				virtual void OnExpire();
 
 			protected:

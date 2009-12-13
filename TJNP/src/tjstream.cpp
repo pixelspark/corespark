@@ -2,7 +2,7 @@
 using namespace tj::np;
 using namespace tj::shared;
 
-Message::Message(PacketAction ac, TransactionIdentifier ti): _writer(GC::Hold(new CodeWriter())), _sent(false) {
+Message::Message(PacketAction ac, TransactionIdentifier ti): _writer(GC::Hold(new DataWriter())), _sent(false) {
 	// Construct packet header
 	PacketHeader ph;
 	ph._action = ac;
@@ -14,7 +14,7 @@ Message::Message(PacketAction ac, TransactionIdentifier ti): _writer(GC::Hold(ne
 	_header = (PacketHeader*)_writer->_buffer;
 }
 
-Message::Message(bool toPlugin, const GroupID& gid, const Channel& cid, const PluginHash& plh): _writer(GC::Hold(new CodeWriter())), _sent(false) {
+Message::Message(bool toPlugin, const GroupID& gid, const Channel& cid, const PluginHash& plh): _writer(GC::Hold(new DataWriter())), _sent(false) {
 	// Construct packet header
 	PacketHeader ph;
 	ph._action = toPlugin ? ActionUpdatePlugin : ActionUpdate;
@@ -30,7 +30,7 @@ Message::~Message() {
 
 strong<Packet> Message::ConvertToPacket() {
 	unsigned int dataSize = _writer->GetSize();
-	char* data = _writer->TakeOverBuffer();
+	char* data = _writer->TakeOverBuffer(true);
 	strong<Packet> packet = GC::Hold(new Packet(data, dataSize));
 	_header = 0;
 	return packet;

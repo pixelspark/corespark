@@ -16,6 +16,7 @@ namespace tj {
 			ResolutionFile,
 			ResolutionData,
 			ResolutionEmpty,
+			ResolutionPermissionDenied,
 		};
 
 		class NP_EXPORTED WebRequest: public tj::shared::Object {
@@ -56,6 +57,10 @@ namespace tj {
 				virtual tj::shared::Flags<Permission> GetPermissions() const = 0;
 				virtual tj::shared::ref<WebItem> CreateCollection(const tj::shared::String& resource);
 				virtual bool Delete(const tj::shared::String& resource);
+				virtual bool Put(const tj::shared::String& resource, tj::shared::ref<tj::shared::Data> data);
+				virtual bool Move(const tj::shared::String& from, const tj::shared::String& to, bool copy, bool overwrite);
+				virtual bool Create(const tj::shared::String& resource, tj::shared::ref<WebItem> wi, bool overwrite);
+				virtual void Rename(const tj::shared::String& newName);
 			
 			protected:
 				tj::shared::CriticalSection _lock;
@@ -78,6 +83,7 @@ namespace tj {
 				virtual bool IsCollection() const;
 				virtual tj::shared::ref<WebItem> Resolve(const tj::shared::String& file);
 				virtual void Walk(tj::shared::strong<WebItemWalker> wiw, const tj::shared::String& prefix, int level = -1);
+				virtual void Rename(const tj::shared::String& newName);
 
 			protected:
 				tj::shared::Flags<WebItem::Permission> _perms;
@@ -86,6 +92,21 @@ namespace tj {
 				tj::shared::String _contentType;
 				tj::shared::String _etag;
 				unsigned int _length;
+		};
+
+		class NP_EXPORTED WebItemDataResource: public WebItemResource {
+			public:
+				WebItemDataResource(const tj::shared::String& fn, const tj::shared::String& dn, const tj::shared::String& contentType, tj::shared::strong<tj::shared::Data> data);
+				virtual ~WebItemDataResource();
+				virtual Resolution Get(tj::shared::ref<WebRequest> frq, tj::shared::String& error, char** data, unsigned int& dataLength);
+				virtual bool Put(const tj::shared::String& resource, tj::shared::ref<tj::shared::Data> data);
+				virtual unsigned int GetContentLength() const;
+
+			protected:
+				virtual void SetData(tj::shared::strong<tj::shared::Data> cw);
+				char* _data;
+				unsigned int _dataLength;
+
 		};
 
 		class NP_EXPORTED WebItemResolver: public WebItem {
@@ -114,6 +135,9 @@ namespace tj {
 				virtual Resolution Get(tj::shared::ref<WebRequest> frq, tj::shared::String& error, char** data, unsigned int& dataLength);
 				virtual tj::shared::ref<WebItem> CreateCollection(const tj::shared::String& resource);
 				virtual bool Delete(const tj::shared::String& resource);
+				virtual bool Put(const tj::shared::String& resource, tj::shared::ref<tj::shared::Data> data);
+				virtual bool Move(const tj::shared::String& from, const tj::shared::String& to, bool copy, bool overwrite);
+				virtual bool Create(const tj::shared::String& resource, tj::shared::ref<WebItem> wi, bool overwrite);
 				
 			protected:
 				virtual tj::shared::ref<WebItem> GetNextByPath(const tj::shared::String& file, tj::shared::String& restOfPath);

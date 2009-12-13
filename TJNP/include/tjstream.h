@@ -45,7 +45,7 @@ namespace tj {
 
 			protected:
 				const char* GetBuffer();
-				tj::shared::strong<tj::shared::CodeWriter> _writer;
+				tj::shared::strong<tj::shared::DataWriter> _writer;
 				PacketHeader* _header;
 				bool _sent;
 		};

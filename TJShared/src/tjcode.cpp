@@ -4,48 +4,84 @@
 #include "../include/tjserializable.h"
 using namespace tj::shared;
 
-Code::Code(const char* code, unsigned int size) {
+Data::~Data() {
+}
+
+DataReader::DataReader(const char* code, unsigned int size) {
 	_code = new char[size*sizeof(char)];
 	memcpy(_code,code,size*sizeof(char));
 	_size = size;
 }
 
-Code::~Code() {
+DataReader::~DataReader() {
 	delete[] _code;
 	_size = 0;
 }
 
-const char* Code::GetBuffer() const {
+const char* DataReader::GetBuffer() const {
 	return _code;
 }
 
-unsigned int Code::GetSize() {
+char* DataReader::TakeOverBuffer(bool clearMine) {
+	if(clearMine) {
+		char* buf = _code;
+		_size = 0;
+		_code = 0;
+		return buf;
+	}
+	else {
+		char* buffer = new char[_size];
+		memcpy(buffer, _code, _size);
+		return buffer;
+	}
+}
+
+unsigned int DataReader::GetSize() {
 	return _size;
 }
 
-CodeWriter::CodeWriter(unsigned int initSize) {
+/** DataWriter **/
+DataWriter::DataWriter(unsigned int initSize) {
 	_buffer = new char[initSize];
 	_size = initSize;
 	_pos = 0;
 }
 
-unsigned int CodeWriter::GetSize() {
+const char* DataWriter::GetBuffer() const {
+	return _buffer;
+}
+
+char* DataWriter::TakeOverBuffer(bool clearMine) {
+	char* buf = _buffer;
+	if(clearMine) {
+		_buffer = 0;
+		_size = 0;
+		_pos = 0;
+	}
+	else {
+		_buffer = new char[_size];
+		memcpy(_buffer, buf, _pos);
+	}
+	return buf;
+}
+
+unsigned int DataWriter::GetSize() {
 	return _pos;
 }
 
-unsigned int CodeWriter::GetCapacity() {
+unsigned int DataWriter::GetCapacity() {
 	return _size;
 }
 
-CodeWriter::~CodeWriter() {
+DataWriter::~DataWriter() {
 	if(_buffer!=0) {
 		delete[] _buffer;
 	}
 }
 
-void CodeWriter::Grow(unsigned int size) {
+void DataWriter::Grow(unsigned int size) {
 	if(_buffer==0) {
-		Throw(L"CodeWriter grown after buffer has been taken over!", ExceptionTypeSevere);
+		Throw(L"DataWriter grown after buffer has been taken over!", ExceptionTypeSevere);
 	}
 
 	if(_pos+size>_size) {
@@ -60,7 +96,7 @@ void CodeWriter::Grow(unsigned int size) {
 	}
 }
 
-template<> tj::shared::Vector Code::Get(unsigned int& position) {
+template<> tj::shared::Vector DataReader::Get(unsigned int& position) {
 	Vector v(0.0f, 0.0f, 0.0f);
 	v.x = Get<float>(position);
 	v.y = Get<float>(position);
@@ -68,9 +104,9 @@ template<> tj::shared::Vector Code::Get(unsigned int& position) {
 	return v;
 }
 
-template<> CodeWriter& CodeWriter::Add(const String& x) {
+template<> DataWriter& DataWriter::Add(const String& x) {
 	if(_buffer==0) {
-		Throw(L"CodeWriter written to after buffer has been taken over!", ExceptionTypeSevere);
+		Throw(L"DataWriter written to after buffer has been taken over!", ExceptionTypeSevere);
 	}
 
 	Grow((unsigned int)((x.length()*sizeof(wchar_t))+sizeof(unsigned int)));
@@ -85,7 +121,7 @@ template<> CodeWriter& CodeWriter::Add(const String& x) {
 	return *this;
 }
 
-template<> String Code::Get(unsigned int& position) {
+template<> String DataReader::Get(unsigned int& position) {
 	unsigned int length = Get<unsigned int>(position);
 	std::wostringstream os;
 	for(unsigned int a=0;a<length;a++) {

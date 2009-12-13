@@ -12,11 +12,27 @@ WebItemWalker::~WebItemWalker() {
 WebItem::~WebItem() {
 }
 
+void WebItem::Rename(const String& newName) {
+	Throw(L"Cannot rename this web-item", ExceptionTypeError);
+}
+
+bool WebItem::Create(const String& resource, ref<WebItem> wi, bool overwrite) {
+	return false;
+}
+
 ref<WebItem> WebItem::CreateCollection(const String& resource) {
 	return null;
 }
 
 bool WebItem::Delete(const String& resource) {
+	return false;
+}
+
+bool WebItem::Put(const String& resource, ref<Data> data) {	
+	return false;
+}
+
+bool WebItem::Move(const tj::shared::String& from, const tj::shared::String& to, bool copy, bool overwrite) {
 	return false;
 }
 
@@ -36,6 +52,10 @@ WebItemResource::~WebItemResource() {
 
 void WebItemResource:: Touch() {
 	_etag = Util::RandomIdentifier(L'E');
+}
+
+void WebItemResource::Rename(const String& newName) {
+	_fn = newName;
 }
 
 tj::shared::String WebItemResource::GetETag() const {
@@ -148,6 +168,149 @@ bool WebItemCollection::Delete(const String& resource) {
 		else {
 			return wi->Delete(restOfPath);
 		}
+	}
+	
+	return false;
+}
+
+bool WebItemCollection::Move(const String& from, const String& to, bool copy, bool overwrite) {
+	if(!GetPermissions().IsSet(WebItem::PermissionPropertyWrite)) {
+		return false;
+	}
+
+	ThreadLock lock(&_lock);
+	ref<WebItem> wi = Resolve(from);
+	if(wi) {
+		if(copy || Delete(from)) {
+			return Create(to, wi, overwrite);
+		}
+		// Could not delete origin
+	}
+	// Could not find origin
+	return false;
+}
+
+bool WebItemCollection::Create(const String& resource, ref<WebItem> wi, bool overwrite) {
+	// Require put permission to create new collections
+	if(!GetPermissions().IsSet(WebItem::PermissionPut)) {
+		return false;
+	}
+
+	if(!GetPermissions().IsSet(WebItem::PermissionPropertyWrite)) {
+		return false;
+	}
+	
+	String collectionName = resource;
+	if(collectionName.length()<1) {
+		return false;
+	}
+	
+	if(collectionName.at(0)==L'/') {
+		collectionName = collectionName.substr(1);
+		if(collectionName.length()<1) {
+			return false;
+		}
+	}
+	
+	String::const_iterator firstSlash = std::find(collectionName.begin(), collectionName.end(), L'/');
+	if(firstSlash!=collectionName.end()) {
+		// This is not the final resource name (yet); recurse
+		String restOfPath;
+		ref<WebItem> wi = GetNextByPath(collectionName, restOfPath);
+		if(wi && wi!=ref<WebItem>(this)) {
+			return wi->Create(restOfPath, wi, overwrite);
+		}
+	}
+	else {
+		// The resource to be put onto is right under me; see if it exists already
+		ThreadLock lock(&_lock);
+		std::deque< ref<WebItem> >::iterator it = _children.begin();
+		while(it!=_children.end()) {
+			ref<WebItem> wi = *it;
+			if(wi) {
+				if(wi->GetName()==collectionName) {
+					if(overwrite) {
+						_children.erase(it);
+						_children.push_back(wi);
+						return true;
+					}
+					else {
+						return false;
+					}
+				}
+			}
+			++it;
+		}
+
+		wi->Rename(collectionName);
+		_children.push_back(wi);
+		return true;
+	}
+	
+	return false;
+}
+
+bool WebItemCollection::Put(const String& resource, ref<Data> data) {
+	// Require put permission to create new collections
+	if(!GetPermissions().IsSet(WebItem::PermissionPut)) {
+		return false;
+	}
+	
+	String collectionName = resource;
+	if(collectionName.length()<1) {
+		return null;
+	}
+	
+	if(collectionName.at(0)==L'/') {
+		collectionName = collectionName.substr(1);
+		if(collectionName.length()<1) {
+			return false;
+		}
+	}
+	
+	String::const_iterator firstSlash = std::find(collectionName.begin(), collectionName.end(), L'/');
+	if(firstSlash!=collectionName.end()) {
+		// This is not the final resource name (yet); recurse
+		String restOfPath;
+		ref<WebItem> wi = GetNextByPath(collectionName, restOfPath);
+		if(wi && wi!=ref<WebItem>(this)) {
+			if(wi->Put(restOfPath, data)) {
+				Touch();
+				return true;
+			}
+			return false;
+		}
+	}
+	else {
+		// The resource to be put onto is right under me; see if it exists already
+		ThreadLock lock(&_lock);
+		std::deque< ref<WebItem> >::iterator it = _children.begin();
+		bool foundExistingItem = false;
+		while(it!=_children.end()) {
+			ref<WebItem> wi = *it;
+			if(wi) {
+				if(wi->GetName()==collectionName) {
+					if(wi->Put(collectionName, data)) {
+						Touch();
+						return true;
+					}
+					return false;
+				}
+			}
+			++it;
+		}
+
+		// File not found; create the item as resource in this collection if we have PropertyWrite permissions
+		if(!GetPermissions().IsSet(WebItem::PermissionPropertyWrite)) {
+			return false;
+		}
+
+		// TODO: use the Content-Type from the request, if any (add to ::Put function as parameter)
+		ref<WebItemDataResource> wd = GC::Hold(new WebItemDataResource(collectionName, collectionName, L"application/octet-stream", data));
+		wd->SetPermissions(GetPermissions()); // Newly created resource inherits permissions
+		_children.push_back(wd);
+		Touch();
+		return true;
 	}
 	
 	return false;
@@ -277,4 +440,60 @@ Flags<WebItem::Permission> WebItemResolver::GetPermissions() const {
 
 Resolution WebItemResolver::Get(tj::shared::ref<WebRequest> frq, tj::shared::String &error, char **data, unsigned int &dataLength) {
 	return ResolutionNone;
+}
+
+/** WebItemDataResource **/
+WebItemDataResource::WebItemDataResource(const String& fn, const String& dn, const String& contentType, strong<Data> data):
+	WebItemResource(fn,dn,contentType, 0), _dataLength(0), _data(0) {
+		SetData(data);
+}
+
+WebItemDataResource::~WebItemDataResource() {
+	delete[] _data;
+}
+
+Resolution WebItemDataResource::Get(tj::shared::ref<WebRequest> frq, tj::shared::String& error, char** data, unsigned int& dataLength) {
+	if(!GetPermissions().IsSet(WebItem::PermissionGet)) {
+		return ResolutionPermissionDenied;
+	}
+
+	if(_data==0) {
+		return ResolutionNone;
+	}
+	*data = new char[_dataLength];
+	memcpy(*data, _data, _dataLength);
+	dataLength = _dataLength;
+	return ResolutionData;
+}
+
+bool WebItemDataResource::Put(const tj::shared::String& resource, ref<Data> data) {
+	if(!GetPermissions().IsSet(WebItem::PermissionPut)) {
+		return false;
+	}
+
+	Touch();
+	if(data) {
+		SetData(data);
+	}
+	else {
+		delete[] _data;
+		_data = 0;
+		_dataLength = 0;
+	}
+	return true;
+}
+
+unsigned int WebItemDataResource::GetContentLength() const {
+	if(_data==0) {
+		return 0;
+	}
+	return _dataLength;
+}
+
+void WebItemDataResource::SetData(strong<Data> cw) {
+	if(_data!=0) {
+		delete[] _data;
+	}
+	_dataLength = cw->GetSize();
+	_data = cw->TakeOverBuffer(false);
 }

@@ -37,11 +37,11 @@ WebServerResponseThread::~WebServerResponseThread() {
 
 void WebServerResponseThread::SendError(int code, const std::wstring& desc, const std::wstring& extraInfo) {
 	std::ostringstream reply;
-	reply << "HTTP/1.1 " << code << " Not Found\r\nContent-type: text/html\r\n\r\n<b>" << Mbs(desc) << "</b>";
+	reply << "HTTP/1.1 " << code << " Not Found\r\nContent-type: text/html\r\n\r\n <b>" << Mbs(desc) << "</b>";
 	if(extraInfo.length()>0) {
 		std::wstring extraInfoHTML = extraInfo;
 		Util::HTMLEntities(extraInfoHTML);
-		reply << ":" << Mbs(extraInfoHTML);
+		reply << ": " << Mbs(extraInfoHTML);
 	}
 
 	std::string replyText = reply.str();
@@ -180,13 +180,19 @@ std::string WebServerResponseThread::CreateAllowHeaderFromPermissions(const Flag
 	if(perms.IsSet(WebItem::PermissionGet)) {
 		headers << "GET, ";
 	}
+	if(perms.IsSet(WebItem::PermissionDelete)) {
+		headers << "DELETE, ";
+	}
+	if(perms.IsSet(WebItem::PermissionPut)) {
+		headers << "PUT, ";
+	}
 	if(perms.IsSet(WebItem::PermissionPropertyRead)) {
 		headers << "LOCK, UNLOCK, PROPFIND, ";
 	}
 	if(perms.IsSet(WebItem::PermissionPropertyWrite)) {
-		headers << "MKCOL, ";
+		headers << "MKCOL, MOVE, COPY, ";
 	}
-	headers << "OPTIONS";
+	headers << "HEAD, OPTIONS";
 	return headers.str();
 }
 
@@ -238,6 +244,9 @@ void WebServerResponseThread::ServeGetRequestWithResolver(ref<HTTPRequest> hrp, 
 		SendError(404, L"Not found", hrp->GetPath());
 		return;
 	}
+	else if(res==ResolutionPermissionDenied) {
+		SendError(403, L"Forbidden", hrp->GetPath());
+	}
 	else if(res==ResolutionData) {
 		if(resolvedData==0) {
 			SendError(500, L"Internal server error", L"No data: "+resolverError);
@@ -251,8 +260,9 @@ void WebServerResponseThread::ServeGetRequestWithResolver(ref<HTTPRequest> hrp, 
 	}
 
 	// Reply
+	bool justHeaders = (hrp->GetMethod()==HTTPRequest::MethodHead);
 	std::ostringstream headers;
-	headers << "HTTP/1.0 200 OK\r\n";
+	headers << "HTTP/1.1 200 OK\r\n";
 	headers << "Connection: close\r\n";
 	headers << "Server: " << KServerName << "\r\n";
 
@@ -273,10 +283,13 @@ void WebServerResponseThread::ServeGetRequestWithResolver(ref<HTTPRequest> hrp, 
 
 	// Just dump the file
 	if(sendData) {
-		headers << "Content-length: " << resolvedDataLength << "\r\n\r\n";
+		headers << "Content-Length: " << resolvedDataLength << "\r\n\r\n";
 		std::string dataHeaders = headers.str();
 		int q = send(_client, dataHeaders.c_str(), dataHeaders.length(), 0);
-		int r = send(_client, resolvedData, resolvedDataLength, 0);
+		int r = 0;
+		if(!justHeaders) {
+			send(_client, resolvedData, resolvedDataLength, 0);
+		}
 		if((q+r)>0) {
 			ref<WebServer> fs = _fs;
 			if(fs) {
@@ -307,17 +320,19 @@ void WebServerResponseThread::ServeGetRequestWithResolver(ref<HTTPRequest> hrp, 
 				}
 
 				// Send file
-				char buffer[4096];
-				DWORD read = 0;
+				if(!justHeaders) {
+					char buffer[4096];
+					DWORD read = 0;
 
-				while(ReadFile(file, buffer, 4096, &read, NULL)!=0) {
-					if(read<=0) {
-						break;
-					}
-					int r = send(_client, buffer, read, 0);
-					if(r>0) {
-						if(fs) {
-							fs->_bytesSent += r;
+					while(ReadFile(file, buffer, 4096, &read, NULL)!=0) {
+						if(read<=0) {
+							break;
+						}
+						int r = send(_client, buffer, read, 0);
+						if(r>0) {
+							if(fs) {
+								fs->_bytesSent += r;
+							}
 						}
 					}
 				}
@@ -341,28 +356,30 @@ void WebServerResponseThread::ServeGetRequestWithResolver(ref<HTTPRequest> hrp, 
 			}
 	
 			// Write data
-			int fp = open(Mbs(resolvedFile).c_str(), O_RDONLY);
-			if(fp!=-1) {
-				off_t length = size;
-				off_t start = 0;
-				
-				#ifdef TJ_OS_MAC
-					if(sendfile(fp, _client, start, &length, NULL, 0)!=0) {
-						Log::Write(L"TJNP/WebServer", L"sendfile() failed, file path was "+resolvedFile);
-					}
-				#endif
-				
-				#ifdef TJ_OS_LINUX
-					if(sendfile(_client, fp, NULL, length)==-1) {
-						Log::Write(L"TJNP/WebServer", L"sendfile() failed, file path was "+resolvedFile);
-					}
-				#endif
+			if(!justHeaders) {
+				int fp = open(Mbs(resolvedFile).c_str(), O_RDONLY);
+				if(fp!=-1) {
+					off_t length = size;
+					off_t start = 0;
 					
+					#ifdef TJ_OS_MAC
+						if(sendfile(fp, _client, start, &length, NULL, 0)!=0) {
+							Log::Write(L"TJNP/WebServer", L"sendfile() failed, file path was "+resolvedFile);
+						}
+					#endif
+					
+					#ifdef TJ_OS_LINUX
+						if(sendfile(_client, fp, NULL, length)==-1) {
+							Log::Write(L"TJNP/WebServer", L"sendfile() failed, file path was "+resolvedFile);
+						}
+					#endif
+						
+				}
+				else {
+					Log::Write(L"TJNP/WebServer", L"open() failed, file path was "+resolvedFile);
+				}
+				close(fp);
 			}
-			else {
-				Log::Write(L"TJNP/WebServer", L"open() failed, file path was "+resolvedFile);
-			}
-			close(fp);
 		#endif
 	}
 }
@@ -371,6 +388,7 @@ void WebServerResponseThread::ServeRequestWithResolver(ref<HTTPRequest> hrp, ref
 	if(resolver) {
 		switch(hrp->GetMethod()) {
 			case HTTPRequest::MethodGet:
+			case HTTPRequest::MethodHead:
 				ServeGetRequestWithResolver(hrp, resolver);
 				break;
 
@@ -391,12 +409,28 @@ void WebServerResponseThread::ServeRequestWithResolver(ref<HTTPRequest> hrp, ref
 				SendError(204, L"No content", Stringify(hrp->GetPath()));
 
 			default:
-				SendError(403, L"Method not implemented", Stringify(hrp->GetMethod()));
+				SendError(501, L"Method not implemented", Stringify(hrp->GetMethod()));
 		}
 	}
 	else {
 		SendError(404, L"Not found", hrp->GetPath());
 		return;
+	}
+}
+
+void WebServerResponseThread::ServePutRequest(tj::shared::ref<HTTPRequest> hrp, tj::shared::ref<WebItem> res, const tj::shared::String& restOfPath) {
+	if(hrp->HasHeader("Content-Range")) {
+		SendError(501, L"Not implemented", L"Content-Range header");
+		return;
+	}
+
+	if(res->Put(restOfPath, hrp->GetAdditionalRequestData())) {
+		Log::Write(L"TJNP/WebServer", L"Put OK @"+hrp->GetPath());
+		SendError(201, L"Put successful", hrp->GetPath());
+	}
+	else {
+		Log::Write(L"TJNP/WebServer", L"Put failed @"+hrp->GetPath());
+		SendError(409, L"Conflict", hrp->GetPath());
 	}
 }
 
@@ -406,6 +440,36 @@ void WebServerResponseThread::ServeDeleteRequest(ref<HTTPRequest> hrp, ref<WebIt
 	}
 	else {
 		SendError(404, L"Delete not successful", hrp->GetPath());
+	}
+}
+
+void WebServerResponseThread::ServeMoveOrCopyRequestWithResolver(ref<HTTPRequest> hrp, ref<WebItem> res, const String& restOfPath) {
+	String destination = hrp->GetHeader("Destination", L"");
+	if(destination.length()==0) {
+		SendError(409, L"Conflict", L"Missing Destination header");
+		return;
+	}
+
+	// The destination can be an absolute URL; if so, strip it
+	if(destination.substr(0, 7)==L"http://") {
+		String::size_type idx = destination.find_first_of(L'/', 7);
+		if(idx!=String::npos) {
+			destination = destination.substr(idx);
+		}
+	}
+
+	// Strip off the first part of the path that is in the prefix for this resolver
+	int prefixLength = hrp->GetPath().length() - restOfPath.length();
+	if(prefixLength>0) {
+		destination = destination.substr(prefixLength);
+	}
+
+	bool overwrite = hrp->GetHeader("Overwrite", L"T")!=L"F";
+	if(res->Move(restOfPath, destination, hrp->GetMethod()==HTTPRequest::MethodCopy, overwrite)) {
+		SendError(201, L"Created", destination);
+	}
+	else {
+		SendError(409, L"Conflict", L"Operating failed");
 	}
 }
 
@@ -421,7 +485,25 @@ void WebServerResponseThread::ServeMakeCollectionRequest(ref<HTTPRequest> hrp, r
 }
 
 void WebServerResponseThread::ServeRequest(ref<HTTPRequest> hrp) {
-	const std::wstring& requestFile = hrp->GetPath();
+	if(hrp->HasHeader("Expect")) {
+		SendError(417, L"Expectation failed", hrp->GetHeader("Expect",  L""));
+		return;
+	}
+
+	std::wstring requestFile = hrp->GetPath();
+
+	// If the request URI is absolute; fix it to make it relative
+	if(requestFile.substr(0, 7)==L"http://") {
+		String::size_type idx = requestFile.find_first_of(L'/', 7);
+		if(idx!=String::npos) {
+			requestFile = requestFile.substr(idx);
+		}
+	}
+
+	// The OPTIONS request can have a request URI of '*'; in this case, return the options for '/'
+	if(hrp->GetMethod()==HTTPRequest::MethodOptions && requestFile==L"*") {
+		requestFile = L"/";
+	}
 
 	// Check if there is a resolver for the path, otherwise use the default file resolver (this->Resolve).
 	// Check if there is a resolver that can resolve this path (by looking at the start of the path)
@@ -448,6 +530,12 @@ void WebServerResponseThread::ServeRequest(ref<HTTPRequest> hrp) {
 					else if(hrp->GetMethod()==HTTPRequest::MethodDelete) {
 						ServeDeleteRequest(hrp, resolver, restOfPath);
 					}
+					else if(hrp->GetMethod()==HTTPRequest::MethodPut) {
+						ServePutRequest(hrp, resolver, restOfPath);
+					}
+					else if(hrp->GetMethod()==HTTPRequest::MethodCopy || hrp->GetMethod()==HTTPRequest::MethodMove) {
+						ServeMoveOrCopyRequestWithResolver(hrp,resolver,restOfPath);
+					}
 					else {
 						resolver = resolver->Resolve(restOfPath);
 					}
@@ -462,17 +550,23 @@ void WebServerResponseThread::ServeRequest(ref<HTTPRequest> hrp) {
 }
 
 void WebServerResponseThread::Run() {
-	std::ostringstream rid;
+	ref<DataWriter> cwHeaders = GC::Hold(new DataWriter());
+	ref<DataWriter> cwData = GC::Hold(new DataWriter());
 
 	// get request
 	char buffer[1024];
-	bool readingRequest = true;
+	bool readingRequestHeaders = true;
+	int requestBytesToRead = 0;
+	bool readCompleteHeaderBlock = false;
+	ref<HTTPRequest> httpRequest;
 	int enterCount = 0;
 
 	// TODO: time-out (use select()?)
-	while(readingRequest) {
+	while(readingRequestHeaders || requestBytesToRead>0) {
 		int r = recv(_client, buffer, 1023, 0);
 		if(r<=0) {
+			readingRequestHeaders = false;
+			requestBytesToRead = 0;
 			break;
 		}
 		else {
@@ -481,32 +575,52 @@ void WebServerResponseThread::Run() {
 				fs->_bytesReceived += r;
 			}
 
-			for(int a=0;a<r;a++) {
-				if(buffer[a]==L'\0') {
-					readingRequest = false;
-					break; // end of request 
-				}
-				else if(buffer[a]==L'\r' || buffer[a]==L'\n') {
-					enterCount++;
-				}
-				else {
-					enterCount = 0;
-				}
+			if(readingRequestHeaders) {
+				for(int a=0;a<r;a++) {
+					if(buffer[a]==L'\r' || buffer[a]==L'\n') {
+						enterCount++;
+					}
+					else {
+						enterCount = 0;
+					}
 
-				if(enterCount>=4) {
-					readingRequest = false; // for HTTP
-					break;
+					cwHeaders->Append(&(buffer[a]), 1);
+
+					if(enterCount>=4) {
+						readCompleteHeaderBlock = true;
+						readingRequestHeaders = false;
+
+						// A complete header block was read; let's see if there's additional data
+						httpRequest = GC::Hold(new HTTPRequest(cwHeaders, cwData));
+						String contentLength = httpRequest->GetHeader("Content-Length", L"");
+						if(contentLength.length()>0) {
+							requestBytesToRead = StringTo<int>(contentLength,0);
+						}
+
+						// Throw the rest of this block's data in the data buffer
+						if(requestBytesToRead>0) {
+							int dataLeft = r-a-1;
+							cwData->Append(&(buffer[a+1]), min(dataLeft,requestBytesToRead));
+							requestBytesToRead -= dataLeft;
+						}
+					}
 				}
-				rid << buffer[a];
+			}
+			else if(requestBytesToRead>0) {
+				cwData->Append(buffer, (unsigned int)min(r,requestBytesToRead));
+				requestBytesToRead -= r;
 			}
 		}
 	}
 
-	// Check if a complete request was read
-	if(!readingRequest) {
-		std::string request = rid.str();
-		ref<HTTPRequest> hrp = GC::Hold(new HTTPRequest(request));
-		ServeRequest(hrp);
+	try {
+		ServeRequest(httpRequest);
+	}
+	catch(const Exception& e) {
+		Log::Write(L"TJNP/WebServerResponseThread", L"Error occurred when processing request: "+e.GetMsg());
+	}
+	catch(...) {
+		Log::Write(L"TJNP/WebServerResponseThread", L"Unknown error occurred when processing request");
 	}
 
 	#ifdef TJ_OS_POSIX

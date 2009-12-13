@@ -127,7 +127,7 @@ void ShowSocket::OnReceive(NativeSocket ns) {
 		return;
 	}
 
-	ref<Code> code = 0;
+	ref<DataReader> code = 0;
 	ref<Transaction> tx = 0;
 	sockaddr_in from;
 	PacketHeader ph;
@@ -257,7 +257,7 @@ void ShowSocket::OnReceive(NativeSocket ns) {
 		}
 
 		// Extract packet contents
-		code = GC::Hold(new Code(_recieveBuffer+sizeof(PacketHeader), ph._size));
+		code = GC::Hold(new DataReader(_recieveBuffer+sizeof(PacketHeader), ph._size));
 
 		// Find our transaction, if it exists. Otherwise, use the 'default transaction' (which happens to be _network)
 		if(ph._transaction==0) {

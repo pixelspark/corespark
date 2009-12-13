@@ -12,12 +12,12 @@ namespace tj {
 				SLIPFrameDecoder();
 				virtual ~SLIPFrameDecoder();
 				virtual void Append(const unsigned char* data, unsigned int length);
-				static void EncodeSLIPFrame(const unsigned char* data, unsigned int length, tj::shared::strong<tj::shared::CodeWriter> cw);
+				static void EncodeSLIPFrame(const unsigned char* data, unsigned int length, tj::shared::strong<tj::shared::DataWriter> cw);
 
 			protected:
 				virtual void OnPacketReceived(const unsigned char* data, unsigned int length);
 				
-				tj::shared::ref<tj::shared::CodeWriter> _buffer;
+				tj::shared::ref<tj::shared::DataWriter> _buffer;
 
 			private:
 				bool _isReceivingPacket;
@@ -33,11 +33,11 @@ namespace tj {
 			public:
 				QueueSLIPFrameDecoder();
 				virtual ~QueueSLIPFrameDecoder();
-				tj::shared::ref<tj::shared::Code> NextPacket();
+				tj::shared::ref<tj::shared::DataReader> NextPacket();
 				
 			protected:
 				virtual void OnPacketReceived(const unsigned char* data, unsigned int length);
-				std::deque< tj::shared::ref<tj::shared::Code> > _buffers;
+				std::deque< tj::shared::ref<tj::shared::DataReader> > _buffers;
 		};
 	}
 }
