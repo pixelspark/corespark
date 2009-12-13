@@ -316,6 +316,10 @@ const std::wstring& HTTPRequest::GetQueryString() const {
 	return _queryString;
 }
 
+void HTTPRequest::SetAdditionalData(ref<Data> d) {
+	_extraData = d;
+}
+
 std::string HTTPRequest::URLEncode(const String& rid) {
 	std::ostringstream os;
 	std::wstring::const_iterator it = rid.begin();

@@ -6,6 +6,10 @@
 #include <map>
 #include <vector>
 
+#ifdef TJ_OS_POSIX
+	#include <semaphore.h>
+#endif
+
 namespace tj {
 	namespace shared {
 		class EXPORTED Atomic {
@@ -138,7 +142,11 @@ namespace tj {
 				#endif
 			
 				#ifdef TJ_OS_POSIX
-					void* _sema;
+					#ifdef TJ_OS_MAC
+						void* _sema;
+					#else
+						sem_t _sema;
+					#endif
 				#endif
 		};
 

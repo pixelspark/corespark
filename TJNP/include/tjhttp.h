@@ -40,6 +40,7 @@ namespace tj {
 				virtual Method GetMethod() const;
 				virtual const tj::shared::String& GetQueryString() const;
 				virtual tj::shared::ref<tj::shared::Data> GetAdditionalRequestData() const;
+				virtual void SetAdditionalData(tj::shared::ref<tj::shared::Data> data);
 
 				static char GetHexChar(char a);
 				static tj::shared::String URLDecode(std::string::const_iterator it, std::string::const_iterator end);

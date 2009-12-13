@@ -29,10 +29,11 @@ std::ostream& operator<< (std::ostream& out, const TiXmlNode& doc) {
 }
 
 /** WebServerResponseThread **/
-WebServerResponseThread::WebServerResponseThread(NativeSocket client, ref<WebServer> fs): _fs(fs), _client(client) {
+WebServerResponseThread::WebServerResponseThread(ref<WebServer> fs): _fs(fs), _client(-1) {
 }
 
 WebServerResponseThread::~WebServerResponseThread() {
+	WaitForCompletion();
 }
 
 void WebServerResponseThread::SendError(int code, const std::wstring& desc, const std::wstring& extraInfo) {
@@ -549,67 +550,85 @@ void WebServerResponseThread::ServeRequest(ref<HTTPRequest> hrp) {
 	ServeRequestWithResolver(hrp, resolver);
 }
 
-void WebServerResponseThread::Run() {
+void WebServerResponseThread::RunSocket(NativeSocket client) {
+	_client = client;
+
 	ref<DataWriter> cwHeaders = GC::Hold(new DataWriter());
-	ref<DataWriter> cwData = GC::Hold(new DataWriter());
+	ref<DataWriter> cwData;
 
 	// get request
-	char buffer[1024];
+	char buffer[2048];
 	bool readingRequestHeaders = true;
-	int requestBytesToRead = 0;
+	int64 requestBytesToRead = 0;
 	bool readCompleteHeaderBlock = false;
 	ref<HTTPRequest> httpRequest;
 	int enterCount = 0;
 
-	// TODO: time-out (use select()?)
-	while(readingRequestHeaders || requestBytesToRead>0) {
-		int r = recv(_client, buffer, 1023, 0);
-		if(r<=0) {
-			readingRequestHeaders = false;
-			requestBytesToRead = 0;
-			break;
-		}
-		else {
-			ref<WebServer> fs = _fs;
-			if(fs) {
-				fs->_bytesReceived += r;
+	// TODO: add time-out in select for very slow clients (maybe only time-out when reading headers)
+	while(readingRequestHeaders || (requestBytesToRead > 0)) {
+		fd_set fds;
+		FD_ZERO(&fds);
+		FD_SET(_client, &fds);
+
+		if(select(_client+1, &fds, 0, 0, 0)>0) {
+			int r = recv(_client, buffer, 2048, 0);
+			if(r<=0) {
+				readingRequestHeaders = false;
+				requestBytesToRead = 0;
+				break;
 			}
+			else {
+				ref<WebServer> fs = _fs;
+				if(fs) {
+					fs->_bytesReceived += r;
+				}
 
-			if(readingRequestHeaders) {
-				for(int a=0;a<r;a++) {
-					if(buffer[a]==L'\r' || buffer[a]==L'\n') {
-						enterCount++;
-					}
-					else {
-						enterCount = 0;
-					}
-
-					cwHeaders->Append(&(buffer[a]), 1);
-
-					if(enterCount>=4) {
-						readCompleteHeaderBlock = true;
-						readingRequestHeaders = false;
-
-						// A complete header block was read; let's see if there's additional data
-						httpRequest = GC::Hold(new HTTPRequest(cwHeaders, cwData));
-						String contentLength = httpRequest->GetHeader("Content-Length", L"");
-						if(contentLength.length()>0) {
-							requestBytesToRead = StringTo<int>(contentLength,0);
+				if(readingRequestHeaders) {
+					for(int a=0;a<r;a++) {
+						if(buffer[a]==L'\r' || buffer[a]==L'\n') {
+							enterCount++;
+						}
+						else {
+							enterCount = 0;
 						}
 
-						// Throw the rest of this block's data in the data buffer
-						if(requestBytesToRead>0) {
-							int dataLeft = r-a-1;
-							cwData->Append(&(buffer[a+1]), min(dataLeft,requestBytesToRead));
-							requestBytesToRead -= dataLeft;
+						cwHeaders->Append(&(buffer[a]), 1);
+
+						if(enterCount>=4) {
+							readCompleteHeaderBlock = true;
+							readingRequestHeaders = false;
+
+							// A complete header block was read; let's see if there's additional data
+							httpRequest = GC::Hold(new HTTPRequest(cwHeaders,null));
+							String contentLength = httpRequest->GetHeader("Content-Length", L"");
+							if(contentLength.length()>0) {
+								requestBytesToRead = StringTo<int64>(contentLength,0);
+								// TODO: limit the maximum number of bytes that can be sent; otherwise, this
+								// could crash the server
+								if(requestBytesToRead>0) {
+									cwData = GC::Hold(new DataWriter(requestBytesToRead));
+								}
+							}
+
+							// Throw the rest of this block's data in the data buffer
+							if(requestBytesToRead>0) {
+								int dataLeft = r-a-1;
+								cwData->Append(&(buffer[a+1]), min(dataLeft,requestBytesToRead));
+								httpRequest->SetAdditionalData(cwData);
+								requestBytesToRead -= dataLeft;
+							}
 						}
 					}
 				}
+				else if(requestBytesToRead>0) {
+					cwData->Append(buffer, (unsigned int)min(r,requestBytesToRead));
+					requestBytesToRead -= r;
+				}
 			}
-			else if(requestBytesToRead>0) {
-				cwData->Append(buffer, (unsigned int)min(r,requestBytesToRead));
-				requestBytesToRead -= r;
-			}
+		}
+		else {
+			// bail
+			break;
 		}
 	}
 
@@ -646,25 +665,72 @@ void WebServerResponseThread::Run() {
 	#ifdef TJ_OS_POSIX
 		close(_client);
 	#endif
-	delete this;
+
+		Log::Write(L"TJNP/WebServerResponseThread", L"End request");
+}
+
+void WebServerResponseThread::Run() {
+	while(true) {
+		ref<WebServer> ws = _fs;
+		if(!ws) {
+			return;
+		}
+		Semaphore& queueSemaphore = ws->_queuedTasks;
+		ws = null;
+
+		// Wait for a task to appear in the queue; if there is a task, wake up and execute it
+		if(queueSemaphore.Wait()) {
+			WebServerTask task(WebServerTask::TaskNone);
+			{
+				ws = _fs;
+				if(!ws) {
+					return;
+				}
+				ThreadLock lock(&(ws->_lock));	
+				std::deque<WebServerTask>::iterator it = ws->_queue.begin();
+				if(it==ws->_queue.end()) {
+					continue;
+				}
+
+				task = *it;
+				ws->_queue.pop_front();
+				++(ws->_busyThreads);
+				ws = null;
+			}
+
+			try {
+				if(task._task==WebServerTask::TaskRequest) {
+					RunSocket(task._socket);
+				}
+				else if(task._task==WebServerTask::TaskQuit) {
+					return;
+				}
+			}
+			catch(const Exception& e) {
+				Log::Write(L"TJNP/WebServerResponseThread", L"Error occurred when processing client request: "+e.GetMsg());
+			}
+			catch(...) {
+				Log::Write(L"TJNP/WebServerResponseThread", L"Unknown error occurred when processing client request");
+			}
+
+			{
+				ws = _fs;
+				if(!ws) {
+					return;
+				}
+
+				ThreadLock lock(&(ws->_lock));	
+				--(ws->_busyThreads);
+			}
+		}
+	}
 }
 
 WebServerThread::WebServerThread(ref<WebServer> fs, int port): _fs(fs), _port(port), _server4(-1), _server6(-1) {
-	#ifdef TJ_OS_POSIX
-		if(socketpair(AF_UNIX, SOCK_STREAM, 0, _controlSocket)!=0) {
-			Log::Write(L"TJNP/SocketListenerThread", L"Could not create control socket pair");
-		}
-	#endif
 }
 
 WebServerThread::~WebServerThread() {
-	Cancel();
-	WaitForCompletion();
-
-	#ifdef TJ_OS_POSIX
-		close(_controlSocket[0]);
-		close(_controlSocket[1]);	
-	#endif
+	// Termination is handled by SocketListenerThread
 }
 
 unsigned short WebServerThread::GetActualPort() const {
@@ -675,20 +741,6 @@ void WebServerThread::Start() {
 	_readyEvent.Reset();
 	Thread::Start();
 	_readyEvent.Wait(); // Blocks until the web server is initialized, and the actual port is known
-}
-
-void WebServerThread::Cancel() {
-	#ifdef TJ_OS_POSIX
-		char quit[1] = {'Q'};
-		if(write(_controlSocket[0], quit, 1)==-1) {
-			Log::Write(L"TJNP/SocketListenerThread", L"Could not send quit message to listener thread");
-		}
-	#endif
-	
-	#ifdef TJ_OS_WIN
-		shutdown (_server4, SD_RECEIVE);
-		shutdown (_server6, SD_RECEIVE);
-	#endif
 }
 
 void WebServerThread::Run() {
@@ -759,6 +811,9 @@ void WebServerThread::Run() {
 		Log::Write(L"TJNP/WebServer", L"The IPv4 socket just doesn't want to listen!");
 		v4 = false;
 	}
+
+	AddListener(_server6, this);
+	AddListener(_server4, this);
 	
 	// TODO: limit the number of threads with some kind of semaphore?
 	_readyEvent.Signal();
@@ -769,64 +824,7 @@ void WebServerThread::Run() {
 		return;
 	}
 	
-	
-	while(true) {
-		ref<WebServer> fs = _fs;
-		if(!fs->_run) {
-			break;
-		}
-		
-		fd_set fds;
-		FD_ZERO(&fds);
-		int maxSocket = 0;
-		
-		#ifdef TJ_OS_POSIX
-			FD_SET(_controlSocket[1], &fds); maxSocket = Util::Max(maxSocket, _controlSocket[1]);
-		#endif
-		
-		if(v6) {
-			FD_SET(_server6, &fds); 
-			maxSocket = Util::Max(maxSocket, (int)_server6);
-		}
-		
-		if(v4) {
-			FD_SET(_server4, &fds); 
-			maxSocket = Util::Max(maxSocket, (int)_server4);
-		}
-		
-		if(select(maxSocket+1, &fds, NULL, NULL, NULL)>0) {
-			#ifdef TJ_OS_POSIX
-				if(FD_ISSET(_controlSocket[1], &fds)) {
-					// End the thread, a control message was sent to us
-					Log::Write(L"TJNP/WebServerThread", L"End thread, quit control message received");
-					return;
-				}
-			#endif
-			
-			if(FD_ISSET(_server6, &fds)) {
-				NativeSocket client = accept(_server6, 0, 0);
-
-				if(client!=-1) {
-					// start a response thread
-					WebServerResponseThread* rt = new WebServerResponseThread(client, _fs); // the thread will delete itself
-					rt->Start();
-				}
-			}
-			else if(FD_ISSET(_server4, &fds)) {
-				NativeSocket client = accept(_server4, 0, 0);
-				
-				if(client!=-1) {
-					// start a response thread
-					WebServerResponseThread* rt = new WebServerResponseThread(client, _fs); // the thread will delete itself
-					rt->Start();
-				}
-			}
-		}
-		else {
-			Log::Write(L"TJNP/WebServerThread", L"Select operation failed; terminating thread!");
-			break;
-		}
-	}
+	SocketListenerThread::Run();
 
 	#ifdef TJ_OS_WIN
 		closesocket(_server6);
@@ -840,23 +838,52 @@ void WebServerThread::Run() {
 
 	_server6 = -1;
 	_server4 = -1;
+}
 
-	Log::Write(L"TJNP/WebServer", L"WebServer has been stopped");
+void WebServerThread::OnReceive(NativeSocket ns) {
+	NativeSocket client = accept(ns, 0, 0);
+
+	if(client!=-1) {
+		// handle request
+		ref<WebServer> fs = _fs;
+		if(fs) {
+			WebServerTask wt(WebServerTask::TaskRequest);
+			wt._socket = client;
+			fs->AddTask(wt);
+		}
+		else {
+			Stop();
+		}
+	}
 }
 
 /** WebServer **/
-WebServer::WebServer(unsigned short port, ref<WebItem> defaultResolver): _run(false), _bytesSent(0), _bytesReceived(0), _defaultResolver(defaultResolver), _port(port) {
+WebServer::WebServer(unsigned short port, ref<WebItem> defaultResolver, unsigned int maxThreads): _run(false), _bytesSent(0), _bytesReceived(0), _defaultResolver(defaultResolver), _port(port), _maxThreads(maxThreads), _busyThreads(0) {
 }
 
 WebServer::~WebServer() {
 	Stop();
 }
 
+void WebServer::AddTask(const WebServerTask& wt) {
+	ThreadLock lock(&_lock);
+	_queue.push_back(wt);
+	if(wt._task!=WebServerTask::TaskQuit) {
+		int numThreads = _threads.size();
+		if((numThreads<1) || ((_busyThreads>=numThreads) && (int(_maxThreads)>numThreads))) {
+			// Create a new response thread
+			ref<WebServerResponseThread> wrt = GC::Hold(new WebServerResponseThread(this));
+			_threads.insert(wrt);
+			wrt->Start();
+		}
+	}
+	_queuedTasks.Release();
+}
+
 void WebServer::OnCreated() {
 	_serverThread = GC::Hold(new WebServerThread(this, _port));
 	_run = true;
 	_serverThread->Start();
-	//Log::Write(L"TJNP/WebServer", L"Actual port is "+Stringify(_serverThread->GetActualPort()));
 }
 
 void WebServer::AddResolver(const std::wstring& pathPrefix, strong<WebItem> frq) {
@@ -873,9 +900,21 @@ unsigned short WebServer::GetActualPort() const {
 }
 
 void WebServer::Stop() {
-	// TODO implement (stop WebServerThread and all the threads it has spawned)
 	_run = false;
-	_serverThread->Cancel();
+	_serverThread->Stop();
+
+	// Send quit messages
+	{
+		ThreadLock lock(&_lock);
+		std::set< ref<WebServerResponseThread> >::iterator tit = _threads.begin();
+		while(tit!=_threads.end()) {
+			AddTask(WebServerTask(WebServerTask::TaskQuit));
+			++tit;
+		}
+	}
+
+	_threads.clear(); // ~WebServerResponseThread will wait for completion
+	Log::Write(L"TJNP/WebServer", L"Web server stopped");
 }
 
 unsigned int WebServer::GetBytesReceived() const {
@@ -884,4 +923,8 @@ unsigned int WebServer::GetBytesReceived() const {
 
 unsigned int WebServer::GetBytesSent() const {
 	return _bytesSent;
+}
+
+/** WebServerTask **/
+WebServerTask::WebServerTask(TaskType t): _task(t) {
 }

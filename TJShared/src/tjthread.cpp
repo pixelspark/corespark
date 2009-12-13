@@ -5,16 +5,13 @@ using namespace tj::shared;
 #ifdef TJ_OS_POSIX
 	#define TJ_USE_PTHREADS
 	#include <pthread.h>
+	#include <semaphore.h>
 	#include <sys/time.h>
-#endif
 
-
-#ifdef TJ_OS_MAC
-	//#define TJ_USE_LIBDISPATCH
-#endif
-
-#ifdef TJ_USE_LIBDISPATCH
-	#include <dispatch/dispatch.h>
+	#ifdef TJ_OS_MAC
+		#define TJ_USE_LIBDISPATCH_SEMAPHORES
+		#include <dispatch/dispatch.h>
+	#endif
 #endif
 
 volatile ReferenceCount Thread::_count = 0;
@@ -334,27 +331,61 @@ void Thread::Sleep(double ms) {
 	}
 #endif
 
-#ifdef TJ_OS_MAC
-#ifdef TJ_USE_LIBDISPATCH
-	Semaphore::Semaphore() {
-		_sema = reinterpret_cast<void*>(dispatch_semaphore_create(0));
-	}
-
-	Semaphore::~Semaphore() {
-		dispatch_release(reinterpret_cast<dispatch_semaphore_t>(_sema));
-	}
-
-	void Semaphore::Release(int n) {
-		while(n>0) {
-			dispatch_semaphore_signal(reinterpret_cast<dispatch_semaphore_t>(_sema));
-			--n;
+#ifdef TJ_OS_POSIX
+	#ifdef TJ_USE_LIBDISPATCH_SEMAPHORES
+		Semaphore::Semaphore() {
+			_sema = reinterpret_cast<void*>(dispatch_semaphore_create(0));
 		}
-	}
 
-	bool Semaphore::Wait(const Time& out) {
-		int timeoutMS = out.ToInt();
-		return dispatch_semaphore_wait(reinterpret_cast<dispatch_semaphore_t>(_sema), (timeoutMS<0)?DISPATCH_TIME_FOREVER:dispatch_time(DISPATCH_TIME_NOW, timeoutMS*1000))==0;
-	}
+		Semaphore::~Semaphore() {
+			dispatch_release(reinterpret_cast<dispatch_semaphore_t>(_sema));
+		}
+
+		void Semaphore::Release(int n) {
+			while(n>0) {
+				dispatch_semaphore_signal(reinterpret_cast<dispatch_semaphore_t>(_sema));
+				--n;
+			}
+		}
+
+		bool Semaphore::Wait(const Time& out) {
+			int timeoutMS = out.ToInt();
+			return dispatch_semaphore_wait(reinterpret_cast<dispatch_semaphore_t>(_sema), (timeoutMS<0)?DISPATCH_TIME_FOREVER:dispatch_time(DISPATCH_TIME_NOW, timeoutMS*1000))==0;
+		}
+	#else 
+		Semaphore::Semaphore() {
+			if(sem_init(&_sema, 0, 0)!=0) {
+				Throw(L"Could not create semaphore (sem_init)", ExceptionTypeError);
+			}
+		}
+
+		Semaphore::~Semaphore() {
+			sem_destroy(&_sema);
+		}
+
+		void Semaphore::Release(int n) {
+			while(n>0) {
+				sem_post(&_sema);
+				--n;
+			}
+		}
+
+		bool Semaphore::Wait(const Time& out) {
+			int ms = out.ToInt();
+
+			if(ms<0) {
+				return sem_wait(&_sema)==0;	
+			}
+			else {
+				struct timeval now;
+				gettimeofday(&now, NULL);
+				
+				struct timespec abstime;
+				abstime.tv_sec = now.tv_sec + (ms / 1000);
+				abstime.tv_nsec = (now.tv_usec + ((ms % 1000)*1000*1000));
+				return sem_timedwait(&_sema, &abstime)==0; /* When timing out, returns ETIMEOUT */
+			}
+		}
 #endif
 #endif
 
