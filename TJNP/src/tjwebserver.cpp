@@ -612,8 +612,8 @@ void WebServerResponseThread::RunSocket(NativeSocket client) {
 
 							// Throw the rest of this block's data in the data buffer
 							if(requestBytesToRead>0) {
-								int dataLeft = r-a-1;
-								cwData->Append(&(buffer[a+1]), min(dataLeft,requestBytesToRead));
+								int64 dataLeft = r-a-1;
+								cwData->Append(&(buffer[a+1]), Util::Min(dataLeft,requestBytesToRead));
 								httpRequest->SetAdditionalData(cwData);
 								requestBytesToRead -= dataLeft;
 							}
@@ -621,7 +621,7 @@ void WebServerResponseThread::RunSocket(NativeSocket client) {
 					}
 				}
 				else if(requestBytesToRead>0) {
-					cwData->Append(buffer, (unsigned int)min(r,requestBytesToRead));
+					cwData->Append(buffer, (unsigned int)Util::Min((int64)r,requestBytesToRead));
 					requestBytesToRead -= r;
 				}
 			}
