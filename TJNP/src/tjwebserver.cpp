@@ -3,6 +3,7 @@ using namespace tj::np;
 using namespace tj::shared;
 
 #include <algorithm>
+#include <errno.h>
 
 #ifdef TJ_OS_WIN
 	#include <winsock2.h>
@@ -769,22 +770,27 @@ void WebServerThread::Run() {
 	local4.sin_family = AF_INET;
 	local4.sin_addr.s_addr = INADDR_ANY;
 	local4.sin_port = htons(_port);
+
+	if(v6) {
+		int on = 1;
+		setsockopt(_server6, IPPROTO_IPV6, IPV6_V6ONLY, (char*)&on, sizeof(char));
+		int br =  bind(_server6, (sockaddr*)&local, sizeof(sockaddr_in6));
+		if(br!=0) {
+			Log::Write(L"TJNP/WebServer", L"Could not bind IPv6 socket to port "+Stringify(ntohs(local.sin6_port))+L" (error="+Stringify(errno)+L"; port already taken?)!");
+			v6 = false;
+		}
+	}
+	
+	// If the IPv6 server initialized correctly and chose a port (local.sin6_port==0), then try to find out
+	// on which port it is and register the same port for the IPv6 server.
+	socklen_t len = sizeof(sockaddr_in6);
+	if(v4 && v6 && getsockname(_server6, (sockaddr*)&local, &len)==0) {
+		local4.sin_port = local.sin6_port;
+	}
 	
 	if(v4 && bind(_server4, (sockaddr*)&local4, sizeof(sockaddr_in))!=0) {
-		Log::Write(L"TJNP/WebServer", L"Could not bind IPv4 socket to port (port already taken?)!");
+		Log::Write(L"TJNP/WebServer", L"Could not bind IPv4 socket to port (port already taken?)! (err="+Stringify(errno)+L")");
 		v4 = false;
-	}
-
-	// If the IPv4 server initialized correctly and chose a port (local4.sin_port==0), then try to find out
-	// on which port it is and register the same port for the IPv6 server.
-	socklen_t len = sizeof(sockaddr_in);
-	if(v4 && v6 && getsockname(_server4, (sockaddr*)&local4, &len)==0) {
-		local.sin6_port = local4.sin_port;
-	}
-
-	if(v6 && bind(_server6, (sockaddr*)&local, sizeof(sockaddr_in6))!=0) {
-		Log::Write(L"TJNP/WebServer", L"Could not bind IPv6 socket to port (port already taken?)!");
-		v6 = false;
 	}
 	
 	if(_port==WebServer::KPortDontCare) {
@@ -801,12 +807,12 @@ void WebServerThread::Run() {
 	}
 
 	if(!v6 || listen(_server6, 10)!=0) {
-		Log::Write(L"TJNP/WebServer", L"The IPv6 socket just doesn't want to listen!");
+		Log::Write(L"TJNP/WebServer", L"The IPv6 socket just doesn't want to listen! (err="+Stringify(errno)+L";v6="+Stringify(v6)+L")");
 		v6 = false;
 	}
 	
 	if(!v4 || listen(_server4, 10)!=0) {
-		Log::Write(L"TJNP/WebServer", L"The IPv4 socket just doesn't want to listen!");
+		Log::Write(L"TJNP/WebServer", L"The IPv4 socket just doesn't want to listen! (err="+Stringify(errno)+L";v4="+Stringify(v4)+L")");
 		v4 = false;
 	}
 	
