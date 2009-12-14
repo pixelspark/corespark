@@ -524,7 +524,7 @@
 				INSTALL_PATH = .;
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
-				SDKROOT = macosx10.5;
+				SDKROOT = macosx10.6;
 				SYMROOT = ../build;
 			};
 			name = Debug;
@@ -539,7 +539,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INSTALL_PATH = .;
 				PREBINDING = NO;
-				SDKROOT = macosx10.5;
+				SDKROOT = macosx10.6;
 				SYMROOT = ../build;
 			};
 			name = Release;

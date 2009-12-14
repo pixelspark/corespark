@@ -285,7 +285,7 @@ bool WebItemCollection::Put(const String& resource, ref<Data> data) {
 		// The resource to be put onto is right under me; see if it exists already
 		ThreadLock lock(&_lock);
 		std::deque< ref<WebItem> >::iterator it = _children.begin();
-		bool foundExistingItem = false;
+
 		while(it!=_children.end()) {
 			ref<WebItem> wi = *it;
 			if(wi) {
