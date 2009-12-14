@@ -809,9 +809,27 @@ void WebServerThread::Run() {
 		Log::Write(L"TJNP/WebServer", L"The IPv4 socket just doesn't want to listen!");
 		v4 = false;
 	}
+	
+	#ifdef TJ_OS_POSIX
+		if(v6) {
+			fcntl(_server6, O_NONBLOCK);
+		}
+		if(v4) {
+			fcntl(_server4, O_NONBLOCK);	
+		}
+	#else
+		#warning Need to set non-blocking server socket
+	#endif
+	
+	
 
-	AddListener(_server6, this);
-	AddListener(_server4, this);
+	if(v6) {
+		AddListener(_server6, this);
+	}
+	
+	if(v4) {
+		AddListener(_server4, this);
+	}
 	
 	// TODO: limit the number of threads with some kind of semaphore?
 	_readyEvent.Signal();
