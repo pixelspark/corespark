@@ -665,8 +665,6 @@ void WebServerResponseThread::RunSocket(NativeSocket client) {
 	#ifdef TJ_OS_POSIX
 		close(_client);
 	#endif
-
-		Log::Write(L"TJNP/WebServerResponseThread", L"End request");
 }
 
 void WebServerResponseThread::Run() {

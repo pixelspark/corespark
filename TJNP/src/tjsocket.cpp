@@ -333,11 +333,9 @@ void SocketListenerThread::Run() {
 	#ifdef TJ_OS_POSIX
 		while(true) {
 			fd_set fds;
-			fd_set fdsErrors;
 			FD_ZERO(&fds);
 			int maxSocket = _controlSocket[1];
 			FD_SET(_controlSocket[1], &fds);
-			FD_SET(_controlSocket[1], &fdsErrors);
 			
 			{
 				ThreadLock lock(&_lock);
@@ -345,14 +343,13 @@ void SocketListenerThread::Run() {
 				while(it!=_listeners.end()) {
 					if(it->first!=-1) {
 						FD_SET(it->first, &fds);
-						FD_SET(it->first, &fdsErrors);
 						maxSocket = Util::Max(maxSocket, it->first);
 					}
 					++it;
 				}
 			}
 
-			if(select(maxSocket+1, &fds, NULL, &fdsErrors, NULL)>0) {
+			if(select(maxSocket+1, &fds, NULL, NULL, NULL)>0) {
 				if(FD_ISSET(_controlSocket[1], &fds)) {
 					char cmd = 'Q';
 					recv(_controlSocket[1], &cmd, sizeof(char), 0);
@@ -375,10 +372,7 @@ void SocketListenerThread::Run() {
 					std::map<NativeSocket, weak<SocketListener> >::iterator it = _listeners.begin();
 					while(it!=_listeners.end()) {
 						if(it->first!=-1) {
-							if(FD_ISSET(it->first, &fdsErrors)) {
-								Log::Write(L"TJNP/SocketListenerThread", L"Error on socket "+StringifyHex(it->first));
-							}
-							else if(FD_ISSET(it->first, &fds)) {
+							if(FD_ISSET(it->first, &fds)) {
 								OnReceive(it->first);
 							}
 						}
