@@ -151,8 +151,8 @@
 					PBXFileDataSource_Warnings_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 282481016;
-			PBXWorkspaceStateSaveDate = 282481016;
+			PBXPerProjectTemplateStateSaveDate = 282561408;
+			PBXWorkspaceStateSaveDate = 282561408;
 		};
 		perUserProjectItems = {
 			B45CFB8B10A1B155007CA879 = B45CFB8B10A1B155007CA879 /* PBXTextBookmark */;
@@ -175,15 +175,15 @@
 			B469550810A6E8860045DB2D = B469550810A6E8860045DB2D /* PBXTextBookmark */;
 			B469550A10A6E8860045DB2D = B469550A10A6E8860045DB2D /* PBXTextBookmark */;
 			B469551010A6E8860045DB2D = B469551010A6E8860045DB2D /* PBXTextBookmark */;
-			B46BB5AD10D6495F0077ABBA = B46BB5AD10D6495F0077ABBA /* PBXTextBookmark */;
+			B474BA5010D6D9D300FA7D4C = B474BA5010D6D9D300FA7D4C /* PBXTextBookmark */;
+			B474BA5110D6D9D300FA7D4C = B474BA5110D6D9D300FA7D4C /* PBXTextBookmark */;
+			B474BA5210D6D9D300FA7D4C = B474BA5210D6D9D300FA7D4C /* PBXTextBookmark */;
 			B475116F10CD0F1D008A801F = B475116F10CD0F1D008A801F /* PBXTextBookmark */;
 			B475117010CD0F1D008A801F = B475117010CD0F1D008A801F /* PBXTextBookmark */;
-			B475117110CD0F1D008A801F = B475117110CD0F1D008A801F /* PBXTextBookmark */;
 			B475117210CD0F1D008A801F = B475117210CD0F1D008A801F /* PBXTextBookmark */;
 			B475117310CD0F1D008A801F = B475117310CD0F1D008A801F /* PBXTextBookmark */;
 			B475117410CD0F1D008A801F = B475117410CD0F1D008A801F /* PBXTextBookmark */;
 			B475117510CD0F1D008A801F = B475117510CD0F1D008A801F /* PBXTextBookmark */;
-			B475117710CD0F1D008A801F = B475117710CD0F1D008A801F /* PBXTextBookmark */;
 			B47A687510BEA4B30060D38F = B47A687510BEA4B30060D38F /* PBXTextBookmark */;
 			B47A687610BEA4B30060D38F = B47A687610BEA4B30060D38F /* PBXTextBookmark */;
 			B47B755310AB72F30031263D = B47B755310AB72F30031263D /* PBXTextBookmark */;
@@ -505,7 +505,7 @@
 		path = /Developer/SDKs/MacOSX10.5.sdk/usr/include/assert.h;
 		sourceTree = "<absolute>";
 	};
-	B46BB5AD10D6495F0077ABBA /* PBXTextBookmark */ = {
+	B474BA5010D6D9D300FA7D4C /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
 		fRef = B4CAA7BA10AD63BE00385A5F /* tjutil.cpp */;
 		name = "tjutil.cpp: 272";
@@ -514,6 +514,26 @@
 		rType = 0;
 		vrLen = 968;
 		vrLoc = 6300;
+	};
+	B474BA5110D6D9D300FA7D4C /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = B4A98AF310C6E87D001CF473 /* tjsettings.h */;
+		name = "tjsettings.h: 44";
+		rLen = 0;
+		rLoc = 1738;
+		rType = 0;
+		vrLen = 1739;
+		vrLoc = 0;
+	};
+	B474BA5210D6D9D300FA7D4C /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = B4CAA7B610AD63BE00385A5F /* tjsettings.cpp */;
+		name = "tjsettings.cpp: 76";
+		rLen = 0;
+		rLoc = 1828;
+		rType = 0;
+		vrLen = 1129;
+		vrLoc = 0;
 	};
 	B47510CA10CCED5B008A801F /* tjsettings.mm */ = {
 		uiCtxt = {
@@ -541,16 +561,6 @@
 		rType = 0;
 		vrLen = 1486;
 		vrLoc = 0;
-	};
-	B475117110CD0F1D008A801F /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = B4A98AF310C6E87D001CF473 /* tjsettings.h */;
-		name = "tjsettings.h: 44";
-		rLen = 0;
-		rLoc = 1738;
-		rType = 0;
-		vrLen = 1704;
-		vrLoc = 126;
 	};
 	B475117210CD0F1D008A801F /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
@@ -591,16 +601,6 @@
 		rType = 0;
 		vrLen = 1404;
 		vrLoc = 2216;
-	};
-	B475117710CD0F1D008A801F /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = B4CAA7BA10AD63BE00385A5F /* tjutil.cpp */;
-		name = "tjutil.cpp: 272";
-		rLen = 0;
-		rLoc = 6823;
-		rType = 0;
-		vrLen = 972;
-		vrLoc = 6300;
 	};
 	B47A685A10BEA4590060D38F /* doxygen.config */ = {
 		uiCtxt = {
@@ -896,6 +896,11 @@
 		name = tjsettings.cpp;
 		path = /Users/tommyvandervorst/Documents/Projecten/tj/TJShared/src/tjsettings.cpp;
 		sourceTree = "<absolute>";
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1012, 3042}}";
+			sepNavSelRange = "{1828, 0}";
+			sepNavVisRange = "{0, 1066}";
+		};
 	};
 	B486E835106628710043CE5D /* tjtea.cpp */ = {
 		isa = PBXFileReference;
@@ -1173,9 +1178,9 @@
 	};
 	B4CAA7B610AD63BE00385A5F /* tjsettings.cpp */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1012, 2678}}";
-			sepNavSelRange = "{443, 0}";
-			sepNavVisRange = "{1798, 1125}";
+			sepNavIntBoundsRect = "{{0, 0}, {1012, 2964}}";
+			sepNavSelRange = "{1828, 0}";
+			sepNavVisRange = "{0, 1129}";
 		};
 	};
 	B4CAA7B910AD63BE00385A5F /* tjtime.cpp */ = {

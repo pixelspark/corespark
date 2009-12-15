@@ -9,8 +9,12 @@ using namespace tj::shared;
 	#include <sys/time.h>
 
 	#ifdef TJ_OS_MAC
-		#define TJ_USE_LIBDISPATCH_SEMAPHORES
-		#include <dispatch/dispatch.h>
+		#ifndef TJ_OS_IPHONE
+			#define TJ_USE_LIBDISPATCH_SEMAPHORES
+			#include <dispatch/dispatch.h>
+		#else
+			#warning No Semaphore implementation for iPhone OS
+		#endif
 	#endif
 #endif
 
