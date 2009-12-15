@@ -386,7 +386,8 @@ void SocketListenerThread::Run() {
 			}
 		}
 	#endif
-	Log::Write(L"TJNP/SocketListenerThread", L"End thread run");
+
+	Log::Write(L"TJNP/SocketListenerThread", L"End socket listener thread");
 }
 
 #ifdef TJ_OS_WIN
