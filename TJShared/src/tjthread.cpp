@@ -9,12 +9,9 @@ using namespace tj::shared;
 	#include <sys/time.h>
 
 	#ifdef TJ_OS_MAC
-		#ifndef TJ_OS_IPHONE
-			#define TJ_USE_LIBDISPATCH_SEMAPHORES
-			#include <dispatch/dispatch.h>
-		#else
-			#warning No Semaphore implementation for iPhone OS
-		#endif
+		#include <mach/mach_init.h>
+		#include <mach/task.h>
+		#include <mach/semaphore.h>
 	#endif
 #endif
 
@@ -335,28 +332,36 @@ void Thread::Sleep(double ms) {
 	}
 #endif
 
-#ifdef TJ_OS_POSIX
-	#ifdef TJ_USE_LIBDISPATCH_SEMAPHORES
-		Semaphore::Semaphore() {
-			_sema = reinterpret_cast<void*>(dispatch_semaphore_create(0));
-		}
+#ifdef TJ_OS_MAC
+	Semaphore::Semaphore() {
+		task_t self = mach_task_self();
+		semaphore_create(self, &_sema, SYNC_POLICY_FIFO, 0);
+	}
 
-		Semaphore::~Semaphore() {
-			dispatch_release(reinterpret_cast<dispatch_semaphore_t>(_sema));
-		}
+	Semaphore::~Semaphore() {
+		task_t self = mach_task_self();
+		semaphore_destroy(self, _sema);
+	}
 
-		void Semaphore::Release(int n) {
-			while(n>0) {
-				dispatch_semaphore_signal(reinterpret_cast<dispatch_semaphore_t>(_sema));
-				--n;
-			}
+	void Semaphore::Release(int n) {
+		while(n>0) {
+			semaphore_signal(_sema);
+			--n;
 		}
+	}
 
-		bool Semaphore::Wait(const Time& out) {
-			int timeoutMS = out.ToInt();
-			return dispatch_semaphore_wait(reinterpret_cast<dispatch_semaphore_t>(_sema), (timeoutMS<0)?DISPATCH_TIME_FOREVER:dispatch_time(DISPATCH_TIME_NOW, timeoutMS*1000))==0;
+	bool Semaphore::Wait(const Time& out) {
+		int timeoutMS = out.ToInt();
+		if(timeoutMS>0) {
+			Log::Write(L"TJShared/Semaphore", L"Semaphore::Wait called with timeout, but cannot wait with timeout on Mach");
 		}
-	#else 
+		semaphore_wait(_sema);
+		return true;
+		//return dispatch_semaphore_wait(reinterpret_cast<dispatch_semaphore_t>(_sema), (timeoutMS<0)?DISPATCH_TIME_FOREVER:dispatch_time(DISPATCH_TIME_NOW, timeoutMS*1000))==0;
+	}
+
+#else
+	#ifdef TJ_OS_POSIX
 		Semaphore::Semaphore() {
 			if(sem_init(&_sema, 0, 0)!=0) {
 				Throw(L"Could not create semaphore (sem_init)", ExceptionTypeError);
@@ -390,7 +395,7 @@ void Thread::Sleep(double ms) {
 				return sem_timedwait(&_sema, &abstime)==0; /* When timing out, returns ETIMEOUT */
 			}
 		}
-#endif
+	#endif
 #endif
 
 /* Event; Windows implementation */

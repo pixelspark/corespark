@@ -328,7 +328,7 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>B4E0322A10CBCA4E000A59A5</string>
+										<string>B476DB8C10D96AEB003BC1C0</string>
 										<key>history</key>
 										<array>
 											<string>B49107E01070D1DB00279D29</string>
@@ -343,8 +343,8 @@
 											<string>B4E0322510CBCA4E000A59A5</string>
 											<string>B4E0322610CBCA4E000A59A5</string>
 											<string>B4E0322710CBCA4E000A59A5</string>
-											<string>B4E0322810CBCA4E000A59A5</string>
-											<string>B4E0322910CBCA4E000A59A5</string>
+											<string>B476DB8A10D96AEB003BC1C0</string>
+											<string>B476DB8B10D96AEB003BC1C0</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -358,18 +358,18 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 0}, {1073, 442}}</string>
+								<string>{{0, 0}, {1073, 432}}</string>
 								<key>RubberWindowFrame</key>
 								<string>0 97 1280 905 0 0 1280 1002 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
 							<key>Proportion</key>
-							<string>442pt</string>
+							<string>432pt</string>
 						</dict>
 						<dict>
 							<key>Proportion</key>
-							<string>417pt</string>
+							<string>427pt</string>
 							<key>Tabs</key>
 							<array>
 								<dict>
@@ -383,7 +383,7 @@
 									<key>GeometryConfiguration</key>
 									<dict>
 										<key>Frame</key>
-										<string>{{10, 27}, {1073, 390}}</string>
+										<string>{{10, 27}, {1073, 400}}</string>
 										<key>RubberWindowFrame</key>
 										<string>0 97 1280 905 0 0 1280 1002 </string>
 									</dict>
@@ -467,11 +467,11 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>B4E0322B10CBCA4E000A59A5</string>
+				<string>B476DB8D10D96AEB003BC1C0</string>
 				<string>1CA23ED40692098700951B8B</string>
-				<string>B4E0322C10CBCA4E000A59A5</string>
+				<string>B476DB8E10D96AEB003BC1C0</string>
 				<string>B45F57E01066C39B00FEDA6B</string>
-				<string>B4E0322D10CBCA4E000A59A5</string>
+				<string>B476DB8F10D96AEB003BC1C0</string>
 				<string>1CA23EDF0692099D00951B8B</string>
 				<string>1CA23EE00692099D00951B8B</string>
 				<string>1CA23EE10692099D00951B8B</string>

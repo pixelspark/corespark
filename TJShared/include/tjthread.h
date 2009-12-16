@@ -10,6 +10,10 @@
 	#include <semaphore.h>
 #endif
 
+#ifdef TJ_OS_MAC
+	#include <mach/semaphore.h>
+#endif
+
 namespace tj {
 	namespace shared {
 		class EXPORTED Atomic {
@@ -143,7 +147,7 @@ namespace tj {
 			
 				#ifdef TJ_OS_POSIX
 					#ifdef TJ_OS_MAC
-						void* _sema;
+						semaphore_t _sema;
 					#else
 						sem_t _sema;
 					#endif
