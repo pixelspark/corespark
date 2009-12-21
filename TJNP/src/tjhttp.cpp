@@ -170,7 +170,7 @@ HTTPRequest::HTTPRequest(ref<Data> request, ref<Data> data) {
 
 		// Find where the headers end
 		const char* fullRequest = request->GetBuffer();
-		const std::string req(fullRequest, 0, request->GetSize());
+		const std::string req(fullRequest, 0, (size_t)request->GetSize());
 		std::string currentHeader;
 		std::string::const_iterator it = req.begin();
 

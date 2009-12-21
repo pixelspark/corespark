@@ -39,8 +39,16 @@ namespace tj {
 				virtual bool Connect(const NetworkAddress& ns, unsigned short port);
 				virtual void Close();
 				virtual bool IsValid() const;
+				virtual void SetBlocking(bool b);
+				virtual void SetBroadcast(bool b);
+				virtual void SetReuseAddress(bool b);
 				virtual NativeSocket GetNativeSocket() const;
 				virtual bool Send(const std::string& data);
+				virtual bool Send(tj::shared::strong<tj::shared::Data> data);
+				virtual bool Send(const char* data, const tj::shared::Bytes& length);
+				virtual bool SendTo(const NetworkAddress& na, unsigned short port, tj::shared::strong<tj::shared::Data> data);
+				virtual bool SendTo(const NetworkAddress& na, unsigned short port, const std::string& data);
+				virtual bool SendTo(const NetworkAddress& na, unsigned short port, const char* data, const tj::shared::Bytes& length);
 				virtual bool Read(char* buffer, unsigned int maxLength, unsigned int& readBytes);
 
 			protected:

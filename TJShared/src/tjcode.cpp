@@ -7,7 +7,7 @@ using namespace tj::shared;
 Data::~Data() {
 }
 
-DataReader::DataReader(const char* code, unsigned int size) {
+DataReader::DataReader(const char* code, Bytes size) {
 	_code = new char[size*sizeof(char)];
 	memcpy(_code,code,size*sizeof(char));
 	_size = size;
@@ -36,12 +36,12 @@ char* DataReader::TakeOverBuffer(bool clearMine) {
 	}
 }
 
-unsigned int DataReader::GetSize() {
+Bytes DataReader::GetSize() const {
 	return _size;
 }
 
 /** DataWriter **/
-DataWriter::DataWriter(unsigned int initSize) {
+DataWriter::DataWriter(Bytes initSize) {
 	_buffer = new char[initSize];
 	_size = initSize;
 	_pos = 0;
@@ -65,11 +65,11 @@ char* DataWriter::TakeOverBuffer(bool clearMine) {
 	return buf;
 }
 
-unsigned int DataWriter::GetSize() {
+Bytes DataWriter::GetSize() const {
 	return _pos;
 }
 
-unsigned int DataWriter::GetCapacity() {
+Bytes DataWriter::GetCapacity() const {
 	return _size;
 }
 
@@ -79,7 +79,7 @@ DataWriter::~DataWriter() {
 	}
 }
 
-void DataWriter::Grow(unsigned int size) {
+void DataWriter::Grow(Bytes size) {
 	if(_buffer==0) {
 		Throw(L"DataWriter grown after buffer has been taken over!", ExceptionTypeSevere);
 	}

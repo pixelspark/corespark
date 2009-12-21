@@ -49,11 +49,11 @@ namespace tj {
 				virtual tj::shared::String GetDisplayName() const = 0;
 				virtual tj::shared::String GetName() const = 0;
 				virtual tj::shared::String GetContentType() const = 0;
-				virtual unsigned int GetContentLength() const = 0;
+				virtual tj::shared::Bytes GetContentLength() const = 0;
 				virtual bool IsCollection() const = 0;
 				virtual void Walk(tj::shared::strong<WebItemWalker> wiw, const tj::shared::String& prefix, int level = -1) = 0;
 				virtual tj::shared::ref<WebItem> Resolve(const tj::shared::String& file) = 0;
-				virtual Resolution Get(tj::shared::ref<WebRequest> frq, tj::shared::String& error, char** data, unsigned int& dataLength) = 0;
+				virtual Resolution Get(tj::shared::ref<WebRequest> frq, tj::shared::String& error, char** data, tj::shared::Bytes& dataLength) = 0;
 				virtual tj::shared::Flags<Permission> GetPermissions() const = 0;
 				virtual tj::shared::ref<WebItem> CreateCollection(const tj::shared::String& resource);
 				virtual bool Delete(const tj::shared::String& resource);
@@ -68,7 +68,7 @@ namespace tj {
 
 		class NP_EXPORTED WebItemResource: public virtual WebItem {
 			public:
-			WebItemResource(const tj::shared::String& fn, const tj::shared::String& dn, const tj::shared::String& contentType, unsigned int length);
+				WebItemResource(const tj::shared::String& fn, const tj::shared::String& dn, const tj::shared::String& contentType, tj::shared::Bytes length);
 				WebItemResource(const tj::shared::String& contentType);
 				
 				virtual ~WebItemResource();
@@ -79,7 +79,7 @@ namespace tj {
 				virtual tj::shared::String GetName() const;
 				virtual tj::shared::String GetContentType() const;
 				virtual tj::shared::Flags<Permission> GetPermissions() const;
-				virtual unsigned int GetContentLength() const;
+				virtual tj::shared::Bytes GetContentLength() const;
 				virtual bool IsCollection() const;
 				virtual tj::shared::ref<WebItem> Resolve(const tj::shared::String& file);
 				virtual void Walk(tj::shared::strong<WebItemWalker> wiw, const tj::shared::String& prefix, int level = -1);
@@ -91,21 +91,21 @@ namespace tj {
 				tj::shared::String _dn;
 				tj::shared::String _contentType;
 				tj::shared::String _etag;
-				unsigned int _length;
+				tj::shared::Bytes _length;
 		};
 
 		class NP_EXPORTED WebItemDataResource: public WebItemResource {
 			public:
 				WebItemDataResource(const tj::shared::String& fn, const tj::shared::String& dn, const tj::shared::String& contentType, tj::shared::strong<tj::shared::Data> data);
 				virtual ~WebItemDataResource();
-				virtual Resolution Get(tj::shared::ref<WebRequest> frq, tj::shared::String& error, char** data, unsigned int& dataLength);
+				virtual Resolution Get(tj::shared::ref<WebRequest> frq, tj::shared::String& error, char** data, tj::shared::Bytes& dataLength);
 				virtual bool Put(const tj::shared::String& resource, tj::shared::ref<tj::shared::Data> data);
-				virtual unsigned int GetContentLength() const;
+				virtual tj::shared::Bytes GetContentLength() const;
 
 			protected:
 				virtual void SetData(tj::shared::strong<tj::shared::Data> cw);
 				char* _data;
-				unsigned int _dataLength;
+				tj::shared::Bytes _dataLength;
 
 		};
 
@@ -117,10 +117,10 @@ namespace tj {
 				virtual tj::shared::String GetDisplayName() const;
 				virtual tj::shared::String GetName() const;
 				virtual tj::shared::String GetContentType() const;
-				virtual unsigned int GetContentLength() const;
+				virtual tj::shared::Bytes GetContentLength() const;
 				virtual bool IsCollection() const;
 				virtual void Walk(tj::shared::strong<WebItemWalker> wiw, const tj::shared::String& prefix, int level = -1);
-				virtual Resolution Get(tj::shared::ref<WebRequest> frq, tj::shared::String& error, char** data, unsigned int& dataLength);
+				virtual Resolution Get(tj::shared::ref<WebRequest> frq, tj::shared::String& error, char** data, tj::shared::Bytes& dataLength);
 				virtual tj::shared::Flags<Permission> GetPermissions() const;
 		};
 
@@ -132,7 +132,7 @@ namespace tj {
 				virtual void Walk(tj::shared::strong<WebItemWalker> wiw, const tj::shared::String& prefix, int level = -1);
 				virtual void Add(tj::shared::ref<WebItem> item);
 				virtual tj::shared::ref<WebItem> Resolve(const tj::shared::String& file);
-				virtual Resolution Get(tj::shared::ref<WebRequest> frq, tj::shared::String& error, char** data, unsigned int& dataLength);
+				virtual Resolution Get(tj::shared::ref<WebRequest> frq, tj::shared::String& error, char** data, tj::shared::Bytes& dataLength);
 				virtual tj::shared::ref<WebItem> CreateCollection(const tj::shared::String& resource);
 				virtual bool Delete(const tj::shared::String& resource);
 				virtual bool Put(const tj::shared::String& resource, tj::shared::ref<tj::shared::Data> data);

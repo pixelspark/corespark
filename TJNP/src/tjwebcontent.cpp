@@ -37,7 +37,7 @@ bool WebItem::Move(const tj::shared::String& from, const tj::shared::String& to,
 }
 
 /** WebItemResource **/
-WebItemResource::WebItemResource(const String& fn, const String& dn, const String& contentType, unsigned int length): _fn(fn), _dn(dn), _contentType(contentType), _length(length) {
+WebItemResource::WebItemResource(const String& fn, const String& dn, const String& contentType, Bytes length): _fn(fn), _dn(dn), _contentType(contentType), _length(length) {
 	Touch();
 	_perms.Set(WebItem::PermissionGet, true);
 }
@@ -74,7 +74,7 @@ tj::shared::String WebItemResource::GetContentType() const {
 	return _contentType;
 }
 
-unsigned int WebItemResource::GetContentLength() const {
+Bytes WebItemResource::GetContentLength() const {
 	return _length;
 }
 
@@ -355,7 +355,7 @@ ref<WebItem> WebItemCollection::CreateCollection(const String& resource) {
 	return null;
 }
 
-Resolution WebItemCollection::Get(ref<WebRequest> frq, String& error, char** data, unsigned int& dataLength) {
+Resolution WebItemCollection::Get(ref<WebRequest> frq, String& error, char** data, Bytes& dataLength) {
 	return ResolutionEmpty;
 }
 
@@ -423,7 +423,7 @@ String WebItemResolver::GetContentType() const {
 	return L"";
 }
 
-unsigned int WebItemResolver::GetContentLength() const {
+Bytes WebItemResolver::GetContentLength() const {
 	return 0;
 }
 
@@ -438,7 +438,7 @@ Flags<WebItem::Permission> WebItemResolver::GetPermissions() const {
 	return Flags<WebItem::Permission>(WebItem::PermissionGet);
 }
 
-Resolution WebItemResolver::Get(tj::shared::ref<WebRequest> frq, tj::shared::String &error, char **data, unsigned int &dataLength) {
+Resolution WebItemResolver::Get(tj::shared::ref<WebRequest> frq, tj::shared::String &error, char **data, Bytes& dataLength) {
 	return ResolutionNone;
 }
 
@@ -452,7 +452,7 @@ WebItemDataResource::~WebItemDataResource() {
 	delete[] _data;
 }
 
-Resolution WebItemDataResource::Get(tj::shared::ref<WebRequest> frq, tj::shared::String& error, char** data, unsigned int& dataLength) {
+Resolution WebItemDataResource::Get(tj::shared::ref<WebRequest> frq, tj::shared::String& error, char** data, Bytes& dataLength) {
 	if(!GetPermissions().IsSet(WebItem::PermissionGet)) {
 		return ResolutionPermissionDenied;
 	}
@@ -460,8 +460,8 @@ Resolution WebItemDataResource::Get(tj::shared::ref<WebRequest> frq, tj::shared:
 	if(_data==0) {
 		return ResolutionNone;
 	}
-	*data = new char[_dataLength];
-	memcpy(*data, _data, _dataLength);
+	*data = new char[(unsigned int)_dataLength];
+	memcpy(*data, _data, (size_t)_dataLength);
 	dataLength = _dataLength;
 	return ResolutionData;
 }
@@ -483,7 +483,7 @@ bool WebItemDataResource::Put(const tj::shared::String& resource, ref<Data> data
 	return true;
 }
 
-unsigned int WebItemDataResource::GetContentLength() const {
+Bytes WebItemDataResource::GetContentLength() const {
 	if(_data==0) {
 		return 0;
 	}

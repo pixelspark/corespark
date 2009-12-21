@@ -23,7 +23,7 @@ ref<DataReader> QueueSLIPFrameDecoder::NextPacket() {
 	return null;
 }
 
-void QueueSLIPFrameDecoder::OnPacketReceived(const unsigned char* data, unsigned int len) {
+void QueueSLIPFrameDecoder::OnPacketReceived(const unsigned char* data, Bytes len) {
 	_buffers.push_back(GC::Hold(new DataReader((const char*)data, len)));
 }
 
@@ -33,9 +33,9 @@ SLIPFrameDecoder::SLIPFrameDecoder(): _isReceivingPacket(false), _lastCharacterW
 SLIPFrameDecoder::~SLIPFrameDecoder() {
 }
 
-void SLIPFrameDecoder::EncodeSLIPFrame(const unsigned char* data, unsigned int length, strong<DataWriter> cw) {
+void SLIPFrameDecoder::EncodeSLIPFrame(const unsigned char* data, Bytes length, strong<DataWriter> cw) {
 	cw->Add(KSLIPEndCharacter);
-	unsigned int index = 0;
+	Bytes index = 0;
 	while(index<length) {
 		if(data[index]==KSLIPEndCharacter) {
 			cw->Add(KSLIPEscapeCharacter);
@@ -46,14 +46,14 @@ void SLIPFrameDecoder::EncodeSLIPFrame(const unsigned char* data, unsigned int l
 			cw->Add(KSLIPEscapeEscapeCharacter);
 		}
 		else {
-			unsigned int endIndex = index+1;
+			Bytes endIndex = index+1;
 			while(endIndex < length) {
 				if(data[endIndex]==KSLIPEscapeCharacter || data[endIndex]==KSLIPEndCharacter) {
 					break;
 				}
 				endIndex++;
 			}
-			unsigned int dataLength = endIndex-index;
+			Bytes dataLength = endIndex-index;
 			if(dataLength>0) {
 				cw->Append((const char*)&(data[index]), dataLength);
 			}
@@ -64,12 +64,12 @@ void SLIPFrameDecoder::EncodeSLIPFrame(const unsigned char* data, unsigned int l
 	cw->Add(KSLIPEndCharacter);
 }
 
-void SLIPFrameDecoder::Append(const unsigned char* data, unsigned int length) {
+void SLIPFrameDecoder::Append(const unsigned char* data, Bytes length) {
 	if(!_buffer) {
 		_buffer = GC::Hold(new DataWriter());
 	}
 
-	unsigned int index = 0;
+	Bytes index = 0;
 	while(index < length) {
 		if(_lastCharacterWasEscape && _isReceivingPacket) {
 			if(data[index]==KSLIPEscapeEscapeCharacter) {
@@ -116,14 +116,15 @@ void SLIPFrameDecoder::Append(const unsigned char* data, unsigned int length) {
 		else if(_isReceivingPacket) {
 			if(!_isDiscardingPacket) {
 				// Read characters until we encounter either the ESC or END character
-				unsigned int endIndex = index+1;
+				Bytes endIndex = index+1;
 				while(endIndex < length) {
 					if(data[endIndex]==KSLIPEscapeCharacter || data[endIndex]==KSLIPEndCharacter) {
 						break;
 					}
 					endIndex++;
 				}
-				unsigned int dataLength = endIndex-index;
+
+				Bytes dataLength = endIndex-index;
 				if(dataLength>0) {
 					_buffer->Append((const char*)&(data[index]), dataLength);
 				}
@@ -137,5 +138,5 @@ void SLIPFrameDecoder::Append(const unsigned char* data, unsigned int length) {
 	}
 }
 
-void SLIPFrameDecoder::OnPacketReceived(const unsigned char* data, unsigned int length) {
+void SLIPFrameDecoder::OnPacketReceived(const unsigned char* data, Bytes length) {
 }

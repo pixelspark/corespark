@@ -11,16 +11,16 @@ namespace tj {
 		class EXPORTED Data: public virtual Object {
 			public:
 				virtual ~Data();
-				virtual unsigned int GetSize() = 0;
+				virtual Bytes GetSize() const = 0;
 				virtual const char* GetBuffer() const = 0;
 				virtual char* TakeOverBuffer(bool clearMine = true) = 0;
 		};
 
 		class EXPORTED DataReader: public Data {
 			public:
-				DataReader(const char* code, unsigned int size);
+				DataReader(const char* code, Bytes size);
 				virtual ~DataReader();
-				virtual unsigned int GetSize();
+				virtual Bytes GetSize() const;
 				virtual const char* GetBuffer() const;
 				virtual char* TakeOverBuffer(bool clearMine);
 
@@ -35,7 +35,7 @@ namespace tj {
 
 			protected:
 				char* _code;
-				unsigned int _size;
+				Bytes _size;
 		};
 
 		template<> EXPORTED String DataReader::Get(unsigned int& position);
@@ -43,10 +43,10 @@ namespace tj {
 
 		class EXPORTED DataWriter: public Data {
 			public:
-				DataWriter(unsigned int initialSize=1024);
+				DataWriter(Bytes initialSize = 1024);
 				virtual ~DataWriter();
-				virtual unsigned int GetSize();
-				unsigned int GetCapacity();
+				virtual Bytes GetSize() const;
+				virtual Bytes GetCapacity() const;
 
 				template<typename T> DataWriter& Add(const T& x) {
 					if(_buffer==0) {
@@ -62,7 +62,7 @@ namespace tj {
 					return *this;
 				}
 
-				inline void Append(const char* buffer, unsigned int size) {
+				inline void Append(const char* buffer, Bytes size) {
 					if(_buffer==0) {
 						Throw(L"DataWriter appended to after buffer has been taken over!", ExceptionTypeSevere);
 					}
@@ -82,10 +82,10 @@ namespace tj {
 				}
 				
 			protected:
-				void Grow(unsigned int size);
+				void Grow(Bytes size);
 
-				unsigned int _size;
-				unsigned int _pos;
+				Bytes _size;
+				Bytes _pos;
 
 			public:
 				char* _buffer;

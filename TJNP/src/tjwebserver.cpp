@@ -107,7 +107,7 @@ class PropFindItemWalker: public WebItemWalker {
 
 			TiXmlElement prop("prop");
 			SaveAttribute(&prop, "displayname", wi->GetDisplayName());
-			unsigned int contentLength = wi->GetContentLength();
+			Bytes contentLength = wi->GetContentLength();
 			if(contentLength>0) {
 				SaveAttribute(&prop, "getcontentlength", contentLength);
 			}
@@ -228,7 +228,7 @@ void WebServerResponseThread::ServeOptionsRequestWithResolver(ref<HTTPRequest> h
 void WebServerResponseThread::ServeGetRequestWithResolver(ref<HTTPRequest> hrp, ref<WebItem> resolver) {
 	std::wstring resolverError;
 	char* resolvedData = 0;
-	unsigned int resolvedDataLength = 0;
+	Bytes resolvedDataLength = 0;
 	bool sendData = false;
 
 	Flags<WebItem::Permission> perms = resolver->GetPermissions();
@@ -273,9 +273,9 @@ void WebServerResponseThread::ServeGetRequestWithResolver(ref<HTTPRequest> hrp, 
 		headers << "Content-type: " << contentType << "\r\n";
 	}
 
-	unsigned int contentLength = resolver->GetContentLength();
+	Bytes contentLength = resolver->GetContentLength();
 	if(contentLength>0) {
-		headers << "Content-length: " << int(contentLength) << "\r\n";
+		headers << "Content-length: " << Bytes(contentLength) << "\r\n";
 	}
 
 	if(perms.IsSet(WebItem::PermissionPropertyRead)) {
@@ -290,7 +290,7 @@ void WebServerResponseThread::ServeGetRequestWithResolver(ref<HTTPRequest> hrp, 
 		int q = send(_client, dataHeaders.c_str(), dataHeaders.length(), 0);
 		int r = 0;
 		if(!justHeaders) {
-			send(_client, resolvedData, resolvedDataLength, 0);
+			send(_client, resolvedData, (int)resolvedDataLength, 0);
 		}
 		if((q+r)>0) {
 			ref<WebServer> fs = _fs;
@@ -823,11 +823,17 @@ void WebServerThread::Run() {
 		if(v4) {
 			fcntl(_server4, O_NONBLOCK);	
 		}
-	#else
-		#warning Need to set non-blocking server socket
 	#endif
 	
-	
+	#ifdef TJ_OS_WIN
+		unsigned long onl = 1;
+		if(v6) {
+			ioctlsocket(_server6, FIONBIO, &onl);
+		}
+		if(v4) {
+			ioctlsocket(_server4, FIONBIO, &onl);
+		}
+	#endif
 
 	if(v6) {
 		AddListener(_server6, this);

@@ -121,8 +121,57 @@ bool Socket::Read(char* buffer, unsigned int length, unsigned int& readBytes) {
 	return false;
 }
 
+bool Socket::SendTo(const NetworkAddress& na, unsigned short port, strong<Data> data) {
+	return SendTo(na, port, data->GetBuffer(), data->GetSize());
+}
+
+bool Socket::SendTo(const NetworkAddress& na, unsigned short port, const std::string& data) {
+	return SendTo(na, port, data.c_str(), (int)data.length()*sizeof(char));
+}
+
+bool Socket::SendTo(const NetworkAddress& na, unsigned short port, const char* data, const Bytes& length) {
+	switch(na.GetAddressFamily()) {
+		case AddressFamilyIPv4: {
+			sockaddr_in addr;
+			if(na.GetIPv4SocketAddress(&addr)) {
+				addr.sin_port = htons(port);
+				if(sendto(_socket, data, (int)length, 0, (const sockaddr*)&addr, sizeof(sockaddr_in))<=0) {
+					return false;
+				}
+				return true;
+			}
+			break;
+		}
+
+		case AddressFamilyIPv6: {
+			sockaddr_in6 addr;
+			if(na.GetIPv6SocketAddress(&addr)) {
+				addr.sin6_port = htons(port);
+				if(sendto(_socket, data, (int)length, 0, (const sockaddr*)&addr, sizeof(sockaddr_in6))<=0) {
+					return false;
+				}
+				return true;
+			}
+			break;
+		}
+
+		default:
+			Throw(L"Socket::SendTo: unsupported address family!", ExceptionTypeError);
+	};
+
+	return false;
+}
+
+bool Socket::Send(strong<Data> data) {
+	return Send(data->GetBuffer(), data->GetSize());
+}
+
 bool Socket::Send(const std::string& data) {
-	if(send(_socket, data.c_str(), int(data.length()*sizeof(char)), 0)<=0) {
+	return Send(data.c_str(), (Bytes)data.length());
+}
+
+bool Socket::Send(const char* data, const Bytes& length) {
+	if(send(_socket, data, (int)length, 0)<=0) {
 		return false;
 	}
 	return true;
@@ -147,8 +196,7 @@ bool Socket::Connect(const NetworkAddress& networkAddress, unsigned short port) 
 		toAddressSize = sizeof(sockaddr_in);
 	}
 	else {
-		Log::Write(L"TJNP/Socket", L"Unsupported address family!");
-		return false;
+		Throw(L"Socket::SendTo: unsupported address family!", ExceptionTypeError);
 	}
 
 	if(connect(_socket, (const sockaddr*)toAddress, toAddressSize)!=0) {
@@ -188,6 +236,38 @@ bool Socket::Create(AddressFamily af, TransportProtocol tp) {
 		return false;
 	}
 	return true;
+}
+
+void Socket::SetBroadcast(bool b) {
+	int on = b ? 1 : 0;
+	setsockopt(_socket, SOL_SOCKET, SO_BROADCAST,(const char*)&on, sizeof(int));
+}
+
+void Socket::SetReuseAddress(bool b) {
+	int on = b ? 1 : 0;
+
+	#ifdef TJ_OS_MAC
+		setsockopt(_socket, SOL_SOCKET, SO_REUSEPORT, (const char*)&on, sizeof(int));
+	#else
+		setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR, (const char*)&on, sizeof(int));
+	#endif
+}
+
+void Socket::SetBlocking(bool b) {
+	#ifdef TJ_OS_POSIX
+		if(b) {
+			fcntl(_socket, O_NONBLOCK);
+		}
+		else {
+			// Cannot set non-blocking mode explicitly; do nothing
+			// TODO: check if we are non-blocking with fcntl(F_GETFL)
+		}
+	#endif
+	
+	#ifdef TJ_OS_WIN
+		unsigned long onl = b ? 1 : 0;
+		ioctlsocket(_socket, FIONBIO, &onl);
+	#endif
 }
 
 NativeSocket Socket::GetNativeSocket() const {
