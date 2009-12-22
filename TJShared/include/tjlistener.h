@@ -32,11 +32,8 @@ namespace tj {
 						ref< Listener<NotificationType> > listener = *it;
 						if(listener) {
 							listener->Notify(source, data);
-							++it;
 						}
-						else {
-							it = _listeners.erase(it);
-						}
+						++it;
 					}
 				}
 
