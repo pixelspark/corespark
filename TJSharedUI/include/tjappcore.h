@@ -27,20 +27,13 @@ namespace tj {
 				RunnableApplication* GetApplicationPointer();
 				Core();
 				virtual ~Core();
-				void AddAction(ref<Runnable> action, bool wait=false);
 				void Quit();
 				virtual void ShowLogWindow(bool t);
 
 			protected:
 				RunnableApplication* _app;
-				CriticalSection _actionLock;
 				ref<EventLogger> _eventLogger;
-				std::vector< ref<Runnable> > _actions;
-				Event _actionEvent;
-				Event _actionsProcessedEvent;
 				graphics::GraphicsInit* _init;
-
-				void ProcessActions();
 		};
 
 		class EXPORTED ModalLoop {

@@ -408,6 +408,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\tjdispatch.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\tjfile.cpp"
 				>
 			</File>
@@ -483,6 +487,10 @@
 			</File>
 			<File
 				RelativePath=".\include\tjcrypto.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tjdispatch.h"
 				>
 			</File>
 			<File

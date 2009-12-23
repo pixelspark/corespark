@@ -29,9 +29,9 @@ Message::~Message() {
 }
 
 strong<Packet> Message::ConvertToPacket() {
-	unsigned int dataSize = _writer->GetSize();
+	Bytes dataSize = _writer->GetSize();
 	char* data = _writer->TakeOverBuffer(true);
-	strong<Packet> packet = GC::Hold(new Packet(data, dataSize));
+	strong<Packet> packet = GC::Hold(new Packet(data, (unsigned int)dataSize));
 	_header = 0;
 	return packet;
 }
@@ -55,7 +55,7 @@ unsigned int Message::GetSize() {
 	if(_header==0) {
 		Throw(L"Message was converted to Packet, cannot get size anymore", ExceptionTypeSevere);
 	}
-	return _writer->GetSize();
+	return (unsigned int)_writer->GetSize();
 }
 
 const char* Message::GetBuffer() {

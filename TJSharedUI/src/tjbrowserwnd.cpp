@@ -80,14 +80,14 @@ using namespace tj::shared;
 					BrowserWnd* _browser;
 			};
 
-			class NavigateRunnable: public Runnable {
+			class NavigateTask: public Task {
 				public:
-					NavigateRunnable(CComPtr<IWebBrowser2> br, CComBSTR url) {
+					NavigateTask(CComPtr<IWebBrowser2> br, CComBSTR url) {
 						_browser = br;
 						_url = url;
 					}
 
-					virtual ~NavigateRunnable() {
+					virtual ~NavigateTask() {
 					}
 
 					virtual void Run() {
@@ -223,7 +223,7 @@ using namespace tj::shared;
 		((CAxWindow*)_ax)->QueryControl(IID_IWebBrowser2, (void**)&browser);
 		if(browser) {
 			std::string urlmbs = Mbs(url);
-			Core::Instance()->AddAction(GC::Hold(new NavigateRunnable(browser, CComBSTR(urlmbs.c_str()))));
+			Dispatcher::DefaultInstance()->Dispatch(ref<Task>(GC::Hold(new NavigateTask(browser, CComBSTR(urlmbs.c_str())))));
 		}
 
 		if(_tools) {

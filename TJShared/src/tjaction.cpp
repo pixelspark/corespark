@@ -245,6 +245,10 @@ Action::Action(UndoSupport sup): _sup(sup) {
 Action::~Action() {
 }
 
+void Action::Run() {
+	Execute();
+}
+
 void Action::Undo() {
 }
 

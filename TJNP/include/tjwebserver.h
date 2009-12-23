@@ -1,6 +1,7 @@
 #ifndef _TJ_NP_WEBSERVER_H
 #define _TJ_NP_WEBSERVER_H
 
+#include <TJShared/include/tjdispatch.h>
 #include "tjnpinternal.h"
 #include "tjsocket.h"
 #include "tjhttp.h"
@@ -29,29 +30,14 @@ namespace tj {
 				NativeSocket _server4, _server6;
 		};
 
-		class NP_EXPORTED WebServerTask {
-			friend class WebServerResponseThread;
 
+		class NP_EXPORTED WebServerResponseTask: public tj::shared::Task {
 			public:
-				enum TaskType {
-					TaskNone = 0,
-					TaskRequest = 1,
-					TaskQuit,
-				};
-			
-				WebServerTask(TaskType t);
-				TaskType _task;
-				NativeSocket _socket;
-		};
-
-		class NP_EXPORTED WebServerResponseThread: public tj::shared::Thread {
-			public:
-				WebServerResponseThread(tj::shared::ref<WebServer> fs);
-				virtual ~WebServerResponseThread();
+				WebServerResponseTask(NativeSocket ns, tj::shared::ref<WebServer> ws);
+				virtual ~WebServerResponseTask();
 				virtual void SendError(int code, const tj::shared::String& desc, const tj::shared::String& extraInfo);
 				virtual void ServeRequest(tj::shared::ref<HTTPRequest> hrp);
 				virtual void Run();
-				virtual void RunSocket(NativeSocket ns);
 
 			protected:
 				virtual void SendMultiStatusReply(TiXmlDocument& reply);
@@ -66,16 +52,19 @@ namespace tj {
 			
 			private:
 				virtual std::string CreateAllowHeaderFromPermissions(const tj::shared::Flags<WebItem::Permission>& perms);
+				
 				const static char* KDAVVersion;
 				const static char* KServerName;
 				NativeSocket _client;
-				tj::shared::weak<WebServer> _fs;
+				tj::shared::weak<WebServer> _ws;
+				unsigned int _bytesReceived;
+				unsigned int _bytesSent;
 		};
 
 
 		class NP_EXPORTED WebServer: public virtual tj::shared::Object {
 			friend class WebServerThread;
-			friend class WebServerResponseThread;
+			friend class WebServerResponseTask;
 
 			public:
 				WebServer(unsigned short port, tj::shared::ref<WebItem> defaultResolver = tj::shared::null, unsigned int maxThreads = 5);
@@ -83,27 +72,22 @@ namespace tj {
 				virtual void OnCreated();
 				virtual unsigned int GetBytesReceived() const;
 				virtual unsigned int GetBytesSent() const;
-				virtual void Stop();
 				virtual unsigned short GetActualPort() const;
 				virtual void AddResolver(const tj::shared::String& pathPrefix, tj::shared::strong<WebItem> fr);
 
 				const static unsigned short KPortDontCare = 0;
-			
+
 			protected:
-				virtual void AddTask(const WebServerTask& wt);
+				tj::shared::CriticalSection _lock;
+				virtual void AddTask(tj::shared::strong<tj::shared::Task> t);
+				unsigned int _bytesReceived;
+				unsigned int _bytesSent;
 
 			private:
-				tj::shared::CriticalSection _lock;
-				std::deque<WebServerTask> _queue;
-				tj::shared::Semaphore _queuedTasks;
-				std::set< tj::shared::ref<WebServerResponseThread> > _threads;
 				std::map< tj::shared::String, tj::shared::ref<WebItem> > _resolvers;
 				tj::shared::ref<WebItem> _defaultResolver;
 				tj::shared::ref<WebServerThread> _serverThread;
-				volatile bool _run;
-
-				unsigned int _bytesReceived;
-				unsigned int _bytesSent;
+				tj::shared::ref<tj::shared::Dispatcher> _dispatcher;
 				unsigned int _maxThreads;
 				volatile int _busyThreads;
 				unsigned short _port;

@@ -4,6 +4,7 @@
 #include "tjsharedinternal.h"
 #include "tjlistener.h"
 #include "tjthread.h"
+#include "tjdispatch.h"
 
 #include <deque>
 
@@ -209,7 +210,7 @@ namespace tj {
 				const std::wstring& _description;
 		};
 
-		class EXPORTED Action: public virtual tj::shared::Object {
+		class EXPORTED Action: public virtual tj::shared::Task {
 			public:
 				enum UndoSupport {
 					UndoSupported = 1,	// Undo is supported, add this command to the undo stack when executed
@@ -220,6 +221,7 @@ namespace tj {
 				virtual ~Action();
 				virtual void Execute() = 0;
 				virtual void Undo();
+				virtual void Run();
 
 				UndoSupport GetUndoSupport() const;
 				String GetName() const;

@@ -19,8 +19,8 @@ using namespace tj::shared;
 	#include <sys/sendfile.h>
 #endif
 
-const char* WebServerResponseThread::KDAVVersion = "1";
-const char* WebServerResponseThread::KServerName = "TJNP";
+const char* WebServerResponseTask::KDAVVersion = "1";
+const char* WebServerResponseTask::KServerName = "TJNP";
 
 std::ostream& operator<< (std::ostream& out, const TiXmlNode& doc) {
 	TiXmlPrinter printer;
@@ -29,15 +29,14 @@ std::ostream& operator<< (std::ostream& out, const TiXmlNode& doc) {
 	return out;
 }
 
-/** WebServerResponseThread **/
-WebServerResponseThread::WebServerResponseThread(ref<WebServer> fs): _fs(fs), _client(-1) {
+/** WebServerResponseTask **/
+WebServerResponseTask::WebServerResponseTask(NativeSocket client, ref<WebServer> fs): _ws(fs), _client(client), _bytesSent(0), _bytesReceived(0) {
 }
 
-WebServerResponseThread::~WebServerResponseThread() {
-	WaitForCompletion();
+WebServerResponseTask::~WebServerResponseTask() {
 }
 
-void WebServerResponseThread::SendError(int code, const std::wstring& desc, const std::wstring& extraInfo) {
+void WebServerResponseTask::SendError(int code, const std::wstring& desc, const std::wstring& extraInfo) {
 	std::ostringstream reply;
 	reply << "HTTP/1.1 " << code << " Not Found\r\nContent-type: text/html\r\n\r\n <b>" << Mbs(desc) << "</b>";
 	if(extraInfo.length()>0) {
@@ -49,15 +48,10 @@ void WebServerResponseThread::SendError(int code, const std::wstring& desc, cons
 	std::string replyText = reply.str();
 	int length = (int)replyText.length();
 	send(_client, replyText.c_str(), length, 0);
-
-	ref<WebServer> fs = _fs;
-	if(fs) {
-		fs->_bytesSent += length;
-	}
+	_bytesSent += length;
 }
 
-
-void WebServerResponseThread::SendMultiStatusReply(TiXmlDocument& reply) {	
+void WebServerResponseTask::SendMultiStatusReply(TiXmlDocument& reply) {	
 	std::ostringstream xos;
 	xos << reply;	
 	std::string dataString = xos.str();
@@ -74,9 +68,8 @@ void WebServerResponseThread::SendMultiStatusReply(TiXmlDocument& reply) {
 	std::string responseString = os.str();
 
 	int q = send(_client, responseString.c_str(), responseString.length(), 0);
-	ref<WebServer> fs = _fs;
-	if(fs && q>0) {
-		fs->_bytesSent += q;
+	if(q>0) {
+		_bytesSent += q;
 	}
 }
 
@@ -141,7 +134,7 @@ class PropFindItemWalker: public WebItemWalker {
 		std::string _host;
 };
 
-void WebServerResponseThread::ServePropFindRequestWithResolver(ref<HTTPRequest> hrp, ref<WebItem> resolver) {
+void WebServerResponseTask::ServePropFindRequestWithResolver(ref<HTTPRequest> hrp, ref<WebItem> resolver) {
 	if(resolver) {
 		Flags<WebItem::Permission> perms = resolver->GetPermissions();
 		if(perms.IsSet(WebItem::PermissionPropertyRead)) {
@@ -176,7 +169,7 @@ void WebServerResponseThread::ServePropFindRequestWithResolver(ref<HTTPRequest> 
 	}
 }
 
-std::string WebServerResponseThread::CreateAllowHeaderFromPermissions(const Flags<WebItem::Permission>& perms) {
+std::string WebServerResponseTask::CreateAllowHeaderFromPermissions(const Flags<WebItem::Permission>& perms) {
 	std::ostringstream headers;
 	headers << "Allow: ";
 	if(perms.IsSet(WebItem::PermissionGet)) {
@@ -198,7 +191,7 @@ std::string WebServerResponseThread::CreateAllowHeaderFromPermissions(const Flag
 	return headers.str();
 }
 
-void WebServerResponseThread::ServeOptionsRequestWithResolver(ref<HTTPRequest> hrp, ref<WebItem> resolver) {
+void WebServerResponseTask::ServeOptionsRequestWithResolver(ref<HTTPRequest> hrp, ref<WebItem> resolver) {
 	if(resolver) {
 		std::ostringstream headers;
 		headers << "HTTP/1.1 200 OK\r\n";
@@ -215,9 +208,8 @@ void WebServerResponseThread::ServeOptionsRequestWithResolver(ref<HTTPRequest> h
 
 		std::string headerString = headers.str();
 		int q = send(_client, headerString.c_str(), headerString.length(), 0);
-		ref<WebServer> fs = _fs;
-		if(fs) {
-			fs->_bytesSent += q;
+		if(q>0) {
+			_bytesSent += q;
 		}
 	}
 	else {
@@ -225,7 +217,7 @@ void WebServerResponseThread::ServeOptionsRequestWithResolver(ref<HTTPRequest> h
 	}
 }
 
-void WebServerResponseThread::ServeGetRequestWithResolver(ref<HTTPRequest> hrp, ref<WebItem> resolver) {
+void WebServerResponseTask::ServeGetRequestWithResolver(ref<HTTPRequest> hrp, ref<WebItem> resolver) {
 	std::wstring resolverError;
 	char* resolvedData = 0;
 	Bytes resolvedDataLength = 0;
@@ -293,10 +285,7 @@ void WebServerResponseThread::ServeGetRequestWithResolver(ref<HTTPRequest> hrp, 
 			send(_client, resolvedData, (int)resolvedDataLength, 0);
 		}
 		if((q+r)>0) {
-			ref<WebServer> fs = _fs;
-			if(fs) {
-				fs->_bytesSent += q+r;
-			}
+			_bytesSent += q+r;
 		}
 		delete[] resolvedData;
 	}
@@ -315,11 +304,7 @@ void WebServerResponseThread::ServeGetRequestWithResolver(ref<HTTPRequest> hrp, 
 				std::string headerString = headers.str();
 				int length = (int)headerString.length();
 				send(_client, headerString.c_str(), length, 0);
-
-				ref<WebServer> fs = _fs;
-				if(fs) {
-					fs->_bytesSent += length;
-				}
+				_bytesSent += length;
 
 				// Send file
 				if(!justHeaders) {
@@ -332,9 +317,7 @@ void WebServerResponseThread::ServeGetRequestWithResolver(ref<HTTPRequest> hrp, 
 						}
 						int r = send(_client, buffer, read, 0);
 						if(r>0) {
-							if(fs) {
-								fs->_bytesSent += r;
-							}
+							_bytesSent += r;
 						}
 					}
 				}
@@ -351,11 +334,7 @@ void WebServerResponseThread::ServeGetRequestWithResolver(ref<HTTPRequest> hrp, 
 			std::string headerString = headers.str();
 			int length = (int)headerString.length();
 			send(_client, headerString.c_str(), length, 0);
-			
-			ref<WebServer> fs = _fs;
-			if(fs) {
-				fs->_bytesSent += length;
-			}
+			_bytesSent += length;
 	
 			// Write data
 			if(!justHeaders) {
@@ -386,7 +365,7 @@ void WebServerResponseThread::ServeGetRequestWithResolver(ref<HTTPRequest> hrp, 
 	}
 }
 
-void WebServerResponseThread::ServeRequestWithResolver(ref<HTTPRequest> hrp, ref<WebItem> resolver) {
+void WebServerResponseTask::ServeRequestWithResolver(ref<HTTPRequest> hrp, ref<WebItem> resolver) {
 	if(resolver) {
 		switch(hrp->GetMethod()) {
 			case HTTPRequest::MethodGet:
@@ -420,7 +399,7 @@ void WebServerResponseThread::ServeRequestWithResolver(ref<HTTPRequest> hrp, ref
 	}
 }
 
-void WebServerResponseThread::ServePutRequest(tj::shared::ref<HTTPRequest> hrp, tj::shared::ref<WebItem> res, const tj::shared::String& restOfPath) {
+void WebServerResponseTask::ServePutRequest(tj::shared::ref<HTTPRequest> hrp, tj::shared::ref<WebItem> res, const tj::shared::String& restOfPath) {
 	if(hrp->HasHeader("Content-Range")) {
 		SendError(501, L"Not implemented", L"Content-Range header");
 		return;
@@ -436,7 +415,7 @@ void WebServerResponseThread::ServePutRequest(tj::shared::ref<HTTPRequest> hrp, 
 	}
 }
 
-void WebServerResponseThread::ServeDeleteRequest(ref<HTTPRequest> hrp, ref<WebItem> item, const String& restOfPath) {
+void WebServerResponseTask::ServeDeleteRequest(ref<HTTPRequest> hrp, ref<WebItem> item, const String& restOfPath) {
 	if(item->Delete(restOfPath)) {
 		SendError(204, L"Delete successful", hrp->GetPath());
 	}
@@ -445,7 +424,7 @@ void WebServerResponseThread::ServeDeleteRequest(ref<HTTPRequest> hrp, ref<WebIt
 	}
 }
 
-void WebServerResponseThread::ServeMoveOrCopyRequestWithResolver(ref<HTTPRequest> hrp, ref<WebItem> res, const String& restOfPath) {
+void WebServerResponseTask::ServeMoveOrCopyRequestWithResolver(ref<HTTPRequest> hrp, ref<WebItem> res, const String& restOfPath) {
 	String destination = hrp->GetHeader("Destination", L"");
 	if(destination.length()==0) {
 		SendError(409, L"Conflict", L"Missing Destination header");
@@ -475,7 +454,7 @@ void WebServerResponseThread::ServeMoveOrCopyRequestWithResolver(ref<HTTPRequest
 	}
 }
 
-void WebServerResponseThread::ServeMakeCollectionRequest(ref<HTTPRequest> hrp, ref<WebItem> item, const String& restOfPath) {
+void WebServerResponseTask::ServeMakeCollectionRequest(ref<HTTPRequest> hrp, ref<WebItem> item, const String& restOfPath) {
 	ref<WebItem> coll = item->CreateCollection(restOfPath);
 	if(coll) {
 		SendError(201, L"Collection created", hrp->GetPath());
@@ -486,7 +465,7 @@ void WebServerResponseThread::ServeMakeCollectionRequest(ref<HTTPRequest> hrp, r
 	}
 }
 
-void WebServerResponseThread::ServeRequest(ref<HTTPRequest> hrp) {
+void WebServerResponseTask::ServeRequest(ref<HTTPRequest> hrp) {
 	if(hrp->HasHeader("Expect")) {
 		SendError(417, L"Expectation failed", hrp->GetHeader("Expect",  L""));
 		return;
@@ -510,7 +489,7 @@ void WebServerResponseThread::ServeRequest(ref<HTTPRequest> hrp) {
 	// Check if there is a resolver for the path, otherwise use the default file resolver (this->Resolve).
 	// Check if there is a resolver that can resolve this path (by looking at the start of the path)
 	ref<WebItem> resolver;
-	ref<WebServer> fs = _fs;
+	ref<WebServer> fs = _ws;
 	if(fs) {
 		ThreadLock lock(&(fs->_lock));
 		resolver = fs->_defaultResolver;
@@ -551,9 +530,7 @@ void WebServerResponseThread::ServeRequest(ref<HTTPRequest> hrp) {
 	ServeRequestWithResolver(hrp, resolver);
 }
 
-void WebServerResponseThread::RunSocket(NativeSocket client) {
-	_client = client;
-
+void WebServerResponseTask::Run() {
 	ref<DataWriter> cwHeaders = GC::Hold(new DataWriter());
 	ref<DataWriter> cwData;
 
@@ -579,10 +556,7 @@ void WebServerResponseThread::RunSocket(NativeSocket client) {
 				break;
 			}
 			else {
-				ref<WebServer> fs = _fs;
-				if(fs) {
-					fs->_bytesReceived += r;
-				}
+				_bytesReceived += r;
 
 				if(readingRequestHeaders) {
 					for(int a=0;a<r;a++) {
@@ -637,10 +611,10 @@ void WebServerResponseThread::RunSocket(NativeSocket client) {
 		ServeRequest(httpRequest);
 	}
 	catch(const Exception& e) {
-		Log::Write(L"TJNP/WebServerResponseThread", L"Error occurred when processing request: "+e.GetMsg());
+		Log::Write(L"TJNP/WebServerResponseTask", L"Error occurred when processing request: "+e.GetMsg());
 	}
 	catch(...) {
-		Log::Write(L"TJNP/WebServerResponseThread", L"Unknown error occurred when processing request");
+		Log::Write(L"TJNP/WebServerResponseTask", L"Unknown error occurred when processing request");
 	}
 
 	#ifdef TJ_OS_POSIX
@@ -666,62 +640,13 @@ void WebServerResponseThread::RunSocket(NativeSocket client) {
 	#ifdef TJ_OS_POSIX
 		close(_client);
 	#endif
-}
 
-void WebServerResponseThread::Run() {
-	while(true) {
-		ref<WebServer> ws = _fs;
-		if(!ws) {
-			return;
-		}
-		Semaphore& queueSemaphore = ws->_queuedTasks;
-		ws = null;
-
-		// Wait for a task to appear in the queue; if there is a task, wake up and execute it
-		if(queueSemaphore.Wait()) {
-			WebServerTask task(WebServerTask::TaskNone);
-			{
-				ws = _fs;
-				if(!ws) {
-					return;
-				}
-				ThreadLock lock(&(ws->_lock));	
-				std::deque<WebServerTask>::iterator it = ws->_queue.begin();
-				if(it==ws->_queue.end()) {
-					continue;
-				}
-
-				task = *it;
-				ws->_queue.pop_front();
-				++(ws->_busyThreads);
-				ws = null;
-			}
-
-			try {
-				if(task._task==WebServerTask::TaskRequest) {
-					RunSocket(task._socket);
-				}
-				else if(task._task==WebServerTask::TaskQuit) {
-					return;
-				}
-			}
-			catch(const Exception& e) {
-				Log::Write(L"TJNP/WebServerResponseThread", L"Error occurred when processing client request: "+e.GetMsg());
-			}
-			catch(...) {
-				Log::Write(L"TJNP/WebServerResponseThread", L"Unknown error occurred when processing client request");
-			}
-
-			{
-				ws = _fs;
-				if(!ws) {
-					return;
-				}
-
-				ThreadLock lock(&(ws->_lock));	
-				--(ws->_busyThreads);
-			}
-		}
+	ref<WebServer> ws = _ws;
+	if(ws) {
+		ws->_bytesReceived += _bytesReceived;
+		ws->_bytesSent += _bytesSent;
+		_bytesSent = 0;
+		_bytesReceived = 0;
 	}
 }
 
@@ -875,9 +800,8 @@ void WebServerThread::OnReceive(NativeSocket ns) {
 		// handle request
 		ref<WebServer> fs = _fs;
 		if(fs) {
-			WebServerTask wt(WebServerTask::TaskRequest);
-			wt._socket = client;
-			fs->AddTask(wt);
+			ref<WebServerResponseTask> wt = GC::Hold(new WebServerResponseTask(client, fs));
+			fs->AddTask(ref<Task>(wt));
 		}
 		else {
 			Stop();
@@ -886,31 +810,25 @@ void WebServerThread::OnReceive(NativeSocket ns) {
 }
 
 /** WebServer **/
-WebServer::WebServer(unsigned short port, ref<WebItem> defaultResolver, unsigned int maxThreads): _run(false), _bytesSent(0), _bytesReceived(0), _defaultResolver(defaultResolver), _port(port), _maxThreads(maxThreads), _busyThreads(0) {
+WebServer::WebServer(unsigned short port, ref<WebItem> defaultResolver, unsigned int maxThreads): _bytesSent(0), _bytesReceived(0), _defaultResolver(defaultResolver), _port(port), _maxThreads(maxThreads), _busyThreads(0) {
 }
 
 WebServer::~WebServer() {
-	Stop();
 }
 
-void WebServer::AddTask(const WebServerTask& wt) {
-	ThreadLock lock(&_lock);
-	_queue.push_back(wt);
-	if(wt._task!=WebServerTask::TaskQuit) {
-		int numThreads = _threads.size();
-		if((numThreads<1) || ((_busyThreads>=numThreads) && (int(_maxThreads)>numThreads))) {
-			// Create a new response thread
-			ref<WebServerResponseThread> wrt = GC::Hold(new WebServerResponseThread(this));
-			_threads.insert(wrt);
-			wrt->Start();
+void WebServer::AddTask(strong<Task> t) {
+	{
+		ThreadLock lock(&_lock);
+		if(!_dispatcher) {
+			_dispatcher = GC::Hold(new Dispatcher());
 		}
 	}
-	_queuedTasks.Release();
+
+	_dispatcher->Dispatch(t);
 }
 
 void WebServer::OnCreated() {
 	_serverThread = GC::Hold(new WebServerThread(this, _port));
-	_run = true;
 	_serverThread->Start();
 }
 
@@ -927,32 +845,10 @@ unsigned short WebServer::GetActualPort() const {
 	return KPortDontCare;
 }
 
-void WebServer::Stop() {
-	_run = false;
-	_serverThread->Stop();
-
-	// Send quit messages
-	{
-		ThreadLock lock(&_lock);
-		std::set< ref<WebServerResponseThread> >::iterator tit = _threads.begin();
-		while(tit!=_threads.end()) {
-			AddTask(WebServerTask(WebServerTask::TaskQuit));
-			++tit;
-		}
-	}
-
-	_threads.clear(); // ~WebServerResponseThread will wait for completion
-	Log::Write(L"TJNP/WebServer", L"Web server stopped");
-}
-
 unsigned int WebServer::GetBytesReceived() const {
 	return _bytesReceived;
 }
 
 unsigned int WebServer::GetBytesSent() const {
 	return _bytesSent;
-}
-
-/** WebServerTask **/
-WebServerTask::WebServerTask(TaskType t): _task(t) {
 }
