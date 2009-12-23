@@ -16,15 +16,37 @@ namespace tj {
 				virtual ~Task();
 				bool IsRun() const;
 				bool IsEnqueued() const;
+				bool IsStalled() const;
 				bool DidFail() const;
+				virtual bool CanRun() const;
 				virtual void Run() = 0;
 
 			protected:
+				virtual void OnAfterRun();
 				Task();
+
+				CriticalSection _lock;
 				volatile int _flags;
 				const static int KTaskEnqueued = 0x1;
 				const static int KTaskRun = 0x2;
 				const static int KTaskFailed = 0x4;
+				const static int KTaskStalled = 0x8;
+		};
+
+		class EXPORTED Future: public Task {
+			public:
+				virtual ~Future();
+				virtual void DependsOn(strong<Future> future);
+				virtual void OnDependencyRan(strong<Future> dep);
+				virtual bool CanRun() const;
+
+			protected:
+				Future();
+				virtual void OnAfterRun();
+
+				
+				std::set< weak<Future> > _dependent;
+				volatile unsigned int _dependencies;
 		};
 
 		class DispatchThread;
@@ -33,22 +55,27 @@ namespace tj {
 			friend class DispatchThread;
 
 			public:
-				Dispatcher(int maxThreads = 0);
+				Dispatcher(int maxThreads = 0, Thread::Priority priority = Thread::PriorityNormal);
 				virtual ~Dispatcher();
 				static strong<Dispatcher> DefaultInstance();
 				virtual void Dispatch(strong<Task> t);
+				virtual void Requeue(strong<Task> t);
 				virtual void Stop();
+				static ref<Dispatcher> GetCurrent();
 
 			private:
 				virtual void DispatchTask(ref<Task> t);
 
 				CriticalSection _lock;
 				std::deque< ref<Task> > _queue;
+				std::set< ref<Task> > _stalled;
 				Semaphore _queuedTasks;
 				std::set< ref<DispatchThread> > _threads;
 				int _maxThreads;
 				volatile int _busyThreads;
+				const Thread::Priority _defaultPriority;
 
+				static ThreadLocal _currentDispatcher;
 				static ref<Dispatcher> _instance;
 		};
 

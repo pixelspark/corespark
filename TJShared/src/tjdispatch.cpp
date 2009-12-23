@@ -13,6 +13,10 @@ bool Task::IsRun() const {
 	return (_flags & KTaskRun)!=0;
 }
 
+bool Task::CanRun() const {
+	return !IsRun();
+}
+
 bool Task::IsEnqueued() const {
 	return (_flags & KTaskEnqueued) != 0;
 }
@@ -21,10 +25,69 @@ bool Task::DidFail() const {
 	return (_flags & KTaskFailed) != 0;
 }
 
+bool Task::IsStalled() const {
+	return (_flags & KTaskStalled) != 0;
+}
+
+void Task::OnAfterRun() {
+}
+
+/** Future **/
+Future::Future(): _dependencies(0) {
+}
+
+Future::~Future() {
+}
+
+void Future::DependsOn(strong<Future> of) {
+	if(IsEnqueued()) {
+		Throw(L"Cannot change dependencies of future when the future is already enqueued", ExceptionTypeError);
+	}
+	ThreadLock lock(&_lock);
+	of->_dependent.insert(ref<Future>(this));
+	++_dependencies;
+}
+
+void Future::OnDependencyRan(strong<Future> f) {
+	ThreadLock lock(&_lock);
+	--_dependencies;
+	if(_dependencies==0) {
+		ref<Dispatcher> disp = Dispatcher::GetCurrent();
+		if(disp) {
+			disp->Requeue(ref<Task>(this));
+		}
+		else {
+			Throw(L"Future ran in dispatcher thread, but dispatcher cannot be obtained to complete operation", ExceptionTypeError);
+		}
+	}
+}
+
+void Future::OnAfterRun() {
+	{
+		ThreadLock lock(&_lock);
+		std::set< weak<Future> >::iterator it = _dependent.begin();
+		while(it!=_dependent.end()) {
+			ref<Future> dep = *it;
+			if(dep) {
+				dep->OnDependencyRan(ref<Future>(this));
+			}
+			++it;
+		}
+	}
+
+	// No need to retain this list anymore
+	_dependent.clear();
+}
+
+bool Future::CanRun() const {
+	return _dependencies==0;
+}
+
 /** Dispatcher **/
 ref<Dispatcher> Dispatcher::_instance;
+ThreadLocal Dispatcher::_currentDispatcher;
 
-Dispatcher::Dispatcher(int maxThreads): _maxThreads(maxThreads), _busyThreads(0) {
+Dispatcher::Dispatcher(int maxThreads, Thread::Priority prio): _maxThreads(maxThreads), _busyThreads(0), _defaultPriority(prio) {
 	// TODO: if maxThreads=0, limit the maximum number of threads to the number of cores in the system * a load factor
 	if(maxThreads==0) {
 		_maxThreads = 2;
@@ -40,6 +103,14 @@ strong<Dispatcher> Dispatcher::DefaultInstance() {
 		_instance = GC::Hold(new Dispatcher());
 	}
 	return _instance;
+}
+
+ref<Dispatcher> Dispatcher::GetCurrent() {
+	Dispatcher* dsp = reinterpret_cast<Dispatcher*>(_currentDispatcher.GetValue());
+	if(dsp!=0) {
+		return ref<Dispatcher>(dsp);
+	}
+	return null;
 }
 
 void Dispatcher::Stop() {
@@ -59,6 +130,24 @@ void Dispatcher::Stop() {
 	_threads.clear(); // ~DispatcherThread will wait for completion
 }
 
+void Dispatcher::Requeue(strong<Task> t) {
+	ThreadLock taskLock(&(t->_lock));
+	if(!t->CanRun() || !t->IsStalled()) {
+		Throw(L"Dispatcher::Requeue called with a task that still cannot run or is not currently stalled; not changing anything!", ExceptionTypeWarning);
+	}
+	
+	// Remove from 'stalled' set
+	t->_flags &= (~Task::KTaskStalled);
+	std::set<ref<Task> >::iterator it = _stalled.find(ref<Task>(t));
+	if(it!=_stalled.end()) {
+		_stalled.erase(it);
+		Dispatch(t);
+	}
+	else {
+		Throw(L"Cannot requeue a stalled task that is not stalled in this dispatcher", ExceptionTypeError);
+	}
+}
+
 void Dispatcher::DispatchTask(ref<Task> t) {
 	if(t && t->IsEnqueued()) {
 		Throw(L"Task is already enqueued in (another?) dispatcher!", ExceptionTypeError);
@@ -66,10 +155,22 @@ void Dispatcher::DispatchTask(ref<Task> t) {
 
 	ThreadLock lock(&_lock);
 	if(t) {
-		t->_flags |= Task::KTaskEnqueued;
+		if(t->CanRun()) {
+			t->_flags |= Task::KTaskEnqueued;
+			_queue.push_back(t);
+			_queuedTasks.Release();
+		}
+		else {
+			t->_flags |= Task::KTaskStalled;
+			_stalled.insert(t);
+		}
+		
 	}
-	_queue.push_back(t);
-	_queuedTasks.Release();
+	else {
+		// A null task is always enqueued; it stops the executing dispatcher thread
+		_queue.push_back(t);
+		_queuedTasks.Release();
+	}
 }
 
 void Dispatcher::Dispatch(strong<Task> t) {
@@ -82,6 +183,7 @@ void Dispatcher::Dispatch(strong<Task> t) {
 	if((numThreads<1) || ((_busyThreads>=numThreads) && (int(_maxThreads)>numThreads))) {
 		// Create a new response thread
 		ref<DispatchThread> wrt = GC::Hold(new DispatchThread(this));
+		wrt->SetPriority(_defaultPriority);
 		_threads.insert(wrt);
 		wrt->Start();
 	}
@@ -133,13 +235,18 @@ void DispatchThread::Run() {
 				if(task) {
 					++(dispatcher->_busyThreads);
 				}
-				dispatcher = null;
 			}
 
 			try {
 				if(task) {
+					if(!task->CanRun()) {
+						Throw(L"Task from queue, but cannot run!", ExceptionTypeError);
+					}
 					task->_flags &= (~Task::KTaskEnqueued);
+					Dispatcher::_currentDispatcher.SetValue(reinterpret_cast<void*>(dispatcher.GetPointer()));
 					task->Run();
+					task->OnAfterRun();
+					Dispatcher::_currentDispatcher.SetValue(0);
 					task->_flags |= Task::KTaskRun;
 				}
 				else {
@@ -167,6 +274,7 @@ void DispatchThread::Run() {
 
 				ThreadLock lock(&(dispatcher->_lock));	
 				--(dispatcher->_busyThreads);
+				dispatcher = null;
 			}
 		}
 	}
