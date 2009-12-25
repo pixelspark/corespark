@@ -4,19 +4,43 @@
 namespace tj {
 	namespace script {
 		using tj::shared::ref;
+		using tj::shared::strong;
 
 		class SCRIPT_EXPORTED ScriptDelegate: public ScriptObject<ScriptDelegate> {
 			public:
-				ScriptDelegate(tj::shared::ref<CompiledScript> sc, tj::shared::ref<ScriptContext> ctx);
+				ScriptDelegate(ref<CompiledScript> sc, ref<ScriptContext> ctx);
 				virtual ~ScriptDelegate();
 				static void Initialize();
-				tj::shared::ref<CompiledScript> GetScript();
-				tj::shared::ref<ScriptContext> GetContext();
-				tj::shared::ref<Scriptable> SToString(tj::shared::ref<ParameterList> p);
+				ref<CompiledScript> GetScript();
+				ref<ScriptContext> GetContext();
+				ref<Scriptable> SToString(ref<ParameterList> p);
 
 			protected:
-				tj::shared::ref<CompiledScript> _cs;
-				tj::shared::ref<ScriptContext> _context;
+				ref<CompiledScript> _cs;
+				ref<ScriptContext> _context;
+		};
+
+		class SCRIPT_EXPORTED ScriptFuture: public ScriptObject<ScriptFuture>, public tj::shared::Future {
+			public:
+				ScriptFuture(ref<CompiledScript> cs, ref<ScriptContext> originalContext);
+				virtual ~ScriptFuture();
+				virtual void Run();
+				virtual bool IsConcrete();
+				virtual ref<Scriptable> GetReturnValue();
+				virtual bool WaitForCompletion();
+				virtual void AddDependency(Field field, strong<ScriptFuture> fut);
+				virtual void AddVariable(Field field, strong<Scriptable> sc);
+
+				static void Initialize();
+				virtual ref<Scriptable> SToString(ref<ParameterList> p);
+
+			protected:
+				strong<CompiledScript> _cs;
+				strong<ScriptContext> _originalContext;
+				strong<ScriptScope> _scope;
+				ref<Scriptable> _returnValue;
+				bool _isConcrete;
+				tj::shared::Event _finished;
 		};
 	}
 }

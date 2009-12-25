@@ -5,7 +5,7 @@ namespace tj {
 	namespace script {
 		class SCRIPT_EXPORTED ScriptException: public tj::shared::Exception {
 			public:
-				ScriptException(std::wstring msg);
+				ScriptException(const std::wstring& msg);
 				virtual ~ScriptException();
 		};
 
@@ -17,7 +17,7 @@ namespace tj {
 
 		class SCRIPT_EXPORTED ParserException: public ScriptException {
 			public:
-				ParserException(std::wstring error);
+				ParserException(const std::wstring& error);
 				virtual ~ParserException();
 		};
 	}

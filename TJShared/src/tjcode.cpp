@@ -8,8 +8,8 @@ Data::~Data() {
 }
 
 DataReader::DataReader(const char* code, Bytes size) {
-	_code = new char[size*sizeof(char)];
-	memcpy(_code,code,size*sizeof(char));
+	_code = new char[(size_t)(size*sizeof(char))];
+	memcpy(_code,code,(size_t)(size*sizeof(char)));
 	_size = size;
 }
 
@@ -30,8 +30,8 @@ char* DataReader::TakeOverBuffer(bool clearMine) {
 		return buf;
 	}
 	else {
-		char* buffer = new char[_size];
-		memcpy(buffer, _code, _size);
+		char* buffer = new char[(size_t)_size];
+		memcpy(buffer, _code, (size_t)_size);
 		return buffer;
 	}
 }
@@ -42,7 +42,7 @@ Bytes DataReader::GetSize() const {
 
 /** DataWriter **/
 DataWriter::DataWriter(Bytes initSize) {
-	_buffer = new char[initSize];
+	_buffer = new char[(size_t)initSize];
 	_size = initSize;
 	_pos = 0;
 }
@@ -59,8 +59,8 @@ char* DataWriter::TakeOverBuffer(bool clearMine) {
 		_pos = 0;
 	}
 	else {
-		_buffer = new char[_size];
-		memcpy(_buffer, buf, _pos);
+		_buffer = new char[(size_t)_size];
+		memcpy(_buffer, buf, (size_t)_pos);
 	}
 	return buf;
 }
@@ -85,7 +85,7 @@ void DataWriter::Grow(Bytes size) {
 	}
 
 	if(_pos+size>_size) {
-		unsigned int newSize = Util::Max(_size*2, _size+size);
+		unsigned int newSize = (size_t)(Util::Max(_size*2, _size+size));
 		char* newBuffer = new char[newSize];
 		for(unsigned int a=0;a<_pos;a++) {
 			newBuffer[a] = _buffer[a];

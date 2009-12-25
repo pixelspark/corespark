@@ -186,6 +186,16 @@ namespace tj {
 				mutable ScriptGrammar const* _grammar;
 			};
 
+			struct ScriptLoadFuture {
+				inline ScriptLoadFuture(ScriptGrammar const* g) {
+					_grammar = g;
+				}
+
+				template<typename T> void operator()(T str, T end) const;
+
+				mutable ScriptGrammar const* _grammar;
+			};
+
 			struct ScriptIf {
 				inline ScriptIf(ScriptGrammar const* g) {
 					_grammar = g;
@@ -578,7 +588,7 @@ namespace tj {
 				_grammar->_stack->Top()->AddInstruction(Ops::OpLoadScriptlet);
 				_grammar->_stack->Top()->Add(idx);
 			}
-			
+
 			template<typename T> void ScriptIterate::operator()(T str, T end) const {
 				ref<Scriptlet> s = _grammar->_stack->Pop();
 				s->AddInstruction(Ops::OpEndScriptlet);

@@ -19,8 +19,11 @@ namespace tj {
 				virtual ref<CompiledScript> CompileFile(std::wstring file);
 				virtual ref<Scriptable> Execute(ref<CompiledScript> scr, ref<ScriptScope> scope=0);
 				virtual ref<ScriptThread> CreateExecutionThread(ref<CompiledScript> scr);
+				virtual ref<Scriptable> GetGlobal();
 				void SetDebug(bool d);
 				void SetOptimize(bool o);
+				virtual void SetDispatcher(ref<tj::shared::Dispatcher> d);
+				virtual tj::shared::strong<tj::shared::Dispatcher> GetDispatcher();
 
 				template<typename T> static inline T GetValue(ref<Scriptable> s, T defaultValue);
 				static tj::shared::Any GetValue(ref<Scriptable> s);
@@ -31,6 +34,7 @@ namespace tj {
 
 			protected:
 				ref<VM> _vm;
+				ref<tj::shared::Dispatcher> _dispatcher;
 				ref<ScriptScope> _global;
 				std::map< std::wstring, ref<ScriptType> > _types;
 				bool _optimize;

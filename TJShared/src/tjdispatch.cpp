@@ -44,8 +44,17 @@ void Future::DependsOn(strong<Future> of) {
 		Throw(L"Cannot change dependencies of future when the future is already enqueued", ExceptionTypeError);
 	}
 	ThreadLock lock(&_lock);
-	of->_dependent.insert(ref<Future>(this));
-	++_dependencies;
+
+	{
+		ThreadLock oflock(&(of->_lock));
+		if(of->IsRun()) {
+			// Dependency already satisfied
+		}
+		else {
+			of->_dependent.insert(ref<Future>(this));
+			++_dependencies;
+		}
+	}
 }
 
 void Future::OnDependencyRan(strong<Future> f) {

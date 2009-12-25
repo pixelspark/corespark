@@ -13,6 +13,17 @@ ScriptContext::ScriptContext(ref<Scriptable> global) {
 ScriptContext::~ScriptContext() {
 }
 
+void ScriptContext::SetDispatcher(ref<Dispatcher> d) {
+	_dispatcher = d;
+}
+
+strong<tj::shared::Dispatcher> ScriptContext::GetDispatcher() {
+	if(_dispatcher) {
+		return _dispatcher;
+	}
+	return Dispatcher::DefaultInstance();
+}
+
 Any ScriptContext::GetValue(ref<Scriptable> s) {
 	if(!s) return Any();
 	
@@ -30,6 +41,10 @@ Any ScriptContext::GetValue(ref<Scriptable> s) {
 
 void ScriptContext::SetOptimize(bool o) {
 	_optimize = o;
+}
+
+ref<Scriptable> ScriptContext::GetGlobal() {
+	return _global;
 }
 
 ref<Scriptable> ScriptContext::Execute(ref<CompiledScript> scr, ref<ScriptScope> scope) {

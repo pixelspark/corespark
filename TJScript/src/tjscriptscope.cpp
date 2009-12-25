@@ -51,6 +51,54 @@ ref<Scriptable> ScriptScope::Execute(Command command, ref<ParameterList> params)
 			return ScriptConstants::True;
 		}
 	}
+	else if(command==L"value") {
+		ref<Scriptable> dlg = params->Get(L"0");
+		if(!dlg) {
+			throw ScriptException(L"First argument to value(..) has to be set");
+		}
+
+		if(dlg.IsCastableTo<ScriptFuture>()) {
+			ref<ScriptFuture> sf = dlg;
+			if(sf) {
+				if(sf->WaitForCompletion()) {
+					if(sf->DidFail()) {
+						throw ScriptException(L"A future has failed (i.e. an exception was thrown during the execution of the delegate)");
+					}
+					return sf->GetReturnValue();
+				}
+			}
+			return ScriptConstants::Null;
+		}
+		return dlg;
+	}
+	else if(command==L"future") {
+		ref<ScriptDelegate> dlg = params->Get(L"0");
+		if(!dlg) {
+			throw ScriptException(L"First argument to future(..) has to be a delegate");
+		}
+
+		ref<ScriptFuture> sft = GC::Hold(new ScriptFuture(dlg->GetScript(), dlg->GetContext()));
+
+		// Add variables (possibly as dependencies)
+		std::map<std::wstring, ref<Scriptable> >::iterator it = params->_vars.begin();
+		while(it!=params->_vars.end()) {
+			ref<Scriptable> value = it->second;
+			if(value && it->first!=L"0") {
+				if(value.IsCastableTo<ScriptFuture>()) {
+					sft->AddDependency(it->first, ref<ScriptFuture>(value));
+				}
+				else {
+					sft->AddVariable(it->first, it->second);
+				}
+			}
+			++it;
+		}
+
+		// Dispatch this future
+		strong<Dispatcher> disp = dlg->GetContext()->GetDispatcher();
+		disp->Dispatch(ref<Task>(sft));
+		return sft;
+	}
 	else {
 		ref<Scriptable> val = Get(command);
 		if(val) {
