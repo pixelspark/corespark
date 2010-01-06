@@ -14,23 +14,6 @@ namespace tj {
 	namespace np {
 		class WebServer;
 
-		class NP_EXPORTED WebServerThread: public SocketListenerThread, public SocketListener {
-			public:
-				WebServerThread(tj::shared::ref<WebServer> fs, int port);
-				virtual ~WebServerThread();
-				virtual void Start();
-				virtual void Run();
-				virtual void OnReceive(NativeSocket ns);
-				virtual unsigned short GetActualPort() const;
-
-			protected:
-				tj::shared::weak<WebServer> _fs;
-				tj::shared::Event _readyEvent;
-				int _port;
-				NativeSocket _server4, _server6;
-		};
-
-
 		class NP_EXPORTED WebServerResponseTask: public tj::shared::Task {
 			public:
 				WebServerResponseTask(NativeSocket ns, tj::shared::ref<WebServer> ws);
@@ -62,14 +45,14 @@ namespace tj {
 		};
 
 
-		class NP_EXPORTED WebServer: public virtual tj::shared::Object {
-			friend class WebServerThread;
+		class NP_EXPORTED WebServer: public virtual tj::shared::Object, public SocketListener {
 			friend class WebServerResponseTask;
 
 			public:
-				WebServer(unsigned short port, tj::shared::ref<WebItem> defaultResolver = tj::shared::null, unsigned int maxThreads = 5);
+				WebServer(unsigned short port, tj::shared::ref<WebItem> defaultResolver = tj::shared::null);
 				virtual ~WebServer();
 				virtual void OnCreated();
+				virtual void OnReceive(NativeSocket ns);
 				virtual unsigned int GetBytesReceived() const;
 				virtual unsigned int GetBytesSent() const;
 				virtual unsigned short GetActualPort() const;
@@ -86,12 +69,10 @@ namespace tj {
 			private:
 				std::map< tj::shared::String, tj::shared::ref<WebItem> > _resolvers;
 				tj::shared::ref<WebItem> _defaultResolver;
-				tj::shared::ref<WebServerThread> _serverThread;
 				tj::shared::ref<tj::shared::Dispatcher> _dispatcher;
-				unsigned int _maxThreads;
-				volatile int _busyThreads;
 				unsigned short _port;
-				NetworkInitializer _initializer;
+				NativeSocket _server4, _server6;
+				tj::shared::ref<SocketListenerThread> _listenerThread;
 		};
 
 	}

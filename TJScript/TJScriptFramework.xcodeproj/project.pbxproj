@@ -50,6 +50,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		B41AE37D10F518DA00F886F0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B41DD4EA1066453E000742DD /* TJSharedFramework.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = B4A987C410C65F70001CF473 /* libTJSharedMobile.a */;
+			remoteInfo = TJSharedMobile;
+		};
 		B41DD4F21066453E000742DD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = B41DD4EA1066453E000742DD /* TJSharedFramework.xcodeproj */;
@@ -166,6 +173,7 @@
 			isa = PBXGroup;
 			children = (
 				B41DD4F31066453E000742DD /* TJShared.framework */,
+				B41AE37E10F518DA00F886F0 /* libTJSharedMobile.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -258,6 +266,13 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		B41AE37E10F518DA00F886F0 /* libTJSharedMobile.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libTJSharedMobile.a;
+			remoteRef = B41AE37D10F518DA00F886F0 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		B41DD4F31066453E000742DD /* TJShared.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;

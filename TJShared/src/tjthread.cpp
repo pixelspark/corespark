@@ -469,11 +469,15 @@ void Thread::Sleep(double ms) {
 		pthread_mutex_lock(&_lock);
 		bool success = false;
 		
-		if(ms==0) {
+		if(ms<=0) {
 			while(_signalCount<=0) {
-				pthread_cond_wait(&_event, &_lock);
+				int r = pthread_cond_wait(&_event, &_lock);
+				if(r==0 && _signalCount>0) {
+					--_signalCount;
+					success = true;
+					break;
+				}
 			}
-			--_signalCount;
 		}
 		else {
 			struct timeval now;

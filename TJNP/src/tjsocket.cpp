@@ -283,6 +283,21 @@ SocketListener::~SocketListener() {
 }
 
 /** SocketListenerThread **/
+
+/* The process wide instance of SocketListenerThread. Note that it is stored as a
+ weak reference, so that it is destroyed when it is not used anymore */
+weak<SocketListenerThread> SocketListenerThread::_instance;
+
+strong<SocketListenerThread> SocketListenerThread::DefaultInstance() {
+	ref<SocketListenerThread> slt = _instance;
+	if(!slt) {
+		slt = GC::Hold(new SocketListenerThread());
+		_instance = slt;
+		slt->Start();
+	}
+	return slt;
+}
+
 SocketListenerThread::SocketListenerThread() {
 	#ifdef TJ_OS_POSIX
 		if(socketpair(AF_UNIX, SOCK_STREAM, 0, _controlSocket)!=0) {
@@ -359,7 +374,16 @@ void SocketListenerThread::OnReceive(NativeSocket ns) {
 	ThreadLock lock(&_lock);
 	ref<SocketListener> sl = _listeners[ns];
 	if(sl) {
-		sl->OnReceive(ns);
+		try {
+			sl->OnReceive(ns);
+		}
+		catch(const Exception& e) {
+			Log::Write(L"TJNP/SocketListenerThread", L"Exception occurred when accepting connection or receiving data from socket "+StringifyHex(ns)+L": "+e.GetMsg());
+		}
+		catch(...) {
+			Log::Write(L"TJNP/SocketListenerThread", L"Unknown exception occurred when accepting connection or receiving data from socket "+StringifyHex(ns));
+
+		}
 	}
 	
 	#ifdef TJ_OS_WIN

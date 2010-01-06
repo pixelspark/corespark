@@ -17,6 +17,7 @@ namespace tj {
 				bool IsRun() const;
 				bool IsEnqueued() const;
 				bool IsStalled() const;
+				bool IsRunning() const;
 				bool DidFail() const;
 				virtual bool CanRun() const;
 				virtual void Run() = 0;
@@ -31,6 +32,7 @@ namespace tj {
 				const static int KTaskRun = 0x2;
 				const static int KTaskFailed = 0x4;
 				const static int KTaskStalled = 0x8;
+				const static int KTaskRunning = 0x01;
 		};
 
 		class EXPORTED Future: public Task {
@@ -39,6 +41,7 @@ namespace tj {
 				virtual void DependsOn(strong<Future> future);
 				virtual void OnDependencyRan(strong<Future> dep);
 				virtual bool CanRun() const;
+				virtual bool WaitForCompletion(const Time& timeout = -1);
 
 			protected:
 				Future();
@@ -47,6 +50,7 @@ namespace tj {
 				
 				std::set< weak<Future> > _dependent;
 				volatile unsigned int _dependencies;
+				Event _completed;
 		};
 
 		class DispatchThread;
@@ -62,6 +66,7 @@ namespace tj {
 				virtual void Requeue(strong<Task> t);
 				virtual void Stop();
 				static ref<Dispatcher> GetCurrent();
+				static strong<Dispatcher> CurrentOrDefaultInstance();
 
 			private:
 				virtual void DispatchTask(ref<Task> t);

@@ -184,53 +184,61 @@ ref<RequestResolver> DNSSDResolver::Resolve(strong<ResolveRequest> rr) {
 	return null;
 }
 
-/** DNSSDAddressResolver **/
-class DNSSDAddressResolver {
-	public:
-		struct ResolvedInfo {
-			std::wstring _ip;
-			std::wstring _hostname;
-			unsigned short _port;
-			bool _succeeded;
-		};
+/** DNSSDAddressFuture **/
+DNSSDAddressFuture::DNSSDAddressFuture(unsigned int iface, const char* name, const char* regtype, const char* domain): _service(0) {
+	_ri._succeeded = false;
+	DNSServiceResolve(&_service, 0, iface, name, regtype, domain, (DNSServiceResolveReply)Reply, reinterpret_cast<void*>(&_ri));
+}
 
-		static void Reply(DNSServiceRef sdRef,DNSServiceFlags flags, uint32_t interfaceIndex,DNSServiceErrorType errorCode, const char* fullname,const char* hosttarget, uint16_t port, uint16_t txtLen, const unsigned char* txtRecord, void* context) {
-			ResolvedInfo* ri = reinterpret_cast<ResolvedInfo*>(context);
-			if(ri!=0) {
-				ri->_succeeded = false;
-				hostent* he = gethostbyname(hosttarget);
-				if(he!=0) {
-					struct in_addr addr;
-					addr.s_addr = *(u_long *)he->h_addr_list[0];
-					const char* stringAddress = inet_ntoa(addr);
-					if(stringAddress!=0) {
-						std::string addressMbs = stringAddress;
-						ri->_ip = Wcs(addressMbs);
-						ri->_hostname = Wcs(hosttarget);
-						ri->_port = ntohs(port);
-						ri->_succeeded = true;
-					}
-				}
+DNSSDAddressFuture::~DNSSDAddressFuture() {
+}
+
+std::wstring DNSSDAddressFuture::GetAddress() {
+	if(!IsRun() || DidFail() || !_ri._succeeded) {
+		Throw(L"Could not resolve the address of the service", ExceptionTypeError);
+	}
+	return _ri._ip;
+}
+
+std::wstring DNSSDAddressFuture::GetHostName() {
+	if(!IsRun() || DidFail() || !_ri._succeeded) {
+		Throw(L"Could not resolve the host name of the service", ExceptionTypeError);
+	}
+	return _ri._hostname;
+}
+
+unsigned short DNSSDAddressFuture::GetPort() {
+	if(!IsRun() || DidFail() || !_ri._succeeded) {
+		Throw(L"Could not resolve the address of the service", ExceptionTypeError);
+	}
+	return _ri._port;
+}
+
+void DNSSDAddressFuture::Run() {
+	DNSServiceProcessResult(_service);
+	DNSServiceRefDeallocate(_service);
+	_service = 0;
+}
+
+void DNSSDAddressFuture::Reply(DNSServiceRef sdRef, DNSServiceFlags flags, uint32_t interfaceIndex, DNSServiceErrorType errorCode, const char* fullname,const char* hosttarget, uint16_t port, uint16_t txtLen, const unsigned char* txtRecord, void* context) {
+	ResolvedInfo* ri = reinterpret_cast<ResolvedInfo*>(context);
+	if(ri!=0) {
+		ri->_succeeded = false;
+		hostent* he = gethostbyname(hosttarget);
+		if(he!=0) {
+			struct in_addr addr;
+			addr.s_addr = *(u_long *)he->h_addr_list[0];
+			const char* stringAddress = inet_ntoa(addr);
+			if(stringAddress!=0) {
+				std::string addressMbs = stringAddress;
+				ri->_ip = Wcs(addressMbs);
+				ri->_hostname = Wcs(hosttarget);
+				ri->_port = ntohs(port);
+				ri->_succeeded = true;
 			}
 		}
-
-		static bool ResolveAddressForService(std::wstring& address, unsigned short& port, unsigned int iface, const char* name, const char* regtype, const char* domain, std::wstring& hostname) {
-			DNSServiceRef service = 0;
-			ResolvedInfo ri;
-			ri._succeeded = false;
-			DNSServiceResolve(&service, 0, iface, name, regtype, domain, (DNSServiceResolveReply)Reply, reinterpret_cast<void*>(&ri));
-			DNSServiceProcessResult(service);
-			DNSServiceRefDeallocate(service);
-
-			if(ri._succeeded) {
-				address = ri._ip;
-				port = ri._port;
-				hostname = ri._hostname;
-				return true;
-			}
-			return false;
-		}
-};
+	}
+}
 
 /** DNSSDAddressResolver **/
 class DNSSDAttributeResolver {
@@ -290,10 +298,9 @@ class DNSSDAttributeResolver {
 };
 
 /** DNSSDService **/
-DNSSDService::DNSSDService(const std::wstring& friendly, const std::wstring& type, const std::wstring& domain, unsigned int iface): _friendly(friendly), _type(type), _domain(domain), _interface(iface), _port(0) {
-	if(!DNSSDAddressResolver::ResolveAddressForService(_address, _port, iface, Mbs(friendly).c_str(), Mbs(type).c_str(), Mbs(domain).c_str(), _hostname)) {
-		Log::Write(L"TJScout/DNSSDService", L"Could not resolve address for service "+GetID());
-	}
+DNSSDService::DNSSDService(const std::wstring& friendly, const std::wstring& type, const std::wstring& domain, unsigned int iface): _friendly(friendly), _type(type), _domain(domain), _interface(iface) {
+	_address = GC::Hold(new DNSSDAddressFuture(iface, Mbs(friendly).c_str(), Mbs(type).c_str(), Mbs(domain).c_str()));
+	Dispatcher::CurrentOrDefaultInstance()->Dispatch(ref<Task>(_address));
 
 	/* Query TXT record containing attributes (a TXT record MUST always be present, hence we can use a blocking query here,
 	this also means that non-conforming mDNS responders can block us...) */
@@ -319,15 +326,25 @@ std::wstring DNSSDService::GetType() const {
 }
 
 std::wstring DNSSDService::GetAddress() const {
-	return _address;
+	if(_address && _address->WaitForCompletion()) {
+		return _address->GetAddress();
+	}
+	return L"";
 }
 
 std::wstring DNSSDService::GetHostName() const {
-	return _hostname;
+	if(_address && _address->WaitForCompletion()) {
+		return _address->GetHostName();
+	}
+	return L"";
 }
 
 unsigned short DNSSDService::GetPort() const {
-	return _port;
+	if(_address && _address->WaitForCompletion()) {
+		return _address->GetPort();
+	}
+	Log::Write(L"TJScout/DNSSDService", L"Wait failed in GetPort");
+	return 0;
 }
 
 /** DNSSDServiceRegistration **/

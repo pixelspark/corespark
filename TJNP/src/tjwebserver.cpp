@@ -650,28 +650,56 @@ void WebServerResponseTask::Run() {
 	}
 }
 
-WebServerThread::WebServerThread(ref<WebServer> fs, int port): _fs(fs), _port(port), _server4(-1), _server6(-1) {
+/** WebServer **/
+WebServer::WebServer(unsigned short port, ref<WebItem> defaultResolver): _bytesSent(0), _bytesReceived(0), _defaultResolver(defaultResolver), _port(port), _server4(Socket::KInvalidSocket), _server6(Socket::KInvalidSocket) {
 }
 
-WebServerThread::~WebServerThread() {
-	// Termination is handled by SocketListenerThread
+WebServer::~WebServer() {
+	if(_listenerThread) {
+		_listenerThread->RemoveListener(_server6);
+		_listenerThread->RemoveListener(_server4);
+	}
+	
+	#ifdef TJ_OS_WIN
+		closesocket(_server6);
+		closesocket(_server4);
+	#endif
+		
+	#ifdef TJ_OS_POSIX
+		close(_server6);
+		close(_server4);
+	#endif
 }
 
-unsigned short WebServerThread::GetActualPort() const {
-	return _port;
+void WebServer::AddTask(strong<Task> t) {
+	{
+		ThreadLock lock(&_lock);
+		if(!_dispatcher) {
+			_dispatcher = GC::Hold(new Dispatcher());
+		}
+	}
+
+	_dispatcher->Dispatch(t);
 }
 
-void WebServerThread::Start() {
-	_readyEvent.Reset();
-	Thread::Start();
-	_readyEvent.Wait(); // Blocks until the web server is initialized, and the actual port is known
+void WebServer::OnReceive(NativeSocket ns) {
+	NativeSocket client = accept(ns, 0, 0);
+	
+	if(client!=-1) {
+		// handle request
+		ref<WebServerResponseTask> wt = GC::Hold(new WebServerResponseTask(client, this));
+		AddTask(ref<Task>(wt));
+	}
 }
 
-void WebServerThread::Run() {
-	NetworkInitializer ni;
+void WebServer::OnCreated() {
+	// Start web server by opening sockets and registering them in the socket listener thread
+	_listenerThread = SocketListenerThread::DefaultInstance();
+	
 	bool v6 = true;
 	bool v4 = true;
-
+	
+	// Create the sockets on which connections will be accepted
 	_server6 = socket(AF_INET6, SOCK_STREAM, IPPROTO_TCP);
 	if(_server6==-1) {
 		Log::Write(L"TJNP/WebServer", L"Could not create IPv6 server socket!");
@@ -683,7 +711,8 @@ void WebServerThread::Run() {
 		Log::Write(L"TJNP/WebServer", L"Could not create IPv4 server socket!");
 		v4 = false;
 	}
-
+	
+	// Bind the sockets to the correct incoming addresses
 	in6_addr any = IN6ADDR_ANY_INIT;
 	sockaddr_in6 local;
 	local.sin6_addr = any;
@@ -695,7 +724,7 @@ void WebServerThread::Run() {
 	local4.sin_family = AF_INET;
 	local4.sin_addr.s_addr = INADDR_ANY;
 	local4.sin_port = htons(_port);
-
+	
 	if(v6) {
 		int on = 1;
 		setsockopt(_server6, IPPROTO_IPV6, IPV6_V6ONLY, (char*)&on, sizeof(char));
@@ -724,13 +753,13 @@ void WebServerThread::Run() {
 			_port = ntohs(local4.sin_port);
 			Log::Write(L"TNP/WebServer", L"IPv4 web server chose port number: "+Stringify(_port));
 		}
-	   len = sizeof(sockaddr_in6);
+		len = sizeof(sockaddr_in6);
 		if(v6 && getsockname(_server6, (sockaddr*)&local, &len)==0) {
 			_port = ntohs(local.sin6_port);
 			Log::Write(L"TNP/WebServer", L"IPv6 web server chose port number: "+Stringify(_port));
 		}  
 	}
-
+	
 	if(!v6 || listen(_server6, 10)!=0) {
 		Log::Write(L"TJNP/WebServer", L"The IPv6 socket just doesn't want to listen! (err="+Stringify(errno)+L";v6="+Stringify(v6)+L")");
 		v6 = false;
@@ -741,6 +770,11 @@ void WebServerThread::Run() {
 		v4 = false;
 	}
 	
+	/* The accepting sockets have to be made non-blocking, because otherwise the 
+	 SocketListenerThread can block on accept(): if it wakes up from the select, but
+	 the connection is closed before it calls accept(), accept() will block. When set to
+	 non-blocking mode, accept() will return an error code for such a connection, and the
+	 socket listener thread will simply ignore it. */
 	#ifdef TJ_OS_POSIX
 		if(v6) {
 			fcntl(_server6, O_NONBLOCK);
@@ -759,77 +793,18 @@ void WebServerThread::Run() {
 			ioctlsocket(_server4, FIONBIO, &onl);
 		}
 	#endif
-
+	
 	if(v6) {
-		AddListener(_server6, this);
+		_listenerThread->AddListener(_server6, this);
 	}
 	
 	if(v4) {
-		AddListener(_server4, this);
+		_listenerThread->AddListener(_server4, this);
 	}
 	
-	// TODO: limit the number of threads with some kind of semaphore?
-	_readyEvent.Signal();
 	if(v4 || v6) {
 		Log::Write(L"TJNP/WebServer", L"WebServer is up and running");
 	}
-	else {
-		return;
-	}
-	
-	SocketListenerThread::Run();
-
-	#ifdef TJ_OS_WIN
-		closesocket(_server6);
-		closesocket(_server4);
-	#endif
-
-	#ifdef TJ_OS_POSIX
-		close(_server6);
-		close(_server4);
-	#endif
-
-	_server6 = -1;
-	_server4 = -1;
-}
-
-void WebServerThread::OnReceive(NativeSocket ns) {
-	NativeSocket client = accept(ns, 0, 0);
-
-	if(client!=-1) {
-		// handle request
-		ref<WebServer> fs = _fs;
-		if(fs) {
-			ref<WebServerResponseTask> wt = GC::Hold(new WebServerResponseTask(client, fs));
-			fs->AddTask(ref<Task>(wt));
-		}
-		else {
-			Stop();
-		}
-	}
-}
-
-/** WebServer **/
-WebServer::WebServer(unsigned short port, ref<WebItem> defaultResolver, unsigned int maxThreads): _bytesSent(0), _bytesReceived(0), _defaultResolver(defaultResolver), _port(port), _maxThreads(maxThreads), _busyThreads(0) {
-}
-
-WebServer::~WebServer() {
-}
-
-void WebServer::AddTask(strong<Task> t) {
-	{
-		ThreadLock lock(&_lock);
-		if(!_dispatcher) {
-			_dispatcher = GC::Hold(new Dispatcher());
-		}
-	}
-
-	_dispatcher->Dispatch(t);
-}
-
-void WebServer::OnCreated() {
-	_serverThread = GC::Hold(new WebServerThread(this, _port));
-	_serverThread->Start();
 }
 
 void WebServer::AddResolver(const std::wstring& pathPrefix, strong<WebItem> frq) {
@@ -838,11 +813,7 @@ void WebServer::AddResolver(const std::wstring& pathPrefix, strong<WebItem> frq)
 }
 
 unsigned short WebServer::GetActualPort() const {
-	if(_serverThread) {
-		// WebServerThread::_port is initialized to KPortDontCare when it is not specified by WebServer
-		return _serverThread->GetActualPort();
-	}
-	return KPortDontCare;
+	return _port;
 }
 
 unsigned int WebServer::GetBytesReceived() const {

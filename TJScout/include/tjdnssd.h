@@ -14,6 +14,7 @@ namespace tj {
 	namespace scout {
 		using namespace tj::shared;
 		class DNSSDBrowserThread;
+		class DNSSDAddressFuture;
 
 		class DNSSDService: public Service {
 			public:
@@ -30,10 +31,8 @@ namespace tj {
 				std::wstring _type;
 				std::wstring _friendly;
 				std::wstring _domain;
-				std::wstring _hostname;
 				unsigned int _interface;
-				std::wstring _address;
-				unsigned short _port;
+				mutable ref<DNSSDAddressFuture> _address;
 		};
 		
 		class DNSSDServiceRegistration: public ServiceRegistration {
@@ -70,6 +69,28 @@ namespace tj {
 				DNSSDResolver();
 				virtual ~DNSSDResolver();
 				virtual ref<RequestResolver> Resolve(strong<ResolveRequest> rr);
+		};
+		
+		class DNSSDAddressFuture: public Future {
+			public:
+				DNSSDAddressFuture(unsigned int iface, const char* name, const char* regtype, const char* domain);
+				virtual ~DNSSDAddressFuture();	
+				static void Reply(DNSServiceRef sdRef,DNSServiceFlags flags, uint32_t interfaceIndex,DNSServiceErrorType errorCode, const char* fullname,const char* hosttarget, uint16_t port, uint16_t txtLen, const unsigned char* txtRecord, void* context);
+				virtual void Run();
+				virtual std::wstring GetAddress();
+				virtual std::wstring GetHostName();
+				virtual unsigned short GetPort();
+				
+			protected:
+				struct ResolvedInfo {
+					std::wstring _ip;
+					std::wstring _hostname;
+					unsigned short _port;
+					bool _succeeded;
+				};
+				
+				DNSServiceRef _service;
+				ResolvedInfo _ri;
 		};
 	}
 }

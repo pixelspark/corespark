@@ -228,7 +228,7 @@ void Daemon::Run() {
 		#ifdef TJ_OS_MAC
 		else if(_lastSignal==SIGINFO) {
 			std::wostringstream info;
-			info << L"GC: " << tj::shared::intern::Resource::GetResourceCount() << L"Threads: " << Thread::GetThreadCount();
+			info << L"GC: " << tj::shared::intern::Resource::GetResourceCount() << L" Threads: " << Thread::GetThreadCount();
 			Log::Write(L"TJShared/Daemon", info.str());
 		}
 		#endif

@@ -13,6 +13,10 @@ bool Task::IsRun() const {
 	return (_flags & KTaskRun)!=0;
 }
 
+bool Task::IsRunning() const {
+	return (_flags & KTaskRunning) != 0;
+}
+
 bool Task::CanRun() const {
 	return !IsRun();
 }
@@ -39,6 +43,20 @@ Future::Future(): _dependencies(0) {
 Future::~Future() {
 }
 
+bool Future::WaitForCompletion(const Time& timeout) {
+	{
+		ThreadLock lock(&_lock);
+		if(IsRun()) {
+			return true;
+		}
+		 
+		if(!IsEnqueued() && !IsRunning()) {
+			Throw(L"Cannot wait for the completion of this future, because it is not enqueued in a dispatcher and not already running", ExceptionTypeError);
+		}
+	}
+	return _completed.Wait(timeout);
+}
+
 void Future::DependsOn(strong<Future> of) {
 	if(IsEnqueued()) {
 		Throw(L"Cannot change dependencies of future when the future is already enqueued", ExceptionTypeError);
@@ -51,7 +69,8 @@ void Future::DependsOn(strong<Future> of) {
 			// Dependency already satisfied
 		}
 		else {
-			of->_dependent.insert(ref<Future>(this));
+			ref<Future> thisFuture(this);
+			of->_dependent.insert(weak<Future>(thisFuture));
 			++_dependencies;
 		}
 	}
@@ -86,6 +105,7 @@ void Future::OnAfterRun() {
 
 	// No need to retain this list anymore
 	_dependent.clear();
+	_completed.Signal();
 }
 
 bool Future::CanRun() const {
@@ -105,6 +125,14 @@ Dispatcher::Dispatcher(int maxThreads, Thread::Priority prio): _maxThreads(maxTh
 
 Dispatcher::~Dispatcher() {
 	Stop();
+}
+
+strong<Dispatcher> Dispatcher::CurrentOrDefaultInstance() {
+	ref<Dispatcher> di = GetCurrent();
+	if(!di) {
+		return Dispatcher::DefaultInstance();
+	}
+	return di;
 }
 
 strong<Dispatcher> Dispatcher::DefaultInstance() {
@@ -164,6 +192,7 @@ void Dispatcher::DispatchTask(ref<Task> t) {
 
 	ThreadLock lock(&_lock);
 	if(t) {
+		ThreadLock taskLock(&(t->_lock));
 		if(t->CanRun()) {
 			t->_flags |= Task::KTaskEnqueued;
 			_queue.push_back(t);
@@ -248,15 +277,25 @@ void DispatchThread::Run() {
 
 			try {
 				if(task) {
-					if(!task->CanRun()) {
-						Throw(L"Task from queue, but cannot run!", ExceptionTypeError);
+					{
+						ThreadLock taskLock(&(task->_lock));
+						if(!task->CanRun()) {
+							Throw(L"Task from queue, but cannot run!", ExceptionTypeError);
+						}
+						task->_flags &= (~Task::KTaskEnqueued);
+						task->_flags |= Task::KTaskRunning;
 					}
-					task->_flags &= (~Task::KTaskEnqueued);
+					
 					Dispatcher::_currentDispatcher.SetValue(reinterpret_cast<void*>(dispatcher.GetPointer()));
 					task->Run();
-					task->OnAfterRun();
-					Dispatcher::_currentDispatcher.SetValue(0);
-					task->_flags |= Task::KTaskRun;
+					
+					{
+						ThreadLock taskLock(&(task->_lock));
+						task->OnAfterRun();
+						Dispatcher::_currentDispatcher.SetValue(0);
+						task->_flags &= (~Task::KTaskRunning);
+						task->_flags |= Task::KTaskRun;
+					}
 				}
 				else {
 					return;

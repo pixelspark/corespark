@@ -51,8 +51,9 @@ namespace tj {
 				virtual bool SendTo(const NetworkAddress& na, unsigned short port, const char* data, const tj::shared::Bytes& length);
 				virtual bool Read(char* buffer, unsigned int maxLength, unsigned int& readBytes);
 
-			protected:
 				const static NativeSocket KInvalidSocket;
+			
+			protected:
 				virtual bool Create(AddressFamily fm, TransportProtocol tp);
 				NativeSocket _socket;
 		};
@@ -75,6 +76,7 @@ namespace tj {
 				virtual void RemoveListener(NativeSocket sock);
 				virtual void Run();
 				virtual void Stop();
+				static tj::shared::strong<SocketListenerThread> DefaultInstance();
 			
 			protected:
 				virtual void OnReceive(NativeSocket ns);
@@ -83,6 +85,7 @@ namespace tj {
 				std::map<NativeSocket, tj::shared::weak<SocketListener> > _listeners;
 				
 			private:
+				static tj::shared::weak<SocketListenerThread> _instance;
 				NetworkInitializer _ni;
 				virtual void PostThreadUpdate();
 			
