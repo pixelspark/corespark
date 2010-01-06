@@ -24,6 +24,10 @@
 	#define TJSOCKET_MESSAGE (WM_USER+1338)
 #endif
 
+#ifdef TJ_OS_POSIX
+	#include <fcntl.h>
+#endif
+
 using namespace tj::shared;
 using namespace tj::np;
 
@@ -256,11 +260,10 @@ void Socket::SetReuseAddress(bool b) {
 void Socket::SetBlocking(bool b) {
 	#ifdef TJ_OS_POSIX
 		if(b) {
-			fcntl(_socket, O_NONBLOCK);
+			fcntl(_socket, F_SETFL, O_NONBLOCK);
 		}
 		else {
-			// Cannot set non-blocking mode explicitly; do nothing
-			// TODO: check if we are non-blocking with fcntl(F_GETFL)
+			fcntl(_socket, F_SETFL, 0);
 		}
 	#endif
 	
