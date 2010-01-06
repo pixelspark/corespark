@@ -142,6 +142,7 @@
 			B41AE40D10F52F8200F886F0 /* PBXTextBookmark */ = B41AE40D10F52F8200F886F0 /* PBXTextBookmark */;
 			B41AE41010F530AF00F886F0 /* PBXTextBookmark */ = B41AE41010F530AF00F886F0 /* PBXTextBookmark */;
 			B41AE41310F530D000F886F0 /* PBXTextBookmark */ = B41AE41310F530D000F886F0 /* PBXTextBookmark */;
+			B41AE41610F5385A00F886F0 /* PBXTextBookmark */ = B41AE41610F5385A00F886F0 /* PBXTextBookmark */;
 			B423B85F106E163800147974 = B423B85F106E163800147974 /* PlistBookmark */;
 			B423BA73106E9AC400147974 = B423BA73106E9AC400147974 /* PBXTextBookmark */;
 			B423BA75106E9AC400147974 = B423BA75106E9AC400147974 /* PBXTextBookmark */;
@@ -227,7 +228,7 @@
 		fRef = B4C6EBED10D93C2B004B21E4 /* tjthread.cpp */;
 		name = "tjthread.cpp: 338";
 		rLen = 0;
-		rLoc = 7259;
+		rLoc = 7383;
 		rType = 0;
 		vrLen = 891;
 		vrLoc = 6825;
@@ -237,7 +238,7 @@
 		fRef = B4C6EBED10D93C2B004B21E4 /* tjthread.cpp */;
 		name = "tjthread.cpp: 338";
 		rLen = 0;
-		rLoc = 7259;
+		rLoc = 7383;
 		rType = 0;
 		vrLen = 891;
 		vrLoc = 6825;
@@ -412,6 +413,16 @@
 		vrLoc = 9221;
 	};
 	B41AE41310F530D000F886F0 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = B41DD3E010663B65000742DD /* tjsocket.cpp */;
+		name = "tjsocket.cpp: 387";
+		rLen = 0;
+		rLoc = 9402;
+		rType = 0;
+		vrLen = 1214;
+		vrLoc = 9221;
+	};
+	B41AE41610F5385A00F886F0 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
 		fRef = B41DD3E010663B65000742DD /* tjsocket.cpp */;
 		name = "tjsocket.cpp: 387";
@@ -967,7 +978,7 @@
 		comments = "'dispatch_semaphore_create' was not declared in this scope";
 		fRef = B4C6EBEB10D93C2B004B21E4 /* tjthread.cpp */;
 		rLen = 1;
-		rLoc = 336;
+		rLoc = 340;
 		rType = 1;
 	};
 	B4C6EBEB10D93C2B004B21E4 /* tjthread.cpp */ = {
@@ -982,7 +993,7 @@
 		fRef = B4C6EBED10D93C2B004B21E4 /* tjthread.cpp */;
 		name = "tjthread.cpp: 337";
 		rLen = 0;
-		rLoc = 7259;
+		rLoc = 7383;
 		rType = 0;
 		vrLen = 850;
 		vrLoc = 6856;

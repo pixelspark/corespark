@@ -177,6 +177,10 @@ void Thread::SetPriority(Priority p) {
 	#endif
 	
 	#ifdef TJ_USE_PTHREADS
+		if(_thread==0) {
+			Throw(L"Cannot set thread priority before thread is started under POSIX", ExceptionTypeSevere);
+		}
+	
 		sched_param sp;
 		int sched_policy = 0;
 		if(pthread_getschedparam(_thread, &sched_policy, &sp)==0) {

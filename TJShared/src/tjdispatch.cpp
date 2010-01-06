@@ -221,9 +221,9 @@ void Dispatcher::Dispatch(strong<Task> t) {
 	if((numThreads<1) || ((_busyThreads>=numThreads) && (int(_maxThreads)>numThreads))) {
 		// Create a new response thread
 		ref<DispatchThread> wrt = GC::Hold(new DispatchThread(this));
-		wrt->SetPriority(_defaultPriority);
 		_threads.insert(wrt);
 		wrt->Start();
+		wrt->SetPriority(_defaultPriority);
 	}
 	
 	DispatchTask(t);
