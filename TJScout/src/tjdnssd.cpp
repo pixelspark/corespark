@@ -125,23 +125,31 @@ void DNSSDBrowserThread::Cancel() {
 
 /** DNSSDResolveRequest **/
 void DNSSDDiscoveryBrowseReply(DNSServiceRef sdRef, DNSServiceFlags flags, uint32_t interfaceIndex, DNSServiceErrorType errorCode, const char *serviceName, const char *regType, const char *replyDomain, void *context)  {
-	if(context!=0) {
-		ref<DNSSDResolveRequest> rr = ref<DNSSDResolveRequest>((DNSSDResolveRequest*)context);
-		if(rr) {
-			ref<ResolveRequest> req = rr->GetOriginalRequest();
-			if(req) {
-				ref<Service> service = GC::Hold(new DNSSDService(Wcs(serviceName), Wcs(regType), Wcs(replyDomain), interfaceIndex));
+	try {
+		if(context!=0) {
+			ref<DNSSDResolveRequest> rr = ref<DNSSDResolveRequest>((DNSSDResolveRequest*)context);
+			if(rr) {
+				ref<ResolveRequest> req = rr->GetOriginalRequest();
+				if(req) {
+					ref<Service> service = GC::Hold(new DNSSDService(Wcs(serviceName), Wcs(regType), Wcs(replyDomain), interfaceIndex));
 
-				//Log::Write(L"TJScout/DNSSDDiscovery", L"Service '"+Wcs(serviceName)+L"' (type="+Wcs(regType)+L" flags="+StringifyHex(flags)+L" iface="+Stringify(interfaceIndex)+L")");
+					//Log::Write(L"TJScout/DNSSDDiscovery", L"Service '"+Wcs(serviceName)+L"' (type="+Wcs(regType)+L" flags="+StringifyHex(flags)+L" iface="+Stringify(interfaceIndex)+L")");
 
-				if((flags & kDNSServiceFlagsAdd)!=0) {
-					req->OnServiceFound(service);
-				}
-				else {
-					req->OnServiceDisappeared(service->GetID());
+					if((flags & kDNSServiceFlagsAdd)!=0) {
+						req->OnServiceFound(service);
+					}
+					else {
+						req->OnServiceDisappeared(service->GetID());
+					}
 				}
 			}
 		}
+	}
+	catch(Exception& e) {
+		Log::Write(L"TJScout/DNSSDBrowser", L"Exception occurred when a new service was found: "+e.GetMsg());
+	}
+	catch(...) {
+		Log::Write(L"TJScout/DNSSDBrowser", L"Unknown exception occurred when a new service was found");
 	}
 }
 
