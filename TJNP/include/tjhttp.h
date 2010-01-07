@@ -67,7 +67,7 @@ namespace tj {
 				tj::shared::ref<tj::shared::Data> _extraData;
 		};
 		
-		class NP_EXPORTED Download: public virtual tj::np::SocketListenerThread {
+		class NP_EXPORTED Download: public virtual tj::shared::Object, public SocketListener {
 			enum DownloadState {
 				DownloadStateNone = 0,
 				DownloadStateConnecting,
@@ -82,8 +82,8 @@ namespace tj {
 			public:
 				Download(const NetworkAddress& na, const tj::shared::String& path, unsigned short port = 80);
 				virtual ~Download();
-				virtual void Run();
 				virtual void Start();
+				virtual void Stop();
 				virtual DownloadState GetState() const;
 				virtual const NetworkAddress& GetAddress() const;
 				
@@ -96,6 +96,7 @@ namespace tj {
 				tj::shared::Event _downloadStateChanged;
 				volatile DownloadState _state;
 				tj::shared::ref<Socket> _socket;
+				tj::shared::ref<SocketListenerThread> _listenerThread;
 				unsigned short _port;
 				tj::shared::ref<tj::shared::DataWriter> _data;
 				unsigned int _entersRead;

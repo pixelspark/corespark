@@ -202,6 +202,7 @@ DNSSDAddressFuture::~DNSSDAddressFuture() {
 }
 
 std::wstring DNSSDAddressFuture::GetAddress() {
+	ThreadLock lock(&_lock);
 	if(!IsRun() || DidFail() || !_ri._succeeded) {
 		Throw(L"Could not resolve the address of the service", ExceptionTypeError);
 	}
@@ -209,6 +210,7 @@ std::wstring DNSSDAddressFuture::GetAddress() {
 }
 
 std::wstring DNSSDAddressFuture::GetHostName() {
+	ThreadLock lock(&_lock);
 	if(!IsRun() || DidFail() || !_ri._succeeded) {
 		Throw(L"Could not resolve the host name of the service", ExceptionTypeError);
 	}
@@ -216,8 +218,9 @@ std::wstring DNSSDAddressFuture::GetHostName() {
 }
 
 unsigned short DNSSDAddressFuture::GetPort() {
+	ThreadLock lock(&_lock);
 	if(!IsRun() || DidFail() || !_ri._succeeded) {
-		Throw(L"Could not resolve the address of the service", ExceptionTypeError);
+		Throw(L"Could not resolve the address of the service; succeeded="+Stringify(_ri._succeeded)+L" run="+Stringify(IsRun())+L" failed="+Stringify(DidFail()), ExceptionTypeError);
 	}
 	return _ri._port;
 }

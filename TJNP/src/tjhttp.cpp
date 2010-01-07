@@ -8,6 +8,7 @@ Download::Download(const NetworkAddress& na, const std::wstring& path, unsigned 
 }
 
 Download::~Download() {
+	Stop();
 }
 
 Download::DownloadState Download::GetState() const {
@@ -17,26 +18,11 @@ Download::DownloadState Download::GetState() const {
 void Download::Start() {
 	_state = DownloadStateNone;
 	_downloadStateChanged.Reset();
-	SocketListenerThread::Start();
-}
-
-void Download::OnDownloadComplete(ref<DataWriter> cw) {
-	if(cw) {
-		Log::Write(L"TJNP/Download", L"Downloaded "+Stringify(cw->GetSize())+L" bytes");
-	}
-	else {
-		Log::Write(L"TJNP/Download", L"Error occurred, no data");
-	}
-}
-
-const NetworkAddress& Download::GetAddress() const {
-	return _address;
-}
-
-void Download::Run() {
+	_listenerThread = SocketListenerThread::DefaultInstance();
 	_entersRead = 0;
 	_data = GC::Hold(new DataWriter());
 	_socket = GC::Hold(new Socket(_address, TransportProtocolTCP, _port));
+	
 	if(_socket->IsValid()) {
 		_state = DownloadStateSendingRequest;
 		_downloadStateChanged.Signal();
@@ -55,9 +41,31 @@ void Download::Run() {
 	_socket->Send(request.str());
 	_state = DownloadStateReceivingHeaders;
 	_downloadStateChanged.Signal();
+	_socket->SetBlocking(false);
+	_listenerThread->AddListener(_socket->GetNativeSocket(), this);
+}
+
+void Download::OnDownloadComplete(ref<DataWriter> cw) {
+	if(cw) {
+		Log::Write(L"TJNP/Download", L"Downloaded "+Stringify(cw->GetSize())+L" bytes");
+	}
+	else {
+		Log::Write(L"TJNP/Download", L"Error occurred, no data");
+	}
 	
-	AddListener(_socket->GetNativeSocket(), null);
-	SocketListenerThread::Run();
+	Stop();
+}
+
+void Download::Stop() {
+	if(_listenerThread && _socket) {
+		_listenerThread->RemoveListener(_socket->GetNativeSocket());
+		_listenerThread = null;
+		_socket = null;
+	}
+}
+
+const NetworkAddress& Download::GetAddress() const {
+	return _address;
 }
 
 void Download::OnReceive(NativeSocket ns) {
@@ -101,8 +109,6 @@ void Download::OnReceive(NativeSocket ns) {
 			if(dataStart!=0 && dataLength>0) {
 				_data->Append(dataStart, dataLength);
 			}
-			
-			SocketListenerThread::OnReceive(ns);
 		}
 		else {
 			if(!_socket->IsValid()) {

@@ -374,8 +374,12 @@ void SocketListenerThread::Stop() {
 }
 
 void SocketListenerThread::OnReceive(NativeSocket ns) {
-	ThreadLock lock(&_lock);
-	ref<SocketListener> sl = _listeners[ns];
+	ref<SocketListener> sl;
+	{
+		ThreadLock lock(&_lock);
+		sl = _listeners[ns];
+	}
+	
 	if(sl) {
 		try {
 			sl->OnReceive(ns);
@@ -475,15 +479,26 @@ void SocketListenerThread::Run() {
 					}
 				}
 				else {
-					ThreadLock lock(&_lock);
-					std::map<NativeSocket, weak<SocketListener> >::iterator it = _listeners.begin();
-					while(it!=_listeners.end()) {
-						if(it->first!=-1) {
-							if(FD_ISSET(it->first, &fds)) {
-								OnReceive(it->first);
+					/* This weird way of doing is to make sure that the socket listener thread is not locked
+					whenever listener->OnReceive is called. */
+					std::set<NativeSocket> readySockets;
+					{
+						ThreadLock lock(&_lock);
+						std::map<NativeSocket, weak<SocketListener> >::iterator it = _listeners.begin();
+						while(it!=_listeners.end()) {
+							if(it->first!=-1) {
+								if(FD_ISSET(it->first, &fds)) {
+									readySockets.insert(it->first);
+								}
 							}
+							++it;
 						}
-						++it;
+					}
+					
+					std::set<NativeSocket>::iterator sit = readySockets.begin();
+					while(sit!=readySockets.end()) {
+						OnReceive(*sit);
+						++sit;
 					}
 				}
 			}
