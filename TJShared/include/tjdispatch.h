@@ -67,6 +67,8 @@ namespace tj {
 				virtual void Stop();
 				static ref<Dispatcher> GetCurrent();
 				static strong<Dispatcher> CurrentOrDefaultInstance();
+				virtual unsigned int GetProcessedItemsCount() const;
+				virtual unsigned int GetThreadCount() const;
 
 			private:
 				virtual void DispatchTask(ref<Task> t);
@@ -78,6 +80,7 @@ namespace tj {
 				std::set< ref<DispatchThread> > _threads;
 				int _maxThreads;
 				volatile int _busyThreads;
+				volatile unsigned int _itemsProcessed;
 				const Thread::Priority _defaultPriority;
 
 				static ThreadLocal _currentDispatcher;

@@ -116,7 +116,7 @@ bool Future::CanRun() const {
 ref<Dispatcher> Dispatcher::_instance;
 ThreadLocal Dispatcher::_currentDispatcher;
 
-Dispatcher::Dispatcher(int maxThreads, Thread::Priority prio): _maxThreads(maxThreads), _busyThreads(0), _defaultPriority(prio) {
+Dispatcher::Dispatcher(int maxThreads, Thread::Priority prio): _maxThreads(maxThreads), _busyThreads(0), _defaultPriority(prio), _itemsProcessed(0) {
 	// TODO: if maxThreads=0, limit the maximum number of threads to the number of cores in the system * a load factor
 	if(maxThreads==0) {
 		_maxThreads = 2;
@@ -125,6 +125,14 @@ Dispatcher::Dispatcher(int maxThreads, Thread::Priority prio): _maxThreads(maxTh
 
 Dispatcher::~Dispatcher() {
 	Stop();
+}
+
+unsigned int Dispatcher::GetProcessedItemsCount() const {
+	return _itemsProcessed;
+}
+
+unsigned int Dispatcher::GetThreadCount() const {
+	return _threads.size();
 }
 
 strong<Dispatcher> Dispatcher::CurrentOrDefaultInstance() {
@@ -193,6 +201,7 @@ void Dispatcher::DispatchTask(ref<Task> t) {
 	ThreadLock lock(&_lock);
 	if(t) {
 		ThreadLock taskLock(&(t->_lock));
+		++_itemsProcessed;
 		if(t->CanRun()) {
 			t->_flags |= Task::KTaskEnqueued;
 			_queue.push_back(t);

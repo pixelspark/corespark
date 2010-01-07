@@ -2,6 +2,7 @@
 #include "../include/tjlanguage.h"
 #include "../include/tjthread.h"
 #include "../include/tjlog.h"
+#include "../include/tjdispatch.h"
 
 #ifdef TJ_OS_MAC
 	#include <CoreFoundation/CoreFoundation.h>
@@ -164,8 +165,25 @@ bool Daemon::Fork(const String& daemonName, bool singleInstance) {
 			return false; // This is the parent process, can exit
 		}
 		
-		// Make child process independent
+		// Put the child process in a new process group to make it independent
 		setsid();
+	
+		/* Fork again, because the just created process is a session leader, and
+		the first tty it opens becomes the controlling terminal, which is not 
+		desirable. */
+		i = fork();
+		if(i<0) {
+			return false; // fork error
+		}
+		else if(i>0) {
+			return false; // This is the parent process, can exit
+		}
+	
+		// Set log-to-syslog instead of log-to-console
+		Log::SetLogToSyslog(true);
+		Log::SetLogToConsole(false);
+	
+		// chdir to /tmp to make sure that we're not locking up some directory we might be in
 		chdir("/tmp");
 		
 		// Restrict file creation (mode will be 750)
@@ -192,10 +210,6 @@ bool Daemon::Fork(const String& daemonName, bool singleInstance) {
 		wos << getpid() << '\n';
 		std::string pidString = wos.str();
 		write(lfp, pidString.c_str(),pidString.length());
-	
-		// Set log-to-syslog instead of log-to-console
-		Log::SetLogToSyslog(true);
-		Log::SetLogToConsole(false);
 		
 		// Child process is good to go
 		return true;
@@ -212,6 +226,7 @@ void Daemon::Run() {
 	#ifdef TJ_OS_POSIX
 		signal(SIGHUP, SignalHandler);
 		signal(SIGCHLD, SignalHandler);
+		signal(SIGUSR1, SignalHandler);
 	#endif
 	
 	#ifdef TJ_OS_MAC
@@ -225,10 +240,14 @@ void Daemon::Run() {
 			break;
 		}
 		
-		#ifdef TJ_OS_MAC
-		else if(_lastSignal==SIGINFO) {
+		#ifdef TJ_OS_POSIX
+			#ifdef TJ_OS_MAC
+				else if(_lastSignal==SIGINFO) {
+			#else
+				else if(_lastSignal==SIGUSR1) {
+			#endif
 			std::wostringstream info;
-			info << L"GC: " << tj::shared::intern::Resource::GetResourceCount() << L" Threads: " << Thread::GetThreadCount();
+			info << L"GC: " << tj::shared::intern::Resource::GetResourceCount() << L" Threads: " << Thread::GetThreadCount() << L" Dispatcher: " << Dispatcher::DefaultInstance()->GetProcessedItemsCount() << L" tasks; " << Dispatcher::DefaultInstance()->GetThreadCount() << L" threads";
 			Log::Write(L"TJShared/Daemon", info.str());
 		}
 		#endif
@@ -236,7 +255,7 @@ void Daemon::Run() {
 		#ifdef TJ_OS_POSIX
 		else if(_lastSignal==SIGHUP) {
 			// Reload config?
-			Log::Write(L"TJShared/Daemon", L"Received hang-up signal; will reload configuration");
+			Log::Write(L"TJShared/Daemon", L"Received hang-up signal");
 		}
 		else if(_lastSignal==SIGCHLD) {
 			Log::Write(L"TJShared/Daemon", L"A child process terminated");

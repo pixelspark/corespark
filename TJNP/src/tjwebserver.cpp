@@ -751,22 +751,20 @@ void WebServer::OnCreated() {
 		// Try to find out on which port we are anyway
 		if(v4 && getsockname(_server4, (sockaddr*)&local4, &len)==0) {
 			_port = ntohs(local4.sin_port);
-			Log::Write(L"TNP/WebServer", L"IPv4 web server chose port number: "+Stringify(_port));
 		}
 		len = sizeof(sockaddr_in6);
 		if(v6 && getsockname(_server6, (sockaddr*)&local, &len)==0) {
 			_port = ntohs(local.sin6_port);
-			Log::Write(L"TNP/WebServer", L"IPv6 web server chose port number: "+Stringify(_port));
 		}  
 	}
 	
 	if(!v6 || listen(_server6, 10)!=0) {
-		Log::Write(L"TJNP/WebServer", L"The IPv6 socket just doesn't want to listen! (err="+Stringify(errno)+L";v6="+Stringify(v6)+L")");
+		Log::Write(L"TJNP/WebServer", L"Cannot listen on IPv6 socket (error code="+Stringify(errno)+L"; v6="+Stringify(v6)+L")");
 		v6 = false;
 	}
 	
 	if(!v4 || listen(_server4, 10)!=0) {
-		Log::Write(L"TJNP/WebServer", L"The IPv4 socket just doesn't want to listen! (err="+Stringify(errno)+L";v4="+Stringify(v4)+L")");
+		Log::Write(L"TJNP/WebServer", L"Cannot listen on IPv4 socket (error code="+Stringify(errno)+L"; v4="+Stringify(v4)+L")");
 		v4 = false;
 	}
 	
@@ -777,10 +775,10 @@ void WebServer::OnCreated() {
 	 socket listener thread will simply ignore it. */
 	#ifdef TJ_OS_POSIX
 		if(v6) {
-			fcntl(_server6, O_NONBLOCK);
+			fcntl(_server6, F_SETFL, O_NONBLOCK);
 		}
 		if(v4) {
-			fcntl(_server4, O_NONBLOCK);	
+			fcntl(_server4, F_SETFL, O_NONBLOCK);	
 		}
 	#endif
 	
