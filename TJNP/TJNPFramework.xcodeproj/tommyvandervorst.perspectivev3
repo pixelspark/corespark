@@ -232,8 +232,6 @@
 			<key>Layout</key>
 			<array>
 				<dict>
-					<key>BecomeActive</key>
-					<true/>
 					<key>ContentConfiguration</key>
 					<dict>
 						<key>PBXBottomSmartGroupGIDs</key>
@@ -282,7 +280,7 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>34</integer>
+									<integer>26</integer>
 									<integer>20</integer>
 									<integer>0</integer>
 								</array>
@@ -316,6 +314,8 @@
 					<key>Dock</key>
 					<array>
 						<dict>
+							<key>BecomeActive</key>
+							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
@@ -333,7 +333,7 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>B4CDDF3210F5DB3700458471</string>
+										<string>B4CDDF7510F6A20C00458471</string>
 										<key>history</key>
 										<array>
 											<string>B423B85F106E163800147974</string>
@@ -345,32 +345,29 @@
 											<string>B49777991097845B00FA1B69</string>
 											<string>B462AFC81098F05800484C29</string>
 											<string>B462B0341098F34600484C29</string>
-											<string>B4B5E68C109F7C94003EB10D</string>
-											<string>B497DB4210AD601F00EB9CB8</string>
 											<string>B47A690A10BEA56F0060D38F</string>
 											<string>B4708C5910C52CAB00A1F8B4</string>
-											<string>B4708C5A10C52CAB00A1F8B4</string>
 											<string>B4708C5C10C52CAB00A1F8B4</string>
 											<string>B4708C5E10C52CAB00A1F8B4</string>
-											<string>B4A9884A10C66193001CF473</string>
 											<string>B4A9884C10C66193001CF473</string>
 											<string>B474BA3510D6D93200FA7D4C</string>
-											<string>B41AE3F010F52D6900F886F0</string>
-											<string>B41AE3F110F52D6900F886F0</string>
 											<string>B41AE3F210F52D6900F886F0</string>
 											<string>B41AE3F310F52D6900F886F0</string>
 											<string>B41AE3F410F52D6900F886F0</string>
 											<string>B41AE3F510F52D6900F886F0</string>
 											<string>B41AE3F610F52D6900F886F0</string>
 											<string>B41AE3F810F52D6900F886F0</string>
-											<string>B41AE3FA10F52D6900F886F0</string>
-											<string>B41AE3FC10F52D6900F886F0</string>
 											<string>B4CDDED310F5D62C00458471</string>
 											<string>B4CDDF2D10F5DB3700458471</string>
 											<string>B4CDDF2E10F5DB3700458471</string>
 											<string>B4CDDF2F10F5DB3700458471</string>
 											<string>B4CDDF3010F5DB3700458471</string>
-											<string>B4CDDF3110F5DB3700458471</string>
+											<string>B4CDDF6F10F6A20C00458471</string>
+											<string>B4CDDF7010F6A20C00458471</string>
+											<string>B4CDDF7110F6A20C00458471</string>
+											<string>B4CDDF7210F6A20C00458471</string>
+											<string>B4CDDF7310F6A20C00458471</string>
+											<string>B4CDDF7410F6A20C00458471</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
