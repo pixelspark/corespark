@@ -315,7 +315,9 @@ SocketListenerThread::~SocketListenerThread() {
 		Stop();
 	}
 	
+	Log::Write(L"TJNP/SocketListenerThread", L"Waiting for completion");
 	WaitForCompletion();
+	Log::Write(L"TJNP/SocketListenerThread", L"Completed");
 	
 	#ifdef TJ_OS_POSIX
 		close(_controlSocket[0]);
@@ -366,6 +368,7 @@ void SocketListenerThread::Stop() {
 	#endif
 		
 	#ifdef TJ_OS_POSIX
+		Log::Write(L"TJNP/SocketListenerThread", L"Will send quit message to listener thread");
 		char quit[1] = {'Q'};
 		if(write(_controlSocket[0], quit, 1)==-1) {
 			Log::Write(L"TJNP/SocketListenerThread", L"Could not send quit message to listener thread");
@@ -442,13 +445,15 @@ void SocketListenerThread::Run() {
 	#endif	
 	
 	#ifdef TJ_OS_POSIX
+		bool controlSocketOnly = false;
+
 		while(true) {
 			fd_set fds;
 			FD_ZERO(&fds);
 			int maxSocket = _controlSocket[1];
 			FD_SET(_controlSocket[1], &fds);
 			
-			{
+			if(!controlSocketOnly) {
 				ThreadLock lock(&_lock);
 				std::map<NativeSocket, weak<SocketListener> >::iterator it = _listeners.begin();
 				while(it!=_listeners.end()) {
@@ -471,7 +476,9 @@ void SocketListenerThread::Run() {
 						return;
 					}
 					else if(cmd=='U') {
-						// Update, restart select()
+						/* Update, restart select(); also, set controlSocketOnly to false; assume that the problem of the last run
+						has been fixed and the 'bad' socket was deleted */
+						controlSocketOnly = false;
 						continue;
 					}
 					else {
@@ -503,8 +510,22 @@ void SocketListenerThread::Run() {
 				}
 			}
 			else {
-				Log::Write(L"TJNP/SocketListenerThread", L"Select operation failed; closing socket? Terminating listener thread!");
-				return;
+				if(errno==EBADF) {
+					/* One of the sockets we are listening to is 'bad' (i.e. has been closed). This probably means that we should
+					not listen to it anymore (i.e. wait for an update and it will be removed from the listeners list) or that we 
+					should stop the thread completely. Therefore, make sure that the next select() operation will only check the
+					control sockets for control messages. If that was already the mode we were in and it failed again, just quit. */
+					if(controlSocketOnly) {
+						Log::Write(L"TJNP/SocketListenerThread", L"Stopping socket listener thread; control pipe seems broken!");
+						return;
+					}
+					else {
+						controlSocketOnly = true;
+					}
+				}
+				else {
+					Log::Write(L"TJNP/SocketListenerThread", L"Select operation failed (err="+Stringify(errno)+L")");
+				}
 			}
 		}
 	#endif

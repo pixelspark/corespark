@@ -221,16 +221,24 @@ bool Daemon::Fork(const String& daemonName, bool singleInstance) {
 
 void Daemon::Run() {
 	// Set up signal handlers
-	signal(SIGINT, SignalHandler);
-	
+	#ifdef TJ_OS_WIN
+		signal(SIGINT, SignalHandler);
+	#endif
+
 	#ifdef TJ_OS_POSIX
-		signal(SIGHUP, SignalHandler);
-		signal(SIGCHLD, SignalHandler);
-		signal(SIGUSR1, SignalHandler);
+		struct sigaction sa;
+		sigemptyset(&sa.sa_mask);
+		sa.sa_flags = SA_RESTART;	
+		sa.sa_handler = SignalHandler;
+
+		sigaction(SIGINT, &sa, NULL);
+		sigaction(SIGHUP, &sa, NULL);
+		sigaction(SIGCHLD, &sa, NULL);
+		sigaction(SIGUSR1, &sa, NULL);
 	#endif
 	
 	#ifdef TJ_OS_MAC
-		signal(SIGINFO, SignalHandler);
+		sigaction(SIGINFO, &sa, NULL);
 	#endif
 	
 	// Wait for stop (interruption with SIGINT will signal _globalStop)
