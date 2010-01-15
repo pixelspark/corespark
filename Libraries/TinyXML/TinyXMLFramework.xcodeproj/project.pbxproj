@@ -28,7 +28,7 @@
 		089C1667FE841158C02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		8DC2EF5A0486A6940098B216 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		8DC2EF5B0486A6940098B216 /* TinyXML.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = TinyXML.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		8DC2EF5B0486A6940098B216 /* TinyXML */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.framework; path = TinyXML; sourceTree = BUILT_PRODUCTS_DIR; };
 		B486E8AB106629700043CE5D /* tinystr.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tinystr.cpp; sourceTree = "<group>"; };
 		B486E8AC106629700043CE5D /* tinystr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tinystr.h; sourceTree = "<group>"; };
 		B486E8AD106629700043CE5D /* tinyxml.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tinyxml.cpp; sourceTree = "<group>"; };
@@ -60,7 +60,7 @@
 		034768DFFF38A50411DB9C8B /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8DC2EF5B0486A6940098B216 /* TinyXML.framework */,
+				8DC2EF5B0486A6940098B216 /* TinyXML */,
 				B4A9875D10C65E8A001CF473 /* libTinyXMLMobile.a */,
 			);
 			name = Products;
@@ -166,7 +166,7 @@
 			name = TinyXML;
 			productInstallPath = "$(HOME)/Library/Frameworks";
 			productName = TinyXMLFramework;
-			productReference = 8DC2EF5B0486A6940098B216 /* TinyXML.framework */;
+			productReference = 8DC2EF5B0486A6940098B216 /* TinyXML */;
 			productType = "com.apple.product-type.framework";
 		};
 		B4A9875C10C65E8A001CF473 /* TinyXMLMobile */ = {
@@ -289,7 +289,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "";
 				INFOPLIST_FILE = Info.plist;
-				INSTALL_PATH = .;
+				INSTALL_PATH = "@executable_path";
 				PRODUCT_NAME = TinyXML;
 				SYMROOT = ../../build;
 				WRAPPER_EXTENSION = framework;

@@ -275,9 +275,8 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>10</integer>
-									<integer>9</integer>
-									<integer>0</integer>
+									<integer>18</integer>
+									<integer>17</integer>
 								</array>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateVisibleRectKey</key>
@@ -328,7 +327,7 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>B4CDDF7D10F6A21200458471</string>
+										<string>B4D65DEE110121B0008FD68C</string>
 										<key>history</key>
 										<array>
 											<string>B49107E01070D1DB00279D29</string>
@@ -343,7 +342,7 @@
 											<string>B4E0322610CBCA4E000A59A5</string>
 											<string>B4CDDF7A10F6A21200458471</string>
 											<string>B4CDDF7B10F6A21200458471</string>
-											<string>B4CDDF7C10F6A21200458471</string>
+											<string>B4CDDF7D10F6A21200458471</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -357,18 +356,18 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 0}, {1073, 695}}</string>
+								<string>{{0, 0}, {1073, 691}}</string>
 								<key>RubberWindowFrame</key>
 								<string>0 96 1280 905 0 0 1280 1002 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
 							<key>Proportion</key>
-							<string>695pt</string>
+							<string>691pt</string>
 						</dict>
 						<dict>
 							<key>Proportion</key>
-							<string>164pt</string>
+							<string>168pt</string>
 							<key>Tabs</key>
 							<array>
 								<dict>
@@ -382,7 +381,7 @@
 									<key>GeometryConfiguration</key>
 									<dict>
 										<key>Frame</key>
-										<string>{{10, 27}, {1073, 137}}</string>
+										<string>{{10, 27}, {1073, 141}}</string>
 										<key>RubberWindowFrame</key>
 										<string>0 96 1280 905 0 0 1280 1002 </string>
 									</dict>
@@ -466,11 +465,11 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>B4CDDF7E10F6A21200458471</string>
+				<string>B4D65CFD11011E05008FD68C</string>
 				<string>1CA23ED40692098700951B8B</string>
-				<string>B4CDDF7F10F6A21200458471</string>
+				<string>B4D65CFE11011E05008FD68C</string>
 				<string>B45F57E01066C39B00FEDA6B</string>
-				<string>B4CDDF8010F6A21200458471</string>
+				<string>B4D65CFF11011E05008FD68C</string>
 				<string>1CA23EDF0692099D00951B8B</string>
 				<string>1CA23EE00692099D00951B8B</string>
 				<string>1CA23EE10692099D00951B8B</string>

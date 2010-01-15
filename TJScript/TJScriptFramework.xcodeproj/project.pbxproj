@@ -54,7 +54,7 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = B41DD4EA1066453E000742DD /* TJSharedFramework.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = B4A987C410C65F70001CF473 /* libTJSharedMobile.a */;
+			remoteGlobalIDString = B4A987C410C65F70001CF473;
 			remoteInfo = TJSharedMobile;
 		};
 		B41DD4F21066453E000742DD /* PBXContainerItemProxy */ = {
@@ -398,7 +398,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "";
 				INFOPLIST_FILE = Info.plist;
-				INSTALL_PATH = .;
+				INSTALL_PATH = "@executable_path";
 				PRODUCT_NAME = TJScript;
 				SYMROOT = ../build;
 				WRAPPER_EXTENSION = framework;

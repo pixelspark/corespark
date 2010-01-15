@@ -275,7 +275,7 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>30</integer>
+									<integer>29</integer>
 									<integer>28</integer>
 								</array>
 							</array>
@@ -313,7 +313,7 @@
 								<key>PBXProjectModuleGUID</key>
 								<string>B486E97710662EB70043CE5D</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>Info.plist</string>
+								<string>IpEndpointName.cpp</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -321,14 +321,15 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>B486E97810662EB70043CE5D</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>Info.plist</string>
+										<string>IpEndpointName.cpp</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>B4A98AF710C6E87E001CF473</string>
+										<string>B4D65D9B11011EF2008FD68C</string>
 										<key>history</key>
 										<array>
-											<string>B4A989C610C6CA12001CF473</string>
+											<string>B4D65D9911011EF2008FD68C</string>
+											<string>B4D65D9A11011EF2008FD68C</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -342,21 +343,23 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 0}, {1073, 450}}</string>
+								<string>{{0, 0}, {1073, 440}}</string>
 								<key>RubberWindowFrame</key>
 								<string>0 94 1280 905 0 0 1280 1002 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
 							<key>Proportion</key>
-							<string>450pt</string>
+							<string>440pt</string>
 						</dict>
 						<dict>
 							<key>Proportion</key>
-							<string>409pt</string>
+							<string>419pt</string>
 							<key>Tabs</key>
 							<array>
 								<dict>
+									<key>BecomeActive</key>
+									<true/>
 									<key>ContentConfiguration</key>
 									<dict>
 										<key>PBXProjectModuleGUID</key>
@@ -367,7 +370,7 @@
 									<key>GeometryConfiguration</key>
 									<dict>
 										<key>Frame</key>
-										<string>{{10, 27}, {1073, 382}}</string>
+										<string>{{10, 27}, {1073, 392}}</string>
 										<key>RubberWindowFrame</key>
 										<string>0 94 1280 905 0 0 1280 1002 </string>
 									</dict>
@@ -451,11 +454,11 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>B4A98AF810C6E87E001CF473</string>
+				<string>B4D65D9611011EDB008FD68C</string>
 				<string>1CA23ED40692098700951B8B</string>
-				<string>B4A98AF910C6E87E001CF473</string>
+				<string>B4D65D9711011EDB008FD68C</string>
 				<string>B486E97710662EB70043CE5D</string>
-				<string>B4A98AFA10C6E87E001CF473</string>
+				<string>B4D65D9811011EDB008FD68C</string>
 				<string>1CA23EDF0692099D00951B8B</string>
 				<string>1CA23EE00692099D00951B8B</string>
 				<string>1CA23EE10692099D00951B8B</string>

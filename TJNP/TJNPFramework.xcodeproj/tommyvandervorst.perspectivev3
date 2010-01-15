@@ -269,6 +269,7 @@
 							<array>
 								<string>0867D691FE84028FC02AAC07</string>
 								<string>B4CAA7E910AD640600385A5F</string>
+								<string>B41DD3F910663BB2000742DD</string>
 								<string>B41DD3DD10663B65000742DD</string>
 								<string>0867D69AFE84028FC02AAC07</string>
 								<string>1058C7B0FEA5585E11CA2CBB</string>
@@ -280,9 +281,8 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>26</integer>
-									<integer>20</integer>
-									<integer>0</integer>
+									<integer>45</integer>
+									<integer>44</integer>
 								</array>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateVisibleRectKey</key>
@@ -303,7 +303,7 @@
 							<real>185</real>
 						</array>
 						<key>RubberWindowFrame</key>
-						<string>0 96 1280 905 0 0 1280 1002 </string>
+						<string>0 91 1280 905 0 0 1280 1002 </string>
 					</dict>
 					<key>Module</key>
 					<string>PBXSmartGroupTreeModule</string>
@@ -321,7 +321,7 @@
 								<key>PBXProjectModuleGUID</key>
 								<string>B41DD3C210663B1B000742DD</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>tjhttp.cpp</string>
+								<string>tjshowsocket.cpp</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -329,11 +329,11 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>B41DD3C310663B1B000742DD</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>tjhttp.cpp</string>
+										<string>tjshowsocket.cpp</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>B4CDDF7510F6A20C00458471</string>
+										<string>B4D65DEF110121B0008FD68C</string>
 										<key>history</key>
 										<array>
 											<string>B423B85F106E163800147974</string>
@@ -341,7 +341,6 @@
 											<string>B423BA75106E9AC400147974</string>
 											<string>B4260E5010811E8C009F328C</string>
 											<string>B408C8E3108A84EF005AC842</string>
-											<string>B46A1935108E367B00B5A89E</string>
 											<string>B49777991097845B00FA1B69</string>
 											<string>B462AFC81098F05800484C29</string>
 											<string>B462B0341098F34600484C29</string>
@@ -363,11 +362,12 @@
 											<string>B4CDDF2F10F5DB3700458471</string>
 											<string>B4CDDF3010F5DB3700458471</string>
 											<string>B4CDDF6F10F6A20C00458471</string>
-											<string>B4CDDF7010F6A20C00458471</string>
 											<string>B4CDDF7110F6A20C00458471</string>
-											<string>B4CDDF7210F6A20C00458471</string>
 											<string>B4CDDF7310F6A20C00458471</string>
-											<string>B4CDDF7410F6A20C00458471</string>
+											<string>B401A71B11010AC500B2B77A</string>
+											<string>B401A7C111010DEC00B2B77A</string>
+											<string>B44824CC11010F52008E64C9</string>
+											<string>B44824CE11010F52008E64C9</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -381,18 +381,18 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 0}, {1073, 445}}</string>
+								<string>{{0, 0}, {1073, 414}}</string>
 								<key>RubberWindowFrame</key>
-								<string>0 96 1280 905 0 0 1280 1002 </string>
+								<string>0 91 1280 905 0 0 1280 1002 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
 							<key>Proportion</key>
-							<string>445pt</string>
+							<string>414pt</string>
 						</dict>
 						<dict>
 							<key>Proportion</key>
-							<string>414pt</string>
+							<string>445pt</string>
 							<key>Tabs</key>
 							<array>
 								<dict>
@@ -406,7 +406,9 @@
 									<key>GeometryConfiguration</key>
 									<dict>
 										<key>Frame</key>
-										<string>{{10, 27}, {1073, 387}}</string>
+										<string>{{10, 27}, {1073, 418}}</string>
+										<key>RubberWindowFrame</key>
+										<string>0 91 1280 905 0 0 1280 1002 </string>
 									</dict>
 									<key>Module</key>
 									<string>XCDetailModule</string>
@@ -460,9 +462,7 @@
 									<key>GeometryConfiguration</key>
 									<dict>
 										<key>Frame</key>
-										<string>{{10, 27}, {1073, 387}}</string>
-										<key>RubberWindowFrame</key>
-										<string>0 96 1280 905 0 0 1280 1002 </string>
+										<string>{{10, 27}, {1073, 418}}</string>
 									</dict>
 									<key>Module</key>
 									<string>PBXBuildResultsModule</string>
@@ -490,11 +490,11 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>B4CDDED610F5D62C00458471</string>
+				<string>B4D65C6E11011C06008FD68C</string>
 				<string>1CA23ED40692098700951B8B</string>
-				<string>B4CDDED710F5D62C00458471</string>
+				<string>B4D65C6F11011C06008FD68C</string>
 				<string>B41DD3C210663B1B000742DD</string>
-				<string>B4CDDED810F5D62C00458471</string>
+				<string>B4D65C7011011C06008FD68C</string>
 				<string>1CA23EDF0692099D00951B8B</string>
 				<string>1CA23EE00692099D00951B8B</string>
 				<string>1CA23EE10692099D00951B8B</string>
@@ -521,6 +521,7 @@
 				<string>debugger-step-into</string>
 				<string>debugger-step-out</string>
 				<string>NSToolbarFlexibleSpaceItem</string>
+				<string>clear-log</string>
 				<string>servicesModulebreakpoints</string>
 				<string>debugger-show-console-window</string>
 			</array>
@@ -643,13 +644,13 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>B408C6DA108A6EF7005AC842</string>
+				<string>B401A7C711010DEC00B2B77A</string>
 				<string>1CCC7628064C1048000F2A68</string>
 				<string>1CCC7629064C1048000F2A68</string>
-				<string>B408C6DB108A6EF7005AC842</string>
-				<string>B408C6DC108A6EF7005AC842</string>
-				<string>B408C6DD108A6EF7005AC842</string>
-				<string>B408C6DE108A6EF7005AC842</string>
+				<string>B401A7C811010DEC00B2B77A</string>
+				<string>B401A7C911010DEC00B2B77A</string>
+				<string>B401A7CA11010DEC00B2B77A</string>
+				<string>B401A7CB11010DEC00B2B77A</string>
 				<string>B41DD3C210663B1B000742DD</string>
 			</array>
 			<key>ToolbarConfigUserDefaultsMinorVersion</key>
@@ -685,7 +686,7 @@
 		<string>/Users/tommyvandervorst/Documents/Projecten/tj/TJNP/TJNPFramework.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
-	<string>0 96 1280 905 0 0 1280 1002 </string>
+	<string>0 91 1280 905 0 0 1280 1002 </string>
 	<key>WindowToolsV3</key>
 	<array>
 		<dict>
