@@ -414,7 +414,7 @@ Any::operator bool() const {
 			return _intValue == 1;
 
 		case TypeString:
-			return _stringValue == L"true";
+			return _stringValue == L"true" || _stringValue==L"yes" || _stringValue==L"1";
 
 		case TypeBool:
 			return _boolValue;

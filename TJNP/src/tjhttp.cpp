@@ -47,7 +47,7 @@ void Download::Start() {
 
 void Download::OnDownloadComplete(ref<DataWriter> cw) {
 	if(cw) {
-		Log::Write(L"TJNP/Download", L"Downloaded "+Stringify(cw->GetSize())+L" bytes");
+		//Log::Write(L"TJNP/Download", L"Downloaded "+Stringify(cw->GetSize())+L" bytes");
 	}
 	else {
 		Log::Write(L"TJNP/Download", L"Error occurred, no data");
