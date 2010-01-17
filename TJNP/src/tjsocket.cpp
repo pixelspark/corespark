@@ -118,9 +118,6 @@ bool Socket::Read(char* buffer, unsigned int length, unsigned int& readBytes) {
 		readBytes = r;
 		return true;
 	}
-	else if(r==0) {
-		Close();
-	}
 	readBytes = 0;
 	return false;
 }
@@ -464,7 +461,7 @@ void SocketListenerThread::Run() {
 					++it;
 				}
 			}
-
+			
 			if(select(maxSocket+1, &fds, NULL, NULL, NULL)>0) {
 				if(FD_ISSET(_controlSocket[1], &fds)) {
 					char cmd = 'Q';
@@ -520,6 +517,7 @@ void SocketListenerThread::Run() {
 						return;
 					}
 					else {
+						Log::Write(L"TJNP/SocketListenerThread", L"One of the sockets in the list is broken; waiting for update of list");
 						controlSocketOnly = true;
 					}
 				}

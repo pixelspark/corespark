@@ -121,7 +121,7 @@ void Download::OnReceive(NativeSocket ns) {
 				// Error
 				_state = DownloadStateError;
 				_downloadStateChanged.Signal();
-				OnDownloadComplete(null);
+				OnDownloadComplete(_data);
 			}
 		}
 	}
