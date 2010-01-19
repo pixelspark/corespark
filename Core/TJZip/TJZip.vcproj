@@ -92,8 +92,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)\build\Release"
+			IntermediateDirectory="$(SolutionDir)\build\Intermediate\TJZip"
 			ConfigurationType="2"
 			CharacterSet="1"
 			WholeProgramOptimization="1"
@@ -115,7 +115,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="$(SolutionDir);$(SolutionDir)\Libraries"
+				AdditionalIncludeDirectories="$(SolutionDir)\Core;$(SolutionDir)\Libraries"
 				PreprocessorDefinitions="WIN32;TJ_OS_WIN;NDEBUG;_WINDOWS;_USRDLL;TJZIP_EXPORTS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -133,7 +133,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="$(SolutionDir)\Release\tjshared.lib"
+				AdditionalDependencies="$(OutDir)\tjshared.lib"
 				OutputFile="$(OutDir)\tjzip.dll"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"

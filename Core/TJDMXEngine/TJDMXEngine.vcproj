@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="TJScout"
-	ProjectGUID="{6266CC58-D812-4B68-81DC-F57CE61CDCC2}"
-	RootNamespace="TJScout"
+	Name="TJDMXEngine"
+	ProjectGUID="{E0ABBF5F-77E6-40B4-8068-D7B390258897}"
+	RootNamespace="TJDMXEngine"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="196613"
 	>
@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;TJSCOUT_EXPORTS"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;TJDMXENGINE_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -90,7 +90,7 @@
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory="$(SolutionDir)\build\Release"
-			IntermediateDirectory="$(SolutionDir)\build\Intermediate\TJScout"
+			IntermediateDirectory="$(SolutionDir)\build\Intermediate\TJDMXEngine"
 			ConfigurationType="2"
 			CharacterSet="1"
 			WholeProgramOptimization="1"
@@ -114,18 +114,14 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				FavorSizeOrSpeed="1"
-				WholeProgramOptimization="true"
-				AdditionalIncludeDirectories="$(SolutionDir)\Core;$(SolutionDir)\Libraries"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;TJSCOUT_EXPORTS"
-				BasicRuntimeChecks="0"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Core&quot;;&quot;$(SolutionDir)\Libraries&quot;"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;TJDMXENGINE_EXPORTS"
 				RuntimeLibrary="2"
-				BufferSecurityCheck="false"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="3"
-				DisableSpecificWarnings="4251;4275"
+				DisableSpecificWarnings="4275; 4251"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -138,8 +134,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="$(SolutionDir)\Libraries\mDNS\Release\dnssd.lib ws2_32.lib"
-				OutputFile="$(OutDir)\tjscout.dll"
+				AdditionalDependencies="$(OutDir)\tjshared.lib $(OutDir)\tjsharedui.lib $(OutDir)\tjnp.lib $(SolutionDir)\Libraries\TinyXML\build\Release\tinyxml.lib ws2_32.lib"
+				OutputFile="$(OutDir)\tjdmxengine.dll"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -179,21 +175,53 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\src\tjdnssd.cpp"
+				RelativePath=".\src\tjdmxcontroller.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\tjresolver.cpp"
+				RelativePath=".\src\tjdmxdevice.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\tjscout.cpp"
+				RelativePath=".\src\tjdmxengine.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\tjservice.cpp"
+				RelativePath=".\src\tjdmxmacro.cpp"
 				>
 			</File>
+			<Filter
+				Name="devices"
+				>
+				<File
+					RelativePath=".\src\devices\tjartnetdevice.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\devices\tjdmxenttecprodevice.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\devices\tjdmxforalldevice.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\devices\tjespdevice.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\devices\tjlanboxdevice.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\devices\tjsoundlight.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\devices\tjsoundlightdevice.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -201,39 +229,61 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\include\tjdnssd.h"
+				RelativePath=".\include\tjdmxcontroller.h"
 				>
 			</File>
 			<File
-				RelativePath=".\include\tjdnssdresolver.h"
+				RelativePath=".\include\tjdmxdevice.h"
 				>
 			</File>
 			<File
-				RelativePath=".\include\tjresolver.h"
+				RelativePath=".\include\tjdmxengine.h"
 				>
 			</File>
 			<File
-				RelativePath=".\include\tjscout.h"
+				RelativePath=".\include\tjdmxinternal.h"
 				>
 			</File>
 			<File
-				RelativePath=".\include\tjservice.h"
+				RelativePath=".\include\tjdmxmacro.h"
 				>
 			</File>
 			<Filter
-				Name="internal"
+				Name="devices"
 				>
 				<File
-					RelativePath=".\include\internal\tjscout.h"
+					RelativePath=".\include\devices\enttecdmx.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\devices\tjartnetdevice.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\devices\tjdevices.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\devices\tjdmxenttecprodevice.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\devices\tjdmxforalldevice.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\devices\tjespdevice.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\devices\tjlanboxdevice.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\devices\tjsoundlightdevice.h"
 					>
 				</File>
 			</Filter>
-		</Filter>
-		<Filter
-			Name="Resource Files"
-			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
-			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
-			>
 		</Filter>
 	</Files>
 	<Globals>

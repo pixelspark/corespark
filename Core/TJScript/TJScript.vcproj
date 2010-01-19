@@ -92,8 +92,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="Release"
-			IntermediateDirectory="Release"
+			OutputDirectory="$(SolutionDir)\build\Release"
+			IntermediateDirectory="$(SolutionDir)\build\Intermediate\TJScript"
 			ConfigurationType="2"
 			CharacterSet="1"
 			WholeProgramOptimization="1"
@@ -117,7 +117,7 @@
 				Name="VCCLCompilerTool"
 				InlineFunctionExpansion="2"
 				FavorSizeOrSpeed="1"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Libraries\Spirit\boost\miniboost&quot;;&quot;$(SolutionDir)\Libraries\Spirit\boost&quot;;$(SolutionDir);$(SolutionDir)\Libraries"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Libraries\Spirit\boost\miniboost&quot;;&quot;$(SolutionDir)\Libraries\Spirit\boost&quot;;&quot;$(SolutionDir)\Core&quot;;&quot;$(SolutionDir)\Libraries&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;TJSCRIPT_EXPORTS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -136,8 +136,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="..\Release\tjshared.lib"
-				OutputFile="$(OutDir)\..\..\Release\tjscript.dll"
+				AdditionalDependencies="$(OutDir)\tjshared.lib"
+				OutputFile="$(OutDir)\tjscript.dll"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="2"

@@ -93,8 +93,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)\build\Release"
+			IntermediateDirectory="$(SolutionDir)\build\Intermediate\TJNP"
 			ConfigurationType="2"
 			CharacterSet="1"
 			WholeProgramOptimization="1"
@@ -118,7 +118,7 @@
 				Name="VCCLCompilerTool"
 				EnableIntrinsicFunctions="true"
 				WholeProgramOptimization="false"
-				AdditionalIncludeDirectories="$(SolutionDir);$(SolutionDir)\Libraries"
+				AdditionalIncludeDirectories="$(SolutionDir)\Core;$(SolutionDir)\Libraries"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;TJNP_EXPORTS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -137,8 +137,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="$(SolutionDir)/Release/tjshared.lib ws2_32.lib $(SolutionDir)/Libraries/tinyxml/build/release/tinyxml.lib iphlpapi.lib"
-				OutputFile="$(SolutionDir)\Release\TJNP.dll"
+				AdditionalDependencies="$(SolutionDir)/build/Release/tjshared.lib ws2_32.lib $(SolutionDir)/Libraries/tinyxml/build/release/tinyxml.lib iphlpapi.lib"
+				OutputFile="$(OutDir)\tjnp.dll"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="2"

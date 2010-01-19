@@ -92,8 +92,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)\build\Release\"
+			IntermediateDirectory="$(SolutionDir)\build\Intermediate\TJCrashReporter"
 			ConfigurationType="1"
 			CharacterSet="1"
 			WholeProgramOptimization="1"
@@ -115,7 +115,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="$(SolutionDir);$(SolutionDir)\Libraries"
+				AdditionalIncludeDirectories="$(SolutionDir)\Core;$(SolutionDir)\Libraries"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -133,8 +133,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="$(SolutionDir)\Libraries\Breakpad\src\client\windows\release\crash_report_sender.lib wininet.lib $(SolutionDir)\Release\tjshared.lib $(SolutionDir)\Release\tjsharedui.lib shlwapi.lib"
-				OutputFile="$(OutDir)\..\Release\$(ProjectName).exe"
+				AdditionalDependencies="$(SolutionDir)\Libraries\Breakpad\src\client\windows\release\crash_report_sender.lib wininet.lib $(SolutionDir)\build\Release\tjshared.lib $(SolutionDir)\build\Release\tjsharedui.lib shlwapi.lib"
+				OutputFile="$(OutDir)\tjcrashreporter.exe"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="2"
