@@ -8,21 +8,33 @@
 
 /* Begin PBXBuildFile section */
 		8DC2EF530486A6940098B216 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C1666FE841158C02AAC07 /* InfoPlist.strings */; };
+		B4492AC0110663EB0096384E /* sqlite3.c in Sources */ = {isa = PBXBuildFile; fileRef = B4492ABF110663EB0096384E /* sqlite3.c */; };
 		B45F58671066C9A600FEDA6B /* tjdb.h in Headers */ = {isa = PBXBuildFile; fileRef = B45F58631066C9A600FEDA6B /* tjdb.h */; };
 		B45F58681066C9A600FEDA6B /* tjdbdatabase.h in Headers */ = {isa = PBXBuildFile; fileRef = B45F58641066C9A600FEDA6B /* tjdbdatabase.h */; };
 		B45F58691066C9A600FEDA6B /* tjdbdatabase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B45F58661066C9A600FEDA6B /* tjdbdatabase.cpp */; };
-		B45F58701066C9BB00FEDA6B /* TJSharedFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B45F586F1066C9B600FEDA6B /* TJSharedFramework.framework */; };
-		B45F58821066CA9D00FEDA6B /* sqlite3.c in Sources */ = {isa = PBXBuildFile; fileRef = B45F587F1066CA9D00FEDA6B /* sqlite3.c */; };
-		B45F58831066CA9D00FEDA6B /* sqlite3.h in Headers */ = {isa = PBXBuildFile; fileRef = B45F58801066CA9D00FEDA6B /* sqlite3.h */; };
-		B45F58841066CA9D00FEDA6B /* sqlite3ext.h in Headers */ = {isa = PBXBuildFile; fileRef = B45F58811066CA9D00FEDA6B /* sqlite3ext.h */; };
+		B45F58701066C9BB00FEDA6B /* TJShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B45F586F1066C9B600FEDA6B /* TJShared.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		B4492AAD1106639D0096384E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B45F586A1066C9B600FEDA6B /* TJSharedFramework.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = B4A987C410C65F70001CF473 /* libTJSharedMobile.a */;
+			remoteInfo = TJSharedMobile;
+		};
+		B4492AC1110663F80096384E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B45F586A1066C9B600FEDA6B /* TJSharedFramework.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8DC2EF4F0486A6940098B216 /* TJShared */;
+			remoteInfo = TJShared;
+		};
 		B45F586E1066C9B600FEDA6B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = B45F586A1066C9B600FEDA6B /* TJSharedFramework.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 8DC2EF5B0486A6940098B216 /* TJSharedFramework.framework */;
+			remoteGlobalIDString = 8DC2EF5B0486A6940098B216;
 			remoteInfo = TJSharedFramework;
 		};
 /* End PBXContainerItemProxy section */
@@ -34,13 +46,11 @@
 		1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		8DC2EF5A0486A6940098B216 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8DC2EF5B0486A6940098B216 /* TJDBFramework.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = TJDBFramework.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B4492ABF110663EB0096384E /* sqlite3.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sqlite3.c; path = ../../Libraries/SQLite/sqlite3.c; sourceTree = SOURCE_ROOT; };
 		B45F58631066C9A600FEDA6B /* tjdb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tjdb.h; path = include/tjdb.h; sourceTree = SOURCE_ROOT; };
 		B45F58641066C9A600FEDA6B /* tjdbdatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tjdbdatabase.h; path = include/tjdbdatabase.h; sourceTree = SOURCE_ROOT; };
 		B45F58661066C9A600FEDA6B /* tjdbdatabase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tjdbdatabase.cpp; path = src/tjdbdatabase.cpp; sourceTree = SOURCE_ROOT; };
 		B45F586A1066C9B600FEDA6B /* TJSharedFramework.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TJSharedFramework.xcodeproj; path = ../TJShared/TJSharedFramework.xcodeproj; sourceTree = SOURCE_ROOT; };
-		B45F587F1066CA9D00FEDA6B /* sqlite3.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sqlite3.c; path = ../Libraries/SQLite/sqlite3.c; sourceTree = SOURCE_ROOT; };
-		B45F58801066CA9D00FEDA6B /* sqlite3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sqlite3.h; path = ../Libraries/SQLite/sqlite3.h; sourceTree = SOURCE_ROOT; };
-		B45F58811066CA9D00FEDA6B /* sqlite3ext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sqlite3ext.h; path = ../Libraries/SQLite/sqlite3ext.h; sourceTree = SOURCE_ROOT; };
 		D2F7E79907B2D74100F64583 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
@@ -49,7 +59,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B45F58701066C9BB00FEDA6B /* TJSharedFramework.framework in Frameworks */,
+				B45F58701066C9BB00FEDA6B /* TJShared.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -125,9 +135,7 @@
 		B45F58651066C9A600FEDA6B /* src */ = {
 			isa = PBXGroup;
 			children = (
-				B45F587F1066CA9D00FEDA6B /* sqlite3.c */,
-				B45F58801066CA9D00FEDA6B /* sqlite3.h */,
-				B45F58811066CA9D00FEDA6B /* sqlite3ext.h */,
+				B4492ABF110663EB0096384E /* sqlite3.c */,
 				B45F58661066C9A600FEDA6B /* tjdbdatabase.cpp */,
 			);
 			path = src;
@@ -136,7 +144,8 @@
 		B45F586B1066C9B600FEDA6B /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				B45F586F1066C9B600FEDA6B /* TJSharedFramework.framework */,
+				B45F586F1066C9B600FEDA6B /* TJShared.framework */,
+				B4492AAE1106639D0096384E /* libTJSharedMobile.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -150,8 +159,6 @@
 			files = (
 				B45F58671066C9A600FEDA6B /* tjdb.h in Headers */,
 				B45F58681066C9A600FEDA6B /* tjdbdatabase.h in Headers */,
-				B45F58831066CA9D00FEDA6B /* sqlite3.h in Headers */,
-				B45F58841066CA9D00FEDA6B /* sqlite3ext.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -170,6 +177,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				B4492AC2110663F80096384E /* PBXTargetDependency */,
 			);
 			name = TJDBFramework;
 			productInstallPath = "$(HOME)/Library/Frameworks";
@@ -202,10 +210,17 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		B45F586F1066C9B600FEDA6B /* TJSharedFramework.framework */ = {
+		B4492AAE1106639D0096384E /* libTJSharedMobile.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libTJSharedMobile.a;
+			remoteRef = B4492AAD1106639D0096384E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		B45F586F1066C9B600FEDA6B /* TJShared.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
-			path = TJSharedFramework.framework;
+			path = TJShared.framework;
 			remoteRef = B45F586E1066C9B600FEDA6B /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -228,11 +243,19 @@
 			buildActionMask = 2147483647;
 			files = (
 				B45F58691066C9A600FEDA6B /* tjdbdatabase.cpp in Sources */,
-				B45F58821066CA9D00FEDA6B /* sqlite3.c in Sources */,
+				B4492AC0110663EB0096384E /* sqlite3.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		B4492AC2110663F80096384E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = TJShared;
+			targetProxy = B4492AC1110663F80096384E /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		089C1666FE841158C02AAC07 /* InfoPlist.strings */ = {
@@ -297,9 +320,15 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					../../Libraries,
+					../../Core,
+				);
+				INSTALL_PATH = "@executable_path";
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
 				SDKROOT = macosx10.5;
+				SYMROOT = ../../build;
 			};
 			name = Debug;
 		};
@@ -310,8 +339,14 @@
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					../../Libraries,
+					../../Core,
+				);
+				INSTALL_PATH = "@executable_path";
 				PREBINDING = NO;
 				SDKROOT = macosx10.5;
+				SYMROOT = ../../build;
 			};
 			name = Release;
 		};
