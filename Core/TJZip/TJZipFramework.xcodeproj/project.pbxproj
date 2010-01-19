@@ -15,7 +15,7 @@
 		B41DD49F10663D01000742DD /* unzip.h in Headers */ = {isa = PBXBuildFile; fileRef = B41DD49810663D01000742DD /* unzip.h */; };
 		B41DD4A010663D01000742DD /* zip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B41DD49910663D01000742DD /* zip.cpp */; };
 		B41DD4A110663D01000742DD /* zip.h in Headers */ = {isa = PBXBuildFile; fileRef = B41DD49A10663D01000742DD /* zip.h */; };
-		B41DD4A810663D11000742DD /* TJSharedFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B41DD4A710663D0F000742DD /* TJSharedFramework.framework */; };
+		B41DD4A810663D11000742DD /* TJShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B41DD4A710663D0F000742DD /* TJShared.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -23,8 +23,15 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = B41DD4A210663D0F000742DD /* TJSharedFramework.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 8DC2EF5B0486A6940098B216 /* TJSharedFramework.framework */;
+			remoteGlobalIDString = 8DC2EF5B0486A6940098B216;
 			remoteInfo = TJSharedFramework;
+		};
+		B44926B011063AAD0096384E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B41DD4A210663D0F000742DD /* TJSharedFramework.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = B4A987C410C65F70001CF473 /* libTJSharedMobile.a */;
+			remoteInfo = TJSharedMobile;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -51,7 +58,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B41DD4A810663D11000742DD /* TJSharedFramework.framework in Frameworks */,
+				B41DD4A810663D11000742DD /* TJShared.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -139,7 +146,8 @@
 		B41DD4A310663D0F000742DD /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				B41DD4A710663D0F000742DD /* TJSharedFramework.framework */,
+				B41DD4A710663D0F000742DD /* TJShared.framework */,
+				B44926B111063AAD0096384E /* libTJSharedMobile.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -205,11 +213,18 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		B41DD4A710663D0F000742DD /* TJSharedFramework.framework */ = {
+		B41DD4A710663D0F000742DD /* TJShared.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
-			path = TJSharedFramework.framework;
+			path = TJShared.framework;
 			remoteRef = B41DD4A610663D0F000742DD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		B44926B111063AAD0096384E /* libTJSharedMobile.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libTJSharedMobile.a;
+			remoteRef = B44926B011063AAD0096384E /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -300,7 +315,6 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
 				SDKROOT = macosx10.5;
-				SYMROOT = ../build;
 			};
 			name = Debug;
 		};
@@ -313,7 +327,6 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				PREBINDING = NO;
 				SDKROOT = macosx10.5;
-				SYMROOT = ../build;
 			};
 			name = Release;
 		};
