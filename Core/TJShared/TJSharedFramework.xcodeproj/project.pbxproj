@@ -21,10 +21,9 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		8DC2EF530486A6940098B216 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C1666FE841158C02AAC07 /* InfoPlist.strings */; };
 		B41AE2EF10F5176E00F886F0 /* tjdispatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B41AE2EE10F5176E00F886F0 /* tjdispatch.cpp */; };
 		B41AE2F010F5176E00F886F0 /* tjdispatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B41AE2EE10F5176E00F886F0 /* tjdispatch.cpp */; };
-		B4492601110635C00096384E /* TinyXML.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B449259F110634030096384E /* TinyXML.framework */; };
-		B4492604110635C90096384E /* libTinyXMLMobile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B44925A1110634030096384E /* libTinyXMLMobile.a */; };
 		B47510CB10CCED5B008A801F /* tjsettings.mm in Sources */ = {isa = PBXBuildFile; fileRef = B47510CA10CCED5B008A801F /* tjsettings.mm */; };
 		B47510CC10CCED5B008A801F /* tjsettings.mm in Sources */ = {isa = PBXBuildFile; fileRef = B47510CA10CCED5B008A801F /* tjsettings.mm */; };
 		B475114810CCEF73008A801F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B475114710CCEF73008A801F /* Foundation.framework */; };
@@ -51,6 +50,7 @@
 		B4A987E010C65FB9001CF473 /* tjutil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B4CAA7BA10AD63BE00385A5F /* tjutil.cpp */; };
 		B4A987E110C65FB9001CF473 /* tjvector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B4CAA7BB10AD63BE00385A5F /* tjvector.cpp */; };
 		B4A987E210C65FB9001CF473 /* tjzone.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B4CAA7BC10AD63BE00385A5F /* tjzone.cpp */; };
+		B4A987E310C65FD0001CF473 /* libTinyXMLMobile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B4A987C910C65F9D001CF473 /* libTinyXMLMobile.a */; };
 		B4CAA78D10AD638300385A5F /* include in Headers */ = {isa = PBXBuildFile; fileRef = B4CAA76D10AD637B00385A5F /* include */; settings = {ATTRIBUTES = (Public, ); }; };
 		B4CAA7BD10AD63BE00385A5F /* tjaction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B4CAA7A810AD63BE00385A5F /* tjaction.cpp */; };
 		B4CAA7BE10AD63BE00385A5F /* tjany.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B4CAA7A910AD63BE00385A5F /* tjany.cpp */; };
@@ -72,40 +72,43 @@
 		B4CAA7CF10AD63BE00385A5F /* tjutil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B4CAA7BA10AD63BE00385A5F /* tjutil.cpp */; };
 		B4CAA7D010AD63BE00385A5F /* tjvector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B4CAA7BB10AD63BE00385A5F /* tjvector.cpp */; };
 		B4CAA7D110AD63BE00385A5F /* tjzone.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B4CAA7BC10AD63BE00385A5F /* tjzone.cpp */; };
+		B4F6F29B1067DF3300B137C0 /* TinyXML.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B4F6F29A1067DF2F00B137C0 /* TinyXML.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		B449259E110634030096384E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = B4F6F2951067DF2F00B137C0 /* TinyXMLFramework.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8DC2EF5B0486A6940098B216 /* TinyXML.framework */;
-			remoteInfo = TinyXML;
-		};
-		B44925A0110634030096384E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = B4F6F2951067DF2F00B137C0 /* TinyXMLFramework.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = B4A9875D10C65E8A001CF473 /* libTinyXMLMobile.a */;
-			remoteInfo = TinyXMLMobile;
-		};
-		B44925D11106344F0096384E /* PBXContainerItemProxy */ = {
+		B497DAD510AD5E0900EB9CB8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = B4F6F2951067DF2F00B137C0 /* TinyXMLFramework.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 8DC2EF4F0486A6940098B216 /* TinyXML */;
+			remoteGlobalIDString = 8DC2EF4F0486A6940098B216;
 			remoteInfo = TinyXML;
+		};
+		B4A987C810C65F9D001CF473 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B4F6F2951067DF2F00B137C0 /* TinyXMLFramework.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = B4A9875D10C65E8A001CF473;
+			remoteInfo = TinyXMLMobile;
+		};
+		B4F6F2991067DF2F00B137C0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B4F6F2951067DF2F00B137C0 /* TinyXMLFramework.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8DC2EF5B0486A6940098B216;
+			remoteInfo = TinyXMLFramework;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		0867D69BFE84028FC02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+		089C1667FE841158C02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		8DC2EF5A0486A6940098B216 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8DC2EF5B0486A6940098B216 /* TJShared.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = TJShared.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B41AE2EE10F5176E00F886F0 /* tjdispatch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tjdispatch.cpp; path = src/tjdispatch.cpp; sourceTree = "<group>"; };
 		B47510CA10CCED5B008A801F /* tjsettings.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = tjsettings.mm; path = src/tjsettings.mm; sourceTree = "<group>"; };
 		B475114710CCEF73008A801F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		B47A685A10BEA4590060D38F /* doxygen.config */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = doxygen.config; sourceTree = "<group>"; };
+		B486E8BD106629E00043CE5D /* TinyXMLFramework.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TinyXMLFramework.framework; path = ../Libraries/TinyXML/build/Release/TinyXMLFramework.framework; sourceTree = SOURCE_ROOT; };
 		B486E8C110662A170043CE5D /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		B497DAD710AD5E2500EB9CB8 /* libstdc++.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.6.dylib"; path = "usr/lib/libstdc++.6.dylib"; sourceTree = SDKROOT; };
 		B4A987C410C65F70001CF473 /* libTJSharedMobile.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libTJSharedMobile.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -130,7 +133,8 @@
 		B4CAA7BA10AD63BE00385A5F /* tjutil.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tjutil.cpp; path = src/tjutil.cpp; sourceTree = "<group>"; };
 		B4CAA7BB10AD63BE00385A5F /* tjvector.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tjvector.cpp; path = src/tjvector.cpp; sourceTree = "<group>"; };
 		B4CAA7BC10AD63BE00385A5F /* tjzone.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tjzone.cpp; path = src/tjzone.cpp; sourceTree = "<group>"; };
-		B4F6F2951067DF2F00B137C0 /* TinyXMLFramework.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TinyXMLFramework.xcodeproj; path = ../../Libraries/TinyXML/TinyXMLFramework.xcodeproj; sourceTree = SOURCE_ROOT; };
+		B4F6F20E1067678900B137C0 /* Info copy.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info copy.plist"; sourceTree = "<group>"; };
+		B4F6F2951067DF2F00B137C0 /* TinyXMLFramework.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TinyXMLFramework.xcodeproj; path = ../Libraries/TinyXML/TinyXMLFramework.xcodeproj; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -138,7 +142,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B4492601110635C00096384E /* TinyXML.framework in Frameworks */,
+				B4F6F29B1067DF3300B137C0 /* TinyXML.framework in Frameworks */,
 				B486E8C210662A170043CE5D /* CoreFoundation.framework in Frameworks */,
 				B497DAD810AD5E2500EB9CB8 /* libstdc++.6.dylib in Frameworks */,
 				B475114810CCEF73008A801F /* Foundation.framework in Frameworks */,
@@ -149,7 +153,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B4492604110635C90096384E /* libTinyXMLMobile.a in Frameworks */,
+				B4A987E310C65FD0001CF473 /* libTinyXMLMobile.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -168,11 +172,11 @@
 		0867D691FE84028FC02AAC07 /* TJSharedFramework */ = {
 			isa = PBXGroup;
 			children = (
-				8DC2EF5A0486A6940098B216 /* Info.plist */,
 				B47A685A10BEA4590060D38F /* doxygen.config */,
 				B4CAA76D10AD637B00385A5F /* include */,
 				B4CAA7D210AD63C100385A5F /* src */,
 				B4F6F2951067DF2F00B137C0 /* TinyXMLFramework.xcodeproj */,
+				089C1665FE841158C02AAC07 /* Resources */,
 				0867D69AFE84028FC02AAC07 /* External Frameworks and Libraries */,
 				034768DFFF38A50411DB9C8B /* Products */,
 				B497DAD710AD5E2500EB9CB8 /* libstdc++.6.dylib */,
@@ -190,10 +194,21 @@
 			name = "External Frameworks and Libraries";
 			sourceTree = "<group>";
 		};
+		089C1665FE841158C02AAC07 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				8DC2EF5A0486A6940098B216 /* Info.plist */,
+				089C1666FE841158C02AAC07 /* InfoPlist.strings */,
+				B4F6F20E1067678900B137C0 /* Info copy.plist */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
 		1058C7B0FEA5585E11CA2CBB /* Linked Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 				B486E8C110662A170043CE5D /* CoreFoundation.framework */,
+				B486E8BD106629E00043CE5D /* TinyXMLFramework.framework */,
 				0867D69BFE84028FC02AAC07 /* Foundation.framework */,
 			);
 			name = "Linked Frameworks";
@@ -204,15 +219,6 @@
 			children = (
 			);
 			name = "Other Frameworks";
-			sourceTree = "<group>";
-		};
-		B449259A110634030096384E /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				B449259F110634030096384E /* TinyXML.framework */,
-				B44925A1110634030096384E /* libTinyXMLMobile.a */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		B4CAA7D210AD63C100385A5F /* src */ = {
@@ -242,6 +248,15 @@
 				B4CAA7BC10AD63BE00385A5F /* tjzone.cpp */,
 			);
 			name = src;
+			sourceTree = "<group>";
+		};
+		B4F6F2961067DF2F00B137C0 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B4F6F29A1067DF2F00B137C0 /* TinyXML.framework */,
+				B4A987C910C65F9D001CF473 /* libTinyXMLMobile.a */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -278,7 +293,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				B44925D21106344F0096384E /* PBXTargetDependency */,
+				B497DAD610AD5E0900EB9CB8 /* PBXTargetDependency */,
 			);
 			name = TJShared;
 			productInstallPath = "$(HOME)/Library/Frameworks";
@@ -316,7 +331,7 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = B449259A110634030096384E /* Products */;
+					ProductGroup = B4F6F2961067DF2F00B137C0 /* Products */;
 					ProjectRef = B4F6F2951067DF2F00B137C0 /* TinyXMLFramework.xcodeproj */;
 				},
 			);
@@ -330,18 +345,18 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		B449259F110634030096384E /* TinyXML.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = TinyXML.framework;
-			remoteRef = B449259E110634030096384E /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		B44925A1110634030096384E /* libTinyXMLMobile.a */ = {
+		B4A987C910C65F9D001CF473 /* libTinyXMLMobile.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libTinyXMLMobile.a;
-			remoteRef = B44925A0110634030096384E /* PBXContainerItemProxy */;
+			remoteRef = B4A987C810C65F9D001CF473 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		B4F6F29A1067DF2F00B137C0 /* TinyXML.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = TinyXML.framework;
+			remoteRef = B4F6F2991067DF2F00B137C0 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -351,6 +366,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8DC2EF530486A6940098B216 /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -434,12 +450,23 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		B44925D21106344F0096384E /* PBXTargetDependency */ = {
+		B497DAD610AD5E0900EB9CB8 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = TinyXML;
-			targetProxy = B44925D11106344F0096384E /* PBXContainerItemProxy */;
+			targetProxy = B497DAD510AD5E0900EB9CB8 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		089C1666FE841158C02AAC07 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				089C1667FE841158C02AAC07 /* English */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		1DEB91AE08733DA50010E9CD /* Debug */ = {
@@ -451,7 +478,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/../../Libraries/TinyXML/build/Release\"",
+					"\"$(SRCROOT)/../Libraries/TinyXML/build/Release\"",
 				);
 				FRAMEWORK_VERSION = A;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -460,9 +487,8 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "";
-				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = Info.plist;
-				INSTALL_PATH = "@executable_path";
+				INSTALL_PATH = .;
 				PRODUCT_NAME = TJShared;
 				PUBLIC_HEADERS_FOLDER_PATH = "$(CONTENTS_FOLDER_PATH)/Headers";
 				WRAPPER_EXTENSION = framework;
@@ -478,18 +504,16 @@
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/../../Libraries/TinyXML/build/Release\"",
+					"\"$(SRCROOT)/../Libraries/TinyXML/build/Release\"",
 				);
 				FRAMEWORK_VERSION = A;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "";
-				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "@executable_path";
 				PRODUCT_NAME = TJShared;
 				PUBLIC_HEADERS_FOLDER_PATH = "$(CONTENTS_FOLDER_PATH)/Headers";
-				SYMROOT = ../../build;
 				WRAPPER_EXTENSION = framework;
 			};
 			name = Release;
@@ -519,14 +543,10 @@
 				GCC_PREPROCESSOR_DEFINITIONS = TJSHARED_EXPORTS;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = (
-					../,
-					../../Libraries/,
-				);
 				INSTALL_PATH = .;
 				PREBINDING = NO;
 				SDKROOT = macosx10.6;
-				SYMROOT = ../../build;
+				SYMROOT = ../build;
 			};
 			name = Release;
 		};
@@ -548,7 +568,6 @@
 				DOXYGEN_PATH = /Applications/Doxygen.app/Contents/Resources/doxygen;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				PRODUCT_NAME = Documentation;
-				SYMROOT = ../../build;
 				ZERO_LINK = NO;
 			};
 			name = Release;
@@ -581,12 +600,11 @@
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				HEADER_SEARCH_PATHS = (
 					../,
-					../../Libraries,
+					../Libraries,
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = TJSharedMobile;
 				SDKROOT = iphoneos3.1;
-				SYMROOT = ../../build;
 				ZERO_LINK = NO;
 			};
 			name = Release;

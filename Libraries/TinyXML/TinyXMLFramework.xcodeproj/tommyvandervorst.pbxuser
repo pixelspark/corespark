@@ -70,13 +70,11 @@
 			PBXWorkspaceStateSaveDate = 285619533;
 		};
 		perUserProjectItems = {
-			B44925EE110635640096384E /* PBXTextBookmark */ = B44925EE110635640096384E /* PBXTextBookmark */;
-			B44925F91106359B0096384E /* PBXTextBookmark */ = B44925F91106359B0096384E /* PBXTextBookmark */;
-			B47A692110BEA5F00060D38F = B47A692110BEA5F00060D38F /* PBXTextBookmark */;
-			B486E8E710662B880043CE5D = B486E8E710662B880043CE5D /* PBXTextBookmark */;
-			B497DA8A10AD5BF900EB9CB8 = B497DA8A10AD5BF900EB9CB8 /* PlistBookmark */;
-			B4A98C8F10C6FF58001CF473 = B4A98C8F10C6FF58001CF473 /* PBXTextBookmark */;
-			B4D65D8911011EBE008FD68C = B4D65D8911011EBE008FD68C /* PBXTextBookmark */;
+			B449272311063DE90096384E /* PBXTextBookmark */ = B449272311063DE90096384E /* PBXTextBookmark */;
+			B47A692110BEA5F00060D38F /* PBXTextBookmark */ = B47A692110BEA5F00060D38F /* PBXTextBookmark */;
+			B486E8E710662B880043CE5D /* PBXTextBookmark */ = B486E8E710662B880043CE5D /* PBXTextBookmark */;
+			B497DA8A10AD5BF900EB9CB8 /* PlistBookmark */ = B497DA8A10AD5BF900EB9CB8 /* PlistBookmark */;
+			B4D65D8911011EBE008FD68C /* PBXTextBookmark */ = B4D65D8911011EBE008FD68C /* PBXTextBookmark */;
 		};
 		sourceControlManager = B486E89E1066294A0043CE5D /* Source Control */;
 		userBuildSettings = {
@@ -85,17 +83,7 @@
 	8DC2EF4F0486A6940098B216 /* TinyXML */ = {
 		activeExec = 0;
 	};
-	B44925EE110635640096384E /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = B486E8AD106629700043CE5D /* tinyxml.cpp */;
-		name = "tinyxml.cpp: 1";
-		rLen = 0;
-		rLoc = 0;
-		rType = 0;
-		vrLen = 343;
-		vrLoc = 6027;
-	};
-	B44925F91106359B0096384E /* PBXTextBookmark */ = {
+	B449272311063DE90096384E /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
 		fRef = B486E8AD106629700043CE5D /* tinyxml.cpp */;
 		name = "tinyxml.cpp: 1";
@@ -195,16 +183,6 @@
 	};
 	B4A9875C10C65E8A001CF473 /* TinyXMLMobile */ = {
 		activeExec = 0;
-	};
-	B4A98C8F10C6FF58001CF473 /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = B486E8AD106629700043CE5D /* tinyxml.cpp */;
-		name = "tinyxml.cpp: 1";
-		rLen = 0;
-		rLoc = 0;
-		rType = 0;
-		vrLen = 394;
-		vrLoc = 6027;
 	};
 	B4D65D8911011EBE008FD68C /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;

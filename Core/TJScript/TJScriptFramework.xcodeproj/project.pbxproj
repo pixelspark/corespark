@@ -378,8 +378,9 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "";
 				INFOPLIST_FILE = Info.plist;
-				INSTALL_PATH = "@executable_path";
+				INSTALL_PATH = .;
 				PRODUCT_NAME = TJScript;
+				SYMROOT = ../build;
 				WRAPPER_EXTENSION = framework;
 			};
 			name = Debug;
@@ -399,6 +400,7 @@
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "@executable_path";
 				PRODUCT_NAME = TJScript;
+				SYMROOT = ../build;
 				WRAPPER_EXTENSION = framework;
 			};
 			name = Release;
@@ -411,14 +413,10 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = (
-					../../Core/,
-					"../../Libraries//**",
-				);
+				HEADER_SEARCH_PATHS = "../Libraries//**";
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
 				SDKROOT = macosx10.6;
-				SYMROOT = ../../build;
 			};
 			name = Debug;
 		};
@@ -429,13 +427,9 @@
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = (
-					../../Core/,
-					"../../Libraries//**",
-				);
+				HEADER_SEARCH_PATHS = "../Libraries//**";
 				PREBINDING = NO;
 				SDKROOT = macosx10.6;
-				SYMROOT = ../../build;
 			};
 			name = Release;
 		};
