@@ -561,7 +561,7 @@ Any::Type Any::GetType() const {
 }
 
 void Any::Save(TiXmlElement* you) {
-	SaveAttributeSmall<int>(you, "type", (int)_type);
+	SaveAttributeSmall<String>(you, "type", StringFromType(_type));
 	SaveAttributeSmall(you, "value", ToString());
 
 	if(_type==TypeTuple && _object) {
@@ -577,7 +577,7 @@ void Any::Save(TiXmlElement* you) {
 }
 
 void Any::Load(TiXmlElement* you) {
-	_type = (Type)LoadAttributeSmall<int>(you, "type", (int)_type);
+	_type = TypeFromString(LoadAttributeSmall<String>(you, "type", StringFromType(_type)));
 	String value = LoadAttributeSmall(you, "value", ToString());
 
 	if(_type==TypeTuple) {
@@ -618,6 +618,54 @@ void Any::Load(TiXmlElement* you) {
 			case TypeObject:
 				break;
 		}
+	}
+}
+
+Any::Type Any::TypeFromString(const String& t) {
+	if(t==L"int32") {
+		return Any::TypeInteger;
+	}
+	else if(t==L"double") {
+		return Any::TypeDouble;
+	}
+	else if(t==L"string") {
+		return Any::TypeString;
+	}
+	else if(t==L"bool") {
+		return Any::TypeBool;
+	}
+	else if(t==L"null") {
+		return Any::TypeNull;
+	}
+	else if(t==L"object") {
+		return Any::TypeObject;
+	}
+	else if(t==L"tuple") {
+		return Any::TypeTuple;
+	}
+	return Any::TypeNull;
+}
+
+String Any::StringFromType(Any::Type t) {
+	switch(t) {
+		case Any::TypeInteger:
+			return L"int32";
+			
+		case Any::TypeString:
+			return L"string";
+			
+		case Any::TypeBool:
+			return L"bool";
+			
+		case Any::TypeObject:
+			return L"object";
+			
+		case Any::TypeTuple:
+			return L"tuple";
+			
+		case Any::TypeNull:
+		default:
+			return L"null";
 	}
 }
 

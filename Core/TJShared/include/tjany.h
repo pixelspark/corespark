@@ -65,6 +65,8 @@ namespace tj {
 
 				///static ref<Property> CreateTypeProperty(const String& name, ref<Inspectable> holder, Type* type);
 				static String GetTypeName(Type t);
+				static Type TypeFromString(const String& tn);
+				static String StringFromType(Type t);
 
 			private:
 				union {

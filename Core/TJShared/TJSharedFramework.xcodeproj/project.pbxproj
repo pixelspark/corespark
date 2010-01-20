@@ -93,14 +93,14 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = B4F6F2951067DF2F00B137C0 /* TinyXMLFramework.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 8DC2EF4F0486A6940098B216 /* TinyXML */;
+			remoteGlobalIDString = 8DC2EF4F0486A6940098B216;
 			remoteInfo = TinyXML;
 		};
 		B4492B001106642D0096384E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = B4F6F2951067DF2F00B137C0 /* TinyXMLFramework.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 8DC2EF4F0486A6940098B216 /* TinyXML */;
+			remoteGlobalIDString = 8DC2EF4F0486A6940098B216;
 			remoteInfo = TinyXML;
 		};
 /* End PBXContainerItemProxy section */
