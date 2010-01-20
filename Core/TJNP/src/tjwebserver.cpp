@@ -497,6 +497,7 @@ void WebServerResponseTask::ServeRequest(ref<HTTPRequest> hrp) {
 		std::map< std::wstring, ref<WebItem> >::iterator it = fs->_resolvers.begin();
 		while(it!=fs->_resolvers.end()) {
 			const std::wstring& resolverPath = it->first;
+			
 			if(requestFile.compare(0, resolverPath.length(), resolverPath)==0) {
 				// Use this resolver
 				resolver = it->second;
