@@ -29,7 +29,7 @@ ref<Scriptable> ScriptScope::Get(const std::wstring& key) {
 }
 
 ref<Scriptable> ScriptScope::Execute(Command command, ref<ParameterList> params) {
-	static const Parameter<std::wstring> PVar(L"var");
+	static const Parameter<std::wstring> PVar(L"var",0);
 
 	if(command==L"exists") {
 		std::wstring name = PVar.Require(params,L"");
