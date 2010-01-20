@@ -176,7 +176,7 @@ void DMXController::Save(TiXmlElement* you) {
 		while(it!=_switchingSlots.end()) {
 			DMXSlot slot = *it;
 			TiXmlElement channelElement("channel");
-			SaveAttributeSmall(&channelElement, "id", *it);
+			SaveAttributeSmall(&channelElement, "id", slot);
 			switchingElement.InsertEndChild(channelElement);
 			++it;
 		}
@@ -365,7 +365,7 @@ ref<DMXMacro> DMXController::CreateMacro(std::wstring address, DMXSource source)
 	else if(address.find(L",")==std::wstring::npos) {
 		DMXSlot channel = ParseChannelNumber(address);
 		if(channel>0 && channel <= _channelCount) {
-			_highestChannelUsed = max(_highestChannelUsed, channel);
+			_highestChannelUsed = Util::Max(_highestChannelUsed, channel);
 			if(precise) {
 				macro = GC::Hold(new PreciseDMXMacro(this, channel, source, invert));
 			}
@@ -407,7 +407,7 @@ DMXSlot DMXController::ParseChannelNumber(const std::wstring& n) {
 void DMXController::Set(const std::wstring& macro, float value, DMXSource source) {
 	ThreadLock lock(&_lock);
 
-	stdext::hash_map<std::wstring, MacroInfo>::iterator it = _macro.find(macro);
+	std::map<std::wstring, MacroInfo>::iterator it = _macro.find(macro);
 	if(it == _macro.end()) {
 		return; // all macros are registered in the _macro map
 	}
@@ -430,27 +430,27 @@ void DMXController::Set(const std::wstring& macro, float value, DMXSource source
 }
 
 float DMXController::GetMacroResult(const std::wstring& macro) {
-	stdext::hash_map<std::wstring, MacroInfo>::iterator it = _macro.find(macro);
+	std::map<std::wstring, MacroInfo>::iterator it = _macro.find(macro);
 	if(it == _macro.end()) {
 		return 0.0f; // all macros are registered in the _macro map
 	}
 
 	MacroInfo& mi = it->second;
-	return max(mi._manual,mi._sequence);
+	return Util::Max(mi._manual,mi._sequence);
 }
 
 void DMXController::DestroyMacro(DMXMacro* macroptr) {
 	ThreadLock lock(&_lock);
 	std::wstring addr = macroptr->GetAddress();
 
-	stdext::hash_map<std::wstring, MacroInfo>::iterator it = _macro.find(addr);
+	std::map<std::wstring, MacroInfo>::iterator it = _macro.find(addr);
 	if(it!=_macro.end()) {
 		_macro.erase(it);
 	}
 }
 
 bool DMXController::IsMacroSubmix(const std::wstring& name) {
-	stdext::hash_map<std::wstring, MacroInfo>::iterator it = _macro.find(name);
+	std::map<std::wstring, MacroInfo>::iterator it = _macro.find(name);
 	if(it == _macro.end()) {
 		return false;
 	}
@@ -458,7 +458,7 @@ bool DMXController::IsMacroSubmix(const std::wstring& name) {
 }
 
 int DMXController::Get(const std::wstring& macro, DMXSource src) {
-	stdext::hash_map<std::wstring, MacroInfo>::iterator it = _macro.find(macro);
+	std::map<std::wstring, MacroInfo>::iterator it = _macro.find(macro);
 	if(it == _macro.end()) {
 		return -1; // all macros are registered in the _macro map
 	}
@@ -477,18 +477,18 @@ int DMXController::Get(const std::wstring& macro, DMXSource src) {
 }
 
 inline int DMXController::GetChannelResult(DMXSlot ch) {
-	wchar_t buffer[33];
-	_itow_s(ch, buffer, 16, 10);
+	std::wostringstream chss;
+	chss << L"," << int(ch) << L",";
+	std::wstring chs = chss.str();
 
-	std::wstring chs = std::wstring(L",")+buffer+L",";
 	float a = float(Get(ch, DMXManual)) / 255.0f;
 	float b = float(Get(ch, DMXSequence)) / 255.0f;
 
 	// multiply sequence value with sequence master
 	b *= GetSequenceMasterValue();
 
-	float highest = max(a,b);
-
+	float highest = Util::Max(a,b);
+		
 	// process submix macro's
 	float submixRatio = 1.0f;
 
@@ -497,7 +497,7 @@ inline int DMXController::GetChannelResult(DMXSlot ch) {
 	}
 
 	if(_macro.size()>0) {
-		stdext::hash_map<std::wstring, MacroInfo>::iterator it = _macro.begin();
+		std::map<std::wstring, MacroInfo>::iterator it = _macro.begin();
 		while(it!=_macro.end()) {
 			std::wstring address = it->first;
 			std::wstring originalAddress = address;
@@ -510,12 +510,12 @@ inline int DMXController::GetChannelResult(DMXSlot ch) {
 
 			// is our channel in the address?
 			if(address.find(chs)!=std::wstring::npos) {
-				float val = max(mi._manual, mi._sequence);
+				float val = Util::Max(mi._manual, mi._sequence);
 				if(mi._submix) {
 					submixRatio *= val;
 				}
 				else {
-					highest = max(val, highest);
+					highest = Util::Max(val, highest);
 				}
 			}
 
@@ -532,11 +532,11 @@ inline int DMXController::GetChannelResult(DMXSlot ch) {
 }
 
 float DMXController::GetGrandMasterValue() const {
-	return float(max(_grandMaster._manual, _grandMaster._sequence))/255.0f;
+	return float(Util::Max(_grandMaster._manual, _grandMaster._sequence))/255.0f;
 }
 
 float DMXController::GetSequenceMasterValue() const {
-	return float(max(_sequenceMaster._manual, _sequenceMaster._sequence))/255.0f;
+	return float(Util::Max(_sequenceMaster._manual, _sequenceMaster._sequence))/255.0f;
 }
 
 int DMXController::GetChannelResultCached(DMXSlot ch) {
@@ -561,7 +561,7 @@ void DMXController::Process() {
 			for(DMXSlot a=1;a<_highestChannelUsed+1;a++) {
 				volatile DMXChannel& channel = _values[a-1];
 				if(channel._dirty || _allDirty) {
-					_transmit[a-1] = unsigned char(int(float(GetChannelResult(a)) * master));
+					_transmit[a-1] = (unsigned char)(int(float(GetChannelResult(a)) * master));
 					channel._dirty = false;
 				}
 			}
@@ -593,7 +593,7 @@ int DMXController::Get(DMXSlot channel, DMXSource src) {
 		return value._manual;
 	}
 	else {
-		return max(value._manual, value._sequence);
+		return Util::Max(value._manual, value._sequence);
 	}
 }
 
@@ -602,7 +602,7 @@ int DMXController::GetGrandMaster(DMXSource src) {
 		return _grandMaster._manual;
 	}
 	else {
-		return max(_grandMaster._manual, _grandMaster._sequence);
+		return Util::Max(_grandMaster._manual, _grandMaster._sequence);
 	}
 }
 
@@ -611,7 +611,7 @@ int DMXController::GetSequenceMaster(DMXSource src) {
 		return _sequenceMaster._manual;
 	}
 	else {
-		return max(_sequenceMaster._manual, _sequenceMaster._sequence);
+		return Util::Max(_sequenceMaster._manual, _sequenceMaster._sequence);
 	}
 }
 

@@ -3,6 +3,7 @@
 using namespace tj::dmx::devices;
 using namespace tj::dmx;
 
+#ifdef TJ_OS_WIN
 #define READ_ONE_BYTE(handle,byte,bytes_read,overlapped_struct) ReadFile(handle,byte,1,bytes_read,overlapped_struct)
 
 DMXEnttecProDevice::DMXEnttecProDevice(): _universe(0) {
@@ -299,3 +300,5 @@ ref< std::vector< ref<DMXDevice> > > DMXEnttecProDeviceClass::GetAvailableDevice
 	devs->push_back(_device);
 	return devs;
 }
+
+#endif

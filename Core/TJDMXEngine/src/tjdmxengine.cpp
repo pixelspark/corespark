@@ -10,11 +10,11 @@ strong<DMXController> DMXEngine::GetController() {
 	if(!_instance) {
 		_instance = GC::Hold(new DMXController());
 		_instance->AddDeviceClass(GC::Hold(new DMXESPDeviceClass()));
-		_instance->AddDeviceClass(GC::Hold(new DMXEnttecProDeviceClass()));
 		_instance->AddDeviceClass(GC::Hold(new DMXArtNetDeviceClass()));
 		_instance->AddDeviceClass(GC::Hold(new DMXLanboxDeviceClass()));
 
 		#ifdef TJ_OS_WIN
+			_instance->AddDeviceClass(GC::Hold(new DMXEnttecProDeviceClass()));
 			_instance->AddDeviceClass(GC::Hold(new DMXSoundLightDeviceClass()));
 			_instance->AddDeviceClass(GC::Hold(new DMXForAllDeviceClass()));
 		#endif

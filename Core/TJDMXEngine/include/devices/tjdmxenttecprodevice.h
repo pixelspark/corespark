@@ -5,6 +5,8 @@
 #include "../tjdmxdevice.h"
 #include "enttecdmx.h"
 
+#ifdef TJ_OS_WIN
+
 namespace tj {
 	namespace dmx {
 		namespace devices {
@@ -63,5 +65,7 @@ namespace tj {
 		}
 	}
 }
+
+#endif
 
 #endif

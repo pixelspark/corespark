@@ -125,7 +125,7 @@ ComplexDMXMacro::ComplexDMXMacro(DMXController* controller, std::wstring address
 		DMXSlot channel = DMXController::ParseChannelNumber(nr);
 		
 		if(channel>-1 && channel < 514) {
-			_controller->_highestChannelUsed = max(_controller->_highestChannelUsed, channel);
+			_controller->_highestChannelUsed = Util::Max(_controller->_highestChannelUsed, channel);
 			_channels.push_back(channel);
 		}
 

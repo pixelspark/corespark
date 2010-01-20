@@ -14,6 +14,7 @@ namespace tj {
 		#else
 			class DMX_EXPORTED DMXDevice: public Thread, public virtual Serializable {
 		#endif
+				
 			public:
 				DMXDevice();
 				virtual ~DMXDevice();
@@ -38,8 +39,8 @@ namespace tj {
 				virtual void Connect() = 0;
 				CriticalSection* GetLock();
 
-				Event _end;
-				Event _transmit;
+				Event _update;
+				volatile bool _running;
 				weak<DMXController> _controller;
 				CriticalSection _lock;
 				Time _retransmitTime;

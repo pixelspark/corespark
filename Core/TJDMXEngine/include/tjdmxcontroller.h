@@ -3,7 +3,6 @@
 
 #include "tjdmxinternal.h"
 #include "tjdmxdevice.h"
-#include <hash_map>
 
 namespace tj {
 	namespace dmx {
@@ -136,7 +135,7 @@ namespace tj {
 				DMXChannel _grandMaster;
 				DMXChannel _sequenceMaster;
 				volatile DMXChannel* _values;
-				stdext::hash_map<std::wstring, MacroInfo > _macro;
+				std::map<std::wstring, MacroInfo > _macro;
 				std::set< DMXSlot > _switchingSlots;
 				unsigned char* _transmit;
 				volatile unsigned int _channelCount;
