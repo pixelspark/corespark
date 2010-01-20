@@ -235,6 +235,7 @@ void Daemon::Run() {
 		sigaction(SIGHUP, &sa, NULL);
 		sigaction(SIGCHLD, &sa, NULL);
 		sigaction(SIGUSR1, &sa, NULL);
+		sigaction(SIGPIPE, &sa, NULL);
 	#endif
 	
 	#ifdef TJ_OS_MAC
@@ -271,7 +272,7 @@ void Daemon::Run() {
 		#endif
 		
 		else {
-			break;
+			Log::Write(L"TJShared/Daemon", L"A signal was received ("+StringifyHex(_lastSignal)+L"), ignoring");
 		}
 	}
 	
