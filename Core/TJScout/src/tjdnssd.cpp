@@ -16,111 +16,64 @@
 
 using namespace tj::shared;
 using namespace tj::scout;
+using namespace tj::np;
 
-/** DNSSDBrowserThread **/
-namespace tj {
-	namespace scout {
-		class DNSSDBrowserThread: public Thread {
-			friend class DNSSDResolveRequest;
-			public:
-				DNSSDBrowserThread(DNSServiceRef service);
-				virtual ~DNSSDBrowserThread();
-				virtual void Run();
-				virtual void Cancel();
+ref<DNSSDBrowserThread> DNSSDBrowserThread::_instance;
 
-			protected:
-				DNSServiceRef _service;
-			
-				#ifdef TJ_OS_POSIX
-					int _controlSocket[2];
-				#endif
-			
-				#ifdef TJ_OS_WIN
-					Event _cancelledEvent;
-				#endif
-		};
+/** DNSSDRequest **/
+DNSSDRequest::DNSSDRequest(DNSServiceRef service, bool oneShot): _service(service), _oneShot(oneShot) {
+}
+
+DNSSDRequest::~DNSSDRequest() {
+	DNSServiceRefDeallocate(_service);
+}
+
+void DNSSDRequest::OnReceive(NativeSocket ns) {
+	DNSServiceProcessResult(_service);
+	if(_oneShot) {
+		ref<DNSSDBrowserThread> bt = _thread;
+		if(bt) {
+			bt->RemoveRequest(ref<DNSSDRequest>(this));
+		}
 	}
 }
 
-DNSSDBrowserThread::DNSSDBrowserThread(DNSServiceRef service): _service(service) {
-	#ifdef TJ_OS_POSIX
-		if(socketpair(AF_UNIX, SOCK_STREAM, 0, _controlSocket)!=0) {
-			Log::Write(L"TJScout/DNSSDBrowserThread", L"Could not create control socket pair");
-		}
-	#endif
+/** DNSSDBrowserThread **/
+DNSSDBrowserThread::DNSSDBrowserThread() {
 }
 
 DNSSDBrowserThread::~DNSSDBrowserThread() {
-	Cancel();
-	WaitForCompletion();
-	DNSServiceRefDeallocate(_service);
-	
-	#ifdef TJ_OS_POSIX
-		close(_controlSocket[0]);
-		close(_controlSocket[1]);
-	#endif
 }
 
-void DNSSDBrowserThread::Run() {
-	int fd = DNSServiceRefSockFD(_service);
-
-	#ifdef TJ_OS_WIN
-		while(!_cancelledEvent.Wait(Time(1000))) {
-			TIMEVAL tv;
-			tv.tv_sec = 0;
-			tv.tv_usec = 1;
-
-			fd_set fdset;
-			FD_ZERO(&fdset);
-			FD_SET(fd, &fdset);
-
-			int sr = select(0, &fdset, 0, 0, &tv);
-			if(sr==SOCKET_ERROR) {
-				Log::Write(L"TJScout/DNSSDBrowserThread", L"SOCKET_ERROR on select!");
-				return;
-			}
-			else if(sr>0) {
-				DNSServiceProcessResult(_service);
-			}
-			else {
-				// Nothing to be processed, wait another second
-			}
-		}
-	#endif
-	
-	
-	#ifdef TJ_OS_POSIX
-		while(true) {
-			fd_set fdset;
-			FD_ZERO(&fdset);
-			FD_SET(fd, &fdset);
-			FD_SET(_controlSocket[1], &fdset);
-			select(Util::Max(_controlSocket[1],fd)+1, &fdset, 0, 0, NULL);
-			if(FD_ISSET(_controlSocket[1], &fdset)) {
-				return;
-			}
-			else if(FD_ISSET(fd, &fdset)) {
-				DNSServiceProcessResult(_service);
-			}
-			else {
-				// Something weird?
-				return;
-			}
-		}
-	#endif
+void DNSSDBrowserThread::AddRequest(ref<DNSSDRequest> drq) {
+	ThreadLock lock(&_lock);
+	if(drq) {
+		ref<DNSSDBrowserThread> sr= this;
+		drq->_thread = sr;
+		_requests.insert(drq);
+		AddListener(DNSServiceRefSockFD(drq->_service), drq);
+	}
 }
 
-void DNSSDBrowserThread::Cancel() {
-	#ifdef TJ_OS_WIN
-		_cancelledEvent.Signal();
-	#endif
-	
-	#ifdef TJ_OS_POSIX
-		char quit[1] = {'Q'};
-		if(write(_controlSocket[0], quit, 1)==-1) {
-			Log::Write(L"TJNP/SocketListenerThread", L"Could not send quit message to listener thread");
+void DNSSDBrowserThread::RemoveRequest(ref<DNSSDRequest> drq) {
+	ThreadLock lock(&_lock);
+	if(drq) {
+		ref<DNSSDBrowserThread> tr;
+		drq->_thread = tr;
+		std::set< ref<DNSSDRequest> >::iterator it = _requests.find(drq);
+		if(it!=_requests.end()) {
+			_requests.erase(it);
 		}
-	#endif
+		RemoveListener(DNSServiceRefSockFD(drq->_service));
+	}
+}
+
+strong<DNSSDBrowserThread> DNSSDBrowserThread::Instance() {
+	if(!_instance) {
+		_instance = GC::Hold(new DNSSDBrowserThread());
+		_instance->Start();
+	}
+	return _instance;
 }
 
 /** DNSSDResolveRequest **/
@@ -132,8 +85,6 @@ void DNSSDDiscoveryBrowseReply(DNSServiceRef sdRef, DNSServiceFlags flags, uint3
 				ref<ResolveRequest> req = rr->GetOriginalRequest();
 				if(req) {
 					ref<Service> service = GC::Hold(new DNSSDService(Wcs(serviceName), Wcs(regType), Wcs(replyDomain), interfaceIndex));
-
-					//Log::Write(L"TJScout/DNSSDDiscovery", L"Service '"+Wcs(serviceName)+L"' (type="+Wcs(regType)+L" flags="+StringifyHex(flags)+L" iface="+Stringify(interfaceIndex)+L")");
 
 					if((flags & kDNSServiceFlagsAdd)!=0) {
 						req->OnServiceFound(service);
@@ -153,19 +104,18 @@ void DNSSDDiscoveryBrowseReply(DNSServiceRef sdRef, DNSServiceFlags flags, uint3
 	}
 }
 
-DNSSDResolveRequest::DNSSDResolveRequest(ref<ResolveRequest> rq, const std::wstring& type): _service(0), _request(rq), _type(type) {
+DNSSDResolveRequest::DNSSDResolveRequest(ref<ResolveRequest> rq, const std::wstring& type): DNSSDRequest(NULL,false), _request(rq), _type(type) {
 }
 
 void DNSSDResolveRequest::OnCreated() {
 	RequestResolver::OnCreated();
 	std::string serviceType = Mbs(_type);
-	DNSServiceErrorType er = DNSServiceBrowse(&_service, 0, 0, serviceType.c_str(), NULL, (DNSServiceBrowseReply)DNSSDDiscoveryBrowseReply, (void*)this);
+	DNSServiceErrorType er = DNSServiceBrowse(&(DNSSDRequest::_service), 0, 0, serviceType.c_str(), NULL, (DNSServiceBrowseReply)DNSSDDiscoveryBrowseReply, (void*)this);
 	if(er!=kDNSServiceErr_NoError) {
 		Log::Write(L"TJScout/DNSSDResolveRequest", L"Could not start browsing for services; err="+Stringify(er)+L"; probably, Bonjour is not installed on this system");
 	}
 	else {
-		_thread = GC::Hold(new DNSSDBrowserThread(_service));
-		_thread->Start();
+		DNSSDBrowserThread::Instance()->AddRequest(this);
 	}
 }
 
@@ -251,7 +201,7 @@ void DNSSDAddressFuture::Reply(DNSServiceRef sdRef, DNSServiceFlags flags, uint3
 	}
 }
 
-/** DNSSDAddressResolver **/
+/** DNSSDAttributeResolver **/
 class DNSSDAttributeResolver {
 	public:
 		struct ResolvedInfo {
@@ -308,6 +258,61 @@ class DNSSDAttributeResolver {
 		}
 };
 
+/** DNSSDUpdateRequest **/
+DNSSDUpdateRequest::DNSSDUpdateRequest(ref<DNSSDService> sd, DNSServiceRef sr): DNSSDRequest(sr,false), _sd(sd) {
+}
+
+DNSSDUpdateRequest::~DNSSDUpdateRequest() {
+}
+
+void DNSSDUpdateRequest::Reply(DNSServiceRef DNSServiceRef, DNSServiceFlags flags, uint32_t interfaceIndex, DNSServiceErrorType errorCode, const char* fullname, uint16_t rrtype, uint16_t rrclass, uint16_t rdlen, const void* rdata, uint32_t ttl, void* context) {
+	ref<DNSSDService> service = ref<DNSSDService>(reinterpret_cast<DNSSDService*>(context));
+	if(service) {
+		const char* rdataChar = (const char*)rdata;
+		const unsigned char* rdataUChar = (const unsigned char*)rdata;
+		
+		// Parse attribute data
+		unsigned int index = 0;
+		while(index < rdlen) {
+			unsigned int length = rdataUChar[index];
+			if(length==0) {
+				return;
+			}
+			
+			unsigned int valueIndex = index;
+			
+			while(valueIndex < rdlen) {
+				++valueIndex;
+				if(rdataChar[valueIndex]=='=') {
+					++valueIndex;
+					break;
+				}
+			}
+			
+			if(valueIndex>index && valueIndex<rdlen && valueIndex < (index+length-1)) {
+				std::string key(&(rdataChar[index+1]), valueIndex-index-2);
+				std::string value(&rdataChar[valueIndex], length-(valueIndex-index)+1);
+				service->SetAttribute(Wcs(key), Wcs(value));
+			}
+			index += length + 1;
+		}
+	}
+}
+
+
+void DNSSDUpdateRequest::OnCreated() {
+	DNSSDRequest::OnCreated();
+}
+
+strong<DNSSDUpdateRequest> DNSSDUpdateRequest::Create(strong<DNSSDService> sd) {
+	DNSServiceRef service;
+	std::string fqdn = Mbs(sd->GetQualifiedName());
+	if(DNSServiceQueryRecord(&service, 0, sd->GetInterface(), fqdn.c_str(), kDNSServiceType_TXT, kDNSServiceClass_IN, (DNSServiceQueryRecordReply)Reply, reinterpret_cast<void*>(ref<DNSSDService>(sd).GetPointer()))!=kDNSServiceErr_NoError) {
+		Throw(L"Cannot start watching updates", ExceptionTypeError);
+	}
+	return GC::Hold(new DNSSDUpdateRequest(sd, service));
+}
+
 /** DNSSDService **/
 DNSSDService::DNSSDService(const std::wstring& friendly, const std::wstring& type, const std::wstring& domain, unsigned int iface): _friendly(friendly), _type(type), _domain(domain), _interface(iface) {
 	_address = GC::Hold(new DNSSDAddressFuture(iface, Mbs(friendly).c_str(), Mbs(type).c_str(), Mbs(domain).c_str()));
@@ -315,13 +320,47 @@ DNSSDService::DNSSDService(const std::wstring& friendly, const std::wstring& typ
 
 	/* Query TXT record containing attributes (a TXT record MUST always be present, hence we can use a blocking query here,
 	this also means that non-conforming mDNS responders can block us...) */
-	std::wstring name = friendly + L"." + _type + _domain;
-	if(!DNSSDAttributeResolver::ResolveAttributesForService(iface, name, _attributes)) {
+	if(!DNSSDAttributeResolver::ResolveAttributesForService(iface, GetQualifiedName(), _attributes)) {
 		Log::Write(L"TJScout/DNSSDService", L"Could not resolve attributes for service"+GetID());
 	}
 }
 
+void DNSSDService::SetAttribute(const String& k, const String& v) {
+	ThreadLock lock(&(Service::_lock));
+	
+	std::map<std::wstring, std::wstring>::iterator it = Service::_attributes.find(k);
+	if(it!=_attributes.end()) {
+		if(it->second==v) {
+			// Value not changed, ignore it
+			return;
+		}
+	}
+	
+	_attributes[k] = v;
+	Service::UpdateNotification un;
+	un._attributeChanged = k;
+	Log::Write(L"TJScout/DNSSDService", L"Attribute '"+k+L"' updated to value '"+v+L"' on service "+GetQualifiedName());
+	Service::EventUpdate.Fire(this, un);
+}
+
+void DNSSDService::OnCreated() {
+	Service::OnCreated();
+	
+	// Start watching TXT record updates asynchronously through a request
+	_watcher = DNSSDUpdateRequest::Create(ref<DNSSDService>(this));
+	DNSSDBrowserThread::Instance()->AddRequest(_watcher);
+}
+
 DNSSDService::~DNSSDService() {
+	DNSSDBrowserThread::Instance()->RemoveRequest(_watcher);
+}
+
+std::wstring DNSSDService::GetQualifiedName() const {
+	return _friendly + L"." + _type + _domain;
+}
+
+unsigned int DNSSDService::GetInterface() const {
+	return _interface;
 }
 
 std::wstring DNSSDService::GetID() const {
@@ -369,10 +408,31 @@ DNSSDServiceRegistration::~DNSSDServiceRegistration() {
 	DNSServiceRefDeallocate(_sd);
 }
 
+bool DNSSDServiceRegistration::SetAttribute(const String& k, const String& v) {
+	_attributes[k] = v;
+	
+	TXTRecordRef tr;
+	unsigned char buffer[2048];
+	TXTRecordCreate(&tr, 2048, (void*)buffer);
+	
+	std::map<std::wstring, std::wstring>::const_iterator it = _attributes.begin();
+	while(it!=_attributes.end()) {
+		std::string value = Mbs(it->second);
+		TXTRecordSetValue(&tr, Mbs(it->first).c_str(), value.length(), value.c_str());
+		++it;
+	}
+	
+	if(DNSServiceUpdateRecord(_sd, NULL, 0, TXTRecordGetLength(&tr), TXTRecordGetBytesPtr(&tr), 0)!=kDNSServiceErr_NoError) {
+		Log::Write(L"TJScout/DNSSDServiceRegistration", L"Could not update attributes of service after changing key '"+k+L"' to value '"+v+L"'");
+		return false;
+	}
+	return true;
+}
+
 void DNSSDServiceRegistration::Register(const ServiceType& st, const std::wstring& name, unsigned short port, const std::map<std::wstring, std::wstring>& attributes) {
 	TXTRecordRef tr;
-	unsigned char buffer[1024];
-	TXTRecordCreate(&tr, 1024, (void*)buffer);
+	unsigned char buffer[2048];
+	TXTRecordCreate(&tr, 2048, (void*)buffer);
 	
 	std::map<std::wstring, std::wstring>::const_iterator it = attributes.begin();
 	while(it!=attributes.end()) {
@@ -383,4 +443,5 @@ void DNSSDServiceRegistration::Register(const ServiceType& st, const std::wstrin
 	
 	DNSServiceRegister(&_sd, 0, 0, Mbs(name).c_str(), Mbs(st).c_str(), NULL, NULL, htons(port), TXTRecordGetLength(&tr), TXTRecordGetBytesPtr(&tr), NULL, NULL);
 	TXTRecordDeallocate(&tr);
+	_attributes = attributes;
 }

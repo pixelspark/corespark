@@ -38,6 +38,10 @@ ServiceRegistration::ServiceRegistration(ServiceDiscoveryType dtp): _discoveryTy
 ServiceRegistration::~ServiceRegistration() {
 }
 
+bool ServiceRegistration::SetAttribute(const String& k, const String& v) {
+	return false;
+}
+
 ServiceDiscoveryType ServiceRegistration::GetDiscoveryType() const {
 	return _discoveryType;
 }

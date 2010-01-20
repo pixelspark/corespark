@@ -15,6 +15,10 @@ namespace tj {
 		
 		class SCOUT_EXPORTED Service: public virtual Object {
 			public:
+				struct UpdateNotification {
+					std::wstring _attributeChanged;
+				};
+			
 				Service();
 				virtual ~Service();
 				virtual std::wstring GetID() const = 0;
@@ -24,8 +28,11 @@ namespace tj {
 				virtual unsigned short GetPort() const = 0;
 				virtual std::wstring GetHostName() const = 0;
 				virtual bool GetAttribute(const std::wstring& key, std::wstring& value);
+			
+				Listenable<UpdateNotification> EventUpdate;
 				
 			protected:
+				CriticalSection _lock;
 				virtual void SetAttribute(const std::wstring& key, const std::wstring& value);
 				std::map< std::wstring, std::wstring > _attributes;
 		};
@@ -35,6 +42,7 @@ namespace tj {
 				virtual ~ServiceRegistration();
 				virtual ServiceDiscoveryType GetDiscoveryType() const;
 				virtual void Register(const ServiceType& st, const std::wstring& serviceName, unsigned short port, const std::map<std::wstring, std::wstring>& attrs) = 0;
+				virtual bool SetAttribute(const tj::shared::String& key, const tj::shared::String& value);
 			
 			protected:
 				ServiceRegistration(ServiceDiscoveryType dtp);
