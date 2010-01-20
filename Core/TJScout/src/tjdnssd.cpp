@@ -339,7 +339,7 @@ void DNSSDService::SetAttribute(const String& k, const String& v) {
 	_attributes[k] = v;
 	Service::UpdateNotification un;
 	un._attributeChanged = k;
-	Log::Write(L"TJScout/DNSSDService", L"Attribute '"+k+L"' updated to value '"+v+L"' on service "+GetQualifiedName());
+	//Log::Write(L"TJScout/DNSSDService", L"Attribute '"+k+L"' updated to value '"+v+L"' on service "+GetQualifiedName());
 	Service::EventUpdate.Fire(this, un);
 }
 
