@@ -251,7 +251,7 @@ class DNSSDAttributeResolver {
 			DNSServiceRef service = 0;
 			ResolvedInfo ri(al);
 			std::string fqdn = Mbs(name);
-			DNSServiceQueryRecord(&service, 0, iface, fqdn.c_str(), kDNSServiceType_TXT, kDNSServiceClass_IN, (DNSServiceQueryRecordReply)Reply, &ri);
+			DNSServiceQueryRecord(&service, kDNSServiceFlagsLongLivedQuery, iface, fqdn.c_str(), kDNSServiceType_TXT, kDNSServiceClass_IN, (DNSServiceQueryRecordReply)Reply, &ri);
 			DNSServiceProcessResult(service);
 			DNSServiceRefDeallocate(service);
 			return ri.succeeded;
