@@ -235,7 +235,7 @@ void Daemon::Run() {
 		sigaction(SIGHUP, &sa, NULL);
 		sigaction(SIGCHLD, &sa, NULL);
 		sigaction(SIGUSR1, &sa, NULL);
-		sigaction(SIGPIPE, &sa, NULL);
+		signal(SIGPIPE, SIG_IGN);
 	#endif
 	
 	#ifdef TJ_OS_MAC
