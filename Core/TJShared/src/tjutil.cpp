@@ -276,7 +276,7 @@ namespace tj {
 		template<> bool StringTo(const String& s, const bool& def) {
 			String ln = s;
 			std::transform(ln.begin(), ln.end(), ln.begin(), tolower);
-			return def ? (ln!=Bool::KFalse) : (ln==Bool::KTrue);
+			return def ? (ln!=Bool::KFalse && ln!=L"0" && ln!=L"false") : (ln==Bool::KTrue || ln==L"1" || ln==L"true");
 		}
 
 		template<> int StringTo(const String& s, const int& def) {
