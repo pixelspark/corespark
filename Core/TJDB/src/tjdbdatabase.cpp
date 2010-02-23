@@ -5,6 +5,22 @@ using namespace tj::shared;
 
 Copyright KCRSQLite(L"TJDB", L"SQLite", L"(public domain software)");
 
+/** Transaction **/
+Transaction::Transaction(strong<Database> db): _db(db), _lock(&(db->_lock)), _committed(false) {
+	_db->BeginTransaction();
+}
+
+Transaction::~Transaction() {
+	if(!_committed) {
+		_db->RollbackTransaction();
+	}
+}
+
+void Transaction::Commit() {
+	_db->CommitTransaction();
+	_committed = true;
+}
+
 /* SQLiteDatabase */
 namespace tj {
 	namespace db {
@@ -26,16 +42,22 @@ namespace tj {
 				friend class SQLiteQuery;
 
 				public:
-					SQLiteDatabase(const std::wstring& path);
+					SQLiteDatabase(const std::wstring& path, bool strictlyTransactional = false);
 					virtual ~SQLiteDatabase();
 					virtual void GetTables(std::vector<Table>& list);
 					virtual ref<Query> CreateQuery(const std::wstring& sql);
 					virtual std::wstring GetVersion();
 					virtual std::wstring GetName();
+					virtual void BeginTransaction();
+					virtual void CommitTransaction();
+					virtual void RollbackTransaction();
+					virtual bool IsInTransaction() const;
 
 				protected:
 					void Error();
 					sqlite3* _db;
+					int _transactionCount;
+					bool _strictlyTransactional;
 			};
 
 			class SQLiteQuery: public Query {
@@ -60,6 +82,7 @@ namespace tj {
 					virtual bool HasRow();
 					virtual void Next();
 					virtual unsigned int GetColumnCount();
+					virtual tj::shared::int64 SQLiteQuery::GetInsertedRowID();
 					virtual std::wstring GetColumnName(int col);
 
 					virtual int GetInt(int col);
@@ -81,16 +104,25 @@ namespace tj {
 
 using namespace tj::db::sqlite;
 
-SQLiteDatabase::SQLiteDatabase(const std::wstring& path) {
+SQLiteDatabase::SQLiteDatabase(const std::wstring& path, bool strictlyTransactional): _transactionCount(0), _strictlyTransactional(strictlyTransactional) {
 	_db = 0;
 	if(sqlite3_open(Mbs(path).c_str(), &_db)!=0) {
 		throw Exception(L"Could not open database (path: '"+path+L"')", ExceptionTypeError, __FILE__, __LINE__);
 	}
 }
 
+bool SQLiteDatabase::IsInTransaction() const {
+	return _transactionCount > 0;
+}
+
 SQLiteDatabase::~SQLiteDatabase() {
+	if(sqlite3_exec(_db, "VACUUM;", NULL, NULL, NULL)!=0) {
+		Log::Write(L"TJDB/SQLiteDatabase", L"Could not vacuum database");
+	}
+
 	if(sqlite3_close(_db)!=0) {
 		// Could not close, but we cannot do anything about it here
+		Log::Write(L"TJDB/SQLiteDatabase", L"Could not close database; losing data?");
 	}
 }
 
@@ -119,7 +151,41 @@ void SQLiteDatabase::GetTables(std::vector<Table>& lst) {
 	}
 }
 
+void SQLiteDatabase::BeginTransaction() {
+	ThreadLock lock(&_lock);
+	if(_transactionCount==0) {
+		if(sqlite3_exec(_db, "BEGIN TRANSACTION;", NULL, NULL, NULL)!=0) {
+			Error();
+		}
+	}
+	++_transactionCount;
+}
+
+
+void SQLiteDatabase::CommitTransaction() {
+	ThreadLock lock(&_lock);
+	if(_transactionCount==1) {
+		if(sqlite3_exec(_db, "COMMIT;", NULL, NULL, NULL)!=0) {
+			Error();
+		}
+	}
+	--_transactionCount;
+}
+
+void SQLiteDatabase::RollbackTransaction() {
+	ThreadLock lock(&_lock);
+	if(_transactionCount!=0) {
+		if(sqlite3_exec(_db, "ROLLBACK;", NULL, NULL, NULL)!=0) {
+			Error();
+		}
+		_transactionCount = 0;
+	}
+}
+
 ref<Query> SQLiteDatabase::CreateQuery(const std::wstring& sql) {
+	if(Zones::IsDebug()) {
+		Log::Write(L"TJDB/SQLiteDatabase", sql);
+	}
 	return GC::Hold(new SQLiteQuery(this, sql));
 }
 
@@ -239,7 +305,14 @@ void SQLiteQuery::Reset() {
 	}
 }
 
+int64 SQLiteQuery::GetInsertedRowID() {
+	return sqlite3_last_insert_rowid(_db->_db);
+}
+
 void SQLiteQuery::Execute() {
+	if(_db->_strictlyTransactional && !_db->IsInTransaction()) {
+		Throw(L"Cannot execute queries outside a databae transaction; please wrap your query code inside a block containing a Transaction object", ExceptionTypeError);
+	}
 	int r = sqlite3_step(_st);
 	
 	if(r==SQLITE_ROW) {
@@ -331,10 +404,50 @@ double SQLiteQuery::GetDouble(int col) {
 Database::~Database() {
 }
 
-ref<Database> Database::Open(const std::wstring& path) {
-	return GC::Hold(new SQLiteDatabase(path));
+ref<Database> Database::Open(const std::wstring& path, bool str) {
+	return GC::Hold(new SQLiteDatabase(path, str));
 }
 
 /* Query */
 Query::~Query() {
+}
+
+void Query::Set(const std::wstring& param, const Any& val) {
+	switch(val.GetType()) {
+		case Any::TypeBool:
+			Set(param, bool(val));
+			break;
+
+		case Any::TypeDouble:
+			Set(param, double(val));
+			break;
+
+		case Any::TypeString:
+			Set(param, String(val));
+			break;
+
+		case Any::TypeInteger:
+			Set(param, int(val));
+			break;
+	}
+}
+
+void Query::Set(int param, const Any& val) {
+	switch(val.GetType()) {
+		case Any::TypeBool:
+			Set(param, bool(val));
+			break;
+
+		case Any::TypeDouble:
+			Set(param, double(val));
+			break;
+
+		case Any::TypeString:
+			Set(param, String(val));
+			break;
+
+		case Any::TypeInteger:
+			Set(param, int(val));
+			break;
+	}
 }

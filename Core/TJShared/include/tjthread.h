@@ -57,8 +57,10 @@ namespace tj {
 			public:
 				CriticalSection();
 				virtual ~CriticalSection();
+				static unsigned int GetCriticalSectionCount();
 
 			protected:
+				static volatile unsigned int _criticalSectionCount;
 				void Enter();
 				void Leave();
 

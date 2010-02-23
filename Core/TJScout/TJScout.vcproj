@@ -138,7 +138,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="$(SolutionDir)\Libraries\mDNS\Release\dnssd.lib ws2_32.lib"
+				AdditionalDependencies="$(SolutionDir)\Libraries\mDNS\Release\dnssd.lib ws2_32.lib $(SolutionDir)\build\Release\tjnp.lib $(SolutionDir)\build\Release\tjshared.lib"
 				OutputFile="$(OutDir)\tjscout.dll"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"

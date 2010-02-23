@@ -122,6 +122,7 @@
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="3"
+				DisableSpecificWarnings="4251;4275"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -184,6 +185,14 @@
 				RelativePath=".\src\tjdbdatabase.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\src\tjdbpersistence.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\tjdbsqlpersistence.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -198,15 +207,31 @@
 				RelativePath=".\include\tjdbdatabase.h"
 				>
 			</File>
+			<File
+				RelativePath=".\include\tjdbpersistence.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tjdbpersistencebindings.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tjdbsqlpersistence.h"
+				>
+			</File>
 			<Filter
 				Name="internal"
 				>
 				<File
-					RelativePath="..\Libraries\SQLite\sqlite3.h"
+					RelativePath="..\..\Libraries\SQLite\sqlite3.h"
 					>
 				</File>
 				<File
-					RelativePath="..\Libraries\SQLite\sqlite3ext.h"
+					RelativePath="..\..\Libraries\SQLite\sqlite3ext.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\internal\tjdbinternal.h"
 					>
 				</File>
 			</Filter>

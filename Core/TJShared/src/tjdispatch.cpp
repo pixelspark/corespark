@@ -170,6 +170,7 @@ void Dispatcher::Stop() {
 			DispatchTask(null);
 			++tit;
 		}
+		DispatchTask(null);
 	}
 
 	_threads.clear(); // ~DispatcherThread will wait for completion

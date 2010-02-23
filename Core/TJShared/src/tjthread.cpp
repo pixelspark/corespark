@@ -664,12 +664,20 @@ void ThreadLocal::operator=(int r) {
 #endif
 
 /** CriticalSection **/
+volatile unsigned int CriticalSection::_criticalSectionCount = 0;
+
+unsigned int CriticalSection::GetCriticalSectionCount() {
+	return _criticalSectionCount;
+}
+
 #ifdef TJ_OS_WIN
 	CriticalSection::CriticalSection() {
+		++_criticalSectionCount;
 		InitializeCriticalSectionAndSpinCount(&_cs, 1024);
 	}
 
 	CriticalSection::~CriticalSection() {
+		--_criticalSectionCount;
 		DeleteCriticalSection(&_cs);
 	}
 
@@ -684,6 +692,7 @@ void ThreadLocal::operator=(int r) {
 
 #ifdef TJ_USE_PTHREADS
 	CriticalSection::CriticalSection() {
+		++_criticalSectionCount;
 		pthread_mutexattr_t attributes;
 		pthread_mutexattr_init(&attributes);
 		pthread_mutexattr_settype(&attributes, PTHREAD_MUTEX_RECURSIVE);
@@ -692,6 +701,7 @@ void ThreadLocal::operator=(int r) {
 	}
 
 	CriticalSection::~CriticalSection() {
+		--_criticalSectionCount;
 		pthread_mutex_destroy(&_cs);
 	}
 

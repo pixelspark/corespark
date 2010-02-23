@@ -74,104 +74,104 @@ namespace tj {
 		template<typename T> class strong;
 		class GC;
 		
-#ifdef TJ_OS_POSIX
+		#ifdef TJ_OS_POSIX
 		typedef int32_t ReferenceCount;
-#endif
-		
-#ifdef TJ_OS_WIN
+		#endif
+
+		#ifdef TJ_OS_WIN
 		typedef long ReferenceCount;
-#endif
-		
+		#endif
+
 		namespace intern {			
 			class EXPORTED Resource {
 				friend class tj::shared::GC;
-				
-			public:
-				Resource();
-				~Resource(); // tjshared.cpp
-				
-				inline bool AddReference(bool first = false) {
-					if(!first && _referenceCount==0) return false;
-#ifdef TJ_OS_WIN
-					_InterlockedIncrement(&_referenceCount);
-#endif
-					
-#ifdef TJ_OS_MAC
-					OSAtomicAdd32(1, &_referenceCount);
-#endif
-					
-#ifdef TJ_OS_LINUX
-					//__sync_add_and_fetch(&_referenceCount, 1);
-					_referenceCount += 1;
-#endif
-					
-					return true;
-				}
-				
-				inline long DeleteReference() {
-#ifdef TJ_OS_WIN
-					ReferenceCount nv = _InterlockedDecrement(&_referenceCount);
-#endif
-					
-#ifdef TJ_OS_MAC
-					ReferenceCount nv = OSAtomicAdd32(-1, &_referenceCount) ;
-#endif
-					
-#ifdef TJ_OS_LINUX
-					ReferenceCount nv = _referenceCount-1; 
-					_referenceCount -= 1;
-#endif
-					
-					if(nv==0 && !IsWeaklyReferenced()) {
-						delete this;
+
+				public:
+					Resource();
+					~Resource(); // tjshared.cpp
+
+					inline bool AddReference(bool first = false) {
+						if(!first && _referenceCount==0) return false;
+						#ifdef TJ_OS_WIN
+							_InterlockedIncrement(&_referenceCount);
+						#endif
+
+						#ifdef TJ_OS_MAC
+							OSAtomicAdd32(1, &_referenceCount);
+						#endif
+
+						#ifdef TJ_OS_LINUX
+							//__sync_add_and_fetch(&_referenceCount, 1);
+							_referenceCount += 1;
+						#endif
+						
+						return true;
 					}
-					return nv;
-				}
-				
-				inline void AddWeakReference() {
-#ifdef TJ_OS_WIN
-					_InterlockedIncrement(&_weakReferenceCount);
-#endif
 					
-#ifdef TJ_OS_MAC
-					OSAtomicAdd32(1, &_weakReferenceCount);
-#endif
-					
-#ifdef TJ_OS_LINUX
-					//__sync_add_and_fetch(&_weakReferenceCount,1);
-					_weakReferenceCount += 1;
-#endif
-				}
-				
-				inline void DeleteWeakReference() {
-#ifdef TJ_OS_WIN
-					ReferenceCount nv = _InterlockedDecrement(&_weakReferenceCount);
-#endif
-					
-#ifdef TJ_OS_MAC
-					ReferenceCount nv = OSAtomicAdd32(-1, &_weakReferenceCount) ;
-#endif
-					
-#ifdef TJ_OS_LINUX
-					//ReferenceCount nv = __sync_sub_and_fetch(&_weakReferenceCount, 1);
-					ReferenceCount nv = _weakReferenceCount-1;
-					_weakReferenceCount -= 1;
-#endif
-					
-					if(nv==0 && !IsReferenced()) {
-						delete this;	
+					inline long DeleteReference() {
+						#ifdef TJ_OS_WIN
+							ReferenceCount nv = _InterlockedDecrement(&_referenceCount);
+						#endif
+
+						#ifdef TJ_OS_MAC
+							ReferenceCount nv = OSAtomicAdd32(-1, &_referenceCount) ;
+						#endif
+
+						#ifdef TJ_OS_LINUX
+							ReferenceCount nv = _referenceCount-1; 
+							_referenceCount -= 1;
+						#endif
+						
+						if(nv==0 && !IsWeaklyReferenced()) {
+							delete this;
+						}
+						return nv;
 					}
-				}
-				
-				inline bool IsReferenced() const {
-					return _referenceCount != 0;
-				}
-				
-				inline bool IsWeaklyReferenced() const {
-					return _weakReferenceCount != 0;
-				}
-				
-				static long GetResourceCount();
+					
+					inline void AddWeakReference() {
+						#ifdef TJ_OS_WIN
+							_InterlockedIncrement(&_weakReferenceCount);
+						#endif
+						
+						#ifdef TJ_OS_MAC
+							OSAtomicAdd32(1, &_weakReferenceCount);
+						#endif
+
+						#ifdef TJ_OS_LINUX
+							//__sync_add_and_fetch(&_weakReferenceCount,1);
+							_weakReferenceCount += 1;
+						#endif
+					}
+
+					inline void DeleteWeakReference() {
+						#ifdef TJ_OS_WIN
+							ReferenceCount nv = _InterlockedDecrement(&_weakReferenceCount);
+						#endif
+
+						#ifdef TJ_OS_MAC
+							ReferenceCount nv = OSAtomicAdd32(-1, &_weakReferenceCount) ;
+						#endif
+
+						#ifdef TJ_OS_LINUX
+							//ReferenceCount nv = __sync_sub_and_fetch(&_weakReferenceCount, 1);
+							ReferenceCount nv = _weakReferenceCount-1;
+							_weakReferenceCount -= 1;
+						#endif
+						
+						if(nv==0 && !IsReferenced()) {
+							delete this;	
+						}
+					}
+					
+					inline bool IsReferenced() const {
+						return _referenceCount != 0;
+					}
+					
+					inline bool IsWeaklyReferenced() const {
+						return _weakReferenceCount != 0;
+					}
+					
+					static long GetResourceCount();
 				
 			protected:
 				volatile ReferenceCount _referenceCount;
@@ -379,9 +379,9 @@ namespace tj {
 				if(_object!=0) {
 					if(_resource->DeleteReference()==0) {
 						// This was the last reference to the object; release it
-#ifdef TJSHARED_MEMORY_TRACE
-						GC::Log(typeid(_object).name(), false);
-#endif
+						#ifdef TJSHARED_MEMORY_TRACE
+							GC::Log(typeid(_object).name(), false);
+						#endif
 						delete _object;
 					}
 					_object = 0;
