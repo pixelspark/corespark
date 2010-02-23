@@ -15,6 +15,8 @@
 #ifdef TJ_OS_POSIX
 	#include <arpa/inet.h>
 	#include <sys/stat.h>
+	#include <string.h>
+	#include <errno.h>
 #endif
 
 #ifdef TJ_OS_MAC
@@ -261,9 +263,17 @@ String Util::GetDescriptionOfSystemError(int ern) {
 			std::wstring errorString = Wcs(std::string(buffer));
 			return errorString;
 		}
+		else {
+			if(errno==EINVAL) {
+				return String(L"Unknown error, strerror_r thinks the error does not exist; code=") + Stringify(ern);
+			}
+			else if(errno==ERANGE) {
+				return String(L"Error known, but insufficient storage to store error message; code=") + Stringify(ern);
+			}
+		}
 	#endif
 	
-	return L"Unknown error";
+	return String(L"Unknown error (") + Stringify(ern) + L")";
 }
 
 String& Util::StringToLower(String& r) {
