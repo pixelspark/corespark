@@ -20,14 +20,14 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = B45F586A1066C9B600FEDA6B /* TJSharedFramework.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = B4A987C410C65F70001CF473 /* libTJSharedMobile.a */;
+			remoteGlobalIDString = B4A987C410C65F70001CF473;
 			remoteInfo = TJSharedMobile;
 		};
 		B4492AC1110663F80096384E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = B45F586A1066C9B600FEDA6B /* TJSharedFramework.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 8DC2EF4F0486A6940098B216 /* TJShared */;
+			remoteGlobalIDString = 8DC2EF4F0486A6940098B216;
 			remoteInfo = TJShared;
 		};
 		B45F586E1066C9B600FEDA6B /* PBXContainerItemProxy */ = {

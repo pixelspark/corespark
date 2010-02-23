@@ -329,14 +329,14 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>B4492B08110664770096384E</string>
+										<string>B42562A31133BC46009F32C8</string>
 										<key>history</key>
 										<array>
 											<string>B45F58891066CAB600FEDA6B</string>
 											<string>B45F588A1066CAB600FEDA6B</string>
 											<string>B45F588D1066CAB600FEDA6B</string>
 											<string>B45F588E1066CAB600FEDA6B</string>
-											<string>B4492AC5110663FD0096384E</string>
+											<string>B4492B08110664770096384E</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -350,18 +350,18 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 0}, {777, 339}}</string>
+								<string>{{0, 0}, {777, 329}}</string>
 								<key>RubberWindowFrame</key>
 								<string>188 255 984 704 0 0 1280 1002 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
 							<key>Proportion</key>
-							<string>339pt</string>
+							<string>329pt</string>
 						</dict>
 						<dict>
 							<key>Proportion</key>
-							<string>319pt</string>
+							<string>329pt</string>
 							<key>Tabs</key>
 							<array>
 								<dict>
@@ -375,7 +375,9 @@
 									<key>GeometryConfiguration</key>
 									<dict>
 										<key>Frame</key>
-										<string>{{10, 27}, {777, 292}}</string>
+										<string>{{10, 27}, {777, 302}}</string>
+										<key>RubberWindowFrame</key>
+										<string>188 255 984 704 0 0 1280 1002 </string>
 									</dict>
 									<key>Module</key>
 									<string>XCDetailModule</string>
@@ -430,8 +432,6 @@
 									<dict>
 										<key>Frame</key>
 										<string>{{10, 27}, {777, 292}}</string>
-										<key>RubberWindowFrame</key>
-										<string>188 255 984 704 0 0 1280 1002 </string>
 									</dict>
 									<key>Module</key>
 									<string>PBXBuildResultsModule</string>
@@ -459,11 +459,11 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>B4492AC7110663FD0096384E</string>
+				<string>B425629E1133BC26009F32C8</string>
 				<string>1CA23ED40692098700951B8B</string>
-				<string>B4492AC8110663FD0096384E</string>
+				<string>B425629F1133BC26009F32C8</string>
 				<string>B45F58451066C94A00FEDA6B</string>
-				<string>B4492AC9110663FD0096384E</string>
+				<string>B42562A01133BC26009F32C8</string>
 				<string>1CA23EDF0692099D00951B8B</string>
 				<string>1CA23EE00692099D00951B8B</string>
 				<string>1CA23EE10692099D00951B8B</string>
