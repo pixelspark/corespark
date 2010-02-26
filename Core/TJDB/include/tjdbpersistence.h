@@ -99,24 +99,7 @@ namespace tj {
 				Stored(ref<T> obj): _materialized(obj), _id(Entity::NewObjectID) {
 				}
 
-				template<class Q> Stored(ref< Stored<Q> > o): _id(Entity::UnknownObjectID) {
-					if(o) {
-						if(o->_id==Entity::NewObjectID) {
-							/* Need to commit, because otherwise two Stored<>'s with Entity::NewObjectID would exist for the same object,
-							leading to the same object be committed twice. */
-							o->Commit();
-						}
-						_id = o->_id;
-						_ctx = o->_ctx;
-
-						if(o->_materialized) {
-							if(!o->_materialized.IsCastableTo<T>()) {
-								throw BadCastException();
-							}
-							_materialized = o->_materialized;
-						}
-					}
-				}
+				template<class Q> Stored(ref< Stored<Q> > o);
 
 				virtual ~Stored() {
 					Commit();
@@ -143,55 +126,9 @@ namespace tj {
 					_materialized = null;
 				}
 
-				virtual void Commit() {
-					if(_id==Entity::UnknownObjectID || !_ctx) {
-						// Unknown object; this reference is a null reference so do not commit anything
-					}
-					else if(_id==Entity::RemovedObjectID) {
-						// Never commit removed objects
-					}
-					else if(_id==Entity::NewObjectID) {
-						// Create object in context
-						if(!_materialized) {
-							Materialize();
-						}
-						_id = _ctx->Add(ref<Entity>(_materialized));
-					}
-					else {
-						if(_materialized) {
-							_ctx->Update(_id, ref<Entity>(_materialized));
-						}
-						else {
-							// No need to save an object if we haven't even loaded and not modified yet
-						}
-					}
-				}
-
-				void Remove() {
-					if(!_materialized) {
-						Materialize();
-					}
-					if(_materialized) {
-						_ctx->Remove(_id, _materialized->GetSchema());
-					}
-				}
-
-				void Materialize() const {
-					if(!_materialized) {
-						if(_id==Entity::UnknownObjectID || !_ctx) {
-							// Do nothing, null relation
-						}
-						else if(_id==Entity::NewObjectID) {
-							_materialized = Persistable<T>::Schema().CreateEntity();
-						}
-						else if(_id==Entity::RemovedObjectID) {
-							Throw(L"Cannot materialize object, it has been removed!", ExceptionTypeError);
-						}
-						else {
-							_materialized = ref<T>(_ctx->Materialize(Persistable<T>::Schema(), _id));
-						}
-					}
-				}
+				virtual void Commit();
+				virtual void Remove();
+				virtual void Materialize() const;
 
 				inline ref<T> Object() const {
 					Materialize();
@@ -337,6 +274,76 @@ namespace tj {
 				static std::map< EntityType, const Schema*>* _schemas;
 				std::map< EntityType, ref<EntityCache> > _cache;
 		};
+		
+		/** Stored<T> implementation **/
+		template<typename T> void Stored<T>::Commit() {
+			if(_id==Entity::UnknownObjectID || !_ctx) {
+				// Unknown object; this reference is a null reference so do not commit anything
+			}
+			else if(_id==Entity::RemovedObjectID) {
+				// Never commit removed objects
+			}
+			else if(_id==Entity::NewObjectID) {
+				// Create object in context
+				if(!_materialized) {
+					Materialize();
+				}
+				_id = _ctx->Add(ref<Entity>(_materialized));
+			}
+			else {
+				if(_materialized) {
+					_ctx->Update(_id, ref<Entity>(_materialized));
+				}
+				else {
+					// No need to save an object if we haven't even loaded and not modified yet
+				}
+			}
+		}
+		
+		template<typename T> void Stored<T>::Remove() {
+			if(!_materialized) {
+				Materialize();
+			}
+			if(_materialized) {
+				_ctx->Remove(_id, _materialized->GetSchema());
+			}
+		}
+		
+		template<typename T> void Stored<T>::Materialize() const {
+			if(!_materialized) {
+				if(_id==Entity::UnknownObjectID || !_ctx) {
+					// Do nothing, null relation
+				}
+				else if(_id==Entity::NewObjectID) {
+					_materialized = T::Schema().CreateEntity();
+				}
+				else if(_id==Entity::RemovedObjectID) {
+					Throw(L"Cannot materialize object, it has been removed!", ExceptionTypeError);
+				}
+				else {
+					_materialized = ref<T>(_ctx->Materialize(T::Schema(), _id));
+				}
+			}
+		}
+		
+		template<typename T> template <class Q> Stored<T>::Stored(ref< Stored<Q> > o): _id(Entity::UnknownObjectID) {
+			if(o) {
+				if(o->_id==Entity::NewObjectID) {
+					/* Need to commit, because otherwise two Stored<>'s with Entity::NewObjectID would exist for the same object,
+					 leading to the same object be committed twice. */
+					o->Commit();
+				}
+				_id = o->_id;
+				_ctx = o->_ctx;
+				
+				if(o->_materialized) {
+					if(dynamic_cast<T*>(o->_materialized.GetPointer())==0) {
+						throw BadCastException();
+					}
+					_materialized = o->_materialized;
+				}
+			}
+		}
 	}
 }
 

@@ -9,6 +9,8 @@ namespace tj {
 		using namespace tj::shared;
 
 		class DB_EXPORTED SQLEntityContext: public EntityContext {
+			friend class SQLUpdateEntityTask;
+			
 			public:
 				SQLEntityContext(strong<Database> db, bool readOnly = false, bool asynchronousUpdates = true);
 				virtual ~SQLEntityContext();

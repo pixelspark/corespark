@@ -82,7 +82,7 @@ namespace tj {
 					virtual bool HasRow();
 					virtual void Next();
 					virtual unsigned int GetColumnCount();
-					virtual tj::shared::int64 SQLiteQuery::GetInsertedRowID();
+					virtual tj::shared::int64 GetInsertedRowID();
 					virtual std::wstring GetColumnName(int col);
 
 					virtual int GetInt(int col);

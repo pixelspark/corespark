@@ -192,33 +192,38 @@ void SQLEntityContext::Update(const ID& i, strong<Entity> et, const Schema& sche
 	}
 }
 
+// Task to dispatch updates in SQLEntityContext
+namespace tj {
+	namespace db {
+		class SQLUpdateEntityTask: public Task {
+			public:
+				SQLUpdateEntityTask(const ID& i, strong<Entity> et, strong<SQLEntityContext> ec): _id(i), _entity(et), _ctx(ec) {
+				}
+				
+				virtual ~SQLUpdateEntityTask() {
+				}
+				
+				virtual void Run() {
+					_ctx->Update(_id, _entity, false);
+				}
+				
+			protected:
+				strong<SQLEntityContext> _ctx;
+				ID _id;
+				strong<Entity> _entity;
+		};
+	}
+}
+
 // Note that the ID is for the subtype (i.e. schema returned by et->GetSchema).
 void SQLEntityContext::Update(const ID& i, strong<Entity> et, bool async) {
 	if(_readOnly) {
 		return;
 	}
 
+	// Queue dispatched task to call this method again with async==false
 	if(async) {
-		// Queue dispatched task to call this method again with async==false
-		class UpdateEntityTask: public Task {
-			public:
-				UpdateEntityTask(const ID& i, strong<Entity> et, strong<SQLEntityContext> ec): _id(i), _entity(et), _ctx(ec) {
-				}
-
-				virtual ~UpdateEntityTask() {
-				}
-
-				virtual void Run() {
-					_ctx->Update(_id, _entity, false);
-				}
-
-			protected:
-				strong<SQLEntityContext> _ctx;
-				ID _id;
-				strong<Entity> _entity;
-		};
-
-		Dispatcher::CurrentOrDefaultInstance()->Dispatch(ref<Task>(GC::Hold(new UpdateEntityTask(i, et, ref<SQLEntityContext>(this)))));
+		Dispatcher::CurrentOrDefaultInstance()->Dispatch(ref<Task>(GC::Hold(new SQLUpdateEntityTask(i, et, ref<SQLEntityContext>(this)))));
 	}
 	else {
 		Transaction tr(_db);

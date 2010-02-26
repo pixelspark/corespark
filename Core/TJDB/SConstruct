@@ -1,0 +1,8 @@
+# TJDB build
+VariantDir('build', 'src');
+env = Environment();
+
+sources = Glob("build/*.cpp") + Glob("#Libraries/SQLite/*.c");
+
+objects = env.SharedObject(sources, CCFLAGS='-DTJ_OS_POSIX -DTJ_OS_LINUX', CPPPATH=['#Core','#Libraries'],LIBS=['gcc','gcc_s','pthread','tjshared']);
+env.SharedLibrary('#build/tjdb', objects);
