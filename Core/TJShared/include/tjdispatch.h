@@ -78,6 +78,7 @@ namespace tj {
 				virtual void Requeue(strong<Task> t);
 				virtual void Stop();
 				static strong<Dispatcher> CurrentInstance();
+				static strong<Dispatcher> CurrentOrDefaultInstance();
 				virtual unsigned int GetProcessedItemsCount() const;
 				virtual unsigned int GetThreadCount() const;
 				virtual void WaitForCompletion();

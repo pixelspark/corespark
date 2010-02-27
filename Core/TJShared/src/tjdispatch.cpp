@@ -142,6 +142,14 @@ strong<Dispatcher> Dispatcher::CurrentInstance() {
 	return di;
 }
 
+strong<Dispatcher> Dispatcher::CurrentOrDefaultInstance() {
+	ref<Dispatcher> di = GetCurrent();
+	if(!di) {
+		di = SharedDispatcher::Instance();
+	}
+	return di;
+}
+
 ref<Dispatcher> Dispatcher::GetCurrent() {
 	Dispatcher* dsp = reinterpret_cast<Dispatcher*>(_currentDispatcher.GetValue());
 	if(dsp!=0) {

@@ -316,7 +316,7 @@ strong<DNSSDUpdateRequest> DNSSDUpdateRequest::Create(strong<DNSSDService> sd) {
 /** DNSSDService **/
 DNSSDService::DNSSDService(const std::wstring& friendly, const std::wstring& type, const std::wstring& domain, unsigned int iface): _friendly(friendly), _type(type), _domain(domain), _interface(iface) {
 	_address = GC::Hold(new DNSSDAddressFuture(iface, Mbs(friendly).c_str(), Mbs(type).c_str(), Mbs(domain).c_str()));
-	SharedDispatcher::Instance()->Dispatch(ref<Task>(_address));
+	Dispatcher::CurrentOrDefaultInstance()->Dispatch(ref<Task>(_address));
 
 	/* Query TXT record containing attributes (a TXT record MUST always be present, hence we can use a blocking query here,
 	this also means that non-conforming mDNS responders can block us...) */
