@@ -2,45 +2,96 @@
 #define _REFERENCE_H
 
 #include "tjsharedinternal.h"
+#include <deque>
+
+#ifdef TJSHARED_MEMORY_TRACE
+	#include <map>
+#endif
 
 namespace tj {
 	namespace shared {
-		class BadCastException: public Exception {
-		public:
-			BadCastException(): Exception(L"A bad cast was attempted", ExceptionTypeError) {
-			}
-		};
-		
-		class StrongReferenceException: public Exception {
-		public:
-			StrongReferenceException(): Exception(L"A null reference tried to become a strong reference", ExceptionTypeError) {
-			}
-		};
-		
-		class BadReferenceException: public Exception {
-		public:
-			BadReferenceException(): Exception(L" A reference error has occurred", ExceptionTypeError) {
-			}
-		};
-		
-		
-		class NullPointerException: public Exception {
-		public:
-			NullPointerException(): Exception(L"A null pointer was dereferenced", ExceptionTypeError) {
-			}
-		};
-		
-		template<class T> class Sortable {
-		public:
-			virtual ~Sortable() {
-			}
-			
-			virtual bool SortsAfter(const T& other) const = 0;
-		};
+		template<typename T> class ref;
+		template<typename T> class weak;
+		template<typename T> class strong;
+		class GC;
+		class CriticalSection;
+		class Recycleable;
 		
 		namespace intern {
 			class Resource;
 		}
+		
+		#ifdef TJ_OS_POSIX
+			typedef int32_t ReferenceCount;
+		#endif
+				
+		#ifdef TJ_OS_WIN
+			typedef long ReferenceCount;
+		#endif
+		
+		/** A BadCastException is thrown whenever an attempt is made to cast a reference 
+		to another type, to which it cannot be casted. If you are unsure whether you can
+		cast a particular object to another type (casting to a known superclass is safe,
+		but casting to a subclass, for instance, is not), you should check using the
+		IsCastable<Q> method on ref<Q>, which will return true if the object can be safely
+		casted to the designated type Q. **/
+		class BadCastException: public Exception {
+			public:
+				BadCastException();
+				virtual ~BadCastException();
+		};
+		
+		/** A StrongReferenceException is thrown whenever an attempt is made to assign
+		a strong reference to null; strong references can never be null. **/
+		class StrongReferenceException: public Exception {
+			public:
+				StrongReferenceException();
+				virtual ~StrongReferenceException();
+		};
+		
+		/** The BadReferenceException is thrown whenever an attempt is made to convert
+		a regular pointer to an object into a reference and fails, because the object
+		is not a subclass of Object (which is required for this operation to work, because
+		it contains a pointer to the Resource object associated with an object) or
+		when the object has not been fully created yet. Also, this exception is thrown 
+		whenever an attempt is made to convert a pointer to an object that is not managed
+		by the memory management system to a reference.
+		 
+		This exception will, for instance, be thrown if you try to use the 'this' pointer
+		of an Object-derived class within its constructor. When still in the constructor,
+		the pointer to the Resource object has not yet been set in the Object class, so
+		conversion from the this pointer to a reference is not possible. To overcome this
+		problem, the memory manager calls the OnCreated method on your Object, in which
+		you can safely convert the this pointer to a reference. **/
+		class BadReferenceException: public Exception {
+			public:
+				BadReferenceException();
+				virtual ~BadReferenceException();
+		};
+		
+		/** The NullPointerException is thrown whenever a method is called on a reference
+		that is null. Strong references never throw this exception when calling a method,
+		but only check for nullity once (on construction). If a strong reference is 
+		initialized with null, it throws a StrongReferenceException. **/
+		class NullPointerException: public Exception {
+			public:
+				NullPointerException();
+				virtual ~NullPointerException();
+		};
+		
+		class EXPORTED OutOfMemoryException: public Exception {
+			public:
+				OutOfMemoryException();
+				virtual ~OutOfMemoryException();
+		};
+		
+		template<class T> class Sortable {
+			public:
+				virtual ~Sortable() {
+				}
+				
+				virtual bool SortsAfter(const T& other) const = 0;
+		};
 		
 		/**  All classes that want Object functionality should inherit from it virtually:
 		 
@@ -48,39 +99,18 @@ namespace tj {
 		 
 		 Without the virtual keyword, duplicate base instances of Object could be instantiated, which is not
 		 guaranteed to work. Object should be listed first in the list of extended classes.
-		 
 		 **/
 		class EXPORTED Object {
 			friend class GC;
 			
-		public:
-			inline Object(): _resource(0) {
-			}
-			
-			struct EXPORTED Notification {}; // useful for empty notifications; then just use Type::Notification
-			
-			// To make it a polymorphic type
-			virtual ~Object() {
-			}
-			
-			virtual void OnCreated();
-			
-			intern::Resource* _resource;
+			public:
+				Object();
+				virtual ~Object();
+				virtual void OnCreated();
+				
+				struct EXPORTED Notification {}; // useful for empty notifications; then just use Type::Notification
+				intern::Resource* _resource;
 		};
-		
-		// T must be a pointer, like MyClass*
-		template<typename T> class ref;
-		template<typename T> class weak;
-		template<typename T> class strong;
-		class GC;
-		
-		#ifdef TJ_OS_POSIX
-		typedef int32_t ReferenceCount;
-		#endif
-
-		#ifdef TJ_OS_WIN
-		typedef long ReferenceCount;
-		#endif
 
 		namespace intern {			
 			class EXPORTED Resource {
@@ -88,7 +118,7 @@ namespace tj {
 
 				public:
 					Resource();
-					~Resource(); // tjshared.cpp
+					~Resource(); // tjcore.cpp
 
 					inline bool AddReference(bool first = false) {
 						if(!first && _referenceCount==0) return false;
@@ -108,7 +138,9 @@ namespace tj {
 						return true;
 					}
 					
-					inline long DeleteReference() {
+					/** Decrements the reference count and returns true if this was 
+					the last reference (note that there could still be weak references!) **/
+					inline bool DeleteReference() {
 						#ifdef TJ_OS_WIN
 							ReferenceCount nv = _InterlockedDecrement(&_referenceCount);
 						#endif
@@ -122,10 +154,7 @@ namespace tj {
 							_referenceCount -= 1;
 						#endif
 						
-						if(nv==0 && !IsWeaklyReferenced()) {
-							delete this;
-						}
-						return nv;
+						return nv==0;
 					}
 					
 					inline void AddWeakReference() {
@@ -143,7 +172,9 @@ namespace tj {
 						#endif
 					}
 
-					inline void DeleteWeakReference() {
+					/** Decrements the weak reference count and returns true if this was the last weak
+					reference (and there were no other 'real' references) **/
+					inline bool DeleteWeakReference() {
 						#ifdef TJ_OS_WIN
 							ReferenceCount nv = _InterlockedDecrement(&_weakReferenceCount);
 						#endif
@@ -158,9 +189,7 @@ namespace tj {
 							_weakReferenceCount -= 1;
 						#endif
 						
-						if(nv==0 && !IsReferenced()) {
-							delete this;	
-						}
+						return (nv==0 && !IsReferenced());
 					}
 					
 					inline bool IsReferenced() const {
@@ -309,13 +338,8 @@ namespace tj {
 				return _object!=0;
 			}
 			
-			/*inline bool operator<(const ref<T>& r) const {
-			 return r._object < _object;
-			 }
-			 
-			 inline bool operator>(const ref<T>& r) const {
-			 return r._object > _object;
-			 }*/
+			void RecycleOrDelete(...);			
+			void RecycleOrDelete(Recycleable* rc);
 			
 			template<class Q> inline bool operator<(const ref<Q>& r) const {
 				if(r.IsCastableTo< Sortable<T> >()) {
@@ -375,19 +399,7 @@ namespace tj {
 			}
 			
 		private:
-			inline void Release() {
-				if(_object!=0) {
-					if(_resource->DeleteReference()==0) {
-						// This was the last reference to the object; release it
-						#ifdef TJSHARED_MEMORY_TRACE
-							GC::Log(typeid(_object).name(), false);
-						#endif
-						delete _object;
-					}
-					_object = 0;
-					_resource = 0;
-				}
-			}
+			void Release();
 			
 		public:
 			T* _object;
@@ -573,12 +585,196 @@ namespace tj {
 			inline void Release() {
 				if(_object!=0) {
 					_object = 0;
-					_resource->DeleteWeakReference();
+					if(_resource->DeleteWeakReference()) {
+						delete _resource;
+						_resource = 0;
+					}
 				}
 			}
 			intern::Resource* _resource;
 			T* _object;
 		};
+		
+		/** The Recycler mechanism allows small objects that can be used multiple times to be 'recycled';
+		 when the memory management system detects that an object that is Recycleable can be deleted,
+		 it will not delete the object but instead add it to a list of objects to be re-used (if the 
+		 'recycle bin' is not yet filled with enough objects). **/
+		class EXPORTED Recycleable: public virtual Object {
+			public:
+				virtual ~Recycleable();
+				virtual void OnRecycle();
+				virtual void OnReuse();
+		};
+		
+		class EXPORTED RecycleBin {
+			public:
+				RecycleBin();
+				virtual ~RecycleBin();
+				virtual void Reuse(Recycleable* rc);
+				virtual Recycleable* Get();
+				static unsigned int GetTrashObjectCount();
+			
+			private:
+				bool WantsToRecycle() const;
+				unsigned int _limit;
+				CriticalSection* _lock;
+				std::deque<Recycleable*> _bin;
+				static unsigned int _totalObjectCount;
+		};
+		
+		class EXPORTED GC {
+			public:
+				template<typename T> static ref<T> Hold(T* x);
+				template<typename T> static ref<T> HoldRecycled(T* x);
+				
+				static void Log(const char* name, bool allocate);
+				
+			protected:
+				static inline void SetObjectPointer(...) {
+				}
+				
+				static inline void SetObjectPointer(tj::shared::Object* object, tj::shared::intern::Resource* rs) {
+					/** There is potential danger here: when SetObjectPointer is called, rs->_referenceCount == 0.
+					 When a reference is created in OnCreated (which is likely!) and then destroyed, it will see 
+					 a reference count of 0 and will delete the object. So then, we probably return some bad memory...
+					 a recipe for trouble. Therefore, this function increments the reference count before doing anything.
+					 We need to catch errors for OnCreated, because otherwise the reference count is wrong anyway */
+					rs->_referenceCount++;
+					try {
+						object->_resource = rs;
+						object->OnCreated();
+						rs->_referenceCount--;
+					}
+					catch(...) {
+						rs->_referenceCount--;
+						throw;
+					}
+				}
+				
+			#ifdef TJSHARED_MEMORY_TRACE
+				static std::map< void*, String> _objects;
+			#endif
+		};
+		
+		template<class T> class Recycler {
+			public:
+				static inline strong<T> Create() {
+					Recycleable* rc = _bin.Get();
+					if(rc!=0) {
+						T* object = dynamic_cast<T*>(rc);
+						if(object==0) {
+							// Something went wrong; for some reason, a wrong object was added to the list.
+							delete rc;
+							return GC::Hold(new T());
+						}
+						
+						return GC::HoldRecycled(object);
+					}
+					return GC::Hold(new T());
+				}
+			
+				static inline void Reuse(...) {
+				}
+			
+				static inline void Reuse(Recycleable* rc) {
+					if(rc!=0) {
+						_bin.Reuse(rc);
+					}
+					else {
+						delete rc->_resource;
+						delete rc;
+					}
+				}
+			
+			protected:
+				static RecycleBin _bin;
+		};
+		
+		/** Implementations of templated methods **/
+		template<class T> RecycleBin Recycler<T>::_bin;
+		
+		template<class T> ref<T> GC::HoldRecycled(T* x) {
+			Recycleable* rc = dynamic_cast<Recycleable*>(x);
+			if(rc==0) {
+				throw BadReferenceException();
+			}
+			
+			if(rc->_resource==0) {
+				throw BadReferenceException();
+			}
+			
+			if(rc->_resource->_referenceCount!=0 || rc->_resource->_weakReferenceCount!=0) {
+				throw BadReferenceException();
+			}
+			
+			rc->_resource->_referenceCount = 1;
+			try {
+				rc->OnReuse();
+				rc->_resource->_referenceCount = 0;
+			}
+			catch(...) {
+				rc->_resource->_referenceCount = 0;
+				throw;
+			}
+			
+			#ifdef TJSHARED_MEMORY_TRACE
+				Log(typeid(x).name(),true);
+			#endif
+			
+			return ref<T>(x, rc->_resource);
+		}
+		
+		template<class T> ref<T> GC::Hold(T* x) {
+			intern::Resource* rs = new intern::Resource();
+			if(rs==0) {
+				throw OutOfMemoryException();
+			}
+			SetObjectPointer(x, rs);
+			
+			#ifdef TJSHARED_MEMORY_TRACE
+				Log(typeid(x).name(),true);
+			#endif
+			
+			return ref<T>(x, rs);
+		}
+								
+		template<class T> void ref<T>::Release() {
+			if(_object!=0) {
+				if(_resource->DeleteReference()) {
+					// This was the last reference to the object; release it
+					#ifdef TJSHARED_MEMORY_TRACE
+						GC::Log(typeid(_object).name(), false);
+					#endif
+					
+					/** Check if there are still weak references; if there are, just
+					 delete the object. If there are none, try to recycle the object **/
+					if(_resource->IsWeaklyReferenced()) {
+						delete _object;
+					}
+					else {
+						RecycleOrDelete(_object);
+					}
+					
+				}
+				_object = 0;
+				_resource = 0;
+			}
+		}
+		
+		template<class T> void ref<T>::RecycleOrDelete(...) {
+			delete _object;
+			delete _resource;
+		}
+		
+		template<class T> void ref<T>::RecycleOrDelete(Recycleable* rc) {
+			if(rc!=0) {
+				Recycler<T>::Reuse(_object);
+			}
+			else {
+				delete _object;
+				delete _resource;
+			}
+		}
 	}
 }
 

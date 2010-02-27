@@ -54,6 +54,19 @@ namespace tj {
 		};
 
 		class DispatchThread;
+		class Dispatcher;
+		
+		class EXPORTED SharedDispatcher {
+			
+			public:
+				SharedDispatcher();
+				~SharedDispatcher();
+				static strong<Dispatcher> Instance();
+				
+			protected:
+				static ref<Dispatcher> _instance;
+			
+		};
 
 		class EXPORTED Dispatcher: public virtual Object {
 			friend class DispatchThread;
@@ -61,22 +74,24 @@ namespace tj {
 			public:
 				Dispatcher(int maxThreads = 0, Thread::Priority priority = Thread::PriorityNormal);
 				virtual ~Dispatcher();
-				static strong<Dispatcher> DefaultInstance();
 				virtual void Dispatch(strong<Task> t);
 				virtual void Requeue(strong<Task> t);
 				virtual void Stop();
-				static ref<Dispatcher> GetCurrent();
-				static strong<Dispatcher> CurrentOrDefaultInstance();
+				static strong<Dispatcher> CurrentInstance();
 				virtual unsigned int GetProcessedItemsCount() const;
 				virtual unsigned int GetThreadCount() const;
+				virtual void WaitForCompletion();
 
 			private:
+				static ref<Dispatcher> GetCurrent();
 				virtual void DispatchTask(ref<Task> t);
 
 				CriticalSection _lock;
+				bool _accepting;
 				std::deque< ref<Task> > _queue;
 				std::set< ref<Task> > _stalled;
 				Semaphore _queuedTasks;
+				Event _taskFinished;
 				std::set< ref<DispatchThread> > _threads;
 				int _maxThreads;
 				volatile int _busyThreads;
@@ -84,7 +99,6 @@ namespace tj {
 				const Thread::Priority _defaultPriority;
 
 				static ThreadLocal _currentDispatcher;
-				static ref<Dispatcher> _instance;
 		};
 
 		class EXPORTED DispatchThread: public Thread {
@@ -94,7 +108,7 @@ namespace tj {
 				virtual void Run();
 
 			private:
-				weak<Dispatcher> _dispatcher;
+				Dispatcher* _dispatcher;
 		};
 	}
 }

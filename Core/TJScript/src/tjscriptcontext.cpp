@@ -21,7 +21,7 @@ strong<tj::shared::Dispatcher> ScriptContext::GetDispatcher() {
 	if(_dispatcher) {
 		return _dispatcher;
 	}
-	return Dispatcher::DefaultInstance();
+	return SharedDispatcher::Instance();
 }
 
 Any ScriptContext::GetValue(ref<Scriptable> s) {

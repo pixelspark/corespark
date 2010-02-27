@@ -94,7 +94,6 @@ namespace tj {
 }
 
 #include "tjreference.h"
-#include "tjgc.h"
 
 #endif
 

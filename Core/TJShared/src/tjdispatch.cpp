@@ -80,7 +80,7 @@ void Future::OnDependencyRan(strong<Future> f) {
 	ThreadLock lock(&_lock);
 	--_dependencies;
 	if(_dependencies==0) {
-		ref<Dispatcher> disp = Dispatcher::GetCurrent();
+		ref<Dispatcher> disp = Dispatcher::CurrentInstance();
 		if(disp) {
 			disp->Requeue(ref<Task>(this));
 		}
@@ -113,10 +113,9 @@ bool Future::CanRun() const {
 }
 
 /** Dispatcher **/
-ref<Dispatcher> Dispatcher::_instance;
 ThreadLocal Dispatcher::_currentDispatcher;
 
-Dispatcher::Dispatcher(int maxThreads, Thread::Priority prio): _maxThreads(maxThreads), _busyThreads(0), _defaultPriority(prio), _itemsProcessed(0) {
+Dispatcher::Dispatcher(int maxThreads, Thread::Priority prio): _maxThreads(maxThreads), _busyThreads(0), _defaultPriority(prio), _itemsProcessed(0), _accepting(true) {
 	// TODO: if maxThreads=0, limit the maximum number of threads to the number of cores in the system * a load factor
 	if(maxThreads==0) {
 		_maxThreads = 2;
@@ -124,7 +123,7 @@ Dispatcher::Dispatcher(int maxThreads, Thread::Priority prio): _maxThreads(maxTh
 }
 
 Dispatcher::~Dispatcher() {
-	Stop();
+	// The destruction of _threads will cause a WaitForCompletion on each of them; please call Stop/WaitForCompletion first!
 }
 
 unsigned int Dispatcher::GetProcessedItemsCount() const {
@@ -135,19 +134,12 @@ unsigned int Dispatcher::GetThreadCount() const {
 	return _threads.size();
 }
 
-strong<Dispatcher> Dispatcher::CurrentOrDefaultInstance() {
+strong<Dispatcher> Dispatcher::CurrentInstance() {
 	ref<Dispatcher> di = GetCurrent();
 	if(!di) {
-		return Dispatcher::DefaultInstance();
+		Throw(L"There is no current dispatcher; please instantiate a DispatcherBlock object first!", ExceptionTypeError);
 	}
 	return di;
-}
-
-strong<Dispatcher> Dispatcher::DefaultInstance() {
-	if(!_instance) {
-		_instance = GC::Hold(new Dispatcher());
-	}
-	return _instance;
 }
 
 ref<Dispatcher> Dispatcher::GetCurrent() {
@@ -162,7 +154,7 @@ void Dispatcher::Stop() {
 	// Send quit messages (null tasks)
 	{
 		ThreadLock lock(&_lock);
-
+		_accepting = false;
 		// Dispatch the same quit task as many times as there are threads; this assumes
 		// that threads do not take any new task after receiving a quit task
 		std::set< ref<DispatchThread> >::iterator tit = _threads.begin();
@@ -170,9 +162,8 @@ void Dispatcher::Stop() {
 			DispatchTask(null);
 			++tit;
 		}
-		DispatchTask(null);
 	}
-
+	
 	_threads.clear(); // ~DispatcherThread will wait for completion
 }
 
@@ -216,13 +207,30 @@ void Dispatcher::DispatchTask(ref<Task> t) {
 	}
 	else {
 		// A null task is always enqueued; it stops the executing dispatcher thread
-		_queue.push_back(t);
+		_queue.push_front(t);
 		_queuedTasks.Release();
+	}
+}
+
+void Dispatcher::WaitForCompletion() {
+	while(true) {
+		{
+			ThreadLock lock(&_lock);
+			if(_queue.size()==0) {
+				return;
+			}
+		}
+		
+		_taskFinished.Wait();
 	}
 }
 
 void Dispatcher::Dispatch(strong<Task> t) {
 	ThreadLock lock(&_lock);
+	if(!_accepting) {
+		Throw(L"Dispatcher is stopping, and does not accept new tasks anymore!", ExceptionTypeError);
+	}
+	
 	int numThreads = _threads.size();
 
 	/* If there are no threads yet, or the number of busy threads is equal to the number of 
@@ -240,7 +248,7 @@ void Dispatcher::Dispatch(strong<Task> t) {
 }
 
 /** DispatchThread **/
-DispatchThread::DispatchThread(ref<Dispatcher> d): _dispatcher(d) {
+DispatchThread::DispatchThread(ref<Dispatcher> d): _dispatcher(d.GetPointer()) {
 }
 
 DispatchThread::~DispatchThread() {
@@ -253,35 +261,23 @@ void DispatchThread::Run() {
 	#endif
 
 	while(true) {
-		ref<Dispatcher> dispatcher = _dispatcher;
-		if(!dispatcher) {
-			// The dispatcher has been destroyed and for some reason, we are still alive; quit too
-			return;
-		}
-
-		Semaphore& queueSemaphore = dispatcher->_queuedTasks;
-		dispatcher = null;
+		Semaphore& queueSemaphore = _dispatcher->_queuedTasks;
 
 		// Wait for a task to appear in the queue; if there is a task, wake up and execute it
 		if(queueSemaphore.Wait()) {
 			ref<Task> task;
 
 			{
-				dispatcher = _dispatcher;
-				if(!dispatcher) {
-					return;
-				}
-
-				ThreadLock lock(&(dispatcher->_lock));	
-				std::deque< ref<Task> >::iterator it = dispatcher->_queue.begin();
-				if(it==dispatcher->_queue.end()) {
+				ThreadLock lock(&(_dispatcher->_lock));	
+				std::deque< ref<Task> >::iterator it = _dispatcher->_queue.begin();
+				if(it==_dispatcher->_queue.end()) {
 					continue;
 				}
 
 				task = *it;
-				dispatcher->_queue.pop_front();
+				_dispatcher->_queue.pop_front();
 				if(task) {
-					++(dispatcher->_busyThreads);
+					++(_dispatcher->_busyThreads);
 				}
 			}
 
@@ -296,7 +292,7 @@ void DispatchThread::Run() {
 						task->_flags |= Task::KTaskRunning;
 					}
 					
-					Dispatcher::_currentDispatcher.SetValue(reinterpret_cast<void*>(dispatcher.GetPointer()));
+					Dispatcher::_currentDispatcher.SetValue(reinterpret_cast<void*>(_dispatcher));
 					task->Run();
 					
 					{
@@ -305,6 +301,7 @@ void DispatchThread::Run() {
 						Dispatcher::_currentDispatcher.SetValue(0);
 						task->_flags &= (~Task::KTaskRunning);
 						task->_flags |= Task::KTaskRun;
+						_dispatcher->_taskFinished.Signal();
 					}
 				}
 				else {
@@ -325,14 +322,8 @@ void DispatchThread::Run() {
 			}
 
 			{
-				dispatcher = _dispatcher;
-				if(!dispatcher) {
-					return;
-				}
-
-				ThreadLock lock(&(dispatcher->_lock));	
-				--(dispatcher->_busyThreads);
-				dispatcher = null;
+				ThreadLock lock(&(_dispatcher->_lock));	
+				--(_dispatcher->_busyThreads);
 			}
 		}
 	}
@@ -340,4 +331,26 @@ void DispatchThread::Run() {
 	#ifdef TJ_OS_WIN
 		CoUninitialize();
 	#endif
+}
+
+/** SharedDispatcher **/
+ref<Dispatcher> SharedDispatcher::_instance;
+
+SharedDispatcher::SharedDispatcher() {
+	if(_instance) {
+		Throw(L"A shared dispatcher already exists; please instantiate only one SharedDispatcher per process (preferably in the main thread)", ExceptionTypeError);
+	}
+	_instance = GC::Hold(new Dispatcher());
+}
+
+SharedDispatcher::~SharedDispatcher() {
+	_instance->WaitForCompletion();
+	_instance->Stop();
+}
+
+strong<Dispatcher> SharedDispatcher::Instance() {
+	if(!_instance) {
+		Throw(L"There is no shared dispatcher; programmers: please instantiate a SharedDispatcher object in the main thread first", ExceptionTypeError);
+	}
+	return _instance;
 }

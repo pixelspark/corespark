@@ -122,7 +122,85 @@ long intern::Resource::GetResourceCount() {
 }
 
 /* Object */
+Object::Object(): _resource(0) {
+}
+
+Object::~Object() {
+}
+
 void Object::OnCreated() {
+}
+
+/* Recycleable */
+Recycleable::~Recycleable() {
+}
+
+void Recycleable::OnRecycle() {
+}
+
+void Recycleable::OnReuse() {
+}
+
+/* RecycleBin */
+unsigned int RecycleBin::_totalObjectCount = 0;
+
+unsigned int RecycleBin::GetTrashObjectCount() {
+	return _totalObjectCount;
+}
+
+RecycleBin::RecycleBin(): _lock(new CriticalSection()), _limit(5) {
+}
+
+RecycleBin::~RecycleBin() {
+	ThreadLock lock(_lock);
+	std::deque<Recycleable*>::iterator it = _bin.begin();
+	while(it!=_bin.end()) {
+		Recycleable* r = *it;
+		if(r!=0) {
+			delete r->_resource;
+			delete r;
+		}
+		++it;
+	}
+	delete _lock;
+}
+
+void RecycleBin::Reuse(Recycleable* rc) {
+	if(rc==0) {
+		throw NullPointerException();
+	}
+	
+	ThreadLock lock(_lock);
+	if(WantsToRecycle()) {
+		try {
+			rc->OnRecycle();
+			_totalObjectCount++;
+			_bin.push_back(rc);
+		}
+		catch(...) {
+		}
+	}
+	else {
+		delete rc->_resource;
+		delete rc;
+	}
+}
+
+Recycleable* RecycleBin::Get() {
+	{
+		ThreadLock lock(_lock);
+		if(_bin.size()>0) {
+			Recycleable* rc = *(_bin.rbegin());
+			_totalObjectCount--;
+			_bin.pop_back();
+			return rc;
+		}
+	}
+	return 0;
+}
+
+bool RecycleBin::WantsToRecycle() const {
+	return (_bin.size() < _limit);
 }
 
 /* Serializable */
@@ -131,6 +209,37 @@ Serializable::~Serializable() {
 
 /** OutOfMemoryException **/
 OutOfMemoryException::OutOfMemoryException(): Exception(L"Out of memory!", ExceptionTypeError) {
+}
+
+OutOfMemoryException::~OutOfMemoryException() {
+}
+
+/** BadCastException **/
+BadCastException::BadCastException(): Exception(L"A bad cast was attempted", ExceptionTypeError) {
+}
+
+BadCastException::~BadCastException() {
+}
+
+/** BadReferenceException **/
+BadReferenceException::BadReferenceException(): Exception(L" A reference error has occurred", ExceptionTypeError) {
+}
+
+BadReferenceException::~BadReferenceException() {
+}
+
+/** NullPointerException **/
+NullPointerException::NullPointerException(): Exception(L"A null pointer was dereferenced", ExceptionTypeError) {
+}
+
+NullPointerException::~NullPointerException() {
+}
+
+/** StrongReferenceException **/
+StrongReferenceException::StrongReferenceException(): Exception(L"A null reference tried to become a strong reference", ExceptionTypeError) {
+}
+
+StrongReferenceException::~StrongReferenceException() {
 }
 
 /** Daemon **/
@@ -256,7 +365,7 @@ void Daemon::Run() {
 				else if(_lastSignal==SIGUSR1) {
 			#endif
 			std::wostringstream info;
-			info << L"GC: " << tj::shared::intern::Resource::GetResourceCount() << L" Threads: " << Thread::GetThreadCount() << L" Dispatcher: " << Dispatcher::DefaultInstance()->GetProcessedItemsCount() << L" tasks; " << Dispatcher::DefaultInstance()->GetThreadCount() << L" threads";
+			info << L"GC: " << tj::shared::intern::Resource::GetResourceCount() << L" Threads: " << Thread::GetThreadCount();
 			Log::Write(L"TJShared/Daemon", info.str());
 		}
 		#endif
