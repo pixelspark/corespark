@@ -377,6 +377,10 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "";
+				HEADER_SEARCH_PATHS = (
+					../Core/,
+					../Libraries/,
+				);
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = .;
 				PRODUCT_NAME = TJScript;
@@ -388,7 +392,7 @@
 		1DEB91AF08733DA50010E9CD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -397,10 +401,14 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "";
+				HEADER_SEARCH_PATHS = (
+					../../Core/,
+					"../../Libraries//**",
+				);
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "@executable_path";
 				PRODUCT_NAME = TJScript;
-				SYMROOT = ../build;
+				SYMROOT = ../../build;
 				WRAPPER_EXTENSION = framework;
 			};
 			name = Release;
@@ -413,7 +421,10 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "../Libraries//**";
+				HEADER_SEARCH_PATHS = (
+					../Core/,
+					../Libraries/,
+				);
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
 				SDKROOT = macosx10.6;
@@ -427,9 +438,13 @@
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "../Libraries//**";
+				HEADER_SEARCH_PATHS = (
+					../Core/,
+					"../Libraries//**",
+				);
 				PREBINDING = NO;
 				SDKROOT = macosx10.6;
+				SYMROOT = ../../build;
 			};
 			name = Release;
 		};

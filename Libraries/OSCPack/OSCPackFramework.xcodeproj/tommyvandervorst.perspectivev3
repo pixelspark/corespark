@@ -232,6 +232,8 @@
 			<key>Layout</key>
 			<array>
 				<dict>
+					<key>BecomeActive</key>
+					<true/>
 					<key>ContentConfiguration</key>
 					<dict>
 						<key>PBXBottomSmartGroupGIDs</key>
@@ -325,11 +327,11 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>B4D65D9B11011EF2008FD68C</string>
+										<string>B453710411395023002344F4</string>
 										<key>history</key>
 										<array>
 											<string>B4D65D9911011EF2008FD68C</string>
-											<string>B4D65D9A11011EF2008FD68C</string>
+											<string>B4D65D9B11011EF2008FD68C</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -343,23 +345,21 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 0}, {1073, 440}}</string>
+								<string>{{0, 0}, {1073, 430}}</string>
 								<key>RubberWindowFrame</key>
 								<string>0 94 1280 905 0 0 1280 1002 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
 							<key>Proportion</key>
-							<string>440pt</string>
+							<string>430pt</string>
 						</dict>
 						<dict>
 							<key>Proportion</key>
-							<string>419pt</string>
+							<string>429pt</string>
 							<key>Tabs</key>
 							<array>
 								<dict>
-									<key>BecomeActive</key>
-									<true/>
 									<key>ContentConfiguration</key>
 									<dict>
 										<key>PBXProjectModuleGUID</key>
@@ -370,7 +370,7 @@
 									<key>GeometryConfiguration</key>
 									<dict>
 										<key>Frame</key>
-										<string>{{10, 27}, {1073, 392}}</string>
+										<string>{{10, 27}, {1073, 402}}</string>
 										<key>RubberWindowFrame</key>
 										<string>0 94 1280 905 0 0 1280 1002 </string>
 									</dict>
@@ -454,11 +454,11 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>B4D65D9611011EDB008FD68C</string>
+				<string>B453710511395023002344F4</string>
 				<string>1CA23ED40692098700951B8B</string>
-				<string>B4D65D9711011EDB008FD68C</string>
+				<string>B453710611395023002344F4</string>
 				<string>B486E97710662EB70043CE5D</string>
-				<string>B4D65D9811011EDB008FD68C</string>
+				<string>B453710711395023002344F4</string>
 				<string>1CA23EDF0692099D00951B8B</string>
 				<string>1CA23EE00692099D00951B8B</string>
 				<string>1CA23EE10692099D00951B8B</string>
@@ -626,7 +626,7 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>/Users/tommyvandervorst/Documents/Projecten/tj/Libraries/OSCPack/OSCPackFramework.xcodeproj</string>
+		<string>/Users/tommyvandervorst/Documents/Projecten/tj2/Libraries/OSCPack/OSCPackFramework.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
 	<string>0 94 1280 905 0 0 1280 1002 </string>
