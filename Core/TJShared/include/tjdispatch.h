@@ -23,6 +23,7 @@ namespace tj {
 				virtual void Run() = 0;
 
 			protected:
+				virtual void OnReuse();
 				virtual void OnAfterRun();
 				Task();
 

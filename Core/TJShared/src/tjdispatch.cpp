@@ -9,6 +9,10 @@ Task::~Task() {
 Task::Task(): _flags(0) {
 }
 
+void Task::OnReuse() {
+	_flags = 0;
+}
+
 bool Task::IsRun() const {
 	return (_flags & KTaskRun)!=0;
 }

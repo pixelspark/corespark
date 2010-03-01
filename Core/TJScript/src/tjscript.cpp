@@ -19,3 +19,6 @@ Scriptable::~Scriptable() {
 bool Scriptable::Set(Field field, tj::shared::ref<Scriptable> value) {
 	return false;
 }
+
+ScriptletStack::~ScriptletStack() {
+}

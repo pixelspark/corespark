@@ -16,6 +16,7 @@ namespace tj {
 		class GC;
 		class CriticalSection;
 		class Recycleable;
+		class RecycleBin;
 		
 		namespace intern {
 			class Resource;
@@ -118,7 +119,7 @@ namespace tj {
 
 				public:
 					Resource();
-					~Resource(); // tjcore.cpp
+					virtual ~Resource(); // tjcore.cpp
 
 					inline bool AddReference(bool first = false) {
 						if(!first && _referenceCount==0) return false;
@@ -202,12 +203,20 @@ namespace tj {
 					
 					static long GetResourceCount();
 				
-			protected:
-				volatile ReferenceCount _referenceCount;
-				volatile ReferenceCount _weakReferenceCount;
-				volatile static ReferenceCount _resourceCount;
+				protected:
+					volatile ReferenceCount _referenceCount;
+					volatile ReferenceCount _weakReferenceCount;
+					volatile static ReferenceCount _resourceCount;
 			};
-		};
+			
+			class EXPORTED RecycleableResource: public Resource {
+				public:
+					RecycleableResource(RecycleBin& rb);
+					virtual ~RecycleableResource();
+				
+					RecycleBin& _bin;
+			};
+		}
 		
 		class Object;
 		
@@ -338,9 +347,6 @@ namespace tj {
 				return _object!=0;
 			}
 			
-			void RecycleOrDelete(...);			
-			void RecycleOrDelete(Recycleable* rc);
-			
 			template<class Q> inline bool operator<(const ref<Q>& r) const {
 				if(r.IsCastableTo< Sortable<T> >()) {
 					return ref< Sortable<T> >(r)->SortsAfter(*_object);
@@ -399,7 +405,7 @@ namespace tj {
 			}
 			
 		private:
-			void Release();
+			inline void Release();
 			
 		public:
 			T* _object;
@@ -410,79 +416,79 @@ namespace tj {
 			friend class ref<T>;
 			friend class weak<T>;
 			
-		public:
-			inline strong(const ref<T>& t): _object(t) {
-				if(!t) {
-					throw StrongReferenceException();
+			public:
+				inline strong(const ref<T>& t): _object(t) {
+					if(!t) {
+						throw StrongReferenceException();
+					}
 				}
-			}
-			
-			inline strong(const strong<T>& t): _object(t._object) {
-				if(!_object) {
-					throw StrongReferenceException();
+				
+				inline strong(const strong<T>& t): _object(t._object) {
+					if(!_object) {
+						throw StrongReferenceException();
+					}
 				}
-			}
-			
-			// This could throw BadCastException
-			template<typename TT> inline strong(const strong<TT>& t): _object(t._object) {
-			}
-			
-			inline ~strong() {
-			}
-			
-			inline strong<T>& operator=(const strong<T>& o) {
-				if(!o._object) {
-					throw StrongReferenceException();
+				
+				// This could throw BadCastException
+				template<typename TT> inline strong(const strong<TT>& t): _object(t._object) {
 				}
-				_object = o._object;
-				return (*this);
-			}
-			
-			inline strong<T>& operator=(const ref<T>& o) {
-				if(!o) {
-					throw StrongReferenceException();
+				
+				inline ~strong() {
 				}
-				_object = o;
-				return (*this);
-			}
-			
-			template<typename TT> inline bool operator==(const strong<TT>& r) const {
-				return (_object == r._object);
-			}
-			
-			template<typename TT> inline bool operator!=(const strong<TT>& r) const {
-				return (_object != r._object);
-			}
-			
-			template<typename TT> inline bool operator==(const ref<TT>& r) const {
-				return (_object == r._object);
-			}
-			
-			template<typename TT> inline bool operator!=(const ref<TT>& r) const {
-				return (_object != r._object);
-			}
-			
-			inline bool operator<(const strong<T>& r) const {
-				return r._object < _object;
-			}
-			
-			inline bool operator>(const strong<T>& r) const {
-				return r._object > _object;
-			}
-			
-			inline T* operator->() {
-				return _object._object;
-			}
-			
-			inline const T* operator->() const {
-				return _object._object;
-			}
-			
-			template<class X> inline bool IsCastableTo() const {
-				return (_object._object!=0) && (dynamic_cast<const X*>(_object._object)!=0);
-			}
-			
-			ref<T> _object;
+				
+				inline strong<T>& operator=(const strong<T>& o) {
+					if(!o._object) {
+						throw StrongReferenceException();
+					}
+					_object = o._object;
+					return (*this);
+				}
+				
+				inline strong<T>& operator=(const ref<T>& o) {
+					if(!o) {
+						throw StrongReferenceException();
+					}
+					_object = o;
+					return (*this);
+				}
+				
+				template<typename TT> inline bool operator==(const strong<TT>& r) const {
+					return (_object == r._object);
+				}
+				
+				template<typename TT> inline bool operator!=(const strong<TT>& r) const {
+					return (_object != r._object);
+				}
+				
+				template<typename TT> inline bool operator==(const ref<TT>& r) const {
+					return (_object == r._object);
+				}
+				
+				template<typename TT> inline bool operator!=(const ref<TT>& r) const {
+					return (_object != r._object);
+				}
+				
+				inline bool operator<(const strong<T>& r) const {
+					return r._object < _object;
+				}
+				
+				inline bool operator>(const strong<T>& r) const {
+					return r._object > _object;
+				}
+				
+				inline T* operator->() {
+					return _object._object;
+				}
+				
+				inline const T* operator->() const {
+					return _object._object;
+				}
+				
+				template<class X> inline bool IsCastableTo() const {
+					return (_object._object!=0) && (dynamic_cast<const X*>(_object._object)!=0);
+				}
+				
+				ref<T> _object;
 		};
 		
 		template<typename T> class weak {
@@ -591,6 +597,7 @@ namespace tj {
 					}
 				}
 			}
+			
 			intern::Resource* _resource;
 			T* _object;
 		};
@@ -625,8 +632,9 @@ namespace tj {
 		class EXPORTED GC {
 			public:
 				template<typename T> static ref<T> Hold(T* x);
+				template<typename T> static ref<T> Hold(T* x, RecycleBin& rb);
 				template<typename T> static ref<T> HoldRecycled(T* x);
-				
+			
 				static void Log(const char* name, bool allocate);
 				
 			protected:
@@ -664,26 +672,14 @@ namespace tj {
 						T* object = dynamic_cast<T*>(rc);
 						if(object==0) {
 							// Something went wrong; for some reason, a wrong object was added to the list.
+							delete rc->_resource;
 							delete rc;
-							return GC::Hold(new T());
+							return GC::Hold(new T(), _bin);
 						}
 						
 						return GC::HoldRecycled(object);
 					}
-					return GC::Hold(new T());
-				}
-			
-				static inline void Reuse(...) {
-				}
-			
-				static inline void Reuse(Recycleable* rc) {
-					if(rc!=0) {
-						_bin.Reuse(rc);
-					}
-					else {
-						delete rc->_resource;
-						delete rc;
-					}
+					return GC::Hold(new T(), _bin);
 				}
 			
 			protected:
@@ -693,7 +689,7 @@ namespace tj {
 		/** Implementations of templated methods **/
 		template<class T> RecycleBin Recycler<T>::_bin;
 		
-		template<class T> ref<T> GC::HoldRecycled(T* x) {
+		template<class T> inline ref<T> GC::HoldRecycled(T* x) {
 			Recycleable* rc = dynamic_cast<Recycleable*>(x);
 			if(rc==0) {
 				throw BadReferenceException();
@@ -724,7 +720,7 @@ namespace tj {
 			return ref<T>(x, rc->_resource);
 		}
 		
-		template<class T> ref<T> GC::Hold(T* x) {
+		template<class T> inline ref<T> GC::Hold(T* x) {
 			intern::Resource* rs = new intern::Resource();
 			if(rs==0) {
 				throw OutOfMemoryException();
@@ -737,8 +733,24 @@ namespace tj {
 			
 			return ref<T>(x, rs);
 		}
+		
+		template<class T> inline ref<T> GC::Hold(T* x, RecycleBin& rb) {
+			/* assert(dynamic_cast<Recycleable*>(x)!=0); */
+			intern::RecycleableResource* rs = new intern::RecycleableResource(rb);
+			if(rs==0) {
+				throw OutOfMemoryException();
+			}
+			
+			SetObjectPointer(x, rs);
+			
+			#ifdef TJSHARED_MEMORY_TRACE
+				Log(typeid(x).name(),true);
+			#endif
+			
+			return ref<T>(x, dynamic_cast<intern::Resource*>(rs));
+		}
 								
-		template<class T> void ref<T>::Release() {
+		template<class T> inline void ref<T>::Release() {
 			if(_object!=0) {
 				if(_resource->DeleteReference()) {
 					// This was the last reference to the object; release it
@@ -752,27 +764,19 @@ namespace tj {
 						delete _object;
 					}
 					else {
-						RecycleOrDelete(_object);
+						intern::RecycleableResource* rrc = dynamic_cast<intern::RecycleableResource*>(_resource);
+						if(rrc!=0) {
+							rrc->_bin.Reuse(dynamic_cast<Recycleable*>(_object));
+						}
+						else {
+							delete _object;
+							delete _resource;
+						}
 					}
 					
 				}
 				_object = 0;
 				_resource = 0;
-			}
-		}
-		
-		template<class T> void ref<T>::RecycleOrDelete(...) {
-			delete _object;
-			delete _resource;
-		}
-		
-		template<class T> void ref<T>::RecycleOrDelete(Recycleable* rc) {
-			if(rc!=0) {
-				Recycler<T>::Reuse(_object);
-			}
-			else {
-				delete _object;
-				delete _resource;
 			}
 		}
 	}

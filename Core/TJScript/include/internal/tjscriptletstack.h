@@ -8,6 +8,8 @@ namespace tj {
 			public:
 				inline ScriptletStack() {
 				}
+			
+				virtual ~ScriptletStack();
 
 				inline void Push(tj::shared::ref<Scriptlet> s, int n) {
 					_stack.push_back(std::pair< tj::shared::ref<Scriptlet>,int >(s,n));

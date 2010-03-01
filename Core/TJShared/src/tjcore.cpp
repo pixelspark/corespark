@@ -121,6 +121,13 @@ long intern::Resource::GetResourceCount() {
 	return _resourceCount;
 }
 
+/* RecycleableResource */
+intern::RecycleableResource::RecycleableResource(RecycleBin& rc): _bin(rc) {
+}
+
+intern::RecycleableResource::~RecycleableResource() {
+}
+
 /* Object */
 Object::Object(): _resource(0) {
 }
@@ -170,15 +177,23 @@ void RecycleBin::Reuse(Recycleable* rc) {
 		throw NullPointerException();
 	}
 	
+	if(rc->_resource->IsReferenced() || rc->_resource->IsWeaklyReferenced()) {
+		throw BadReferenceException();
+	}
+	
 	ThreadLock lock(_lock);
 	if(WantsToRecycle()) {
 		try {
 			rc->OnRecycle();
-			_totalObjectCount++;
-			_bin.push_back(rc);
 		}
 		catch(...) {
+			delete rc->_resource;
+			delete rc;
+			return;
 		}
+		
+		_totalObjectCount++;
+		_bin.push_back(rc);
 	}
 	else {
 		delete rc->_resource;
@@ -189,8 +204,9 @@ void RecycleBin::Reuse(Recycleable* rc) {
 Recycleable* RecycleBin::Get() {
 	{
 		ThreadLock lock(_lock);
-		if(_bin.size()>0) {
-			Recycleable* rc = *(_bin.rbegin());
+		std::deque<Recycleable*>::reverse_iterator it = _bin.rbegin();
+		if(it!=_bin.rend()) {
+			Recycleable* rc = *it;
 			_totalObjectCount--;
 			_bin.pop_back();
 			return rc;
@@ -365,7 +381,7 @@ void Daemon::Run() {
 				else if(_lastSignal==SIGUSR1) {
 			#endif
 			std::wostringstream info;
-			info << L"GC: " << tj::shared::intern::Resource::GetResourceCount() << L" Threads: " << Thread::GetThreadCount();
+					info << L"GC: " << tj::shared::intern::Resource::GetResourceCount() << L" Threads: " << Thread::GetThreadCount() << L" Trash: " << RecycleBin::GetTrashObjectCount();
 			Log::Write(L"TJShared/Daemon", info.str());
 		}
 		#endif

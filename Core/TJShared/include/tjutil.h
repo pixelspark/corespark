@@ -187,22 +187,35 @@ namespace tj {
 			protected:
 				int* _values;
 		};
-
+		
+		class Copyright;
+		
+		class EXPORTED Copyrights {
+			public:
+				Copyrights();
+				virtual ~Copyrights();
+				std::set<Copyright*> _copyrights;
+				
+				static void AddCopyright(Copyright* cs);
+				static String Dump();
+				static ref<Copyrights> _instance;
+		};
+		
 		class EXPORTED Copyright {
+			friend class Copyrights;
+			
 			public:
 				inline Copyright(const String& module, const String& component, const String& description): _module(module), _component(component), _description(description) {
-					AddCopyright(this);
+					Copyrights::AddCopyright(this);
 				}
-
+				
 				~Copyright();
-				static String Dump();
-				static void AddCopyright(Copyright* cs);
-
+				
+				
 			private:
 				String _module;
 				String _component;
 				String _description;
-				static ref< std::set<Copyright*> > _copyrights;
 		};
 
 		class EXPORTED MediaUtil {
