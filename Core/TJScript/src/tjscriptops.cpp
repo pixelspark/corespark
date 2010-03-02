@@ -157,7 +157,9 @@ void OpNegateHandler(VM* vm) {
 	
 	if(a.IsCastableTo<ScriptAny>()) {
 		Any aa = ref<ScriptAny>(a)->Unbox();
-		stack.Push(GC::Hold(new ScriptAnyValue(-aa)));
+		strong<ScriptAnyValue> sav = Recycler<ScriptAnyValue>::Create();
+		sav->SetValue(-aa);
+		stack.Push(sav);
 	}
 	else {
 		stack.Push(ScriptConstants::Null);
@@ -172,7 +174,9 @@ void OpAddHandler(VM* vm) {
 	if(a.IsCastableTo<ScriptAny>() && b.IsCastableTo<ScriptAny>()) {
 		Any aa = ref<ScriptAny>(a)->Unbox();
 		Any ab = ref<ScriptAny>(b)->Unbox();
-		stack.Push(GC::Hold(new ScriptAnyValue(ab+aa)));
+		strong<ScriptAnyValue> sav = Recycler<ScriptAnyValue>::Create();
+		sav->SetValue(ab+aa);
+		stack.Push(sav);
 	}
 	else {
 		stack.Push(ScriptConstants::Null);
@@ -187,7 +191,9 @@ void OpSubHandler(VM* vm) {
 	if(a.IsCastableTo<ScriptAny>() && b.IsCastableTo<ScriptAny>()) {
 		Any aa = ref<ScriptAny>(a)->Unbox();
 		Any ab = ref<ScriptAny>(b)->Unbox();
-		stack.Push(GC::Hold(new ScriptAnyValue(ab-aa)));
+		strong<ScriptAnyValue> sav = Recycler<ScriptAnyValue>::Create();
+		sav->SetValue(ab-aa);
+		stack.Push(sav);
 	}
 	else {
 		stack.Push(ScriptConstants::Null);
@@ -202,7 +208,9 @@ void OpMulHandler(VM* vm) {
 	if(a.IsCastableTo<ScriptAny>() && b.IsCastableTo<ScriptAny>()) {
 		Any aa = ref<ScriptAny>(a)->Unbox();
 		Any ab = ref<ScriptAny>(b)->Unbox();
-		stack.Push(GC::Hold(new ScriptAnyValue(aa*ab)));
+		strong<ScriptAnyValue> sav = Recycler<ScriptAnyValue>::Create();
+		sav->SetValue(aa*ab);
+		stack.Push(sav);
 	}
 	else {
 		stack.Push(ScriptConstants::Null);
@@ -217,7 +225,9 @@ void OpDivHandler(VM* vm) {
 	if(a.IsCastableTo<ScriptAny>() && b.IsCastableTo<ScriptAny>()) {
 		Any aa = ref<ScriptAny>(a)->Unbox();
 		Any ab = ref<ScriptAny>(b)->Unbox();
-		stack.Push(GC::Hold(new ScriptAnyValue(ab/aa)));
+		strong<ScriptAnyValue> sav = Recycler<ScriptAnyValue>::Create();
+		sav->SetValue(ab/aa);
+		stack.Push(sav);
 	}
 	else {
 		stack.Push(ScriptConstants::Null);
@@ -231,7 +241,7 @@ void OpAndHandler(VM* vm) {
 	bool ba = ScriptContext::GetValue<bool>(a, false);
 	bool bb = ScriptContext::GetValue<bool>(b, false);
 
-	vm->GetStack().Push((ba&&bb)?ScriptConstants::True:ScriptConstants::False);
+	vm->GetStack().Push((ba&&bb) ? ScriptConstants::True : ScriptConstants::False);
 }
 
 void OpOrHandler(VM* vm) {
@@ -241,7 +251,7 @@ void OpOrHandler(VM* vm) {
 	bool ba = ScriptContext::GetValue<bool>(a, false);
 	bool bb = ScriptContext::GetValue<bool>(b, false);
 
-	vm->GetStack().Push(GC::Hold(new ScriptBool(ba||bb)));
+	vm->GetStack().Push((ba||bb) ? ScriptConstants::True : ScriptConstants::False);
 }
 
 void OpBranchIfHandler(VM* vm) {
@@ -337,7 +347,7 @@ void OpXorHandler(VM* vm) {
 	bool ba = ScriptContext::GetValue<bool>(a, false);
 	bool bb = ScriptContext::GetValue<bool>(b, false);
 	bool result = ((ba||bb) && !(ba==bb));
-	vm->GetStack().Push(result?ScriptConstants::True:ScriptConstants::False);
+	vm->GetStack().Push(result ? ScriptConstants::True : ScriptConstants::False);
 }
 
 void OpBreakHandler(VM* vm) {
@@ -379,7 +389,6 @@ void OpIterateHandler(VM* vm) {
 
 		//set variable
 		vm->GetCurrentScopeForWriting()->Set(ref<ScriptString>(varName)->GetValue(), value);
-
 		vm->Call(scriptlet);
 	}
 	else {

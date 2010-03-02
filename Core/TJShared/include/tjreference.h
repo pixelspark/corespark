@@ -623,9 +623,12 @@ namespace tj {
 			
 			private:
 				bool WantsToRecycle() const;
-				unsigned int _limit;
+			
+				const static unsigned int KRecycleBinMaximumSize = 5;
+				Recycleable* _bin[KRecycleBinMaximumSize];
+				unsigned int _added;
+				unsigned int _removed;
 				CriticalSection* _lock;
-				std::deque<Recycleable*> _bin;
 				static unsigned int _totalObjectCount;
 		};
 		

@@ -661,6 +661,11 @@ WebServer::~WebServer() {
 		_listenerThread->RemoveListener(_server4);
 	}
 	
+	if(_dispatcher) {
+		_dispatcher->Stop();
+		_dispatcher->WaitForCompletion();
+	}
+	
 	#ifdef TJ_OS_WIN
 		closesocket(_server6);
 		closesocket(_server4);

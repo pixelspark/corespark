@@ -155,20 +155,20 @@ unsigned int RecycleBin::GetTrashObjectCount() {
 	return _totalObjectCount;
 }
 
-RecycleBin::RecycleBin(): _lock(new CriticalSection()), _limit(5) {
+RecycleBin::RecycleBin(): _lock(new CriticalSection()), _added(0), _removed(0) {
+	for(unsigned int a=0; a<KRecycleBinMaximumSize; a++) {
+		_bin[a] = 0;
+	}
 }
 
 RecycleBin::~RecycleBin() {
 	ThreadLock lock(_lock);
-	std::deque<Recycleable*>::iterator it = _bin.begin();
-	while(it!=_bin.end()) {
-		Recycleable* r = *it;
-		if(r!=0) {
-			delete r->_resource;
-			delete r;
-		}
-		++it;
+	
+	for(unsigned int a=_removed; a<_added; a++) {
+		delete _bin[a % KRecycleBinMaximumSize]->_resource;
+		delete _bin[a % KRecycleBinMaximumSize];
 	}
+	
 	delete _lock;
 }
 
@@ -192,8 +192,9 @@ void RecycleBin::Reuse(Recycleable* rc) {
 			return;
 		}
 		
-		_totalObjectCount++;
-		_bin.push_back(rc);
+		_bin[_added % KRecycleBinMaximumSize] = rc;
+		++_added;
+		++_totalObjectCount;
 	}
 	else {
 		delete rc->_resource;
@@ -204,11 +205,11 @@ void RecycleBin::Reuse(Recycleable* rc) {
 Recycleable* RecycleBin::Get() {
 	{
 		ThreadLock lock(_lock);
-		std::deque<Recycleable*>::reverse_iterator it = _bin.rbegin();
-		if(it!=_bin.rend()) {
-			Recycleable* rc = *it;
-			_totalObjectCount--;
-			_bin.pop_back();
+		if(_removed<_added) {
+			Recycleable* rc = _bin[_removed % KRecycleBinMaximumSize];
+			_bin[_removed % KRecycleBinMaximumSize] = 0;
+			++_removed;
+			--_totalObjectCount;
 			return rc;
 		}
 	}
@@ -216,7 +217,7 @@ Recycleable* RecycleBin::Get() {
 }
 
 bool RecycleBin::WantsToRecycle() const {
-	return (_bin.size() < _limit);
+	return (_added-_removed) < KRecycleBinMaximumSize;
 }
 
 /* Serializable */

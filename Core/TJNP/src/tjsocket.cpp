@@ -312,9 +312,7 @@ SocketListenerThread::~SocketListenerThread() {
 		Stop();
 	}
 	
-	Log::Write(L"TJNP/SocketListenerThread", L"Waiting for completion");
 	WaitForCompletion();
-	Log::Write(L"TJNP/SocketListenerThread", L"Completed");
 	
 	#ifdef TJ_OS_POSIX
 		close(_controlSocket[0]);
@@ -365,7 +363,6 @@ void SocketListenerThread::Stop() {
 	#endif
 		
 	#ifdef TJ_OS_POSIX
-		Log::Write(L"TJNP/SocketListenerThread", L"Will send quit message to listener thread");
 		char quit[1] = {'Q'};
 		if(write(_controlSocket[0], quit, 1)==-1) {
 			Log::Write(L"TJNP/SocketListenerThread", L"Could not send quit message to listener thread");

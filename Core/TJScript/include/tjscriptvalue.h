@@ -36,12 +36,19 @@ namespace tj {
 		 Any type). Please do not try to use the ScriptValue<T> from client applications directly, as these problems might occur
 		 (especially under GCC; it used to work fine under MSVC++ by the way).
 		 **/
-		template<typename T> class ScriptValue: public ScriptAny {
+		template<typename T> class ScriptValue: public ScriptAny, public tj::shared::Recycleable {
 			public:
 				ScriptValue(const T& value): _value(value) {
 				}
+			
+				ScriptValue() {
+				}
 
 				virtual ~ScriptValue() {
+				}
+			
+				virtual void SetValue(const T& x) {
+					_value = x;
 				}
 
 				virtual T& GetValue() {
