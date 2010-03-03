@@ -17,8 +17,9 @@ namespace tj {
 		using namespace tj::np;
 		
 		class DNSSDBrowserThread;
-		class DNSSDAddressFuture;
+		class DNSSDAddressRequest;
 		class DNSSDUpdateRequest;
+		class DNSSDAttributesRequest;
 		
 		class DNSSDRequest: public virtual Object, public SocketListener {
 			friend class DNSSDBrowserThread;
@@ -31,6 +32,7 @@ namespace tj {
 				bool _oneShot;
 				
 			protected:
+				bool _dirty;
 				weak<DNSSDBrowserThread> _thread;
 		};
 		
@@ -41,17 +43,18 @@ namespace tj {
 				DNSSDBrowserThread();
 				virtual ~DNSSDBrowserThread();
 				virtual void AddRequest(ref<DNSSDRequest> drq);
-				virtual void RemoveRequest(ref<DNSSDRequest> drq);
+				virtual void RemoveRequest(NativeSocket ns);
 				
 				static strong<DNSSDBrowserThread> Instance();
 				
 			protected:
-				CriticalSection _lock;
-				std::set< ref<DNSSDRequest> > _requests;
 				static ref<DNSSDBrowserThread> _instance;
 		};
 
 		class DNSSDService: public Service {
+			friend class DNSSDAddressRequest;
+			friend class DNSSDAttributesRequest;
+			
 			public:
 				DNSSDService(const std::wstring& friendly, const std::wstring& type, const std::wstring& domain, unsigned int iface);
 				virtual ~DNSSDService();
@@ -64,15 +67,25 @@ namespace tj {
 				virtual std::wstring GetQualifiedName() const;
 				virtual unsigned int GetInterface() const;
 				virtual void SetAttribute(const String& key, const String& value);
+			
+				virtual void Resolve();
+				struct DNSSDServiceResolvedNotification {};
+				Listenable<DNSSDServiceResolvedNotification> EventResolved;
+			
+				static String CreateID(const std::wstring& name, const std::wstring& regtype, const std::wstring& domain);
 
 			protected:
+				virtual void OnAddressResolved();
+				virtual void OnAttributesResolved();
 				virtual void OnCreated();
+			
 				std::wstring _type;
 				std::wstring _friendly;
 				std::wstring _domain;
 				unsigned int _interface;
-				ref< DNSSDUpdateRequest > _watcher;
-				mutable ref<DNSSDAddressFuture> _address;
+				ref<DNSSDUpdateRequest> _watcher;
+				ref<DNSSDAddressRequest> _address;
+				ref<DNSSDAttributesRequest> _attributesRequest;
 		};
 		
 		class DNSSDServiceRegistration: public ServiceRegistration {
@@ -100,18 +113,23 @@ namespace tj {
 		};
 		
 
-		class DNSSDResolveRequest: public DNSSDRequest, public RequestResolver {
+		class DNSSDResolveRequest: public DNSSDRequest, public RequestResolver, public tj::shared::Listener<DNSSDService::DNSSDServiceResolvedNotification> {
 			friend class DNSSDBrowserThread;
 
 			public:
 				DNSSDResolveRequest(ref<ResolveRequest> rr, const std::wstring& type);
 				virtual ~DNSSDResolveRequest();
-				virtual ref<ResolveRequest> GetOriginalRequest();
+				virtual void AddNewService(strong<DNSSDService> ds);
+				virtual void OnServiceDisappeared(const tj::shared::String& ident);
+				virtual void Notify(ref<Object> source, const DNSSDService::DNSSDServiceResolvedNotification& data);
 
 			protected:
 				virtual void OnCreated();
+			
+				CriticalSection _lock;
 				weak<ResolveRequest> _request;
 				std::wstring _type;
+				std::set< ref<DNSSDService> > _waitingToResolve;
 		};
 
 		class DNSSDResolver: public Resolver {
@@ -123,26 +141,36 @@ namespace tj {
 				virtual ref<RequestResolver> Resolve(strong<ResolveRequest> rr);
 		};
 		
-		class DNSSDAddressFuture: public Future {
+		class DNSSDAttributesRequest: public DNSSDRequest {
+			friend class DNSSDService;
+			
+		public:
+			DNSSDAttributesRequest(ref<DNSSDService> parent);
+			virtual ~DNSSDAttributesRequest();	
+			virtual void OnCreated();
+			static void Reply(DNSServiceRef DNSServiceRef, DNSServiceFlags flags, uint32_t interfaceIndex, DNSServiceErrorType errorCode, const char* fullname, uint16_t rrtype, uint16_t rrclass, uint16_t rdlen, const void* rdata, uint32_t ttl, void* context);
+				
+		protected:
+			weak<DNSSDService> _parent;
+			bool _succeeded;
+		};
+		
+		class DNSSDAddressRequest: public DNSSDRequest {
+			friend class DNSSDService;
+			
 			public:
-				DNSSDAddressFuture(unsigned int iface, const char* name, const char* regtype, const char* domain);
-				virtual ~DNSSDAddressFuture();	
+				DNSSDAddressRequest(ref<DNSSDService> parent);
+				virtual ~DNSSDAddressRequest();	
+				virtual void OnCreated();
 				static void Reply(DNSServiceRef sdRef,DNSServiceFlags flags, uint32_t interfaceIndex,DNSServiceErrorType errorCode, const char* fullname,const char* hosttarget, uint16_t port, uint16_t txtLen, const unsigned char* txtRecord, void* context);
-				virtual void Run();
-				virtual std::wstring GetAddress();
-				virtual std::wstring GetHostName();
-				virtual unsigned short GetPort();
 				
 			protected:
-				struct ResolvedInfo {
-					std::wstring _ip;
-					std::wstring _hostname;
-					unsigned short _port;
-					bool _succeeded;
-				};
+				weak<DNSSDService> _parent;
 				
-				DNSServiceRef _service;
-				ResolvedInfo _ri;
+				std::wstring _ip;
+				std::wstring _hostname;
+				unsigned short _port;
+				bool _succeeded;
 		};
 	}
 }

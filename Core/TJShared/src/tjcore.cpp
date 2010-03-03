@@ -382,7 +382,7 @@ void Daemon::Run() {
 				else if(_lastSignal==SIGUSR1) {
 			#endif
 			std::wostringstream info;
-					info << L"GC: " << tj::shared::intern::Resource::GetResourceCount() << L" Threads: " << Thread::GetThreadCount() << L" Trash: " << RecycleBin::GetTrashObjectCount();
+					info << L"GC: " << tj::shared::intern::Resource::GetResourceCount() << L" Threads: " << Thread::GetThreadCount() << L" Trash: " << RecycleBin::GetTrashObjectCount() << L" Locks: " << CriticalSection::GetCriticalSectionCount();
 			Log::Write(L"TJShared/Daemon", info.str());
 		}
 		#endif

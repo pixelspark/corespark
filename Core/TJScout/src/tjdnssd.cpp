@@ -21,11 +21,14 @@ using namespace tj::np;
 ref<DNSSDBrowserThread> DNSSDBrowserThread::_instance;
 
 /** DNSSDRequest **/
-DNSSDRequest::DNSSDRequest(DNSServiceRef service, bool oneShot): _service(service), _oneShot(oneShot) {
+DNSSDRequest::DNSSDRequest(DNSServiceRef service, bool oneShot): _service(service), _oneShot(oneShot), _dirty(true) {
 }
 
 DNSSDRequest::~DNSSDRequest() {
-	DNSServiceRefDeallocate(_service);
+	if(_dirty) {
+		DNSSDBrowserThread::Instance()->RemoveRequest(DNSServiceRefSockFD(_service));
+		DNSServiceRefDeallocate(_service);
+	}
 }
 
 void DNSSDRequest::OnReceive(NativeSocket ns) {
@@ -33,7 +36,10 @@ void DNSSDRequest::OnReceive(NativeSocket ns) {
 	if(_oneShot) {
 		ref<DNSSDBrowserThread> bt = _thread;
 		if(bt) {
-			bt->RemoveRequest(ref<DNSSDRequest>(this));
+			bt->RemoveRequest(DNSServiceRefSockFD(_service));
+			DNSServiceRefDeallocate(_service);
+			_dirty = false;
+			
 		}
 	}
 }
@@ -46,26 +52,15 @@ DNSSDBrowserThread::~DNSSDBrowserThread() {
 }
 
 void DNSSDBrowserThread::AddRequest(ref<DNSSDRequest> drq) {
-	ThreadLock lock(&_lock);
 	if(drq) {
-		ref<DNSSDBrowserThread> sr= this;
+		ref<DNSSDBrowserThread> sr = this;
 		drq->_thread = sr;
-		_requests.insert(drq);
 		AddListener(DNSServiceRefSockFD(drq->_service), drq);
 	}
 }
 
-void DNSSDBrowserThread::RemoveRequest(ref<DNSSDRequest> drq) {
-	ThreadLock lock(&_lock);
-	if(drq) {
-		ref<DNSSDBrowserThread> tr;
-		drq->_thread = tr;
-		std::set< ref<DNSSDRequest> >::iterator it = _requests.find(drq);
-		if(it!=_requests.end()) {
-			_requests.erase(it);
-		}
-		RemoveListener(DNSServiceRefSockFD(drq->_service));
-	}
+void DNSSDBrowserThread::RemoveRequest(NativeSocket ns) {
+	RemoveListener(ns);
 }
 
 strong<DNSSDBrowserThread> DNSSDBrowserThread::Instance() {
@@ -82,18 +77,20 @@ void DNSSDDiscoveryBrowseReply(DNSServiceRef sdRef, DNSServiceFlags flags, uint3
 		if(context!=0) {
 			ref<DNSSDResolveRequest> rr = ref<DNSSDResolveRequest>((DNSSDResolveRequest*)context);
 			if(rr) {
-				ref<ResolveRequest> req = rr->GetOriginalRequest();
-				if(req) {
-					ref<Service> service = GC::Hold(new DNSSDService(Wcs(serviceName), Wcs(regType), Wcs(replyDomain), interfaceIndex));
-
-					if((flags & kDNSServiceFlagsAdd)!=0) {
-						req->OnServiceFound(service);
-					}
-					else {
-						req->OnServiceDisappeared(service->GetID());
-					}
+				if((flags & kDNSServiceFlagsAdd)!=0) {
+					ref<DNSSDService> service = GC::Hold(new DNSSDService(Wcs(serviceName), Wcs(regType), Wcs(replyDomain), interfaceIndex));
+					rr->AddNewService(service);
+				}
+				else {
+					rr->OnServiceDisappeared(L"dnssd:"+DNSSDService::CreateID(Wcs(serviceName), Wcs(regType), Wcs(replyDomain)));
 				}
 			}
+			else {
+				Throw(L"No resolve request given in DNSSDDiscoveryBrowseReply!", ExceptionTypeError);
+			}
+		}
+		else {
+			Throw(L"No context given in DNSSDDiscoveryBrowseReply!", ExceptionTypeError);
 		}
 	}
 	catch(Exception& e) {
@@ -110,7 +107,7 @@ DNSSDResolveRequest::DNSSDResolveRequest(ref<ResolveRequest> rq, const std::wstr
 void DNSSDResolveRequest::OnCreated() {
 	RequestResolver::OnCreated();
 	std::string serviceType = Mbs(_type);
-	DNSServiceErrorType er = DNSServiceBrowse(&(DNSSDRequest::_service), 0, 0, serviceType.c_str(), NULL, (DNSServiceBrowseReply)DNSSDDiscoveryBrowseReply, (void*)this);
+	DNSServiceErrorType er = DNSServiceBrowse(&(DNSSDRequest::_service), 0, 0, serviceType.c_str(), NULL, (DNSServiceBrowseReply)DNSSDDiscoveryBrowseReply, reinterpret_cast<void*>(this));
 	if(er!=kDNSServiceErr_NoError) {
 		Log::Write(L"TJScout/DNSSDResolveRequest", L"Could not start browsing for services; err="+Stringify(er)+L"; probably, Bonjour is not installed on this system");
 	}
@@ -122,8 +119,43 @@ void DNSSDResolveRequest::OnCreated() {
 DNSSDResolveRequest::~DNSSDResolveRequest() {
 }
 
-ref<ResolveRequest> DNSSDResolveRequest::GetOriginalRequest() {
-	return _request;
+void DNSSDResolveRequest::Notify(ref<Object> source, const DNSSDService::DNSSDServiceResolvedNotification& data) {
+	ref<DNSSDService> service = source;
+	if(service) {
+		{
+			ThreadLock lock(&_lock);
+			std::set< ref<DNSSDService> >::iterator it = _waitingToResolve.find(service);
+			if(it!=_waitingToResolve.end()) {
+				_waitingToResolve.erase(it);
+			}
+			else {
+				Log::Write(L"TJScout/DNSSDResolveRequest", L"Got a resolve notification for a service we we're not waiting for: "+service->GetID());
+				return;
+			}
+		}
+		
+		ref<ResolveRequest> rr = _request;
+		if(rr) {
+			rr->OnServiceFound(ref<Service>(service));
+		}
+	}
+}
+
+void DNSSDResolveRequest::OnServiceDisappeared(const String& ident) {
+	ref<ResolveRequest> rr = _request;
+	if(rr) {
+		rr->OnServiceDisappeared(ident);
+	}
+}
+
+void DNSSDResolveRequest::AddNewService(strong<DNSSDService> dsd) {
+	ThreadLock lock(&_lock);
+	ref<ResolveRequest> rr = _request;
+	if(rr) {
+		_waitingToResolve.insert(dsd);
+		dsd->EventResolved.AddListener(this);
+		dsd->Resolve();
+	}
 }
 
 /** DNSSDResolver **/
@@ -142,121 +174,122 @@ ref<RequestResolver> DNSSDResolver::Resolve(strong<ResolveRequest> rr) {
 	return null;
 }
 
-/** DNSSDAddressFuture **/
-DNSSDAddressFuture::DNSSDAddressFuture(unsigned int iface, const char* name, const char* regtype, const char* domain): _service(0) {
-	_ri._succeeded = false;
-	DNSServiceResolve(&_service, 0, iface, name, regtype, domain, (DNSServiceResolveReply)Reply, reinterpret_cast<void*>(&_ri));
+/** DNSSDAddressRequest **/
+DNSSDAddressRequest::DNSSDAddressRequest(ref<DNSSDService> parent): 
+	DNSSDRequest(0, true),
+	_succeeded(false),
+	_port(0),
+	_parent(parent) {
+
 }
 
-DNSSDAddressFuture::~DNSSDAddressFuture() {
+DNSSDAddressRequest::~DNSSDAddressRequest() {
 }
 
-std::wstring DNSSDAddressFuture::GetAddress() {
-	ThreadLock lock(&_lock);
-	if(!IsRun() || DidFail() || !_ri._succeeded) {
-		Throw(L"Could not resolve the address of the service", ExceptionTypeError);
+void DNSSDAddressRequest::OnCreated() {
+	ref<DNSSDService> parent = _parent;
+	if(parent) {
+		std::string name = Mbs(parent->_friendly);
+		std::string regType = Mbs(parent->_type);
+		std::string domain = Mbs(parent->_domain);
+		DNSServiceErrorType er = DNSServiceResolve(&_service, 0, parent->_interface, name.c_str(), regType.c_str(), domain.c_str(), (DNSServiceResolveReply)Reply, reinterpret_cast<void*>(this));
+		if(er!=kDNSServiceErr_NoError) {
+			Log::Write(L"TJScout/DNSSDAddressRequest", L"Could not resolve address for service; err="+Stringify(er)+L"; probably, Bonjour is not installed on this system");
+		}
+		else {
+			DNSSDBrowserThread::Instance()->AddRequest(this);
+		}
 	}
-	return _ri._ip;
 }
 
-std::wstring DNSSDAddressFuture::GetHostName() {
-	ThreadLock lock(&_lock);
-	if(!IsRun() || DidFail() || !_ri._succeeded) {
-		Throw(L"Could not resolve the host name of the service", ExceptionTypeError);
-	}
-	return _ri._hostname;
-}
-
-unsigned short DNSSDAddressFuture::GetPort() {
-	ThreadLock lock(&_lock);
-	if(!IsRun() || DidFail() || !_ri._succeeded) {
-		Throw(L"Could not resolve the address of the service; succeeded="+Stringify(_ri._succeeded)+L" run="+Stringify(IsRun())+L" failed="+Stringify(DidFail()), ExceptionTypeError);
-	}
-	return _ri._port;
-}
-
-void DNSSDAddressFuture::Run() {
-	DNSServiceProcessResult(_service);
-	DNSServiceRefDeallocate(_service);
-	_service = 0;
-}
-
-void DNSSDAddressFuture::Reply(DNSServiceRef sdRef, DNSServiceFlags flags, uint32_t interfaceIndex, DNSServiceErrorType errorCode, const char* fullname,const char* hosttarget, uint16_t port, uint16_t txtLen, const unsigned char* txtRecord, void* context) {
-	ResolvedInfo* ri = reinterpret_cast<ResolvedInfo*>(context);
-	if(ri!=0) {
-		ri->_succeeded = false;
-		hostent* he = gethostbyname(hosttarget);
-		if(he!=0) {
-			struct in_addr addr;
-			addr.s_addr = *(u_long *)he->h_addr_list[0];
-			const char* stringAddress = inet_ntoa(addr);
-			if(stringAddress!=0) {
-				std::string addressMbs = stringAddress;
-				ri->_ip = Wcs(addressMbs);
-				ri->_hostname = Wcs(hosttarget);
-				ri->_port = ntohs(port);
-				ri->_succeeded = true;
+void DNSSDAddressRequest::Reply(DNSServiceRef sdRef, DNSServiceFlags flags, uint32_t interfaceIndex, DNSServiceErrorType errorCode, const char* fullname,const char* hosttarget, uint16_t port, uint16_t txtLen, const unsigned char* txtRecord, void* context) {
+	DNSSDAddressRequest* request = reinterpret_cast<DNSSDAddressRequest*>(context);
+	if(request!=0) {
+		ref<DNSSDService> service = request->_parent;
+		if(service) {
+			ThreadLock lock(&(service->_lock));
+			request->_succeeded = false;
+			hostent* he = gethostbyname(hosttarget);
+			if(he!=0) {
+				struct in_addr addr;
+				addr.s_addr = *(u_long *)he->h_addr_list[0];
+				const char* stringAddress = inet_ntoa(addr);
+				if(stringAddress!=0) {
+					std::string addressMbs = stringAddress;
+					request->_ip = Wcs(addressMbs);
+					request->_hostname = Wcs(hosttarget);
+					request->_port = ntohs(port);
+					request->_succeeded = true;
+					
+					service->OnAddressResolved();
+				}
 			}
 		}
 	}
 }
 
 /** DNSSDAttributeResolver **/
-class DNSSDAttributeResolver {
-	public:
-		struct ResolvedInfo {
-			ResolvedInfo(std::map<std::wstring, std::wstring>& a): attributes(a), succeeded(false) {
-			}
+DNSSDAttributesRequest::DNSSDAttributesRequest(ref<DNSSDService> parent): DNSSDRequest(0,true), _parent(parent), _succeeded(false) {
+}
 
-			std::map<std::wstring, std::wstring>& attributes;
-			bool succeeded;
-		};
+DNSSDAttributesRequest::~DNSSDAttributesRequest() {
+}
 
-		static void Reply(DNSServiceRef DNSServiceRef, DNSServiceFlags flags, uint32_t interfaceIndex, DNSServiceErrorType errorCode, const char* fullname, uint16_t rrtype, uint16_t rrclass, uint16_t rdlen, const void* rdata, uint32_t ttl, void* context) {
-			ResolvedInfo* ri = (ResolvedInfo*)context;
-			if(ri!=0) {
-				ri->succeeded = true;
-				const char* rdataChar = (const char*)rdata;
-				const unsigned char* rdataUChar = (const unsigned char*)rdata;
+void DNSSDAttributesRequest::OnCreated() {
+	ref<DNSSDService> service = _parent;
+	if(service) {
+		std::string fqdn = Mbs(service->GetQualifiedName());
+		DNSServiceErrorType er = DNSServiceQueryRecord(&_service, kDNSServiceFlagsLongLivedQuery, service->_interface, fqdn.c_str(), kDNSServiceType_TXT, kDNSServiceClass_IN, (DNSServiceQueryRecordReply)Reply, reinterpret_cast<void*>(this));
+		
+		if(er!=kDNSServiceErr_NoError) {
+			Log::Write(L"TJScout/DNSSDAttributesRequest", L"Could not resolve attributes for service; err="+Stringify(er)+L"; probably, Bonjour is not installed on this system");
+		}
+		else {
+			DNSSDBrowserThread::Instance()->AddRequest(this);
+		}
+	}
+}
 
-				// Parse attribute data
-				unsigned int index = 0;
-				while(index < rdlen) {
-					unsigned int length = rdataUChar[index];
-					if(length==0) {
-						return;
-					}
-
-					unsigned int valueIndex = index;
-
-					while(valueIndex < rdlen) {
-						++valueIndex;
-						if(rdataChar[valueIndex]=='=') {
-							++valueIndex;
-							break;
-						}
-					}
-					
-					if(valueIndex>index && valueIndex<rdlen && valueIndex < (index+length-1)) {
-						std::string key(&(rdataChar[index+1]), valueIndex-index-2);
-						std::string value(&rdataChar[valueIndex], length-(valueIndex-index)+1);
-						ri->attributes[Wcs(key)] = Wcs(value);
-					}
-					index += length + 1;
+void DNSSDAttributesRequest::Reply(DNSServiceRef DNSServiceRef, DNSServiceFlags flags, uint32_t interfaceIndex, DNSServiceErrorType errorCode, const char* fullname, uint16_t rrtype, uint16_t rrclass, uint16_t rdlen, const void* rdata, uint32_t ttl, void* context) {
+	DNSSDAttributesRequest* dar = reinterpret_cast<DNSSDAttributesRequest*>(context);
+	if(dar!=0) {
+		ref<DNSSDService> parent = dar->_parent;
+		if(parent) {
+			ThreadLock lock(&(parent->_lock));
+			const char* rdataChar = (const char*)rdata;
+			const unsigned char* rdataUChar = (const unsigned char*)rdata;
+			
+			// Parse attribute data
+			unsigned int index = 0;
+			while(index < rdlen) {
+				unsigned int length = rdataUChar[index];
+				if(length==0) {
+					return;
 				}
+				
+				unsigned int valueIndex = index;
+				
+				while(valueIndex < rdlen) {
+					++valueIndex;
+					if(rdataChar[valueIndex]=='=') {
+						++valueIndex;
+						break;
+					}
+				}
+				
+				if(valueIndex>index && valueIndex<rdlen && valueIndex < (index+length-1)) {
+					std::string key(&(rdataChar[index+1]), valueIndex-index-2);
+					std::string value(&rdataChar[valueIndex], length-(valueIndex-index)+1);
+					parent->_attributes[Wcs(key)] = Wcs(value);
+				}
+				index += length + 1;
 			}
+		
+			dar->_succeeded = true;
+			parent->OnAttributesResolved();
 		}
-
-		static bool ResolveAttributesForService(unsigned int iface, const std::wstring& name, std::map<std::wstring,std::wstring>& al) {
-			DNSServiceRef service = 0;
-			ResolvedInfo ri(al);
-			std::string fqdn = Mbs(name);
-			DNSServiceQueryRecord(&service, kDNSServiceFlagsLongLivedQuery, iface, fqdn.c_str(), kDNSServiceType_TXT, kDNSServiceClass_IN, (DNSServiceQueryRecordReply)Reply, &ri);
-			DNSServiceProcessResult(service);
-			DNSServiceRefDeallocate(service);
-			return ri.succeeded;
-		}
-};
+	}
+}
 
 /** DNSSDUpdateRequest **/
 DNSSDUpdateRequest::DNSSDUpdateRequest(ref<DNSSDService> sd, DNSServiceRef sr): DNSSDRequest(sr,false), _sd(sd) {
@@ -315,14 +348,6 @@ strong<DNSSDUpdateRequest> DNSSDUpdateRequest::Create(strong<DNSSDService> sd) {
 
 /** DNSSDService **/
 DNSSDService::DNSSDService(const std::wstring& friendly, const std::wstring& type, const std::wstring& domain, unsigned int iface): _friendly(friendly), _type(type), _domain(domain), _interface(iface) {
-	_address = GC::Hold(new DNSSDAddressFuture(iface, Mbs(friendly).c_str(), Mbs(type).c_str(), Mbs(domain).c_str()));
-	Dispatcher::CurrentOrDefaultInstance()->Dispatch(ref<Task>(_address));
-
-	/* Query TXT record containing attributes (a TXT record MUST always be present, hence we can use a blocking query here,
-	this also means that non-conforming mDNS responders can block us...) */
-	if(!DNSSDAttributeResolver::ResolveAttributesForService(iface, GetQualifiedName(), _attributes)) {
-		Log::Write(L"TJScout/DNSSDService", L"Could not resolve attributes for service"+GetID());
-	}
 }
 
 void DNSSDService::SetAttribute(const String& k, const String& v) {
@@ -345,18 +370,28 @@ void DNSSDService::SetAttribute(const String& k, const String& v) {
 
 void DNSSDService::OnCreated() {
 	Service::OnCreated();
-	
-	// Start watching TXT record updates asynchronously through a request
-	_watcher = DNSSDUpdateRequest::Create(ref<DNSSDService>(this));
-	DNSSDBrowserThread::Instance()->AddRequest(_watcher);
+}
+
+void DNSSDService::Resolve() {
+	if(!_address) {
+		std::string friendly = Mbs(_friendly);
+		std::string type = Mbs(_type);
+		std::string domain = Mbs(_domain);
+		_address = GC::Hold(new DNSSDAddressRequest(this));
+		_attributesRequest = GC::Hold(new DNSSDAttributesRequest(this));
+		// DNSSDAddressRequest will add itself to the browser thread
+	}
 }
 
 DNSSDService::~DNSSDService() {
-	DNSSDBrowserThread::Instance()->RemoveRequest(_watcher);
+}
+
+String DNSSDService::CreateID(const String& name, const String& regtype, const String& domain) {
+	return name + L"." + regtype + domain;
 }
 
 std::wstring DNSSDService::GetQualifiedName() const {
-	return _friendly + L"." + _type + _domain;
+	return CreateID(_friendly, _type, _domain);
 }
 
 unsigned int DNSSDService::GetInterface() const {
@@ -364,7 +399,7 @@ unsigned int DNSSDService::GetInterface() const {
 }
 
 std::wstring DNSSDService::GetID() const {
-	return L"dnssd:" + _friendly + L"." + _type + _domain;
+	return L"dnssd:"+GetQualifiedName();
 }
 
 std::wstring DNSSDService::GetFriendlyName() const {
@@ -376,25 +411,38 @@ std::wstring DNSSDService::GetType() const {
 }
 
 std::wstring DNSSDService::GetAddress() const {
-	if(_address && _address->WaitForCompletion()) {
-		return _address->GetAddress();
+	if(_address && _address->_succeeded) {
+		return _address->_ip;
 	}
-	return L"";
+	Throw(L"Address for this service is not resolved yet!", ExceptionTypeError);
 }
 
 std::wstring DNSSDService::GetHostName() const {
-	if(_address && _address->WaitForCompletion()) {
-		return _address->GetHostName();
+	if(_address && _address->_succeeded) {
+		return _address->_hostname;
 	}
-	return L"";
+	Throw(L"Host name for this service is not resolved yet!", ExceptionTypeError);
 }
 
 unsigned short DNSSDService::GetPort() const {
-	if(_address && _address->WaitForCompletion()) {
-		return _address->GetPort();
+	if(_address && _address->_succeeded) {
+		return _address->_port;
 	}
-	Log::Write(L"TJScout/DNSSDService", L"Wait failed in GetPort");
-	return 0;
+	Throw(L"Port for this service is not resolved yet!", ExceptionTypeError);
+}
+
+void DNSSDService::OnAddressResolved() {
+	if(_address && _address->_succeeded && _attributesRequest && _attributesRequest->_succeeded) {
+		EventResolved.Fire(this, DNSSDServiceResolvedNotification());
+		
+		// Start watching for TXT record changes
+		_watcher = DNSSDUpdateRequest::Create(ref<DNSSDService>(this));
+		DNSSDBrowserThread::Instance()->AddRequest(_watcher);
+	}
+}
+
+void DNSSDService::OnAttributesResolved() {
+	OnAddressResolved();
 }
 
 /** DNSSDServiceRegistration **/

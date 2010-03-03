@@ -10,6 +10,7 @@ Task::Task(): _flags(0) {
 }
 
 void Task::OnReuse() {
+	ThreadLock lock(&_lock);
 	_flags = 0;
 }
 
@@ -317,6 +318,7 @@ void DispatchThread::Run() {
 					}
 				}
 				else {
+					Log::Write(L"TJShared/DispatchThread", L"Bailing out");
 					return;
 				}
 			}
@@ -340,6 +342,8 @@ void DispatchThread::Run() {
 		}
 	}
 
+	Log::Write(L"TJShared/DispatchThread", L"Exiting");
+	
 	#ifdef TJ_OS_WIN
 		CoUninitialize();
 	#endif
