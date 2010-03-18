@@ -45,7 +45,7 @@
 		1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		32DBCF5E0370ADEE00C91783 /* OSCPackFramework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OSCPackFramework_Prefix.pch; sourceTree = "<group>"; };
 		8DC2EF5A0486A6940098B216 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		8DC2EF5B0486A6940098B216 /* OSCPack */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.framework; path = OSCPack; sourceTree = BUILT_PRODUCTS_DIR; };
+		8DC2EF5B0486A6940098B216 /* OSCPack.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = OSCPack.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B4A989AB10C6C9DA001CF473 /* libOSCPackMobile.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libOSCPackMobile.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		B4F0AEB810B9E22F00351BAA /* UdpSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UdpSocket.h; sourceTree = "<group>"; };
 		B4F0AEB910B9E22F00351BAA /* TimerListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TimerListener.h; sourceTree = "<group>"; };
@@ -92,7 +92,7 @@
 		034768DFFF38A50411DB9C8B /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8DC2EF5B0486A6940098B216 /* OSCPack */,
+				8DC2EF5B0486A6940098B216 /* OSCPack.framework */,
 				B4A989AB10C6C9DA001CF473 /* libOSCPackMobile.a */,
 			);
 			name = Products;
@@ -230,7 +230,7 @@
 			name = OSCPack;
 			productInstallPath = "$(HOME)/Library/Frameworks";
 			productName = OSCPackFramework;
-			productReference = 8DC2EF5B0486A6940098B216 /* OSCPack */;
+			productReference = 8DC2EF5B0486A6940098B216 /* OSCPack.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		B4A989AA10C6C9DA001CF473 /* OSCPackMobile */ = {
@@ -398,6 +398,7 @@
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				HEADER_SEARCH_PATHS = "/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS3.0.sdk/usr/include/c++/4.2.1/armv6-apple-darwin9/";
 				PREBINDING = NO;
 				PRODUCT_NAME = OSCPackMobile;
 				SDKROOT = iphoneos3.1;
@@ -412,6 +413,7 @@
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				HEADER_SEARCH_PATHS = "/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS3.0.sdk/usr/include/c++/4.2.1/armv6-apple-darwin9/";
 				PREBINDING = NO;
 				PRODUCT_NAME = OSCPackMobile;
 				SDKROOT = iphoneos3.1;
