@@ -65,7 +65,7 @@
 					public:
 						DMXForAllDeviceClass();
 						virtual ~DMXForAllDeviceClass();
-						virtual ref< std::vector< ref<DMXDevice> > > GetAvailableDevices();
+						virtual void GetAvailableDevices(std::vector< ref<DMXDevice> >& devs);
 
 					protected:
 						ref<DMXForAllDevice> _device;

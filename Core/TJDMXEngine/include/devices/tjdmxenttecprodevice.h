@@ -57,7 +57,7 @@ namespace tj {
 				public:
 					DMXEnttecProDeviceClass();
 					virtual ~DMXEnttecProDeviceClass();
-					virtual ref< std::vector< ref<DMXDevice> > > GetAvailableDevices();
+					virtual void GetAvailableDevices(std::vector< ref<DMXDevice> >& devs);
 
 				protected:
 					ref<DMXEnttecProDevice> _device;

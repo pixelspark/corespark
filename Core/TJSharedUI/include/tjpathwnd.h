@@ -14,7 +14,7 @@ namespace tj {
 				String GetText() const;
 				String GetTextTrimmed() const;
 				graphics::Image* GetIcon();
-				virtual ref< std::vector< ref<Crumb> > > GetChildren();
+				virtual void GetChildren(std::vector< ref<Crumb> >& crs);
 				virtual ref<Inspectable> GetSubject();
 				virtual void SetText(const String& x);
 
@@ -29,7 +29,7 @@ namespace tj {
 				BasicCrumb(const String& text, const ResourceIdentifier& icon, ref<Inspectable> subject);
 				virtual ~BasicCrumb();
 				virtual ref<Inspectable> GetSubject();
-				virtual ref< std::vector< ref<Crumb> > > GetChildren();
+				virtual void GetChildren(std::vector< ref<Crumb> >& crs);
 
 			protected:
 				ref<Inspectable> _subject;

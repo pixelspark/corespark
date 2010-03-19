@@ -44,7 +44,7 @@ namespace tj {
 				public:
 					DMXSoundLightDeviceClass();
 					virtual ~DMXSoundLightDeviceClass();
-					virtual ref< std::vector< ref<DMXDevice> > > GetAvailableDevices();
+					virtual void GetAvailableDevices(std::vector< ref<DMXDevice> >& devs);
 
 				protected:
 					ref<DMXSoundLightDevice> _device;

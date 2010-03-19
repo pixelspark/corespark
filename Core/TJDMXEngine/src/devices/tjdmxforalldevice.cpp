@@ -130,11 +130,9 @@
 	DMXForAllDeviceClass::~DMXForAllDeviceClass() {
 	}
 
-	ref< std::vector< ref<DMXDevice> > > DMXForAllDeviceClass::GetAvailableDevices() {
-		ref< std::vector< ref<DMXDevice> > > lst = GC::Hold(new std::vector<ref<DMXDevice> >());
+	void DMXForAllDeviceClass::GetAvailableDevices(std::vector< ref<DMXDevice> >& devs) {
 		if(_device) {
-			lst->push_back(_device);
+			devs.push_back(_device);
 		}
-		return lst;
 	}
 #endif

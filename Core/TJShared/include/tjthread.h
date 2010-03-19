@@ -163,7 +163,7 @@ namespace tj {
 
 			public:
 				Event();
-				~Event();
+				virtual ~Event();
 				void Signal();
 				void Pulse();
 				void Reset();

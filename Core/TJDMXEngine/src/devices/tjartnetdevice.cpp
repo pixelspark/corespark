@@ -93,7 +93,7 @@ void DMXArtNetDevice::OnTransmit(ref<DMXController> controller) {
 		
 		for(int a=0;a<_universeCount;a++) {
 			unsigned int inUniverse = _inUniverse + a;
-			if(inUniverse<=universeCount) {
+			if(inUniverse<universeCount) {
 				int in = inUniverse*512;
 				const unsigned char* transmit = controller->GetTransmitBuffer();
 				ArtDmx packet;
@@ -168,12 +168,10 @@ DMXArtNetDeviceClass::DMXArtNetDeviceClass() {
 DMXArtNetDeviceClass::~DMXArtNetDeviceClass() {
 }
 
-ref< std::vector< ref<DMXDevice> > > DMXArtNetDeviceClass::GetAvailableDevices() {
+void DMXArtNetDeviceClass::GetAvailableDevices(std::vector< ref<DMXDevice> >& devs) {
 	if(!_device) {
 		_device = GC::Hold(new DMXArtNetDevice());
 	}
 
-	ref< std::vector< ref<DMXDevice> > > devs = GC::Hold(new std::vector< ref<DMXDevice> >());
-	devs->push_back(_device);
-	return devs;
+	devs.push_back(_device);
 }

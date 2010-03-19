@@ -131,17 +131,17 @@ void DMXController::Load(TiXmlElement* you) {
 
 	while(it!=_classes.end()) {
 		ref<DMXDeviceClass> dc = *it;
-		ref< std::vector< ref<DMXDevice> > > availableDevices = dc->GetAvailableDevices();
-		if(availableDevices) {
-			std::vector< ref<DMXDevice> >::iterator ait = availableDevices->begin();
-			while(ait!=availableDevices->end()) {
-				ref<DMXDevice> device = *ait;
-				if(device) {
-					devs[device->GetDeviceID()] = device;
-				}
-				++ait;
+		std::vector< ref<DMXDevice> > availableDevices;
+		dc->GetAvailableDevices(availableDevices);
+		std::vector< ref<DMXDevice> >::iterator ait = availableDevices.begin();
+		while(ait!=availableDevices.end()) {
+			ref<DMXDevice> device = *ait;
+			if(device) {
+				devs[device->GetDeviceID()] = device;
 			}
+			++ait;
 		}
+		
 		++it;
 	}
 
@@ -186,18 +186,18 @@ void DMXController::Save(TiXmlElement* you) {
 	std::set< ref<DMXDeviceClass> >::iterator it = _classes.begin();
 	while(it!=_classes.end()) {
 		ref<DMXDeviceClass> dc = *it;
-		ref< std::vector< ref<DMXDevice> > > availableDevices = dc->GetAvailableDevices();
-		if(availableDevices) {
-			std::vector< ref<DMXDevice> >::iterator ait = availableDevices->begin();
-			while(ait!=availableDevices->end()) {
-				ref<DMXDevice> device = *ait;
-				TiXmlElement eDevice("device");
-				SaveAttributeSmall<std::wstring>(&eDevice, "id", device->GetDeviceID());
-				SaveAttributeSmall<bool>(&eDevice, "enabled", IsDeviceEnabled(device));
-				device->Save(&eDevice);
-				you->InsertEndChild(eDevice);
-				++ait;
-			}
+		std::vector< ref<DMXDevice> > availableDevices;
+		dc->GetAvailableDevices(availableDevices);
+
+		std::vector< ref<DMXDevice> >::iterator ait = availableDevices.begin();
+		while(ait!=availableDevices.end()) {
+			ref<DMXDevice> device = *ait;
+			TiXmlElement eDevice("device");
+			SaveAttributeSmall<std::wstring>(&eDevice, "id", device->GetDeviceID());
+			SaveAttributeSmall<bool>(&eDevice, "enabled", IsDeviceEnabled(device));
+			device->Save(&eDevice);
+			you->InsertEndChild(eDevice);
+			++ait;
 		}
 		++it;
 	}

@@ -223,7 +223,7 @@ using namespace tj::shared;
 		((CAxWindow*)_ax)->QueryControl(IID_IWebBrowser2, (void**)&browser);
 		if(browser) {
 			std::string urlmbs = Mbs(url);
-			Dispatcher::DefaultInstance()->Dispatch(ref<Task>(GC::Hold(new NavigateTask(browser, CComBSTR(urlmbs.c_str())))));
+			Dispatcher::CurrentOrDefaultInstance()->Dispatch(ref<Task>(GC::Hold(new NavigateTask(browser, CComBSTR(urlmbs.c_str())))));
 		}
 
 		if(_tools) {

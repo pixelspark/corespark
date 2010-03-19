@@ -33,8 +33,7 @@ Crumb::Crumb(const std::wstring& text, const ResourceIdentifier& icon): _icon(ic
 Crumb::~Crumb() {
 }
 
-ref< std::vector< ref<Crumb> > > Crumb::GetChildren() {
-	return 0;
+void Crumb::GetChildren(std::vector< ref<Crumb> >& crs){
 }
 
 ref<Inspectable> Crumb::GetSubject() {
@@ -72,8 +71,7 @@ ref<Inspectable> BasicCrumb::GetSubject() {
 	return _subject;
 }
 
-ref< std::vector< ref<Crumb> > > BasicCrumb::GetChildren() {
-	return 0;
+void BasicCrumb::GetChildren(std::vector< ref<Crumb> >& crs) {
 }
 
 /* PathWnd*/
@@ -231,12 +229,13 @@ void PathWnd::DoCrumbMenu(ref<Crumb> crumb, int x) {
 	ContextMenu cm;
 	cm.AddItem(crumb->GetTextTrimmed(), 0, true, false);
 
-	ref< std::vector< ref<Crumb> > > cr = crumb->GetChildren();
-	if(cr && cr->size()>0) {
+	std::vector< ref<Crumb> > cr;
+	crumb->GetChildren(cr);
+	if(cr.size()>0) {
 		cm.AddSeparator();
-		std::vector< ref<Crumb> >::iterator it = cr->begin();
+		std::vector< ref<Crumb> >::iterator it = cr.begin();
 		int n = 2;
-		while(it!=cr->end()) {
+		while(it!=cr.end()) {
 			ref<Crumb> child = *it;
 			if(child) {
 				cm.AddItem(child->GetText(), n, false, false);				
@@ -252,7 +251,7 @@ void PathWnd::DoCrumbMenu(ref<Crumb> crumb, int x) {
 		next = crumb;
 	}
 	else if(command>1) {
-		next = cr->at(command-2);
+		next = cr.at(command-2);
 	}
 
 	if(next && next!=_path->GetHead()) {

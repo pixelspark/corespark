@@ -36,7 +36,7 @@ namespace tj {
 		but casting to a subclass, for instance, is not), you should check using the
 		IsCastable<Q> method on ref<Q>, which will return true if the object can be safely
 		casted to the designated type Q. **/
-		class BadCastException: public Exception {
+		class EXPORTED BadCastException: public Exception {
 			public:
 				BadCastException();
 				virtual ~BadCastException();
@@ -44,7 +44,7 @@ namespace tj {
 		
 		/** A StrongReferenceException is thrown whenever an attempt is made to assign
 		a strong reference to null; strong references can never be null. **/
-		class StrongReferenceException: public Exception {
+		class EXPORTED StrongReferenceException: public Exception {
 			public:
 				StrongReferenceException();
 				virtual ~StrongReferenceException();
@@ -64,7 +64,7 @@ namespace tj {
 		conversion from the this pointer to a reference is not possible. To overcome this
 		problem, the memory manager calls the OnCreated method on your Object, in which
 		you can safely convert the this pointer to a reference. **/
-		class BadReferenceException: public Exception {
+		class EXPORTED BadReferenceException: public Exception {
 			public:
 				BadReferenceException();
 				virtual ~BadReferenceException();
@@ -74,7 +74,7 @@ namespace tj {
 		that is null. Strong references never throw this exception when calling a method,
 		but only check for nullity once (on construction). If a strong reference is 
 		initialized with null, it throws a StrongReferenceException. **/
-		class NullPointerException: public Exception {
+		class EXPORTED NullPointerException: public Exception {
 			public:
 				NullPointerException();
 				virtual ~NullPointerException();

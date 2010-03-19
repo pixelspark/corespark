@@ -291,14 +291,12 @@ DMXEnttecProDeviceClass::DMXEnttecProDeviceClass() {
 DMXEnttecProDeviceClass::~DMXEnttecProDeviceClass() {
 }
 
-ref< std::vector< ref<DMXDevice> > > DMXEnttecProDeviceClass::GetAvailableDevices() {
+void DMXEnttecProDeviceClass::GetAvailableDevices(std::vector< ref<DMXDevice> >& devs) {
 	if(!_device) {
 		_device = GC::Hold(new DMXEnttecProDevice());
 	}
 
-	ref< std::vector< ref<DMXDevice> > > devs = GC::Hold(new std::vector< ref<DMXDevice> >());
-	devs->push_back(_device);
-	return devs;
+	devs.push_back(_device);
 }
 
 #endif

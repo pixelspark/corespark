@@ -128,12 +128,10 @@ DMXLanboxDeviceClass::DMXLanboxDeviceClass() {
 DMXLanboxDeviceClass::~DMXLanboxDeviceClass() {
 }
 
-ref< std::vector< ref<DMXDevice> > > DMXLanboxDeviceClass::GetAvailableDevices() {
+void DMXLanboxDeviceClass::GetAvailableDevices(std::vector< ref<DMXDevice> >& devs) {
 	if(!_device) {
 		_device = GC::Hold(new DMXLanboxDevice());
 	}
 
-	ref< std::vector< ref<DMXDevice> > > devs = GC::Hold(new std::vector< ref<DMXDevice> >());
-	devs->push_back(_device);
-	return devs;
+	devs.push_back(_device);
 }

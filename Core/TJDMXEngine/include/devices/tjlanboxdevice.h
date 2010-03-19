@@ -53,7 +53,7 @@ namespace tj {
 				public:
 					DMXLanboxDeviceClass();
 					virtual ~DMXLanboxDeviceClass();
-					virtual ref< std::vector< ref<DMXDevice> > > GetAvailableDevices();
+					virtual void GetAvailableDevices(std::vector< ref<DMXDevice> >& devs);
 
 				protected:
 					ref<DMXLanboxDevice> _device;

@@ -21,7 +21,6 @@ void DMXDevice::Load(TiXmlElement* you) {
 
 void DMXDevice::Stop() {
 	ThreadLock lock(&_lock);
-	Log::Write(L"TJDMX/DMXDevice", L"Stop device "+GetDeviceName());
 	_running = false;
 	_update.Signal();
 }

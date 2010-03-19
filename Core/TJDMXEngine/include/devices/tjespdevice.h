@@ -51,8 +51,7 @@ namespace tj {
 				public:
 					DMXESPDeviceClass();
 					virtual ~DMXESPDeviceClass();
-					virtual ref< std::vector< ref<DMXDevice> > > GetAvailableDevices();
-
+					virtual void GetAvailableDevices(std::vector< ref<DMXDevice> >& devs);
 				protected:
 					ref<DMXESPDevice> _device;
 			};

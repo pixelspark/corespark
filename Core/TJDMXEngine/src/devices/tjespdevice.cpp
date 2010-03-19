@@ -193,12 +193,10 @@ DMXESPDeviceClass::DMXESPDeviceClass() {
 DMXESPDeviceClass::~DMXESPDeviceClass() {
 }
 
-ref< std::vector< ref<DMXDevice> > > DMXESPDeviceClass::GetAvailableDevices() {
+void DMXESPDeviceClass::GetAvailableDevices(std::vector< ref<DMXDevice> >& devs) {
 	if(!_device) {
 		_device = GC::Hold(new DMXESPDevice());
 	}
 
-	ref< std::vector< ref<DMXDevice> > > devs = GC::Hold(new std::vector< ref<DMXDevice> >());
-	devs->push_back(_device);
-	return devs;
+	devs.push_back(_device);
 }

@@ -55,7 +55,7 @@ namespace tj {
 		class DMX_EXPORTED DMXDeviceClass {
 			public:
 				virtual ~DMXDeviceClass();
-				virtual ref< std::vector< ref<DMXDevice> > > GetAvailableDevices() = 0;
+				virtual void GetAvailableDevices(std::vector< ref<DMXDevice> >& devs) = 0;
 		};
 	}
 }

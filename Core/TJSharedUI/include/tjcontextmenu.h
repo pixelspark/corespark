@@ -137,7 +137,7 @@ namespace tj {
 
 			public:
 				ContextMenu();
-				~ContextMenu();
+				virtual ~ContextMenu();
 				int DoContextMenu(ref<Wnd> wnd, Pixels x, Pixels y);
 				ref<MenuItem> DoContextMenuByItem(ref<Wnd> wnd, Pixels x, Pixels y);
 				int DoContextMenu(ref<Wnd> wnd);
