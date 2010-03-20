@@ -232,6 +232,8 @@
 			<key>Layout</key>
 			<array>
 				<dict>
+					<key>BecomeActive</key>
+					<true/>
 					<key>ContentConfiguration</key>
 					<dict>
 						<key>PBXBottomSmartGroupGIDs</key>
@@ -325,11 +327,11 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>B49B4E9211413BA800128F84</string>
+										<string>B4C998CD115575640097F64A</string>
 										<key>history</key>
 										<array>
 											<string>B4D65D9911011EF2008FD68C</string>
-											<string>B453710411395023002344F4</string>
+											<string>B49B4E9211413BA800128F84</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -343,18 +345,18 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 0}, {1073, 420}}</string>
+								<string>{{0, 0}, {1073, 409}}</string>
 								<key>RubberWindowFrame</key>
 								<string>0 94 1280 905 0 0 1280 1002 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
 							<key>Proportion</key>
-							<string>420pt</string>
+							<string>409pt</string>
 						</dict>
 						<dict>
 							<key>Proportion</key>
-							<string>439pt</string>
+							<string>450pt</string>
 							<key>Tabs</key>
 							<array>
 								<dict>
@@ -368,7 +370,9 @@
 									<key>GeometryConfiguration</key>
 									<dict>
 										<key>Frame</key>
-										<string>{{10, 27}, {1073, 412}}</string>
+										<string>{{10, 27}, {1073, 423}}</string>
+										<key>RubberWindowFrame</key>
+										<string>0 94 1280 905 0 0 1280 1002 </string>
 									</dict>
 									<key>Module</key>
 									<string>XCDetailModule</string>
@@ -423,8 +427,6 @@
 									<dict>
 										<key>Frame</key>
 										<string>{{10, 27}, {1073, 412}}</string>
-										<key>RubberWindowFrame</key>
-										<string>0 94 1280 905 0 0 1280 1002 </string>
 									</dict>
 									<key>Module</key>
 									<string>PBXBuildResultsModule</string>
@@ -452,11 +454,11 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>B49B4E8C11413A4300128F84</string>
+				<string>B4C998CE115575640097F64A</string>
 				<string>1CA23ED40692098700951B8B</string>
-				<string>B49B4E8D11413A4300128F84</string>
+				<string>B4C998CF115575640097F64A</string>
 				<string>B486E97710662EB70043CE5D</string>
-				<string>B49B4E8E11413A4300128F84</string>
+				<string>B4C998D0115575640097F64A</string>
 				<string>1CA23EDF0692099D00951B8B</string>
 				<string>1CA23EE00692099D00951B8B</string>
 				<string>1CA23EE10692099D00951B8B</string>

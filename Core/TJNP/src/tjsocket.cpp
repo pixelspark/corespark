@@ -78,19 +78,19 @@ Socket::Socket(NativeSocket ns): _socket(ns) {
 
 Socket::Socket(const NetworkAddress& ns, TransportProtocol tp, unsigned short port) {
 	if(!Create(ns.GetAddressFamily(), tp)) {
-		Throw(L"Could not create socket", ExceptionTypeError);
+		Throw(L"Could not create socket (creation of socket failed; perhaps some kind of limit is reached or the protocol is not supported on the system?)", ExceptionTypeError);
 	}
 
 	if(!Connect(ns,port)) {
 		Log::Write(L"TJNP/Socket", L"Could not connect TCP socket; address="+ns.ToString()+L" port="+Stringify(port)+L" error="+Util::GetDescriptionOfSystemError(errno));
 		Close();
-		Throw(L"Could not connect socket", ExceptionTypeError);
+		Throw(L"Could not connect socket, although the socket was created successfully", ExceptionTypeError);
 	}
 }
 
 Socket::Socket(AddressFamily af, TransportProtocol tp) {
 	if(!Create(af,tp)) {
-		Throw(L"Could not create socket", ExceptionTypeError);
+		Throw(L"Could not create socket; Create() failed", ExceptionTypeError);
 	}
 }
 

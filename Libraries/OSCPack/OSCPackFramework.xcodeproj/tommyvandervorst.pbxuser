@@ -1,7 +1,7 @@
 // !$*UTF8*$!
 {
 	0867D690FE84028FC02AAC07 /* Project object */ = {
-		activeBuildConfigurationName = Release;
+		activeBuildConfigurationName = Debug;
 		activeTarget = B4A989AA10C6C9DA001CF473 /* OSCPackMobile */;
 		addToTargets = (
 			8DC2EF4F0486A6940098B216 /* OSCPack */,
@@ -52,13 +52,14 @@
 					PBXFileDataSource_Warnings_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 289487405;
-			PBXWorkspaceStateSaveDate = 289487405;
+			PBXPerProjectTemplateStateSaveDate = 290813274;
+			PBXWorkspaceStateSaveDate = 290813274;
 		};
 		perUserProjectItems = {
-			B453710411395023002344F4 /* PBXTextBookmark */ = B453710411395023002344F4 /* PBXTextBookmark */;
-			B49B4E9211413BA800128F84 /* PBXTextBookmark */ = B49B4E9211413BA800128F84 /* PBXTextBookmark */;
-			B4D65D9911011EF2008FD68C /* PlistBookmark */ = B4D65D9911011EF2008FD68C /* PlistBookmark */;
+			B453710411395023002344F4 = B453710411395023002344F4 /* PBXTextBookmark */;
+			B49B4E9211413BA800128F84 = B49B4E9211413BA800128F84 /* PBXTextBookmark */;
+			B4C998CD115575640097F64A /* PBXTextBookmark */ = B4C998CD115575640097F64A /* PBXTextBookmark */;
+			B4D65D9911011EF2008FD68C = B4D65D9911011EF2008FD68C /* PlistBookmark */;
 		};
 		sourceControlManager = B486E97D10662EB70043CE5D /* Source Control */;
 		userBuildSettings = {
@@ -104,6 +105,16 @@
 	B4A989AA10C6C9DA001CF473 /* OSCPackMobile */ = {
 		activeExec = 0;
 	};
+	B4C998CD115575640097F64A /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = B4F0AECC10B9E22F00351BAA /* IpEndpointName.cpp */;
+		name = "IpEndpointName.cpp: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 1431;
+		vrLoc = 0;
+	};
 	B4D65D9911011EF2008FD68C /* PlistBookmark */ = {
 		isa = PlistBookmark;
 		fRef = 8DC2EF5A0486A6940098B216 /* Info.plist */;
@@ -148,7 +159,7 @@
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1012, 897}}";
 			sepNavSelRange = "{0, 0}";
-			sepNavVisRange = "{0, 1460}";
+			sepNavVisRange = "{0, 1431}";
 		};
 	};
 }
