@@ -36,6 +36,7 @@ namespace tj {
 					IconTabAddActive,
 					IconTabCloseActive,
 					IconKeyboard,
+					IconUnchecked,
 					_IconLast,
 				};
 
