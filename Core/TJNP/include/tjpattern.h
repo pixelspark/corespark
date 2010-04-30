@@ -1,4 +1,18 @@
-/** Generic OSC pattern matcher with support for Unicode for TJShow input
+/* This file is part of CoreSpark. CoreSpark is free software: you 
+ * can redistribute it and/or modify it under the terms of the GNU
+ * General Public License as published by the Free Software Foundation,
+ * either version 3 of the License, or (at your option) any later 
+ * version.
+ * 
+ * CoreSpark is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with CoreSpark.  If not, see <http://www.gnu.org/licenses/>. */
+ 
+ /** Generic OSC pattern matcher with support for Unicode for TJShow input
 (C) Tommy van der Vorst, 2008-2009, All rights reserved.
 
 Permission to use, copy, modify, distribute, and distribute modified versions

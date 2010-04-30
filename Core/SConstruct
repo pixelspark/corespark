@@ -1,4 +1,4 @@
-SConscript([
+ SConscript([
 'TJShared/SConstruct', 
 'TJScript/SConstruct', 
 'TJNP/SConstruct', 
